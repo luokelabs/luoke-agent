@@ -1,0 +1,130 @@
+{
+  "reply": {
+    "id": 9,
+    "jsonrpc": "2.0",
+    "result": {
+      "content": [
+        {
+          "text": "上一轮：2026-10-20T12:00:00Z，用了 0 秒；发现：放心删 1、要确认 5、仅供参考 15；放心删的能腾出 62.9 MB；病毒库 daily 27000（2026-10-20）；没查成：space、space.system、space.duplicates、leftover.app-data、leftover.installer、stale.large-file、secrets、permission.stale-grant、malware；自动清：关",
+          "type": "text"
+        }
+      ],
+      "isError": false,
+      "resultType": "complete",
+      "structuredContent": {
+        "card": [
+          {
+            "createSurface": {
+              "catalogId": "ai.luoke/a2ui/agent/1",
+              "surfaceId": "scan-000000000004"
+            },
+            "version": "v0.9"
+          },
+          {
+            "updateComponents": {
+              "components": [
+                {
+                  "children": [
+                    "h1",
+                    "t2",
+                    "t3",
+                    "t4",
+                    "t5",
+                    "t6",
+                    "t7",
+                    "r9"
+                  ],
+                  "component": "Column",
+                  "id": "root"
+                },
+                {
+                  "component": "Text",
+                  "id": "h1",
+                  "text": "扫描",
+                  "variant": "h4"
+                },
+                {
+                  "component": "Text",
+                  "id": "t2",
+                  "text": "上一轮：2026-10-20T12:00:00Z，用了 0 秒"
+                },
+                {
+                  "component": "Text",
+                  "id": "t3",
+                  "text": "发现：放心删 1、要确认 5、仅供参考 15",
+                  "variant": "caption"
+                },
+                {
+                  "component": "Text",
+                  "id": "t4",
+                  "text": "放心删的能腾出 62.9 MB",
+                  "variant": "caption"
+                },
+                {
+                  "component": "Text",
+                  "id": "t5",
+                  "text": "病毒库 daily 27000（2026-10-20）",
+                  "variant": "caption"
+                },
+                {
+                  "component": "Text",
+                  "id": "t6",
+                  "text": "没查成：space、space.system、space.duplicates、leftover.app-data、leftover.installer、stale.large-file、secrets、permission.stale-grant、malware",
+                  "variant": "caption"
+                },
+                {
+                  "component": "Text",
+                  "id": "t7",
+                  "text": "自动清：关",
+                  "variant": "caption"
+                },
+                {
+                  "action": {
+                    "event": {
+                      "context": {},
+                      "name": "scan_now"
+                    }
+                  },
+                  "child": "b8-text",
+                  "component": "Button",
+                  "id": "b8"
+                },
+                {
+                  "component": "Text",
+                  "id": "b8-text",
+                  "text": "现在查一下"
+                },
+                {
+                  "children": [
+                    "b8"
+                  ],
+                  "component": "Row",
+                  "id": "r9"
+                }
+              ],
+              "surfaceId": "scan-000000000004"
+            },
+            "version": "v0.9"
+          }
+        ]
+      }
+    }
+  },
+  "request": {
+    "id": 9,
+    "jsonrpc": "2.0",
+    "method": "tools/call",
+    "params": {
+      "_meta": {
+        "io.modelcontextprotocol/clientCapabilities": {},
+        "io.modelcontextprotocol/clientInfo": {
+          "name": "luoke-agent",
+          "version": "fixtures"
+        },
+        "io.modelcontextprotocol/protocolVersion": "2026-07-28"
+      },
+      "arguments": {},
+      "name": "scan_status"
+    }
+  }
+}

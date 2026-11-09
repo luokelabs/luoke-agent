@@ -1,0 +1,119 @@
+{
+  "reply": {
+    "id": 2,
+    "jsonrpc": "2.0",
+    "result": {
+      "content": [
+        {
+          "text": "移到废纸篓 1 项（131.1 MB），删掉会重建的缓存 1 项（腾出 62.9 MB）。",
+          "type": "text"
+        }
+      ],
+      "isError": false,
+      "resultType": "complete",
+      "structuredContent": {
+        "card": [
+          {
+            "updateComponents": {
+              "components": [
+                {
+                  "children": [
+                    "r97900-t1",
+                    "r97900-t2",
+                    "r97900-t3",
+                    "r97900-r5"
+                  ],
+                  "component": "Column",
+                  "id": "root"
+                },
+                {
+                  "component": "Text",
+                  "id": "r97900-t1",
+                  "text": "移到废纸篓 1 项（131.1 MB），删掉会重建的缓存 1 项（腾出 62.9 MB）。"
+                },
+                {
+                  "component": "Text",
+                  "id": "r97900-t2",
+                  "text": "临时目录里有 25 个 wings-* 没被删掉，共 131.1 MB",
+                  "variant": "caption"
+                },
+                {
+                  "component": "Text",
+                  "id": "r97900-t3",
+                  "text": "倒掉废纸篓才真正腾出空间。",
+                  "variant": "caption"
+                },
+                {
+                  "action": {
+                    "event": {
+                      "context": {
+                        "id": "p-000000000002"
+                      },
+                      "name": "scan_restore"
+                    }
+                  },
+                  "child": "r97900-b4-text",
+                  "component": "Button",
+                  "id": "r97900-b4"
+                },
+                {
+                  "component": "Text",
+                  "id": "r97900-b4-text",
+                  "text": "放回"
+                },
+                {
+                  "children": [
+                    "r97900-b4"
+                  ],
+                  "component": "Row",
+                  "id": "r97900-r5"
+                }
+              ],
+              "surfaceId": "round-000000000001"
+            },
+            "version": "v0.9"
+          }
+        ],
+        "done": true
+      }
+    }
+  },
+  "request": {
+    "id": 2,
+    "jsonrpc": "2.0",
+    "method": "tools/call",
+    "params": {
+      "_meta": {
+        "ai.luoke/user-action": {
+          "at": "2026-10-20T20:05:00+08:00",
+          "componentId": "b7",
+          "surfaceId": "round-000000000001"
+        },
+        "io.modelcontextprotocol/clientCapabilities": {},
+        "io.modelcontextprotocol/clientInfo": {
+          "name": "luoke-agent",
+          "version": "fixtures"
+        },
+        "io.modelcontextprotocol/protocolVersion": "2026-07-28"
+      },
+      "arguments": {
+        "choices": {
+          "i0": [
+            "trash"
+          ],
+          "i1": [
+            "remove"
+          ],
+          "i2": [
+            "keep"
+          ],
+          "i3": [
+            "keep"
+          ]
+        },
+        "plan_id": "p-000000000002"
+      },
+      "name": "scan_apply"
+    }
+  }
+}

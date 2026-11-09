@@ -1,0 +1,105 @@
+{
+  "reply": {
+    "id": 8,
+    "jsonrpc": "2.0",
+    "result": {
+      "contents": [
+        {
+          "mimeType": "application/json",
+          "text": [
+            {
+              "createSurface": {
+                "catalogId": "ai.luoke/a2ui/agent/1",
+                "surfaceId": "cleaned"
+              },
+              "version": "v0.9"
+            },
+            {
+              "updateComponents": {
+                "components": [
+                  {
+                    "children": [
+                      "h1",
+                      "d2",
+                      "t3",
+                      "t4",
+                      "r6"
+                    ],
+                    "component": "Column",
+                    "id": "root"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "h1",
+                    "text": "清理记录",
+                    "variant": "h4"
+                  },
+                  {
+                    "component": "Divider",
+                    "id": "d2"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "t3",
+                    "text": "自动清：重复的 report-2026.pdf、安装包 Fixtureapp-2.0.dmg、临时文件夹 puppeteer_dev_chrome_profile-P00020 等 24 项（181.5 MB）"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "t4",
+                    "text": "10月20日 20:00",
+                    "variant": "caption"
+                  },
+                  {
+                    "action": {
+                      "event": {
+                        "context": {
+                          "id": "auto-2026-10-20T12:00:00Z"
+                        },
+                        "name": "scan_restore"
+                      }
+                    },
+                    "child": "b5-text",
+                    "component": "Button",
+                    "id": "b5"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "b5-text",
+                    "text": "放回"
+                  },
+                  {
+                    "children": [
+                      "b5"
+                    ],
+                    "component": "Row",
+                    "id": "r6"
+                  }
+                ],
+                "surfaceId": "cleaned"
+              },
+              "version": "v0.9"
+            }
+          ],
+          "uri": "page/cleaned"
+        }
+      ],
+      "resultType": "complete"
+    }
+  },
+  "request": {
+    "id": 8,
+    "jsonrpc": "2.0",
+    "method": "resources/read",
+    "params": {
+      "_meta": {
+        "io.modelcontextprotocol/clientCapabilities": {},
+        "io.modelcontextprotocol/clientInfo": {
+          "name": "luoke-agent",
+          "version": "fixtures"
+        },
+        "io.modelcontextprotocol/protocolVersion": "2026-07-28"
+      },
+      "uri": "page/cleaned"
+    }
+  }
+}

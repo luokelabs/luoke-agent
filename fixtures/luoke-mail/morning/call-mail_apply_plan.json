@@ -1,0 +1,96 @@
+{
+  "reply": {
+    "id": 6,
+    "jsonrpc": "2.0",
+    "result": {
+      "content": [
+        {
+          "text": "已移到垃圾邮件 1 封。",
+          "type": "text"
+        }
+      ],
+      "isError": false,
+      "resultType": "complete",
+      "structuredContent": {
+        "card": [
+          {
+            "updateComponents": {
+              "components": [
+                {
+                  "children": [
+                    "res-t1",
+                    "res-r3"
+                  ],
+                  "component": "Column",
+                  "id": "root"
+                },
+                {
+                  "component": "Text",
+                  "id": "res-t1",
+                  "text": "已移到垃圾邮件 1 封。"
+                },
+                {
+                  "action": {
+                    "event": {
+                      "context": {
+                        "execution_id": "suspicious-3112a3797159a510"
+                      },
+                      "name": "mail_undo"
+                    }
+                  },
+                  "child": "res-b2-text",
+                  "component": "Button",
+                  "id": "res-b2"
+                },
+                {
+                  "component": "Text",
+                  "id": "res-b2-text",
+                  "text": "撤销"
+                },
+                {
+                  "children": [
+                    "res-b2"
+                  ],
+                  "component": "Row",
+                  "id": "res-r3"
+                }
+              ],
+              "surfaceId": "suspicious-3112a3797159a510"
+            },
+            "version": "v0.9"
+          }
+        ],
+        "done": true
+      }
+    }
+  },
+  "request": {
+    "id": 6,
+    "jsonrpc": "2.0",
+    "method": "tools/call",
+    "params": {
+      "_meta": {
+        "ai.luoke/user-action": {
+          "at": "2026-10-12T10:35:00+08:00",
+          "componentId": "b3",
+          "surfaceId": "suspicious-3112a3797159a510"
+        },
+        "io.modelcontextprotocol/clientCapabilities": {},
+        "io.modelcontextprotocol/clientInfo": {
+          "name": "luoke-agent",
+          "version": "fixtures"
+        },
+        "io.modelcontextprotocol/protocolVersion": "2026-07-28"
+      },
+      "arguments": {
+        "choices": {
+          "m26": [
+            "spam"
+          ]
+        },
+        "plan_id": "suspicious-3112a3797159a510"
+      },
+      "name": "mail_apply_plan"
+    }
+  }
+}

@@ -1,0 +1,56 @@
+{
+  "reply": {
+    "id": 5,
+    "jsonrpc": "2.0",
+    "result": {
+      "resources": [
+        {
+          "mimeType": "application/json",
+          "name": "扫描要告诉你的事",
+          "uri": "luoke://luoke-scan/outbox"
+        },
+        {
+          "mimeType": "application/json",
+          "name": "扫描要告诉你的事",
+          "uri": "outbox"
+        },
+        {
+          "mimeType": "application/json",
+          "name": "清理记录",
+          "uri": "page/cleaned"
+        },
+        {
+          "mimeType": "application/json",
+          "name": "概览",
+          "uri": "page/overview"
+        },
+        {
+          "mimeType": "application/json",
+          "name": "权限的状态",
+          "uri": "permissions"
+        },
+        {
+          "mimeType": "application/json",
+          "name": "概览",
+          "uri": "summary"
+        }
+      ],
+      "resultType": "complete"
+    }
+  },
+  "request": {
+    "id": 5,
+    "jsonrpc": "2.0",
+    "method": "resources/list",
+    "params": {
+      "_meta": {
+        "io.modelcontextprotocol/clientCapabilities": {},
+        "io.modelcontextprotocol/clientInfo": {
+          "name": "luoke-agent",
+          "version": "fixtures"
+        },
+        "io.modelcontextprotocol/protocolVersion": "2026-07-28"
+      }
+    }
+  }
+}

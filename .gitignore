@@ -1,0 +1,13 @@
+build.noindex/
+__pycache__/
+*.pyc
+.DS_Store
+CLAUDE.local.md
+*.noindex/
+build/
+.env
+.env.*
+.build/
+.swiftpm/
+Package.resolved
+.tmp/

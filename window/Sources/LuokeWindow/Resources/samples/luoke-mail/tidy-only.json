@@ -1,0 +1,199 @@
+{
+ "_about": "scripts/window_samples.py 用 fixtures/luoke-mail/tidy-only（luoke-mail 88bcfd81ac3f）接上真核心生成的，不要手改",
+ "app": "luoke-mail",
+ "apps": {
+  "apps": [
+   {
+    "id": "luoke-mail",
+    "needs": [],
+    "pages": [],
+    "running": true,
+    "summary": null,
+    "ui": {
+     "pages": [
+      {
+       "id": "accounts",
+       "title": "邮箱"
+      }
+     ]
+    }
+   }
+  ]
+ },
+ "asked": [
+  "read-outbox.json",
+  "tools-list.json",
+  "read-permissions.json"
+ ],
+ "clock": "2026-10-12T02:30:00Z",
+ "events": [
+  [
+   "a2ui",
+   {
+    "createSurface": {
+     "catalogId": "ai.luoke/a2ui/agent/1",
+     "surfaceId": "luoke-mail/new-mail-9dd127c9cc859c30"
+    },
+    "version": "v0.9"
+   }
+  ],
+  [
+   "a2ui",
+   {
+    "updateComponents": {
+     "components": [
+      {
+       "children": [
+        "h1",
+        "c-rest",
+        "r4"
+       ],
+       "component": "Column",
+       "id": "root"
+      },
+      {
+       "component": "Text",
+       "id": "h1",
+       "text": "这几封打算整理",
+       "variant": "h4"
+      },
+      {
+       "component": "ChoicePicker",
+       "id": "c-rest",
+       "label": "另外 15 封打算归档",
+       "options": [
+        {
+         "label": "照建议处理",
+         "value": "suggested"
+        },
+        {
+         "label": "先不动",
+         "value": "keep"
+        }
+       ],
+       "value": {
+        "path": "/choices/rest"
+       }
+      },
+      {
+       "action": {
+        "event": {
+         "context": {
+          "choices": {
+           "path": "/choices"
+          },
+          "plan_id": "new-mail-9dd127c9cc859c30"
+         },
+         "name": "mail_apply_plan"
+        }
+       },
+       "child": "b2-text",
+       "component": "Button",
+       "id": "b2",
+       "variant": "primary"
+      },
+      {
+       "component": "Text",
+       "id": "b2-text",
+       "text": "按这个处理"
+      },
+      {
+       "action": {
+        "event": {
+         "context": {
+          "plan_id": "new-mail-9dd127c9cc859c30"
+         },
+         "name": "mail_open"
+        }
+       },
+       "child": "b3-text",
+       "component": "Button",
+       "id": "b3"
+      },
+      {
+       "component": "Text",
+       "id": "b3-text",
+       "text": "在邮件助手里看"
+      },
+      {
+       "children": [
+        "b2",
+        "b3"
+       ],
+       "component": "Row",
+       "id": "r4"
+      }
+     ],
+     "surfaceId": "luoke-mail/new-mail-9dd127c9cc859c30"
+    },
+    "version": "v0.9"
+   }
+  ],
+  [
+   "a2ui",
+   {
+    "updateDataModel": {
+     "path": "/",
+     "surfaceId": "luoke-mail/new-mail-9dd127c9cc859c30",
+     "value": {
+      "choices": {
+       "rest": [
+        "suggested"
+       ]
+      }
+     }
+    },
+    "version": "v0.9"
+   }
+  ],
+  [
+   "feed",
+   {
+    "brief": {
+     "next": "2026-10-12T08:00:00+08:00"
+    },
+    "cards": [
+     {
+      "app": "luoke-mail",
+      "id": "luoke-mail/new-mail-9dd127c9cc859c30",
+      "kind": "new-mail",
+      "section": "later",
+      "time": "2026-10-12T10:30:00+08:00",
+      "title": "15 封新邮件可以整理"
+     }
+    ],
+    "notices": [],
+    "open": 1,
+    "order": [
+     "luoke-mail/new-mail-9dd127c9cc859c30"
+    ],
+    "paused_until": null
+   }
+  ]
+ ],
+ "host": {},
+ "pages": {},
+ "permissions": {
+  "rows": [
+   {
+    "app": "luoke-mail",
+    "can": [
+     "open",
+     "remove"
+    ],
+    "facts": [
+     "用授权码连接，授权码只存在这台 Mac 的钥匙串里",
+     "邮件内容不离开这台 Mac",
+     "不发信，不永久删除"
+    ],
+    "id": "mailbox",
+    "kind": "account",
+    "state": "granted",
+    "title": "邮箱"
+   }
+  ]
+ },
+ "scenario": "tidy-only",
+ "title": "只有可以整理的：通知、推送、订阅",
+ "version": "0.19.35"
+}

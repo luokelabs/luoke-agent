@@ -1,0 +1,1214 @@
+{
+ "_about": "scripts/window_samples.py 用 fixtures/luoke-scan/full-report（luoke-scan 27544abc5e9c）接上真核心生成的，不要手改",
+ "app": "luoke-scan",
+ "apps": {
+  "apps": [
+   {
+    "id": "luoke-scan",
+    "needs": [],
+    "pages": [
+     {
+      "id": "overview",
+      "title": "概览"
+     },
+     {
+      "id": "cleaned",
+      "title": "清理记录"
+     }
+    ],
+    "running": true,
+    "summary": {
+     "count": 18,
+     "text": "有 2 件要尽快看看，另外 4 条需要留意"
+    },
+    "ui": null
+   }
+  ]
+ },
+ "asked": [
+  "read-outbox.json",
+  "tools-list.json",
+  "read-summary.json",
+  "read-permissions.json",
+  "read-page-overview.json",
+  "read-page-cleaned.json"
+ ],
+ "clock": "2026-10-20T12:00:00Z",
+ "events": [
+  [
+   "a2ui",
+   {
+    "createSurface": {
+     "catalogId": "ai.luoke/a2ui/agent/1",
+     "surfaceId": "luoke-scan/security-000000000001"
+    },
+    "version": "v0.9"
+   }
+  ],
+  [
+   "a2ui",
+   {
+    "updateComponents": {
+     "components": [
+      {
+       "children": [
+        "h1",
+        "t2",
+        "t3",
+        "r7"
+       ],
+       "component": "Column",
+       "id": "root"
+      },
+      {
+       "component": "Text",
+       "id": "h1",
+       "text": "病毒库认出 eicar-test.com 是 Eicar-Test-Signature",
+       "variant": "h4"
+      },
+      {
+       "component": "Text",
+       "id": "t2",
+       "text": "~/Downloads/eicar-test.com",
+       "variant": "caption"
+      },
+      {
+       "component": "Text",
+       "id": "t3",
+       "text": "依据：病毒库认出是 Eicar-Test-Signature（daily 27000，2026-10-20）",
+       "variant": "caption"
+      },
+      {
+       "action": {
+        "event": {
+         "context": {
+          "choices": {
+           "i0": [
+            "trash"
+           ]
+          },
+          "plan_id": "p-000000000002"
+         },
+         "name": "scan_apply"
+        }
+       },
+       "child": "b4-text",
+       "component": "Button",
+       "id": "b4",
+       "variant": "primary"
+      },
+      {
+       "component": "Text",
+       "id": "b4-text",
+       "text": "移到废纸篓"
+      },
+      {
+       "action": {
+        "event": {
+         "context": {
+          "finding_id": "malware.clamav/000000000003"
+         },
+         "name": "scan_reveal"
+        }
+       },
+       "child": "b5-text",
+       "component": "Button",
+       "id": "b5"
+      },
+      {
+       "component": "Text",
+       "id": "b5-text",
+       "text": "在访达里显示"
+      },
+      {
+       "action": {
+        "event": {
+         "context": {
+          "finding_id": "malware.clamav/000000000003"
+         },
+         "name": "scan_ignore"
+        }
+       },
+       "child": "b6-text",
+       "component": "Button",
+       "id": "b6"
+      },
+      {
+       "component": "Text",
+       "id": "b6-text",
+       "text": "不是病毒，以后别提"
+      },
+      {
+       "children": [
+        "b4",
+        "b5",
+        "b6"
+       ],
+       "component": "Row",
+       "id": "r7"
+      }
+     ],
+     "surfaceId": "luoke-scan/security-000000000001"
+    },
+    "version": "v0.9"
+   }
+  ],
+  [
+   "a2ui",
+   {
+    "createSurface": {
+     "catalogId": "ai.luoke/a2ui/agent/1",
+     "surfaceId": "luoke-scan/security-000000000004"
+    },
+    "version": "v0.9"
+   }
+  ],
+  [
+   "a2ui",
+   {
+    "updateComponents": {
+     "components": [
+      {
+       "children": [
+        "h1",
+        "t2",
+        "t3",
+        "r7"
+       ],
+       "component": "Column",
+       "id": "root"
+      },
+      {
+       "component": "Text",
+       "id": "h1",
+       "text": "update.scpt：伪造的系统对话框骗你输入密码（macOS 上窃取钥匙串的木马常用）",
+       "variant": "h4"
+      },
+      {
+       "component": "Text",
+       "id": "t2",
+       "text": "~/Downloads/update.scpt",
+       "variant": "caption"
+      },
+      {
+       "component": "Text",
+       "id": "t3",
+       "text": "依据：规则 luoke_fake_password_dialog",
+       "variant": "caption"
+      },
+      {
+       "action": {
+        "event": {
+         "context": {
+          "choices": {
+           "i0": [
+            "trash"
+           ]
+          },
+          "plan_id": "p-000000000005"
+         },
+         "name": "scan_apply"
+        }
+       },
+       "child": "b4-text",
+       "component": "Button",
+       "id": "b4",
+       "variant": "primary"
+      },
+      {
+       "component": "Text",
+       "id": "b4-text",
+       "text": "移到废纸篓"
+      },
+      {
+       "action": {
+        "event": {
+         "context": {
+          "finding_id": "malware.yara.luoke_fake_password_dialog/000000000006"
+         },
+         "name": "scan_reveal"
+        }
+       },
+       "child": "b5-text",
+       "component": "Button",
+       "id": "b5"
+      },
+      {
+       "component": "Text",
+       "id": "b5-text",
+       "text": "在访达里显示"
+      },
+      {
+       "action": {
+        "event": {
+         "context": {
+          "finding_id": "malware.yara.luoke_fake_password_dialog/000000000006"
+         },
+         "name": "scan_ignore"
+        }
+       },
+       "child": "b6-text",
+       "component": "Button",
+       "id": "b6"
+      },
+      {
+       "component": "Text",
+       "id": "b6-text",
+       "text": "不是病毒，以后别提"
+      },
+      {
+       "children": [
+        "b4",
+        "b5",
+        "b6"
+       ],
+       "component": "Row",
+       "id": "r7"
+      }
+     ],
+     "surfaceId": "luoke-scan/security-000000000004"
+    },
+    "version": "v0.9"
+   }
+  ],
+  [
+   "a2ui",
+   {
+    "createSurface": {
+     "catalogId": "ai.luoke/a2ui/agent/1",
+     "surfaceId": "luoke-scan/round-000000000007"
+    },
+    "version": "v0.9"
+   }
+  ],
+  [
+   "a2ui",
+   {
+    "updateComponents": {
+     "components": [
+      {
+       "children": [
+        "h1",
+        "t2",
+        "c-i0",
+        "t3",
+        "c-i1",
+        "t4",
+        "c-i2",
+        "t5",
+        "c-i3",
+        "t6",
+        "c-i4",
+        "t7",
+        "c-i5",
+        "t8",
+        "c-i6",
+        "t9",
+        "c-i7",
+        "t10",
+        "c-i8",
+        "t11",
+        "c-i9",
+        "t12",
+        "c-i10",
+        "t13",
+        "r16",
+        "d17",
+        "t18",
+        "t19",
+        "r21",
+        "t22",
+        "r24",
+        "d25",
+        "t26",
+        "t27",
+        "d28",
+        "t29",
+        "t30",
+        "t31",
+        "r34",
+        "t35",
+        "t36",
+        "r38",
+        "t39",
+        "t40",
+        "r42",
+        "t43",
+        "t44",
+        "t45"
+       ],
+       "component": "Column",
+       "id": "root"
+      },
+      {
+       "component": "Text",
+       "id": "h1",
+       "text": "能清出 349.2 MB，另外有 12 件事值得看一眼",
+       "variant": "h4"
+      },
+      {
+       "component": "Text",
+       "id": "t2",
+       "text": "会自动重建的缓存直接删掉，别的放心删的移到废纸篓，要你确认的先不动。",
+       "variant": "caption"
+      },
+      {
+       "component": "ChoicePicker",
+       "id": "c-i0",
+       "label": "病毒库认出 eicar-test.com 是 Eicar-Test-Signature（4 KB）",
+       "options": [
+        {
+         "label": "移到废纸篓",
+         "value": "trash"
+        },
+        {
+         "label": "先不动",
+         "value": "keep"
+        },
+        {
+         "label": "以后别提",
+         "value": "ignore"
+        }
+       ],
+       "value": {
+        "path": "/choices/i0"
+       }
+      },
+      {
+       "component": "Text",
+       "id": "t3",
+       "text": "~/Downloads/eicar-test.com",
+       "variant": "caption"
+      },
+      {
+       "component": "ChoicePicker",
+       "id": "c-i1",
+       "label": "update.scpt：伪造的系统对话框骗你输入密码（macOS 上窃取钥匙串的木马常用）（4 KB）",
+       "options": [
+        {
+         "label": "移到废纸篓",
+         "value": "trash"
+        },
+        {
+         "label": "先不动",
+         "value": "keep"
+        },
+        {
+         "label": "以后别提",
+         "value": "ignore"
+        }
+       ],
+       "value": {
+        "path": "/choices/i1"
+       }
+      },
+      {
+       "component": "Text",
+       "id": "t4",
+       "text": "~/Downloads/update.scpt",
+       "variant": "caption"
+      },
+      {
+       "component": "ChoicePicker",
+       "id": "c-i2",
+       "label": "后台任务 io.example.gone 指向已经不存在的位置",
+       "options": [
+        {
+         "label": "移到废纸篓",
+         "value": "trash"
+        },
+        {
+         "label": "先不动",
+         "value": "keep"
+        },
+        {
+         "label": "以后别提",
+         "value": "ignore"
+        }
+       ],
+       "value": {
+        "path": "/choices/i2"
+       }
+      },
+      {
+       "component": "Text",
+       "id": "t5",
+       "text": "~/Library/LaunchAgents/io.example.gone.plist",
+       "variant": "caption"
+      },
+      {
+       "component": "ChoicePicker",
+       "id": "c-i3",
+       "label": "临时目录里有 25 个 wings-* 没被删掉，共 131.1 MB",
+       "options": [
+        {
+         "label": "移到废纸篓",
+         "value": "trash"
+        },
+        {
+         "label": "先不动",
+         "value": "keep"
+        },
+        {
+         "label": "以后别提",
+         "value": "ignore"
+        }
+       ],
+       "value": {
+        "path": "/choices/i3"
+       }
+      },
+      {
+       "component": "Text",
+       "id": "t6",
+       "text": "$TMPDIR 里的 25 项",
+       "variant": "caption"
+      },
+      {
+       "component": "ChoicePicker",
+       "id": "c-i4",
+       "label": "pip 的缓存，删了会自动重建（62.9 MB）",
+       "options": [
+        {
+         "label": "删掉（会自动重建）",
+         "value": "remove"
+        },
+        {
+         "label": "先不动",
+         "value": "keep"
+        },
+        {
+         "label": "以后别提",
+         "value": "ignore"
+        }
+       ],
+       "value": {
+        "path": "/choices/i4"
+       }
+      },
+      {
+       "component": "Text",
+       "id": "t7",
+       "text": "~/Library/Caches/pip",
+       "variant": "caption"
+      },
+      {
+       "component": "ChoicePicker",
+       "id": "c-i5",
+       "label": "Go 的缓存，删了会自动重建（60.8 MB）",
+       "options": [
+        {
+         "label": "删掉（会自动重建）",
+         "value": "remove"
+        },
+        {
+         "label": "先不动",
+         "value": "keep"
+        },
+        {
+         "label": "以后别提",
+         "value": "ignore"
+        }
+       ],
+       "value": {
+        "path": "/choices/i5"
+       }
+      },
+      {
+       "component": "Text",
+       "id": "t8",
+       "text": "~/Library/Caches/go-build",
+       "variant": "caption"
+      },
+      {
+       "component": "ChoicePicker",
+       "id": "c-i6",
+       "label": "uv 的缓存，删了会自动重建（58.7 MB）",
+       "options": [
+        {
+         "label": "删掉（会自动重建）",
+         "value": "remove"
+        },
+        {
+         "label": "先不动",
+         "value": "keep"
+        },
+        {
+         "label": "以后别提",
+         "value": "ignore"
+        }
+       ],
+       "value": {
+        "path": "/choices/i6"
+       }
+      },
+      {
+       "component": "Text",
+       "id": "t9",
+       "text": "~/.cache/uv",
+       "variant": "caption"
+      },
+      {
+       "component": "ChoicePicker",
+       "id": "c-i7",
+       "label": "npm 的缓存，删了会自动重建（56.6 MB）",
+       "options": [
+        {
+         "label": "删掉（会自动重建）",
+         "value": "remove"
+        },
+        {
+         "label": "先不动",
+         "value": "keep"
+        },
+        {
+         "label": "以后别提",
+         "value": "ignore"
+        }
+       ],
+       "value": {
+        "path": "/choices/i7"
+       }
+      },
+      {
+       "component": "Text",
+       "id": "t10",
+       "text": "~/.npm/_cacache",
+       "variant": "caption"
+      },
+      {
+       "component": "ChoicePicker",
+       "id": "c-i8",
+       "label": "Xcode 的缓存，删了会自动重建（55.6 MB）",
+       "options": [
+        {
+         "label": "删掉（会自动重建）",
+         "value": "remove"
+        },
+        {
+         "label": "先不动",
+         "value": "keep"
+        },
+        {
+         "label": "以后别提",
+         "value": "ignore"
+        }
+       ],
+       "value": {
+        "path": "/choices/i8"
+       }
+      },
+      {
+       "component": "Text",
+       "id": "t11",
+       "text": "~/Library/Developer/Xcode/DerivedData",
+       "variant": "caption"
+      },
+      {
+       "component": "ChoicePicker",
+       "id": "c-i9",
+       "label": "Bun 的缓存，删了会自动重建（54.5 MB）",
+       "options": [
+        {
+         "label": "删掉（会自动重建）",
+         "value": "remove"
+        },
+        {
+         "label": "先不动",
+         "value": "keep"
+        },
+        {
+         "label": "以后别提",
+         "value": "ignore"
+        }
+       ],
+       "value": {
+        "path": "/choices/i9"
+       }
+      },
+      {
+       "component": "Text",
+       "id": "t12",
+       "text": "~/.bun/install/cache",
+       "variant": "caption"
+      },
+      {
+       "component": "ChoicePicker",
+       "id": "c-i10",
+       "label": "old-pushed 半年多没动过，都已推送，删了能从远程找回（147 KB）",
+       "options": [
+        {
+         "label": "移到废纸篓",
+         "value": "trash"
+        },
+        {
+         "label": "先不动",
+         "value": "keep"
+        },
+        {
+         "label": "以后别提",
+         "value": "ignore"
+        }
+       ],
+       "value": {
+        "path": "/choices/i10"
+       }
+      },
+      {
+       "component": "Text",
+       "id": "t13",
+       "text": "~/Projects/old-pushed",
+       "variant": "caption"
+      },
+      {
+       "action": {
+        "event": {
+         "context": {
+          "choices": {
+           "path": "/choices"
+          },
+          "plan_id": "p-000000000008"
+         },
+         "name": "scan_apply"
+        }
+       },
+       "child": "b14-text",
+       "component": "Button",
+       "id": "b14",
+       "variant": "primary"
+      },
+      {
+       "component": "Text",
+       "id": "b14-text",
+       "text": "按这个处理"
+      },
+      {
+       "action": {
+        "event": {
+         "context": {
+          "on": true
+         },
+         "name": "scan_autoclean"
+        }
+       },
+       "child": "b15-text",
+       "component": "Button",
+       "id": "b15"
+      },
+      {
+       "component": "Text",
+       "id": "b15-text",
+       "text": "以后自动清"
+      },
+      {
+       "children": [
+        "b14",
+        "b15"
+       ],
+       "component": "Row",
+       "id": "r16"
+      },
+      {
+       "component": "Divider",
+       "id": "d17"
+      },
+      {
+       "component": "Text",
+       "id": "t18",
+       "text": "这几个应用已经删了，权限还留着，可以在系统设置里移除：",
+       "variant": "caption"
+      },
+      {
+       "component": "Text",
+       "id": "t19",
+       "text": "/opt/gone/tool 已经不在这台 Mac 上，还拿着「录屏」"
+      },
+      {
+       "action": {
+        "event": {
+         "context": {
+          "grant": "录屏"
+         },
+         "name": "scan_open_settings"
+        }
+       },
+       "child": "b20-text",
+       "component": "Button",
+       "id": "b20"
+      },
+      {
+       "component": "Text",
+       "id": "b20-text",
+       "text": "打开「录屏」设置"
+      },
+      {
+       "children": [
+        "b20"
+       ],
+       "component": "Row",
+       "id": "r21"
+      },
+      {
+       "component": "Text",
+       "id": "t22",
+       "text": "io.example.removed 已经不在这台 Mac 上，还拿着「完全磁盘访问」"
+      },
+      {
+       "action": {
+        "event": {
+         "context": {
+          "grant": "完全磁盘访问"
+         },
+         "name": "scan_open_settings"
+        }
+       },
+       "child": "b23-text",
+       "component": "Button",
+       "id": "b23"
+      },
+      {
+       "component": "Text",
+       "id": "b23-text",
+       "text": "打开「完全磁盘访问」设置"
+      },
+      {
+       "children": [
+        "b23"
+       ],
+       "component": "Row",
+       "id": "r24"
+      },
+      {
+       "component": "Divider",
+       "id": "d25"
+      },
+      {
+       "component": "Text",
+       "id": "t26",
+       "text": "这几样螺壳不替你动，你可以自己看看：",
+       "variant": "caption"
+      },
+      {
+       "component": "Text",
+       "id": "t27",
+       "text": "进程 100（gone）的程序已经被删掉了，它还在跑"
+      },
+      {
+       "component": "Divider",
+       "id": "d28"
+      },
+      {
+       "component": "Text",
+       "id": "t29",
+       "text": "这几条值得留意，有空看一下：",
+       "variant": "caption"
+      },
+      {
+       "component": "Text",
+       "id": "t30",
+       "text": "没有开发者担保的程序 Keys 在看你在所有应用里按的每一个键"
+      },
+      {
+       "component": "Text",
+       "id": "t31",
+       "text": "怎么办：认得就留着；不认得的先退出它，再在 系统设置 → 隐私与安全性 → 输入监控、辅助功能 里关掉它的权限，把程序移到废纸篓",
+       "variant": "caption"
+      },
+      {
+       "action": {
+        "event": {
+         "context": {
+          "grant": "输入监控"
+         },
+         "name": "scan_open_settings"
+        }
+       },
+       "child": "b32-text",
+       "component": "Button",
+       "id": "b32"
+      },
+      {
+       "component": "Text",
+       "id": "b32-text",
+       "text": "打开「输入监控」设置"
+      },
+      {
+       "action": {
+        "event": {
+         "context": {
+          "finding_id": "keyboard.unvouched/000000000009"
+         },
+         "name": "scan_reveal"
+        }
+       },
+       "child": "b33-text",
+       "component": "Button",
+       "id": "b33"
+      },
+      {
+       "component": "Text",
+       "id": "b33-text",
+       "text": "在访达里显示"
+      },
+      {
+       "children": [
+        "b32",
+        "b33"
+       ],
+       "component": "Row",
+       "id": "r34"
+      },
+      {
+       "component": "Text",
+       "id": "t35",
+       "text": "Gemini CLI 的 MCP 设置里明文写着 1 个密钥，这台 Mac 上别的账户也能读到"
+      },
+      {
+       "component": "Text",
+       "id": "t36",
+       "text": "怎么办：把密钥放进环境变量或钥匙串，设置里写成引用（例如 ${env:名字}）；已经写过的密钥最好换新的；终端里运行 chmod 600 \"$HOME/.gemini/settings.json\"",
+       "variant": "caption"
+      },
+      {
+       "action": {
+        "event": {
+         "context": {
+          "finding_id": "mcp.secrets/000000000010"
+         },
+         "name": "scan_reveal"
+        }
+       },
+       "child": "b37-text",
+       "component": "Button",
+       "id": "b37"
+      },
+      {
+       "component": "Text",
+       "id": "b37-text",
+       "text": "在访达里显示"
+      },
+      {
+       "children": [
+        "b37"
+       ],
+       "component": "Row",
+       "id": "r38"
+      },
+      {
+       "component": "Text",
+       "id": "t39",
+       "text": "Claude Code 的 skill「quick-setup」：从网上下载代码直接运行，另有 1 处要看"
+      },
+      {
+       "component": "Text",
+       "id": "t40",
+       "text": "怎么办：不认识就在访达里把这个 skill 的文件夹移到废纸篓；认得的话看看它为什么要这样做；弄清楚之前别让 AI 用它",
+       "variant": "caption"
+      },
+      {
+       "action": {
+        "event": {
+         "context": {
+          "finding_id": "skill.download-exec/000000000011"
+         },
+         "name": "scan_reveal"
+        }
+       },
+       "child": "b41-text",
+       "component": "Button",
+       "id": "b41"
+      },
+      {
+       "component": "Text",
+       "id": "b41-text",
+       "text": "在访达里显示"
+      },
+      {
+       "children": [
+        "b41"
+       ],
+       "component": "Row",
+       "id": "r42"
+      },
+      {
+       "component": "Text",
+       "id": "t43",
+       "text": "FileVault 没开：电脑丢了，硬盘上的东西能直接被读出来"
+      },
+      {
+       "component": "Text",
+       "id": "t44",
+       "text": "怎么办：系统设置 → 隐私与安全性 → FileVault",
+       "variant": "caption"
+      },
+      {
+       "component": "Text",
+       "id": "t45",
+       "text": "另有 18 条仅供参考，问我就列给你。",
+       "variant": "caption"
+      }
+     ],
+     "surfaceId": "luoke-scan/round-000000000007"
+    },
+    "version": "v0.9"
+   }
+  ],
+  [
+   "a2ui",
+   {
+    "updateDataModel": {
+     "path": "/",
+     "surfaceId": "luoke-scan/round-000000000007",
+     "value": {
+      "choices": {
+       "i0": [
+        "keep"
+       ],
+       "i1": [
+        "keep"
+       ],
+       "i10": [
+        "keep"
+       ],
+       "i2": [
+        "keep"
+       ],
+       "i3": [
+        "keep"
+       ],
+       "i4": [
+        "remove"
+       ],
+       "i5": [
+        "remove"
+       ],
+       "i6": [
+        "remove"
+       ],
+       "i7": [
+        "remove"
+       ],
+       "i8": [
+        "remove"
+       ],
+       "i9": [
+        "remove"
+       ]
+      }
+     }
+    },
+    "version": "v0.9"
+   }
+  ],
+  [
+   "feed",
+   {
+    "brief": {
+     "next": "2026-10-20T08:00:00+08:00"
+    },
+    "cards": [
+     {
+      "app": "luoke-scan",
+      "id": "luoke-scan/security-000000000001",
+      "kind": "security",
+      "section": "urgent",
+      "time": "2026-10-20T20:00:00+08:00",
+      "title": "病毒库认出 eicar-test.com 是 Eicar-Test-Signature"
+     },
+     {
+      "app": "luoke-scan",
+      "id": "luoke-scan/security-000000000004",
+      "kind": "security",
+      "section": "urgent",
+      "time": "2026-10-20T20:00:00+08:00",
+      "title": "update.scpt：伪造的系统对话框骗你输入密码（macOS 上窃取钥匙串的木马常用）"
+     },
+     {
+      "app": "luoke-scan",
+      "id": "luoke-scan/round-000000000007",
+      "kind": "findings",
+      "section": "later",
+      "time": "2026-10-20T20:00:00+08:00",
+      "title": "能清出 349.2 MB，另外有 12 件事值得看一眼"
+     }
+    ],
+    "notices": [],
+    "open": 3,
+    "order": [
+     "luoke-scan/security-000000000001",
+     "luoke-scan/security-000000000004",
+     "luoke-scan/round-000000000007"
+    ],
+    "paused_until": null
+   }
+  ]
+ ],
+ "host": {
+  "fda": "granted"
+ },
+ "pages": {
+  "cleaned": {
+   "messages": [
+    {
+     "createSurface": {
+      "catalogId": "ai.luoke/a2ui/agent/1",
+      "surfaceId": "luoke-scan/page/cleaned"
+     },
+     "version": "v0.9"
+    },
+    {
+     "updateComponents": {
+      "components": [
+       {
+        "children": [
+         "h1",
+         "t2"
+        ],
+        "component": "Column",
+        "id": "root"
+       },
+       {
+        "component": "Text",
+        "id": "h1",
+        "text": "清理记录",
+        "variant": "h4"
+       },
+       {
+        "component": "Text",
+        "id": "t2",
+        "text": "还没清理过。"
+       }
+      ],
+      "surfaceId": "luoke-scan/page/cleaned"
+     },
+     "version": "v0.9"
+    }
+   ]
+  },
+  "overview": {
+   "messages": [
+    {
+     "createSurface": {
+      "catalogId": "ai.luoke/a2ui/agent/1",
+      "surfaceId": "luoke-scan/page/overview"
+     },
+     "version": "v0.9"
+    },
+    {
+     "updateComponents": {
+      "components": [
+       {
+        "children": [
+         "h1",
+         "t2",
+         "t3",
+         "t4",
+         "t5",
+         "r7"
+        ],
+        "component": "Column",
+        "id": "root"
+       },
+       {
+        "component": "Text",
+        "id": "h1",
+        "text": "扫描",
+        "variant": "h4"
+       },
+       {
+        "component": "Text",
+        "id": "t2",
+        "text": "有 2 件要尽快看看，另外 4 条需要留意"
+       },
+       {
+        "component": "Text",
+        "id": "t3",
+        "text": "上一轮 10月20日 20:00：放心删 6、要确认 8、仅供参考 22",
+        "variant": "caption"
+       },
+       {
+        "component": "Text",
+        "id": "t4",
+        "text": "病毒库 daily 27000（2026-10-20）",
+        "variant": "caption"
+       },
+       {
+        "component": "Text",
+        "id": "t5",
+        "text": "自动清：关",
+        "variant": "caption"
+       },
+       {
+        "action": {
+         "event": {
+          "context": {},
+          "name": "scan_now"
+         }
+        },
+        "child": "b6-text",
+        "component": "Button",
+        "id": "b6"
+       },
+       {
+        "component": "Text",
+        "id": "b6-text",
+        "text": "现在查一下"
+       },
+       {
+        "children": [
+         "b6"
+        ],
+        "component": "Row",
+        "id": "r7"
+       }
+      ],
+      "surfaceId": "luoke-scan/page/overview"
+     },
+     "version": "v0.9"
+    }
+   ]
+  }
+ },
+ "permissions": {
+  "rows": [
+   {
+    "app": "luoke-scan",
+    "can": [
+     "settings"
+    ],
+    "facts": [
+     "看文件名、大小、修改时间",
+     "重复文件、散落的密钥、AI 的 skill 和说明文件在本机读内容",
+     "结果不出这台 Mac"
+    ],
+    "id": "fda",
+    "kind": "system",
+    "owner": "luoke",
+    "state": "granted",
+    "tcc": "SystemPolicyAllFiles",
+    "title": "完全磁盘访问",
+    "without": "degrade"
+   },
+   {
+    "app": "luoke-scan",
+    "can": [
+     "on"
+    ],
+    "id": "auto",
+    "kind": "delegate",
+    "state": "off",
+    "title": "不用点就清 4 类"
+   },
+   {
+    "app": "luoke-scan",
+    "id": "admin",
+    "kind": "each-time",
+    "state": "ask",
+    "title": "删除系统目录里的东西（要 Mac 的密码）"
+   }
+  ]
+ },
+ "scenario": "full-report",
+ "title": "用了一阵的开发机：一轮查出一长串",
+ "version": "0.3.5"
+}

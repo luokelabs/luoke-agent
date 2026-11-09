@@ -1,0 +1,269 @@
+{
+  "reply": {
+    "id": 4,
+    "jsonrpc": "2.0",
+    "result": {
+      "resultType": "complete",
+      "tools": [
+        {
+          "annotations": {
+            "destructiveHint": false,
+            "readOnlyHint": true
+          },
+          "description": "上一轮什么时候查的、查出多少、病毒库日期、哪些项没查成",
+          "inputSchema": {
+            "properties": {},
+            "required": [],
+            "type": "object"
+          },
+          "name": "scan_status",
+          "title": "扫描的状态"
+        },
+        {
+          "annotations": {
+            "destructiveHint": false,
+            "readOnlyHint": true
+          },
+          "description": "上一轮的发现，可以按结论、类别筛",
+          "inputSchema": {
+            "properties": {
+              "category": {
+                "type": "string"
+              },
+              "limit": {
+                "maximum": 50,
+                "minimum": 1,
+                "type": "integer"
+              },
+              "verdict": {
+                "enum": [
+                  "safe",
+                  "confirm",
+                  "info"
+                ],
+                "type": "string"
+              }
+            },
+            "required": [],
+            "type": "object"
+          },
+          "name": "scan_findings",
+          "title": "列出发现"
+        },
+        {
+          "annotations": {
+            "destructiveHint": false,
+            "readOnlyHint": true
+          },
+          "description": "马上开始一轮扫描（只读，不改动任何东西）",
+          "inputSchema": {
+            "properties": {},
+            "required": [],
+            "type": "object"
+          },
+          "name": "scan_now",
+          "title": "现在查一下"
+        },
+        {
+          "annotations": {
+            "destructiveHint": false,
+            "readOnlyHint": true
+          },
+          "description": "按上一轮的发现出一份清理方案，每项可以选移到废纸篓、先不动、以后别提",
+          "inputSchema": {
+            "properties": {
+              "scope": {
+                "enum": [
+                  "all",
+                  "cache"
+                ],
+                "type": "string"
+              }
+            },
+            "required": [],
+            "type": "object"
+          },
+          "name": "scan_plan",
+          "title": "出清理方案"
+        },
+        {
+          "annotations": {
+            "destructiveHint": true,
+            "readOnlyHint": false
+          },
+          "description": "执行用户在卡片上点过的方案：只做方案里列的、用户选的",
+          "inputSchema": {
+            "properties": {
+              "choices": {
+                "type": "object"
+              },
+              "plan_id": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "plan_id",
+              "choices"
+            ],
+            "type": "object"
+          },
+          "name": "scan_apply",
+          "title": "执行清理方案"
+        },
+        {
+          "annotations": {
+            "destructiveHint": false,
+            "readOnlyHint": false
+          },
+          "description": "把一条发现标成不用管，以后不再报",
+          "inputSchema": {
+            "properties": {
+              "finding_id": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "finding_id"
+            ],
+            "type": "object"
+          },
+          "name": "scan_ignore",
+          "title": "以后别提这一条"
+        },
+        {
+          "annotations": {
+            "destructiveHint": false,
+            "readOnlyHint": false
+          },
+          "description": "把清理时移进废纸篓的放回原处：一条清理记录（c-…），或一次清理的整批（p-… / auto-…）；原位置有同名的就放在旁边，不盖掉",
+          "inputSchema": {
+            "properties": {
+              "id": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "id"
+            ],
+            "type": "object"
+          },
+          "name": "scan_restore",
+          "title": "放回"
+        },
+        {
+          "annotations": {
+            "destructiveHint": false,
+            "readOnlyHint": false
+          },
+          "description": "开或关不用点就清的四类：会重建的缓存、装好了的应用的安装包、下载文件夹里的重复文件、测试工具留下的临时文件夹",
+          "inputSchema": {
+            "properties": {
+              "enable": {
+                "description": "旧写法，和 on 一样；给了 on 就不看它",
+                "type": "boolean"
+              },
+              "on": {
+                "description": "开（true）还是关（false）；要给",
+                "type": "boolean"
+              }
+            },
+            "required": [],
+            "type": "object"
+          },
+          "name": "scan_autoclean",
+          "title": "自动清理"
+        },
+        {
+          "_meta": {
+            "ai.luoke/where": "mac"
+          },
+          "annotations": {
+            "destructiveHint": false,
+            "readOnlyHint": true
+          },
+          "description": "在访达里选中一条发现指的文件或文件夹",
+          "inputSchema": {
+            "properties": {
+              "finding_id": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "finding_id"
+            ],
+            "type": "object"
+          },
+          "name": "scan_reveal",
+          "title": "在访达里显示"
+        },
+        {
+          "_meta": {
+            "ai.luoke/where": "mac"
+          },
+          "annotations": {
+            "destructiveHint": false,
+            "readOnlyHint": true
+          },
+          "description": "打开系统设置里对应的页面（隐私与安全性的某个权限，或「登录项」）",
+          "inputSchema": {
+            "properties": {
+              "grant": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "grant"
+            ],
+            "type": "object"
+          },
+          "name": "scan_open_settings",
+          "title": "打开系统设置"
+        },
+        {
+          "annotations": {
+            "destructiveHint": false,
+            "readOnlyHint": true
+          },
+          "description": "agent 告诉扫描某件事已经说过、答过或放下了",
+          "inputSchema": {
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "state": {
+                "enum": [
+                  "shown",
+                  "answered",
+                  "dismissed"
+                ],
+                "type": "string"
+              }
+            },
+            "required": [
+              "id",
+              "state"
+            ],
+            "type": "object"
+          },
+          "name": "outbox_ack",
+          "title": "记下说过了"
+        }
+      ]
+    }
+  },
+  "request": {
+    "id": 4,
+    "jsonrpc": "2.0",
+    "method": "tools/list",
+    "params": {
+      "_meta": {
+        "io.modelcontextprotocol/clientCapabilities": {},
+        "io.modelcontextprotocol/clientInfo": {
+          "name": "luoke-agent",
+          "version": "fixtures"
+        },
+        "io.modelcontextprotocol/protocolVersion": "2026-07-28"
+      }
+    }
+  }
+}

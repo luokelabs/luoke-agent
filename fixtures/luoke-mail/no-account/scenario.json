@@ -1,0 +1,50 @@
+{
+  "id": "no-account",
+  "normalised": {
+    "resources/read": "contents[0].text 解开成了 JSON 值；线上是 JSON 文字"
+  },
+  "produced": {
+    "fixture": [
+      "还没连邮箱：设置里没有邮箱（第一次打开邮件助手、还没填授权码）"
+    ],
+    "mcp": "luoke-mail 的 agent socket（luoke_mail/agent.py 的 Agent，同一个 ToolServer.handle）在进程里直接答：一个请求一份答复",
+    "tz": "Asia/Shanghai",
+    "user_action_at": "点按时的 at 是那一步的时钟，按 Asia/Shanghai 写"
+  },
+  "situation": "邮件助手装好了、开着，还没连邮箱（设置里没有邮箱）。",
+  "steps": [
+    {
+      "clock": "2026-10-12T02:30:00Z",
+      "do": "邮件助手开着，还没连邮箱"
+    },
+    {
+      "clock": "2026-10-12T02:30:00Z",
+      "do": "server/discover",
+      "file": "server-discover.json"
+    },
+    {
+      "clock": "2026-10-12T02:30:00Z",
+      "do": "列工具（agent 认 readOnlyHint）",
+      "file": "tools-list.json"
+    },
+    {
+      "clock": "2026-10-12T02:30:00Z",
+      "do": "列资源",
+      "file": "resources-list.json"
+    },
+    {
+      "clock": "2026-10-12T02:30:00Z",
+      "do": "读 outbox（每分钟一次）",
+      "file": "read-outbox.json"
+    },
+    {
+      "clock": "2026-10-12T02:30:00Z",
+      "do": "读权限的状态",
+      "file": "read-permissions.json"
+    }
+  ],
+  "title": "还没连邮箱",
+  "window": [
+    "outbox 是空的；权限里邮箱是 `ask`：「设置 · 权限」那一行要用户去邮件助手里连。"
+  ]
+}

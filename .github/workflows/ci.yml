@@ -1,0 +1,103 @@
+# 每个 PR 推了新提交、每次合进 main：跑全部测试，把每个界面截成图（浅色、深色）。
+# PR 上贴一条评论（每次更新它）：测试结果、和 main 比哪些界面变了、全部截图。
+# 截图按内容存在 ui-shots 分支；main 的那一份是 PR 比较的底。
+name: 测试和截图
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+env:
+  HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+
+jobs:
+  python:
+    name: Python ${{ matrix.python }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - python: "3.9"
+            flags: ""
+          - python: "3.12"
+            flags: "-W error::ResourceWarning"
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ env.HEAD_SHA }}
+      - uses: actions/setup-python@v7
+        with:
+          python-version: ${{ matrix.python }}
+      - run: python -B ${{ matrix.flags }} -m unittest discover -s tests -t .
+
+  swift:
+    name: Swift 测试和截图
+    runs-on: macos-26
+    timeout-minutes: 40
+    env:
+      OUT: ${{ github.workspace }}/.tmp/ci
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ env.HEAD_SHA }}
+      - name: 工具链
+        run: |
+          sw_vers
+          swift --version
+      - name: LuokeA2UI
+        run: scripts/ci/step.sh "$OUT" LuokeA2UI a2ui.log swift test --package-path a2ui
+      - name: LuokeWindow
+        if: ${{ !cancelled() }}
+        run: scripts/ci/step.sh "$OUT" LuokeWindow window.log swift test --package-path window
+      - name: 截图
+        if: ${{ !cancelled() }}
+        run: scripts/ci/step.sh "$OUT" 截图 shots.log swift run --package-path window luoke-window-shots "$OUT/shots"
+      - uses: actions/upload-artifact@v7
+        if: ${{ !cancelled() }}
+        with:
+          name: ui-shots-${{ env.HEAD_SHA }}
+          path: .tmp/ci
+          retention-days: 30
+
+  report:
+    name: 贴截图
+    needs: [python, swift]
+    # 从别人 fork 来的 PR 没有写权限：只留 artifact，不推截图、不评论
+    if: ${{ !cancelled() && (github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository) }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ env.HEAD_SHA }}
+          sparse-checkout: scripts/ci
+      - uses: actions/download-artifact@v8
+        continue-on-error: true
+        with:
+          name: ui-shots-${{ env.HEAD_SHA }}
+          path: .tmp/ci
+      - name: 推截图、更新评论
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TARGET: ${{ github.event.pull_request.number || 'main' }}
+          PYTHON_RESULT: ${{ needs.python.result }}
+        run: >
+          python3 -B scripts/ci/post_shots.py
+          --run .tmp/ci --work "$RUNNER_TEMP/ui-shots"
+          --target "$TARGET" --sha "$HEAD_SHA" --repo "$GITHUB_REPOSITORY"
+          --python "$PYTHON_RESULT"
+          --run-url "$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"

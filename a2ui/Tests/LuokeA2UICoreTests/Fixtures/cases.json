@@ -1,0 +1,4036 @@
+[
+ {
+  "name": "plan_card",
+  "catalog": "ai.luoke/a2ui/agent/1",
+  "messages": [
+   {
+    "version": "v0.9",
+    "createSurface": {
+     "surfaceId": "p1",
+     "catalogId": "ai.luoke/a2ui/agent/1"
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateComponents": {
+     "surfaceId": "p1",
+     "components": [
+      {
+       "id": "root",
+       "component": "Column",
+       "children": [
+        "h1",
+        "c-m1",
+        "t2",
+        "c-rest",
+        "r5"
+       ]
+      },
+      {
+       "id": "h1",
+       "component": "Text",
+       "text": "这 2 封我打算这样处理",
+       "variant": "h4"
+      },
+      {
+       "id": "c-m1",
+       "component": "ChoicePicker",
+       "label": "王老师：答辩时间",
+       "options": [
+        {
+         "label": "写草稿",
+         "value": "draft"
+        },
+        {
+         "label": "先不动",
+         "value": "keep"
+        }
+       ],
+       "value": {
+        "path": "/choices/m1"
+       }
+      },
+      {
+       "id": "t2",
+       "component": "Text",
+       "text": "周五前回",
+       "variant": "caption"
+      },
+      {
+       "id": "c-rest",
+       "component": "ChoicePicker",
+       "label": "另外 4 封",
+       "options": [
+        {
+         "label": "照建议归档",
+         "value": "archive"
+        },
+        {
+         "label": "先不动",
+         "value": "keep"
+        }
+       ],
+       "value": {
+        "path": "/choices/rest"
+       }
+      },
+      {
+       "id": "b3",
+       "component": "Button",
+       "child": "b3-text",
+       "action": {
+        "event": {
+         "name": "mail_apply_plan",
+         "context": {
+          "plan_id": "p1",
+          "choices": {
+           "path": "/choices"
+          }
+         }
+        }
+       },
+       "variant": "primary"
+      },
+      {
+       "id": "b3-text",
+       "component": "Text",
+       "text": "按这个处理"
+      },
+      {
+       "id": "b4",
+       "component": "Button",
+       "child": "b4-text",
+       "action": {
+        "event": {
+         "name": "agent.open_url",
+         "context": {
+          "url": "https://calendar.google.com/x"
+         }
+        }
+       }
+      },
+      {
+       "id": "b4-text",
+       "component": "Text",
+       "text": "加入日程"
+      },
+      {
+       "id": "r5",
+       "component": "Row",
+       "children": [
+        "b3",
+        "b4"
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateDataModel": {
+     "surfaceId": "p1",
+     "path": "/",
+     "value": {
+      "choices": {
+       "m1": [
+        "draft"
+       ],
+       "rest": [
+        "archive"
+       ]
+      }
+     }
+    }
+   }
+  ],
+  "ok": true
+ },
+ {
+  "name": "text_field_card",
+  "catalog": "ai.luoke/a2ui/agent/1",
+  "messages": [
+   {
+    "version": "v0.9",
+    "createSurface": {
+     "surfaceId": "f1",
+     "catalogId": "ai.luoke/a2ui/agent/1"
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateComponents": {
+     "surfaceId": "f1",
+     "components": [
+      {
+       "id": "root",
+       "component": "Column",
+       "children": [
+        "f-reply",
+        "r2"
+       ]
+      },
+      {
+       "id": "f-reply",
+       "component": "TextField",
+       "label": "你的回答",
+       "value": {
+        "path": "/fields/reply"
+       }
+      },
+      {
+       "id": "b1",
+       "component": "Button",
+       "child": "b1-text",
+       "action": {
+        "event": {
+         "name": "mem.answer",
+         "context": {
+          "ask": 1,
+          "reply": {
+           "path": "/fields/reply"
+          }
+         }
+        }
+       },
+       "variant": "primary"
+      },
+      {
+       "id": "b1-text",
+       "component": "Text",
+       "text": "交回"
+      },
+      {
+       "id": "r2",
+       "component": "Row",
+       "children": [
+        "b1"
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateDataModel": {
+     "surfaceId": "f1",
+     "path": "/",
+     "value": {
+      "fields": {
+       "reply": ""
+      }
+     }
+    }
+   }
+  ],
+  "ok": true
+ },
+ {
+  "name": "text_only",
+  "catalog": "ai.luoke/a2ui/agent/1",
+  "messages": [
+   {
+    "version": "v0.9",
+    "createSurface": {
+     "surfaceId": "s",
+     "catalogId": "ai.luoke/a2ui/agent/1"
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateComponents": {
+     "surfaceId": "s",
+     "components": [
+      {
+       "id": "root",
+       "component": "Text",
+       "text": "hi"
+      }
+     ]
+    }
+   }
+  ],
+  "ok": true
+ },
+ {
+  "name": "empty",
+  "catalog": "ai.luoke/a2ui/agent/1",
+  "messages": [],
+  "ok": false
+ },
+ {
+  "name": "no_create_first",
+  "catalog": "ai.luoke/a2ui/agent/1",
+  "messages": [
+   {
+    "version": "v0.9",
+    "updateComponents": {
+     "surfaceId": "s",
+     "components": [
+      {
+       "id": "root",
+       "component": "Text",
+       "text": "hi"
+      }
+     ]
+    }
+   }
+  ],
+  "ok": false
+ },
+ {
+  "name": "unknown_catalog",
+  "catalog": "x",
+  "messages": [
+   {
+    "version": "v0.9",
+    "createSurface": {
+     "surfaceId": "s",
+     "catalogId": "x"
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateComponents": {
+     "surfaceId": "s",
+     "components": [
+      {
+       "id": "root",
+       "component": "Text",
+       "text": "hi"
+      }
+     ]
+    }
+   }
+  ],
+  "ok": false
+ },
+ {
+  "name": "no_root",
+  "catalog": "ai.luoke/a2ui/agent/1",
+  "messages": [
+   {
+    "version": "v0.9",
+    "createSurface": {
+     "surfaceId": "s",
+     "catalogId": "ai.luoke/a2ui/agent/1"
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateComponents": {
+     "surfaceId": "s",
+     "components": [
+      {
+       "id": "a",
+       "component": "Text",
+       "text": "x"
+      }
+     ]
+    }
+   }
+  ],
+  "ok": false
+ },
+ {
+  "name": "image_not_in_catalog",
+  "catalog": "ai.luoke/a2ui/agent/1",
+  "messages": [
+   {
+    "version": "v0.9",
+    "createSurface": {
+     "surfaceId": "s",
+     "catalogId": "ai.luoke/a2ui/agent/1"
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateComponents": {
+     "surfaceId": "s",
+     "components": [
+      {
+       "id": "root",
+       "component": "Image",
+       "url": "x"
+      }
+     ]
+    }
+   }
+  ],
+  "ok": false
+ },
+ {
+  "name": "old_version",
+  "catalog": "ai.luoke/a2ui/agent/1",
+  "messages": [
+   {
+    "version": "v0.9",
+    "createSurface": {
+     "surfaceId": "s",
+     "catalogId": "ai.luoke/a2ui/agent/1"
+    }
+   },
+   {
+    "version": "v0.8",
+    "updateComponents": {
+     "surfaceId": "s",
+     "components": [
+      {
+       "id": "root",
+       "component": "Text",
+       "text": "hi"
+      }
+     ]
+    }
+   }
+  ],
+  "ok": false
+ },
+ {
+  "name": "dangling_child",
+  "catalog": "ai.luoke/a2ui/agent/1",
+  "messages": [
+   {
+    "version": "v0.9",
+    "createSurface": {
+     "surfaceId": "s",
+     "catalogId": "ai.luoke/a2ui/agent/1"
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateComponents": {
+     "surfaceId": "s",
+     "components": [
+      {
+       "id": "root",
+       "component": "Column",
+       "children": [
+        "nope"
+       ]
+      }
+     ]
+    }
+   }
+  ],
+  "ok": false
+ },
+ {
+  "name": "cycle",
+  "catalog": "ai.luoke/a2ui/agent/1",
+  "messages": [
+   {
+    "version": "v0.9",
+    "createSurface": {
+     "surfaceId": "s",
+     "catalogId": "ai.luoke/a2ui/agent/1"
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateComponents": {
+     "surfaceId": "s",
+     "components": [
+      {
+       "id": "root",
+       "component": "Column",
+       "children": [
+        "a"
+       ]
+      },
+      {
+       "id": "a",
+       "component": "Row",
+       "children": [
+        "b"
+       ]
+      },
+      {
+       "id": "b",
+       "component": "Card",
+       "child": "a"
+      }
+     ]
+    }
+   }
+  ],
+  "ok": false
+ },
+ {
+  "name": "two_parents",
+  "catalog": "ai.luoke/a2ui/agent/1",
+  "messages": [
+   {
+    "version": "v0.9",
+    "createSurface": {
+     "surfaceId": "s",
+     "catalogId": "ai.luoke/a2ui/agent/1"
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateComponents": {
+     "surfaceId": "s",
+     "components": [
+      {
+       "id": "root",
+       "component": "Column",
+       "children": [
+        "a",
+        "b"
+       ]
+      },
+      {
+       "id": "a",
+       "component": "Card",
+       "child": "t"
+      },
+      {
+       "id": "b",
+       "component": "Card",
+       "child": "t"
+      },
+      {
+       "id": "t",
+       "component": "Text",
+       "text": "x"
+      }
+     ]
+    }
+   }
+  ],
+  "ok": false
+ },
+ {
+  "name": "template_children",
+  "catalog": "ai.luoke/a2ui/agent/1",
+  "messages": [
+   {
+    "version": "v0.9",
+    "createSurface": {
+     "surfaceId": "s",
+     "catalogId": "ai.luoke/a2ui/agent/1"
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateComponents": {
+     "surfaceId": "s",
+     "components": [
+      {
+       "id": "root",
+       "component": "List",
+       "children": {
+        "componentId": "t",
+        "path": "/xs"
+       }
+      }
+     ]
+    }
+   }
+  ],
+  "ok": false
+ },
+ {
+  "name": "unbound_checkbox",
+  "catalog": "ai.luoke/a2ui/agent/1",
+  "messages": [
+   {
+    "version": "v0.9",
+    "createSurface": {
+     "surfaceId": "s",
+     "catalogId": "ai.luoke/a2ui/agent/1"
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateComponents": {
+     "surfaceId": "s",
+     "components": [
+      {
+       "id": "root",
+       "component": "CheckBox",
+       "label": "x",
+       "value": {
+        "path": "/on"
+       }
+      }
+     ]
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateDataModel": {
+     "surfaceId": "s",
+     "path": "/",
+     "value": {}
+    }
+   }
+  ],
+  "ok": false
+ },
+ {
+  "name": "bound_checkbox",
+  "catalog": "ai.luoke/a2ui/agent/1",
+  "messages": [
+   {
+    "version": "v0.9",
+    "createSurface": {
+     "surfaceId": "s",
+     "catalogId": "ai.luoke/a2ui/agent/1"
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateComponents": {
+     "surfaceId": "s",
+     "components": [
+      {
+       "id": "root",
+       "component": "CheckBox",
+       "label": "x",
+       "value": {
+        "path": "/on"
+       }
+      }
+     ]
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateDataModel": {
+     "surfaceId": "s",
+     "path": "/",
+     "value": {
+      "on": true
+     }
+    }
+   }
+  ],
+  "ok": true
+ },
+ {
+  "name": "choice_single_string",
+  "catalog": "ai.luoke/a2ui/agent/1",
+  "messages": [
+   {
+    "version": "v0.9",
+    "createSurface": {
+     "surfaceId": "s",
+     "catalogId": "ai.luoke/a2ui/agent/1"
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateComponents": {
+     "surfaceId": "s",
+     "components": [
+      {
+       "id": "root",
+       "component": "ChoicePicker",
+       "options": [
+        {
+         "label": "a",
+         "value": "a"
+        }
+       ],
+       "value": {
+        "path": "/v"
+       }
+      }
+     ]
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateDataModel": {
+     "surfaceId": "s",
+     "path": "/",
+     "value": {
+      "v": "a"
+     }
+    }
+   }
+  ],
+  "ok": false
+ },
+ {
+  "name": "choice_outside",
+  "catalog": "ai.luoke/a2ui/agent/1",
+  "messages": [
+   {
+    "version": "v0.9",
+    "createSurface": {
+     "surfaceId": "s",
+     "catalogId": "ai.luoke/a2ui/agent/1"
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateComponents": {
+     "surfaceId": "s",
+     "components": [
+      {
+       "id": "root",
+       "component": "ChoicePicker",
+       "options": [
+        {
+         "label": "a",
+         "value": "a"
+        }
+       ],
+       "value": {
+        "path": "/v"
+       }
+      }
+     ]
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateDataModel": {
+     "surfaceId": "s",
+     "path": "/",
+     "value": {
+      "v": [
+       "b"
+      ]
+     }
+    }
+   }
+  ],
+  "ok": false
+ },
+ {
+  "name": "text_number",
+  "catalog": "ai.luoke/a2ui/agent/1",
+  "messages": [
+   {
+    "version": "v0.9",
+    "createSurface": {
+     "surfaceId": "s",
+     "catalogId": "ai.luoke/a2ui/agent/1"
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateComponents": {
+     "surfaceId": "s",
+     "components": [
+      {
+       "id": "root",
+       "component": "Text",
+       "text": 3
+      }
+     ]
+    }
+   }
+  ],
+  "ok": false
+ },
+ {
+  "name": "text_too_long",
+  "catalog": "ai.luoke/a2ui/agent/1",
+  "messages": [
+   {
+    "version": "v0.9",
+    "createSurface": {
+     "surfaceId": "s",
+     "catalogId": "ai.luoke/a2ui/agent/1"
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateComponents": {
+     "surfaceId": "s",
+     "components": [
+      {
+       "id": "root",
+       "component": "Text",
+       "text": "字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字"
+      }
+     ]
+    }
+   }
+  ],
+  "ok": false
+ },
+ {
+  "name": "bad_icon",
+  "catalog": "ai.luoke/a2ui/agent/1",
+  "messages": [
+   {
+    "version": "v0.9",
+    "createSurface": {
+     "surfaceId": "s",
+     "catalogId": "ai.luoke/a2ui/agent/1"
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateComponents": {
+     "surfaceId": "s",
+     "components": [
+      {
+       "id": "root",
+       "component": "Icon",
+       "name": "rocket"
+      }
+     ]
+    }
+   }
+  ],
+  "ok": false
+ },
+ {
+  "name": "good_icon",
+  "catalog": "ai.luoke/a2ui/agent/1",
+  "messages": [
+   {
+    "version": "v0.9",
+    "createSurface": {
+     "surfaceId": "s",
+     "catalogId": "ai.luoke/a2ui/agent/1"
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateComponents": {
+     "surfaceId": "s",
+     "components": [
+      {
+       "id": "root",
+       "component": "Icon",
+       "name": "mail"
+      }
+     ]
+    }
+   }
+  ],
+  "ok": true
+ },
+ {
+  "name": "bad_variant",
+  "catalog": "ai.luoke/a2ui/agent/1",
+  "messages": [
+   {
+    "version": "v0.9",
+    "createSurface": {
+     "surfaceId": "s",
+     "catalogId": "ai.luoke/a2ui/agent/1"
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateComponents": {
+     "surfaceId": "s",
+     "components": [
+      {
+       "id": "root",
+       "component": "Text",
+       "text": "x",
+       "variant": "huge"
+      }
+     ]
+    }
+   }
+  ],
+  "ok": false
+ },
+ {
+  "name": "button_ok",
+  "catalog": "ai.luoke/a2ui/agent/1",
+  "messages": [
+   {
+    "version": "v0.9",
+    "createSurface": {
+     "surfaceId": "s",
+     "catalogId": "ai.luoke/a2ui/agent/1"
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateComponents": {
+     "surfaceId": "s",
+     "components": [
+      {
+       "id": "root",
+       "component": "Button",
+       "child": "t",
+       "action": {
+        "event": {
+         "name": "do",
+         "context": {
+          "x": {
+           "path": "/x"
+          }
+         }
+        }
+       }
+      },
+      {
+       "id": "t",
+       "component": "Text",
+       "text": "点"
+      }
+     ]
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateDataModel": {
+     "surfaceId": "s",
+     "path": "/",
+     "value": {
+      "x": 1
+     }
+    }
+   }
+  ],
+  "ok": true
+ },
+ {
+  "name": "button_unbound",
+  "catalog": "ai.luoke/a2ui/agent/1",
+  "messages": [
+   {
+    "version": "v0.9",
+    "createSurface": {
+     "surfaceId": "s",
+     "catalogId": "ai.luoke/a2ui/agent/1"
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateComponents": {
+     "surfaceId": "s",
+     "components": [
+      {
+       "id": "root",
+       "component": "Button",
+       "child": "t",
+       "action": {
+        "event": {
+         "name": "do",
+         "context": {
+          "x": {
+           "path": "/y"
+          }
+         }
+        }
+       }
+      },
+      {
+       "id": "t",
+       "component": "Text",
+       "text": "点"
+      }
+     ]
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateDataModel": {
+     "surfaceId": "s",
+     "path": "/",
+     "value": {
+      "x": 1
+     }
+    }
+   }
+  ],
+  "ok": false
+ },
+ {
+  "name": "agent_unknown",
+  "catalog": "ai.luoke/a2ui/agent/1",
+  "messages": [
+   {
+    "version": "v0.9",
+    "createSurface": {
+     "surfaceId": "s",
+     "catalogId": "ai.luoke/a2ui/agent/1"
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateComponents": {
+     "surfaceId": "s",
+     "components": [
+      {
+       "id": "root",
+       "component": "Button",
+       "child": "t",
+       "action": {
+        "event": {
+         "name": "agent.rm_rf",
+         "context": {}
+        }
+       }
+      },
+      {
+       "id": "t",
+       "component": "Text",
+       "text": "点"
+      }
+     ]
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateDataModel": {
+     "surfaceId": "s",
+     "path": "/",
+     "value": {
+      "x": 1
+     }
+    }
+   }
+  ],
+  "ok": false
+ },
+ {
+  "name": "open_url_http",
+  "catalog": "ai.luoke/a2ui/agent/1",
+  "messages": [
+   {
+    "version": "v0.9",
+    "createSurface": {
+     "surfaceId": "s",
+     "catalogId": "ai.luoke/a2ui/agent/1"
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateComponents": {
+     "surfaceId": "s",
+     "components": [
+      {
+       "id": "root",
+       "component": "Button",
+       "child": "t",
+       "action": {
+        "event": {
+         "name": "agent.open_url",
+         "context": {
+          "url": "http://example.com"
+         }
+        }
+       }
+      },
+      {
+       "id": "t",
+       "component": "Text",
+       "text": "点"
+      }
+     ]
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateDataModel": {
+     "surfaceId": "s",
+     "path": "/",
+     "value": {
+      "x": 1
+     }
+    }
+   }
+  ],
+  "ok": false
+ },
+ {
+  "name": "open_url_bound",
+  "catalog": "ai.luoke/a2ui/agent/1",
+  "messages": [
+   {
+    "version": "v0.9",
+    "createSurface": {
+     "surfaceId": "s",
+     "catalogId": "ai.luoke/a2ui/agent/1"
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateComponents": {
+     "surfaceId": "s",
+     "components": [
+      {
+       "id": "root",
+       "component": "Button",
+       "child": "t",
+       "action": {
+        "event": {
+         "name": "agent.open_url",
+         "context": {
+          "url": {
+           "path": "/x"
+          }
+         }
+        }
+       }
+      },
+      {
+       "id": "t",
+       "component": "Text",
+       "text": "点"
+      }
+     ]
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateDataModel": {
+     "surfaceId": "s",
+     "path": "/",
+     "value": {
+      "x": 1
+     }
+    }
+   }
+  ],
+  "ok": false
+ },
+ {
+  "name": "open_url_https",
+  "catalog": "ai.luoke/a2ui/agent/1",
+  "messages": [
+   {
+    "version": "v0.9",
+    "createSurface": {
+     "surfaceId": "s",
+     "catalogId": "ai.luoke/a2ui/agent/1"
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateComponents": {
+     "surfaceId": "s",
+     "components": [
+      {
+       "id": "root",
+       "component": "Button",
+       "child": "t",
+       "action": {
+        "event": {
+         "name": "agent.open_url",
+         "context": {
+          "url": "https://example.com"
+         }
+        }
+       }
+      },
+      {
+       "id": "t",
+       "component": "Text",
+       "text": "点"
+      }
+     ]
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateDataModel": {
+     "surfaceId": "s",
+     "path": "/",
+     "value": {
+      "x": 1
+     }
+    }
+   }
+  ],
+  "ok": true
+ },
+ {
+  "name": "open_url_backslash",
+  "catalog": "ai.luoke/a2ui/agent/1",
+  "messages": [
+   {
+    "version": "v0.9",
+    "createSurface": {
+     "surfaceId": "s",
+     "catalogId": "ai.luoke/a2ui/agent/1"
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateComponents": {
+     "surfaceId": "s",
+     "components": [
+      {
+       "id": "root",
+       "component": "Button",
+       "child": "t",
+       "action": {
+        "event": {
+         "name": "agent.open_url",
+         "context": {
+          "url": "https://example.com\\@evil.example/"
+         }
+        }
+       }
+      },
+      {
+       "id": "t",
+       "component": "Text",
+       "text": "点"
+      }
+     ]
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateDataModel": {
+     "surfaceId": "s",
+     "path": "/",
+     "value": {
+      "x": 1
+     }
+    }
+   }
+  ],
+  "ok": false
+ },
+ {
+  "name": "open_url_userinfo",
+  "catalog": "ai.luoke/a2ui/agent/1",
+  "messages": [
+   {
+    "version": "v0.9",
+    "createSurface": {
+     "surfaceId": "s",
+     "catalogId": "ai.luoke/a2ui/agent/1"
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateComponents": {
+     "surfaceId": "s",
+     "components": [
+      {
+       "id": "root",
+       "component": "Button",
+       "child": "t",
+       "action": {
+        "event": {
+         "name": "agent.open_url",
+         "context": {
+          "url": "https://user:pass@evil.example/"
+         }
+        }
+       }
+      },
+      {
+       "id": "t",
+       "component": "Text",
+       "text": "点"
+      }
+     ]
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateDataModel": {
+     "surfaceId": "s",
+     "path": "/",
+     "value": {
+      "x": 1
+     }
+    }
+   }
+  ],
+  "ok": false
+ },
+ {
+  "name": "open_url_tab",
+  "catalog": "ai.luoke/a2ui/agent/1",
+  "messages": [
+   {
+    "version": "v0.9",
+    "createSurface": {
+     "surfaceId": "s",
+     "catalogId": "ai.luoke/a2ui/agent/1"
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateComponents": {
+     "surfaceId": "s",
+     "components": [
+      {
+       "id": "root",
+       "component": "Button",
+       "child": "t",
+       "action": {
+        "event": {
+         "name": "agent.open_url",
+         "context": {
+          "url": "https://exa\tmple.com/"
+         }
+        }
+       }
+      },
+      {
+       "id": "t",
+       "component": "Text",
+       "text": "点"
+      }
+     ]
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateDataModel": {
+     "surfaceId": "s",
+     "path": "/",
+     "value": {
+      "x": 1
+     }
+    }
+   }
+  ],
+  "ok": false
+ },
+ {
+  "name": "open_url_space",
+  "catalog": "ai.luoke/a2ui/agent/1",
+  "messages": [
+   {
+    "version": "v0.9",
+    "createSurface": {
+     "surfaceId": "s",
+     "catalogId": "ai.luoke/a2ui/agent/1"
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateComponents": {
+     "surfaceId": "s",
+     "components": [
+      {
+       "id": "root",
+       "component": "Button",
+       "child": "t",
+       "action": {
+        "event": {
+         "name": "agent.open_url",
+         "context": {
+          "url": "https://example.com/a b"
+         }
+        }
+       }
+      },
+      {
+       "id": "t",
+       "component": "Text",
+       "text": "点"
+      }
+     ]
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateDataModel": {
+     "surfaceId": "s",
+     "path": "/",
+     "value": {
+      "x": 1
+     }
+    }
+   }
+  ],
+  "ok": false
+ },
+ {
+  "name": "open_url_bidi",
+  "catalog": "ai.luoke/a2ui/agent/1",
+  "messages": [
+   {
+    "version": "v0.9",
+    "createSurface": {
+     "surfaceId": "s",
+     "catalogId": "ai.luoke/a2ui/agent/1"
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateComponents": {
+     "surfaceId": "s",
+     "components": [
+      {
+       "id": "root",
+       "component": "Button",
+       "child": "t",
+       "action": {
+        "event": {
+         "name": "agent.open_url",
+         "context": {
+          "url": "https://evil.example‮/moc.elgoog"
+         }
+        }
+       }
+      },
+      {
+       "id": "t",
+       "component": "Text",
+       "text": "点"
+      }
+     ]
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateDataModel": {
+     "surfaceId": "s",
+     "path": "/",
+     "value": {
+      "x": 1
+     }
+    }
+   }
+  ],
+  "ok": false
+ },
+ {
+  "name": "open_url_zero_width",
+  "catalog": "ai.luoke/a2ui/agent/1",
+  "messages": [
+   {
+    "version": "v0.9",
+    "createSurface": {
+     "surfaceId": "s",
+     "catalogId": "ai.luoke/a2ui/agent/1"
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateComponents": {
+     "surfaceId": "s",
+     "components": [
+      {
+       "id": "root",
+       "component": "Button",
+       "child": "t",
+       "action": {
+        "event": {
+         "name": "agent.open_url",
+         "context": {
+          "url": "https://exa​mple.com/"
+         }
+        }
+       }
+      },
+      {
+       "id": "t",
+       "component": "Text",
+       "text": "点"
+      }
+     ]
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateDataModel": {
+     "surfaceId": "s",
+     "path": "/",
+     "value": {
+      "x": 1
+     }
+    }
+   }
+  ],
+  "ok": false
+ },
+ {
+  "name": "open_url_empty_host",
+  "catalog": "ai.luoke/a2ui/agent/1",
+  "messages": [
+   {
+    "version": "v0.9",
+    "createSurface": {
+     "surfaceId": "s",
+     "catalogId": "ai.luoke/a2ui/agent/1"
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateComponents": {
+     "surfaceId": "s",
+     "components": [
+      {
+       "id": "root",
+       "component": "Button",
+       "child": "t",
+       "action": {
+        "event": {
+         "name": "agent.open_url",
+         "context": {
+          "url": "https:///evil.example"
+         }
+        }
+       }
+      },
+      {
+       "id": "t",
+       "component": "Text",
+       "text": "点"
+      }
+     ]
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateDataModel": {
+     "surfaceId": "s",
+     "path": "/",
+     "value": {
+      "x": 1
+     }
+    }
+   }
+  ],
+  "ok": false
+ },
+ {
+  "name": "open_url_percent_host",
+  "catalog": "ai.luoke/a2ui/agent/1",
+  "messages": [
+   {
+    "version": "v0.9",
+    "createSurface": {
+     "surfaceId": "s",
+     "catalogId": "ai.luoke/a2ui/agent/1"
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateComponents": {
+     "surfaceId": "s",
+     "components": [
+      {
+       "id": "root",
+       "component": "Button",
+       "child": "t",
+       "action": {
+        "event": {
+         "name": "agent.open_url",
+         "context": {
+          "url": "https://%65vil.example/"
+         }
+        }
+       }
+      },
+      {
+       "id": "t",
+       "component": "Text",
+       "text": "点"
+      }
+     ]
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateDataModel": {
+     "surfaceId": "s",
+     "path": "/",
+     "value": {
+      "x": 1
+     }
+    }
+   }
+  ],
+  "ok": false
+ },
+ {
+  "name": "open_url_hex_ip",
+  "catalog": "ai.luoke/a2ui/agent/1",
+  "messages": [
+   {
+    "version": "v0.9",
+    "createSurface": {
+     "surfaceId": "s",
+     "catalogId": "ai.luoke/a2ui/agent/1"
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateComponents": {
+     "surfaceId": "s",
+     "components": [
+      {
+       "id": "root",
+       "component": "Button",
+       "child": "t",
+       "action": {
+        "event": {
+         "name": "agent.open_url",
+         "context": {
+          "url": "https://0x7f.1/"
+         }
+        }
+       }
+      },
+      {
+       "id": "t",
+       "component": "Text",
+       "text": "点"
+      }
+     ]
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateDataModel": {
+     "surfaceId": "s",
+     "path": "/",
+     "value": {
+      "x": 1
+     }
+    }
+   }
+  ],
+  "ok": false
+ },
+ {
+  "name": "open_url_short_ip",
+  "catalog": "ai.luoke/a2ui/agent/1",
+  "messages": [
+   {
+    "version": "v0.9",
+    "createSurface": {
+     "surfaceId": "s",
+     "catalogId": "ai.luoke/a2ui/agent/1"
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateComponents": {
+     "surfaceId": "s",
+     "components": [
+      {
+       "id": "root",
+       "component": "Button",
+       "child": "t",
+       "action": {
+        "event": {
+         "name": "agent.open_url",
+         "context": {
+          "url": "https://127.1/"
+         }
+        }
+       }
+      },
+      {
+       "id": "t",
+       "component": "Text",
+       "text": "点"
+      }
+     ]
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateDataModel": {
+     "surfaceId": "s",
+     "path": "/",
+     "value": {
+      "x": 1
+     }
+    }
+   }
+  ],
+  "ok": false
+ },
+ {
+  "name": "open_url_ipv4",
+  "catalog": "ai.luoke/a2ui/agent/1",
+  "messages": [
+   {
+    "version": "v0.9",
+    "createSurface": {
+     "surfaceId": "s",
+     "catalogId": "ai.luoke/a2ui/agent/1"
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateComponents": {
+     "surfaceId": "s",
+     "components": [
+      {
+       "id": "root",
+       "component": "Button",
+       "child": "t",
+       "action": {
+        "event": {
+         "name": "agent.open_url",
+         "context": {
+          "url": "https://127.0.0.1/"
+         }
+        }
+       }
+      },
+      {
+       "id": "t",
+       "component": "Text",
+       "text": "点"
+      }
+     ]
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateDataModel": {
+     "surfaceId": "s",
+     "path": "/",
+     "value": {
+      "x": 1
+     }
+    }
+   }
+  ],
+  "ok": true
+ },
+ {
+  "name": "open_url_ipv6",
+  "catalog": "ai.luoke/a2ui/agent/1",
+  "messages": [
+   {
+    "version": "v0.9",
+    "createSurface": {
+     "surfaceId": "s",
+     "catalogId": "ai.luoke/a2ui/agent/1"
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateComponents": {
+     "surfaceId": "s",
+     "components": [
+      {
+       "id": "root",
+       "component": "Button",
+       "child": "t",
+       "action": {
+        "event": {
+         "name": "agent.open_url",
+         "context": {
+          "url": "https://[::1]/"
+         }
+        }
+       }
+      },
+      {
+       "id": "t",
+       "component": "Text",
+       "text": "点"
+      }
+     ]
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateDataModel": {
+     "surfaceId": "s",
+     "path": "/",
+     "value": {
+      "x": 1
+     }
+    }
+   }
+  ],
+  "ok": false
+ },
+ {
+  "name": "open_url_port",
+  "catalog": "ai.luoke/a2ui/agent/1",
+  "messages": [
+   {
+    "version": "v0.9",
+    "createSurface": {
+     "surfaceId": "s",
+     "catalogId": "ai.luoke/a2ui/agent/1"
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateComponents": {
+     "surfaceId": "s",
+     "components": [
+      {
+       "id": "root",
+       "component": "Button",
+       "child": "t",
+       "action": {
+        "event": {
+         "name": "agent.open_url",
+         "context": {
+          "url": "https://example.com:8443/x"
+         }
+        }
+       }
+      },
+      {
+       "id": "t",
+       "component": "Text",
+       "text": "点"
+      }
+     ]
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateDataModel": {
+     "surfaceId": "s",
+     "path": "/",
+     "value": {
+      "x": 1
+     }
+    }
+   }
+  ],
+  "ok": true
+ },
+ {
+  "name": "open_url_bad_port",
+  "catalog": "ai.luoke/a2ui/agent/1",
+  "messages": [
+   {
+    "version": "v0.9",
+    "createSurface": {
+     "surfaceId": "s",
+     "catalogId": "ai.luoke/a2ui/agent/1"
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateComponents": {
+     "surfaceId": "s",
+     "components": [
+      {
+       "id": "root",
+       "component": "Button",
+       "child": "t",
+       "action": {
+        "event": {
+         "name": "agent.open_url",
+         "context": {
+          "url": "https://example.com:99999/"
+         }
+        }
+       }
+      },
+      {
+       "id": "t",
+       "component": "Text",
+       "text": "点"
+      }
+     ]
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateDataModel": {
+     "surfaceId": "s",
+     "path": "/",
+     "value": {
+      "x": 1
+     }
+    }
+   }
+  ],
+  "ok": false
+ },
+ {
+  "name": "open_url_empty_port",
+  "catalog": "ai.luoke/a2ui/agent/1",
+  "messages": [
+   {
+    "version": "v0.9",
+    "createSurface": {
+     "surfaceId": "s",
+     "catalogId": "ai.luoke/a2ui/agent/1"
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateComponents": {
+     "surfaceId": "s",
+     "components": [
+      {
+       "id": "root",
+       "component": "Button",
+       "child": "t",
+       "action": {
+        "event": {
+         "name": "agent.open_url",
+         "context": {
+          "url": "https://example.com:/"
+         }
+        }
+       }
+      },
+      {
+       "id": "t",
+       "component": "Text",
+       "text": "点"
+      }
+     ]
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateDataModel": {
+     "surfaceId": "s",
+     "path": "/",
+     "value": {
+      "x": 1
+     }
+    }
+   }
+  ],
+  "ok": false
+ },
+ {
+  "name": "open_url_trailing_dot",
+  "catalog": "ai.luoke/a2ui/agent/1",
+  "messages": [
+   {
+    "version": "v0.9",
+    "createSurface": {
+     "surfaceId": "s",
+     "catalogId": "ai.luoke/a2ui/agent/1"
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateComponents": {
+     "surfaceId": "s",
+     "components": [
+      {
+       "id": "root",
+       "component": "Button",
+       "child": "t",
+       "action": {
+        "event": {
+         "name": "agent.open_url",
+         "context": {
+          "url": "https://example.com./"
+         }
+        }
+       }
+      },
+      {
+       "id": "t",
+       "component": "Text",
+       "text": "点"
+      }
+     ]
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateDataModel": {
+     "surfaceId": "s",
+     "path": "/",
+     "value": {
+      "x": 1
+     }
+    }
+   }
+  ],
+  "ok": false
+ },
+ {
+  "name": "open_url_empty_label",
+  "catalog": "ai.luoke/a2ui/agent/1",
+  "messages": [
+   {
+    "version": "v0.9",
+    "createSurface": {
+     "surfaceId": "s",
+     "catalogId": "ai.luoke/a2ui/agent/1"
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateComponents": {
+     "surfaceId": "s",
+     "components": [
+      {
+       "id": "root",
+       "component": "Button",
+       "child": "t",
+       "action": {
+        "event": {
+         "name": "agent.open_url",
+         "context": {
+          "url": "https://a..example/"
+         }
+        }
+       }
+      },
+      {
+       "id": "t",
+       "component": "Text",
+       "text": "点"
+      }
+     ]
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateDataModel": {
+     "surfaceId": "s",
+     "path": "/",
+     "value": {
+      "x": 1
+     }
+    }
+   }
+  ],
+  "ok": false
+ },
+ {
+  "name": "open_url_idn",
+  "catalog": "ai.luoke/a2ui/agent/1",
+  "messages": [
+   {
+    "version": "v0.9",
+    "createSurface": {
+     "surfaceId": "s",
+     "catalogId": "ai.luoke/a2ui/agent/1"
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateComponents": {
+     "surfaceId": "s",
+     "components": [
+      {
+       "id": "root",
+       "component": "Button",
+       "child": "t",
+       "action": {
+        "event": {
+         "name": "agent.open_url",
+         "context": {
+          "url": "https://bücher.example/路径?q=中"
+         }
+        }
+       }
+      },
+      {
+       "id": "t",
+       "component": "Text",
+       "text": "点"
+      }
+     ]
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateDataModel": {
+     "surfaceId": "s",
+     "path": "/",
+     "value": {
+      "x": 1
+     }
+    }
+   }
+  ],
+  "ok": true
+ },
+ {
+  "name": "open_url_at_in_query",
+  "catalog": "ai.luoke/a2ui/agent/1",
+  "messages": [
+   {
+    "version": "v0.9",
+    "createSurface": {
+     "surfaceId": "s",
+     "catalogId": "ai.luoke/a2ui/agent/1"
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateComponents": {
+     "surfaceId": "s",
+     "components": [
+      {
+       "id": "root",
+       "component": "Button",
+       "child": "t",
+       "action": {
+        "event": {
+         "name": "agent.open_url",
+         "context": {
+          "url": "https://example.com/?a@b"
+         }
+        }
+       }
+      },
+      {
+       "id": "t",
+       "component": "Text",
+       "text": "点"
+      }
+     ]
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateDataModel": {
+     "surfaceId": "s",
+     "path": "/",
+     "value": {
+      "x": 1
+     }
+    }
+   }
+  ],
+  "ok": true
+ },
+ {
+  "name": "open_url_backslash_combining",
+  "catalog": "ai.luoke/a2ui/agent/1",
+  "messages": [
+   {
+    "version": "v0.9",
+    "createSurface": {
+     "surfaceId": "s",
+     "catalogId": "ai.luoke/a2ui/agent/1"
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateComponents": {
+     "surfaceId": "s",
+     "components": [
+      {
+       "id": "root",
+       "component": "Button",
+       "child": "t",
+       "action": {
+        "event": {
+         "name": "agent.open_url",
+         "context": {
+          "url": "https://evil.example\\́/x"
+         }
+        }
+       }
+      },
+      {
+       "id": "t",
+       "component": "Text",
+       "text": "点"
+      }
+     ]
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateDataModel": {
+     "surfaceId": "s",
+     "path": "/",
+     "value": {
+      "x": 1
+     }
+    }
+   }
+  ],
+  "ok": false
+ },
+ {
+  "name": "open_url_at_combining",
+  "catalog": "ai.luoke/a2ui/agent/1",
+  "messages": [
+   {
+    "version": "v0.9",
+    "createSurface": {
+     "surfaceId": "s",
+     "catalogId": "ai.luoke/a2ui/agent/1"
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateComponents": {
+     "surfaceId": "s",
+     "components": [
+      {
+       "id": "root",
+       "component": "Button",
+       "child": "t",
+       "action": {
+        "event": {
+         "name": "agent.open_url",
+         "context": {
+          "url": "https://user@́evil.example/"
+         }
+        }
+       }
+      },
+      {
+       "id": "t",
+       "component": "Text",
+       "text": "点"
+      }
+     ]
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateDataModel": {
+     "surfaceId": "s",
+     "path": "/",
+     "value": {
+      "x": 1
+     }
+    }
+   }
+  ],
+  "ok": false
+ },
+ {
+  "name": "open_url_bound_label",
+  "catalog": "ai.luoke/a2ui/agent/1",
+  "messages": [
+   {
+    "version": "v0.9",
+    "createSurface": {
+     "surfaceId": "s",
+     "catalogId": "ai.luoke/a2ui/agent/1"
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateComponents": {
+     "surfaceId": "s",
+     "components": [
+      {
+       "id": "root",
+       "component": "Button",
+       "child": "t",
+       "action": {
+        "event": {
+         "name": "agent.open_url",
+         "context": {
+          "url": "https://example.com"
+         }
+        }
+       }
+      },
+      {
+       "id": "t",
+       "component": "Text",
+       "text": {
+        "path": "/label"
+       }
+      }
+     ]
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateDataModel": {
+     "surfaceId": "s",
+     "path": "/",
+     "value": {
+      "label": "打开"
+     }
+    }
+   }
+  ],
+  "ok": false
+ },
+ {
+  "name": "open_url_row_label",
+  "catalog": "ai.luoke/a2ui/agent/1",
+  "messages": [
+   {
+    "version": "v0.9",
+    "createSurface": {
+     "surfaceId": "s",
+     "catalogId": "ai.luoke/a2ui/agent/1"
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateComponents": {
+     "surfaceId": "s",
+     "components": [
+      {
+       "id": "root",
+       "component": "Button",
+       "child": "t",
+       "action": {
+        "event": {
+         "name": "agent.open_url",
+         "context": {
+          "url": "https://example.com"
+         }
+        }
+       }
+      },
+      {
+       "id": "t",
+       "component": "Row",
+       "children": []
+      }
+     ]
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateDataModel": {
+     "surfaceId": "s",
+     "path": "/",
+     "value": {
+      "x": 1
+     }
+    }
+   }
+  ],
+  "ok": false
+ },
+ {
+  "name": "button_bound_label",
+  "catalog": "ai.luoke/a2ui/agent/1",
+  "messages": [
+   {
+    "version": "v0.9",
+    "createSurface": {
+     "surfaceId": "s",
+     "catalogId": "ai.luoke/a2ui/agent/1"
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateComponents": {
+     "surfaceId": "s",
+     "components": [
+      {
+       "id": "root",
+       "component": "Button",
+       "child": "t",
+       "action": {
+        "event": {
+         "name": "do",
+         "context": {}
+        }
+       }
+      },
+      {
+       "id": "t",
+       "component": "Text",
+       "text": {
+        "path": "/label"
+       }
+      }
+     ]
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateDataModel": {
+     "surfaceId": "s",
+     "path": "/",
+     "value": {
+      "label": "删除 3 个"
+     }
+    }
+   }
+  ],
+  "ok": true
+ },
+ {
+  "name": "switch_ok",
+  "catalog": "ai.luoke/a2ui/agent/1",
+  "messages": [
+   {
+    "version": "v0.9",
+    "createSurface": {
+     "surfaceId": "s",
+     "catalogId": "ai.luoke/a2ui/agent/1"
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateComponents": {
+     "surfaceId": "s",
+     "components": [
+      {
+       "id": "root",
+       "component": "Button",
+       "child": "t",
+       "variant": "switch",
+       "on": true,
+       "action": {
+        "event": {
+         "name": "do",
+         "context": {}
+        }
+       }
+      },
+      {
+       "id": "t",
+       "component": "Text",
+       "text": "点"
+      }
+     ]
+    }
+   }
+  ],
+  "ok": true
+ },
+ {
+  "name": "switch_open_url",
+  "catalog": "ai.luoke/a2ui/agent/1",
+  "messages": [
+   {
+    "version": "v0.9",
+    "createSurface": {
+     "surfaceId": "s",
+     "catalogId": "ai.luoke/a2ui/agent/1"
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateComponents": {
+     "surfaceId": "s",
+     "components": [
+      {
+       "id": "root",
+       "component": "Button",
+       "child": "t",
+       "variant": "switch",
+       "on": false,
+       "action": {
+        "event": {
+         "name": "agent.open_url",
+         "context": {
+          "url": "https://example.com"
+         }
+        }
+       }
+      },
+      {
+       "id": "t",
+       "component": "Text",
+       "text": "点"
+      }
+     ]
+    }
+   }
+  ],
+  "ok": false
+ },
+ {
+  "name": "progress_ok",
+  "catalog": "ai.luoke/a2ui/agent/1",
+  "messages": [
+   {
+    "version": "v0.9",
+    "createSurface": {
+     "surfaceId": "s",
+     "catalogId": "ai.luoke/a2ui/agent/1"
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateComponents": {
+     "surfaceId": "s",
+     "components": [
+      {
+       "id": "root",
+       "component": "ProgressBar",
+       "value": 0.5
+      }
+     ]
+    }
+   }
+  ],
+  "ok": true
+ },
+ {
+  "name": "progress_ends",
+  "catalog": "ai.luoke/a2ui/agent/1",
+  "messages": [
+   {
+    "version": "v0.9",
+    "createSurface": {
+     "surfaceId": "s",
+     "catalogId": "ai.luoke/a2ui/agent/1"
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateComponents": {
+     "surfaceId": "s",
+     "components": [
+      {
+       "id": "root",
+       "component": "Column",
+       "children": [
+        "a",
+        "b"
+       ]
+      },
+      {
+       "id": "a",
+       "component": "ProgressBar",
+       "value": 0
+      },
+      {
+       "id": "b",
+       "component": "ProgressBar",
+       "value": 1
+      }
+     ]
+    }
+   }
+  ],
+  "ok": true
+ },
+ {
+  "name": "progress_over",
+  "catalog": "ai.luoke/a2ui/agent/1",
+  "messages": [
+   {
+    "version": "v0.9",
+    "createSurface": {
+     "surfaceId": "s",
+     "catalogId": "ai.luoke/a2ui/agent/1"
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateComponents": {
+     "surfaceId": "s",
+     "components": [
+      {
+       "id": "root",
+       "component": "ProgressBar",
+       "value": 1.5
+      }
+     ]
+    }
+   }
+  ],
+  "ok": false
+ },
+ {
+  "name": "progress_under",
+  "catalog": "ai.luoke/a2ui/agent/1",
+  "messages": [
+   {
+    "version": "v0.9",
+    "createSurface": {
+     "surfaceId": "s",
+     "catalogId": "ai.luoke/a2ui/agent/1"
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateComponents": {
+     "surfaceId": "s",
+     "components": [
+      {
+       "id": "root",
+       "component": "ProgressBar",
+       "value": -0.1
+      }
+     ]
+    }
+   }
+  ],
+  "ok": false
+ },
+ {
+  "name": "progress_no_value",
+  "catalog": "ai.luoke/a2ui/agent/1",
+  "messages": [
+   {
+    "version": "v0.9",
+    "createSurface": {
+     "surfaceId": "s",
+     "catalogId": "ai.luoke/a2ui/agent/1"
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateComponents": {
+     "surfaceId": "s",
+     "components": [
+      {
+       "id": "root",
+       "component": "ProgressBar"
+      }
+     ]
+    }
+   }
+  ],
+  "ok": false
+ },
+ {
+  "name": "progress_text_value",
+  "catalog": "ai.luoke/a2ui/agent/1",
+  "messages": [
+   {
+    "version": "v0.9",
+    "createSurface": {
+     "surfaceId": "s",
+     "catalogId": "ai.luoke/a2ui/agent/1"
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateComponents": {
+     "surfaceId": "s",
+     "components": [
+      {
+       "id": "root",
+       "component": "ProgressBar",
+       "value": "0.5"
+      }
+     ]
+    }
+   }
+  ],
+  "ok": false
+ },
+ {
+  "name": "progress_bool_value",
+  "catalog": "ai.luoke/a2ui/agent/1",
+  "messages": [
+   {
+    "version": "v0.9",
+    "createSurface": {
+     "surfaceId": "s",
+     "catalogId": "ai.luoke/a2ui/agent/1"
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateComponents": {
+     "surfaceId": "s",
+     "components": [
+      {
+       "id": "root",
+       "component": "ProgressBar",
+       "value": true
+      }
+     ]
+    }
+   }
+  ],
+  "ok": false
+ },
+ {
+  "name": "progress_bound_value",
+  "catalog": "ai.luoke/a2ui/agent/1",
+  "messages": [
+   {
+    "version": "v0.9",
+    "createSurface": {
+     "surfaceId": "s",
+     "catalogId": "ai.luoke/a2ui/agent/1"
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateComponents": {
+     "surfaceId": "s",
+     "components": [
+      {
+       "id": "root",
+       "component": "ProgressBar",
+       "value": {
+        "path": "/x"
+       }
+      }
+     ]
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateDataModel": {
+     "surfaceId": "s",
+     "path": "/",
+     "value": {
+      "x": 0.5
+     }
+    }
+   }
+  ],
+  "ok": false
+ },
+ {
+  "name": "ime_progress",
+  "catalog": "ai.luoke/a2ui/ime/1",
+  "messages": [
+   {
+    "version": "v0.9",
+    "createSurface": {
+     "surfaceId": "s",
+     "catalogId": "ai.luoke/a2ui/ime/1"
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateComponents": {
+     "surfaceId": "s",
+     "components": [
+      {
+       "id": "root",
+       "component": "ProgressBar",
+       "value": 0.5
+      }
+     ]
+    }
+   }
+  ],
+  "ok": false
+ },
+ {
+  "name": "too_many",
+  "catalog": "ai.luoke/a2ui/agent/1",
+  "messages": [
+   {
+    "version": "v0.9",
+    "createSurface": {
+     "surfaceId": "s",
+     "catalogId": "ai.luoke/a2ui/agent/1"
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateComponents": {
+     "surfaceId": "s",
+     "components": [
+      {
+       "id": "root",
+       "component": "Column",
+       "children": [
+        "t0",
+        "t1",
+        "t2",
+        "t3",
+        "t4",
+        "t5",
+        "t6",
+        "t7",
+        "t8",
+        "t9",
+        "t10",
+        "t11",
+        "t12",
+        "t13",
+        "t14",
+        "t15",
+        "t16",
+        "t17",
+        "t18",
+        "t19",
+        "t20",
+        "t21",
+        "t22",
+        "t23",
+        "t24",
+        "t25",
+        "t26",
+        "t27",
+        "t28",
+        "t29",
+        "t30",
+        "t31",
+        "t32",
+        "t33",
+        "t34",
+        "t35",
+        "t36",
+        "t37",
+        "t38",
+        "t39",
+        "t40",
+        "t41",
+        "t42",
+        "t43",
+        "t44",
+        "t45",
+        "t46",
+        "t47",
+        "t48",
+        "t49",
+        "t50",
+        "t51",
+        "t52",
+        "t53",
+        "t54",
+        "t55",
+        "t56",
+        "t57",
+        "t58",
+        "t59",
+        "t60",
+        "t61",
+        "t62",
+        "t63",
+        "t64",
+        "t65",
+        "t66",
+        "t67",
+        "t68",
+        "t69",
+        "t70",
+        "t71",
+        "t72",
+        "t73",
+        "t74",
+        "t75",
+        "t76",
+        "t77",
+        "t78",
+        "t79",
+        "t80",
+        "t81",
+        "t82",
+        "t83",
+        "t84",
+        "t85",
+        "t86",
+        "t87",
+        "t88",
+        "t89",
+        "t90",
+        "t91",
+        "t92",
+        "t93",
+        "t94",
+        "t95",
+        "t96",
+        "t97",
+        "t98",
+        "t99",
+        "t100",
+        "t101",
+        "t102",
+        "t103",
+        "t104",
+        "t105",
+        "t106",
+        "t107",
+        "t108",
+        "t109",
+        "t110",
+        "t111",
+        "t112",
+        "t113",
+        "t114",
+        "t115",
+        "t116",
+        "t117",
+        "t118",
+        "t119",
+        "t120",
+        "t121",
+        "t122",
+        "t123",
+        "t124",
+        "t125",
+        "t126",
+        "t127",
+        "t128",
+        "t129",
+        "t130",
+        "t131",
+        "t132",
+        "t133",
+        "t134",
+        "t135",
+        "t136",
+        "t137",
+        "t138",
+        "t139",
+        "t140",
+        "t141",
+        "t142",
+        "t143",
+        "t144",
+        "t145",
+        "t146",
+        "t147",
+        "t148",
+        "t149",
+        "t150",
+        "t151",
+        "t152",
+        "t153",
+        "t154",
+        "t155",
+        "t156",
+        "t157",
+        "t158",
+        "t159",
+        "t160",
+        "t161",
+        "t162",
+        "t163",
+        "t164",
+        "t165",
+        "t166",
+        "t167",
+        "t168",
+        "t169",
+        "t170",
+        "t171",
+        "t172",
+        "t173",
+        "t174",
+        "t175",
+        "t176",
+        "t177",
+        "t178",
+        "t179",
+        "t180",
+        "t181",
+        "t182",
+        "t183",
+        "t184",
+        "t185",
+        "t186",
+        "t187",
+        "t188",
+        "t189",
+        "t190",
+        "t191",
+        "t192",
+        "t193",
+        "t194",
+        "t195",
+        "t196",
+        "t197",
+        "t198",
+        "t199"
+       ]
+      },
+      {
+       "id": "t0",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t1",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t2",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t3",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t4",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t5",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t6",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t7",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t8",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t9",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t10",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t11",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t12",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t13",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t14",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t15",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t16",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t17",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t18",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t19",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t20",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t21",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t22",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t23",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t24",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t25",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t26",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t27",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t28",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t29",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t30",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t31",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t32",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t33",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t34",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t35",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t36",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t37",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t38",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t39",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t40",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t41",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t42",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t43",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t44",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t45",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t46",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t47",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t48",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t49",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t50",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t51",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t52",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t53",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t54",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t55",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t56",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t57",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t58",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t59",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t60",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t61",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t62",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t63",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t64",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t65",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t66",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t67",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t68",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t69",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t70",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t71",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t72",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t73",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t74",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t75",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t76",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t77",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t78",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t79",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t80",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t81",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t82",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t83",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t84",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t85",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t86",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t87",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t88",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t89",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t90",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t91",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t92",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t93",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t94",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t95",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t96",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t97",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t98",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t99",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t100",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t101",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t102",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t103",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t104",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t105",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t106",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t107",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t108",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t109",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t110",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t111",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t112",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t113",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t114",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t115",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t116",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t117",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t118",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t119",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t120",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t121",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t122",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t123",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t124",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t125",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t126",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t127",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t128",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t129",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t130",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t131",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t132",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t133",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t134",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t135",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t136",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t137",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t138",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t139",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t140",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t141",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t142",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t143",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t144",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t145",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t146",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t147",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t148",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t149",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t150",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t151",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t152",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t153",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t154",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t155",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t156",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t157",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t158",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t159",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t160",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t161",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t162",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t163",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t164",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t165",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t166",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t167",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t168",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t169",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t170",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t171",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t172",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t173",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t174",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t175",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t176",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t177",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t178",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t179",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t180",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t181",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t182",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t183",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t184",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t185",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t186",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t187",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t188",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t189",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t190",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t191",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t192",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t193",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t194",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t195",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t196",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t197",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t198",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t199",
+       "component": "Text",
+       "text": "x"
+      }
+     ]
+    }
+   }
+  ],
+  "ok": false
+ },
+ {
+  "name": "ime_slider",
+  "catalog": "ai.luoke/a2ui/ime/1",
+  "messages": [
+   {
+    "version": "v0.9",
+    "createSurface": {
+     "surfaceId": "s",
+     "catalogId": "ai.luoke/a2ui/ime/1"
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateComponents": {
+     "surfaceId": "s",
+     "components": [
+      {
+       "id": "root",
+       "component": "Slider",
+       "value": {
+        "path": "/n"
+       },
+       "min": 0,
+       "max": 5
+      }
+     ]
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateDataModel": {
+     "surfaceId": "s",
+     "path": "/",
+     "value": {
+      "n": 2
+     }
+    }
+   }
+  ],
+  "ok": true
+ },
+ {
+  "name": "agent_slider",
+  "catalog": "ai.luoke/a2ui/agent/1",
+  "messages": [
+   {
+    "version": "v0.9",
+    "createSurface": {
+     "surfaceId": "s",
+     "catalogId": "ai.luoke/a2ui/agent/1"
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateComponents": {
+     "surfaceId": "s",
+     "components": [
+      {
+       "id": "root",
+       "component": "Slider",
+       "value": {
+        "path": "/n"
+       },
+       "min": 0,
+       "max": 5
+      }
+     ]
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateDataModel": {
+     "surfaceId": "s",
+     "path": "/",
+     "value": {
+      "n": 2
+     }
+    }
+   }
+  ],
+  "ok": false
+ },
+ {
+  "name": "ime_card",
+  "catalog": "ai.luoke/a2ui/ime/1",
+  "messages": [
+   {
+    "version": "v0.9",
+    "createSurface": {
+     "surfaceId": "s",
+     "catalogId": "ai.luoke/a2ui/ime/1"
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateComponents": {
+     "surfaceId": "s",
+     "components": [
+      {
+       "id": "root",
+       "component": "Card",
+       "child": "t"
+      },
+      {
+       "id": "t",
+       "component": "Text",
+       "text": "x"
+      }
+     ]
+    }
+   }
+  ],
+  "ok": false
+ }
+]

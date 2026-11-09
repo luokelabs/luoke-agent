@@ -1,0 +1,63 @@
+{
+  "id": "morning",
+  "normalised": {
+    "resources/read": "contents[0].text 解开成了 JSON 值；线上是 JSON 文字"
+  },
+  "produced": {
+    "fixture": [
+      "假的 IMAP 服务器（tests/fakes.py，Gmail 那种）的收件箱放 43 封 luoke_mail/samples.py 的虚构邮件；照后台分拣那样过 pipeline.sync，模型的答复用 bench/results 里 Qwen3.5-9B 对这几封的真实答复（43 封；archive 15、follow_up 9、reply 4、schedule 7、可疑 8）",
+      "点完：假的 IMAP 服务器上 1 封进了垃圾邮件"
+    ],
+    "mcp": "luoke-mail 的 agent socket（luoke_mail/agent.py 的 Agent，同一个 ToolServer.handle）在进程里直接答：一个请求一份答复",
+    "tz": "Asia/Shanghai",
+    "user_action_at": "点按时的 at 是那一步的时钟，按 Asia/Shanghai 写"
+  },
+  "situation": "收件箱里是演示用的那一批虚构邮件，后台刚分拣完：每封可疑邮件一张急事卡片，要你处理的（回复、日程、待办）一张卡片列出最要紧的 8 封、每封有自己的选项，其余打算归档或移到垃圾箱的合成一行。",
+  "steps": [
+    {
+      "clock": "2026-10-12T02:30:00Z",
+      "do": "后台分拣完了（收件箱的每一封都过了模型；见 produced.fixture）"
+    },
+    {
+      "clock": "2026-10-12T02:30:00Z",
+      "do": "server/discover",
+      "file": "server-discover.json"
+    },
+    {
+      "clock": "2026-10-12T02:30:00Z",
+      "do": "列工具（agent 认 readOnlyHint）",
+      "file": "tools-list.json"
+    },
+    {
+      "clock": "2026-10-12T02:30:00Z",
+      "do": "列资源",
+      "file": "resources-list.json"
+    },
+    {
+      "clock": "2026-10-12T02:30:00Z",
+      "do": "读 outbox（每分钟一次）",
+      "file": "read-outbox.json"
+    },
+    {
+      "clock": "2026-10-12T02:30:00Z",
+      "do": "读权限的状态",
+      "file": "read-permissions.json"
+    },
+    {
+      "clock": "2026-10-12T02:35:00Z",
+      "do": "用户在第一张可疑邮件的卡片上照默认的「移到垃圾邮件」点「按这个处理」",
+      "file": "call-mail_apply_plan.json"
+    },
+    {
+      "clock": "2026-10-12T02:35:00Z",
+      "do": "点完再读 outbox",
+      "file": "read-outbox-after-apply.json"
+    }
+  ],
+  "title": "早上分拣好的一批：几封可疑、一批要你处理、其余打算整理",
+  "window": [
+    "可疑邮件每封一件 `suspicious`、`urgent`：在「急事」；卡片上一行「移到垃圾邮件 / 先不动」（默认移到垃圾邮件）、模型给的理由，按钮「按这个处理」「在邮件助手里看」。",
+    "要你处理的是一件 `new-mail`、`normal`：在「要你决定」；标题「这 8 封要你处理，其余打算整理」，每封一行选项（回复的：写草稿 / 待跟进 / 归档 / 先不动；日程、待办：待跟进 / 归档 / 先不动），最后一行「照建议处理 / 先不动」；有日程的带「加入日程」（打开网页，最多 3 个）。",
+    "点完可疑邮件那张：答复的卡片换成结果和 [撤销]，这一件从 outbox 撤下。"
+  ]
+}

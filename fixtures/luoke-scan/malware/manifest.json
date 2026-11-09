@@ -1,0 +1,170 @@
+{
+  "_draft": "草案：等打包签名时去掉；scan 用 --this-mac（家目录、临时目录、常见项目目录、~/.luoke-scan）",
+  "accessory": "luoke-scan",
+  "bundle_id": "ai.luoke.scan",
+  "capabilities": {
+    "actions": [
+      {
+        "name": "scan_apply",
+        "title": "执行你点过的清理方案",
+        "writes": true
+      },
+      {
+        "name": "scan_ignore",
+        "title": "把某项标成不用管",
+        "writes": true
+      },
+      {
+        "name": "scan_restore",
+        "title": "把清理时移进废纸篓的放回原处",
+        "writes": true
+      },
+      {
+        "name": "scan_autoclean",
+        "title": "开或关不用点就清的四类",
+        "writes": true
+      }
+    ],
+    "listing": {
+      "category": "系统",
+      "tagline": "它为这台 Mac 加护：拂去你不会想念的，无一不可复还。"
+    },
+    "permissions": [
+      {
+        "facts": [
+          "看文件名、大小、修改时间",
+          "重复文件、散落的密钥、AI 的 skill 和说明文件在本机读内容",
+          "结果不出这台 Mac"
+        ],
+        "id": "fda",
+        "kind": "system",
+        "owner": "luoke",
+        "tcc": "SystemPolicyAllFiles",
+        "title": "完全磁盘访问",
+        "without": "degrade"
+      },
+      {
+        "id": "auto",
+        "kind": "delegate",
+        "on": "scan_autoclean",
+        "title": "不用点就清 4 类"
+      },
+      {
+        "id": "admin",
+        "kind": "each-time",
+        "title": "删除系统目录里的东西（要 Mac 的密码）"
+      }
+    ],
+    "protocol": 1,
+    "reports": [
+      {
+        "kind": "security",
+        "title": "安全问题",
+        "urgency": "urgent"
+      },
+      {
+        "kind": "space",
+        "title": "空间被吃掉",
+        "urgency": "normal"
+      },
+      {
+        "kind": "findings",
+        "title": "扫描结果",
+        "urgency": "low"
+      },
+      {
+        "kind": "needs-access",
+        "title": "需要你允许",
+        "urgency": "low"
+      },
+      {
+        "kind": "auto-done",
+        "title": "自动清掉的",
+        "urgency": "normal"
+      }
+    ],
+    "service": {
+      "pages": [
+        {
+          "id": "overview",
+          "title": "概览"
+        },
+        {
+          "id": "cleaned",
+          "title": "清理记录"
+        }
+      ],
+      "summary": true
+    },
+    "transport": "stdio"
+  },
+  "contract": 1,
+  "data": [
+    "~/.luoke-scan"
+  ],
+  "entry": [],
+  "jobs": [
+    {
+      "allow_battery": false,
+      "command": [
+        "update",
+        "--this-mac"
+      ],
+      "exec": "luoke-scan",
+      "memory_mb": 800,
+      "min_interval_minutes": 1440,
+      "name": "update",
+      "timeout_minutes": 20,
+      "uses_model": false
+    },
+    {
+      "allow_battery": false,
+      "command": [
+        "scan",
+        "--this-mac",
+        "--autoclean"
+      ],
+      "exec": "luoke-scan",
+      "memory_mb": 1500,
+      "min_interval_minutes": 1440,
+      "name": "scan",
+      "permissions": [
+        "fda"
+      ],
+      "timeout_minutes": 60,
+      "uses_model": true
+    }
+  ],
+  "memory": true,
+  "min_macos": "26.2",
+  "name": "螺壳扫描",
+  "resident": false,
+  "resident_command": [
+    "mcp",
+    "--this-mac"
+  ],
+  "resident_exec": "luoke-scan",
+  "resident_permissions": [
+    "fda"
+  ],
+  "tasks": [
+    {
+      "kind": "generate",
+      "main": false,
+      "name": "luoke-scan.explain"
+    },
+    {
+      "kind": "generate",
+      "main": false,
+      "name": "luoke-scan.identify"
+    },
+    {
+      "kind": "generate",
+      "main": false,
+      "name": "luoke-scan.skills"
+    }
+  ],
+  "type": "app",
+  "ui_element": true,
+  "version": "0.3.5"
+}

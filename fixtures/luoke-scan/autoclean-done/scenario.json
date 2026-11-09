@@ -1,0 +1,114 @@
+{
+  "id": "autoclean-done",
+  "normalised": {
+    "$TMPDIR": "假目录的临时目录（$FIXTURE/tmp）",
+    "000000000001…": "由路径、随机数算出的 12 位编号，按在本场景里出现的先后编号",
+    "resources/read": "contents[0].text 解开成了 JSON 值；线上是 JSON 文字",
+    "~": "假用户目录（$FIXTURE/home）",
+    "~/.Trash": "假目录的废纸篓（$FIXTURE/Trash）"
+  },
+  "produced": {
+    "changes": [
+      "pip 的缓存长到 60 MB",
+      "删掉了 ~/Downloads/eicar-test.com",
+      "删掉了 ~/Downloads/update.scpt",
+      "删掉了 ~/Library/LaunchAgents/io.example.gone.plist",
+      "删掉了 ~/Library/Application Support/io.example.removed",
+      "删掉了 ~/Library/Preferences/io.example.removed.plist",
+      "删掉了 ~/Library/Group Containers/ABCDE12345.io.example.removed",
+      "删掉了 ~/Library/Containers/ABCDE12345.io.example.removed",
+      "加了装好了的应用的安装包、文稿里也有一份的下载、21 个 Puppeteer 临时文件夹（都是 20 天前来的）",
+      "用户之前在设置里打开了自动清（默认关）：2026-10-20T07:12:00Z 带 user-action（surfaceId `settings`）调了 `scan_autoclean` `{\"on\": true}`"
+    ],
+    "fixture": [
+      "blackbox/fx.py 造的假目录：blackbox/cases/base.py 的 `build`（照单元测试的 Fixture.build 摆），fakes.json 是 `fx.standard_fakes`（和单元测试的 Fixture.Fakes.standard 一样）",
+      "luoke-scan update --data $FIXTURE/data --tool-dir $FIXTURE/tools --force（假的 freshclam，daily 27000，库文件的时间 2026-10-20T01:00:00Z）",
+      "luoke-scan scan --fixture $FIXTURE --clock 2026-10-17T12:00:00Z（3 天前查过一轮：pip 的缓存还是空的）"
+    ],
+    "mcp": "luoke-scan mcp --fixture $FIXTURE --clock <那一步的时钟>：一个请求一个进程，标准输入一条 JSON-RPC，标准输出是答复",
+    "tz": "Asia/Shanghai",
+    "user_action_at": "点按时的 at 是那一步的时钟，按 Asia/Shanghai 写"
+  },
+  "situation": "用户之前在设置里打开了自动清（默认关）。主控在空闲时跑了每天那一轮（`scan --autoclean`）：查完把四类不用点就清的清掉了：pip 的缓存直接删（会重建），装好了的应用的安装包、下载里的重复文件、Puppeteer 留下的临时文件夹移进废纸篓（能放回）。用户回来看到报告，先点了「放回」，又点了「以后别自动清」。",
+  "steps": [
+    {
+      "clock": "2026-10-20T12:00:00Z",
+      "do": "查一轮：luoke-scan scan --fixture $FIXTURE --clock 2026-10-20T12:00:00Z --autoclean（主控的空闲任务，查完自动清）"
+    },
+    {
+      "clock": "2026-10-20T12:01:00Z",
+      "do": "server/discover",
+      "file": "server-discover.json"
+    },
+    {
+      "clock": "2026-10-20T12:01:00Z",
+      "do": "列工具（agent 认 readOnlyHint）",
+      "file": "tools-list.json"
+    },
+    {
+      "clock": "2026-10-20T12:01:00Z",
+      "do": "列资源",
+      "file": "resources-list.json"
+    },
+    {
+      "clock": "2026-10-20T12:01:00Z",
+      "do": "读 outbox（每分钟一次）",
+      "file": "read-outbox.json"
+    },
+    {
+      "clock": "2026-10-20T12:01:00Z",
+      "do": "读概览（侧栏的计数和一句话）",
+      "file": "read-summary.json"
+    },
+    {
+      "clock": "2026-10-20T12:01:00Z",
+      "do": "读权限的状态",
+      "file": "read-permissions.json"
+    },
+    {
+      "clock": "2026-10-20T12:01:00Z",
+      "do": "读基础页 page/overview",
+      "file": "read-page-overview.json"
+    },
+    {
+      "clock": "2026-10-20T12:01:00Z",
+      "do": "读基础页 page/cleaned",
+      "file": "read-page-cleaned.json"
+    },
+    {
+      "clock": "2026-10-20T12:10:00Z",
+      "do": "用户在自动清的卡片上点「放回」（整批放回，放回过的那几类以后先问）",
+      "file": "call-scan_restore.json"
+    },
+    {
+      "clock": "2026-10-20T12:10:00Z",
+      "do": "点完再读权限",
+      "file": "read-permissions-after-restore.json"
+    },
+    {
+      "clock": "2026-10-20T12:10:00Z",
+      "do": "点完再读 outbox",
+      "file": "read-outbox-after-restore.json"
+    },
+    {
+      "clock": "2026-10-20T12:11:00Z",
+      "do": "用户再点「以后别自动清」",
+      "file": "call-scan_autoclean-off.json"
+    },
+    {
+      "clock": "2026-10-20T12:11:00Z",
+      "do": "点完再读权限",
+      "file": "read-permissions-after-off.json"
+    },
+    {
+      "clock": "2026-10-20T12:11:00Z",
+      "do": "再读概览页",
+      "file": "read-page-overview-after-off.json"
+    }
+  ],
+  "title": "不用点就清了 4 类",
+  "window": [
+    "一轮的那件是 `auto-done`、`normal`：在「已经替你做了」；上半张说清了什么（[放回]、[以后别自动清]），下半张是还要用户定的方案。",
+    "「放回」整批放回以后，放回过的那三类以后先问（`permissions.auto` 还是 `on`：缓存照清）；「以后别自动清」以后 `auto` 是 `off`，概览页写「自动清：关」，权限页的开关跟着变。"
+  ]
+}

@@ -1,0 +1,142 @@
+{
+  "reply": {
+    "id": 11,
+    "jsonrpc": "2.0",
+    "result": {
+      "content": [
+        {
+          "text": "放回了 25 项。",
+          "type": "text"
+        }
+      ],
+      "isError": false,
+      "resultType": "complete",
+      "structuredContent": {
+        "card": [
+          {
+            "updateComponents": {
+              "components": [
+                {
+                  "children": [
+                    "r1500-t1",
+                    "r1500-t2",
+                    "r1500-t3",
+                    "r1500-t4",
+                    "r1500-t5",
+                    "r1500-t6",
+                    "r1500-t7",
+                    "r1500-t8",
+                    "r1500-t9",
+                    "r1500-t10",
+                    "r1500-t11",
+                    "r1500-t12"
+                  ],
+                  "component": "Column",
+                  "id": "root"
+                },
+                {
+                  "component": "Text",
+                  "id": "r1500-t1",
+                  "text": "放回了 25 项。"
+                },
+                {
+                  "component": "Text",
+                  "id": "r1500-t2",
+                  "text": "临时目录里有 25 个 wings-* 没被删掉，共 131.1 MB",
+                  "variant": "caption"
+                },
+                {
+                  "component": "Text",
+                  "id": "r1500-t3",
+                  "text": "临时目录里有 25 个 wings-* 没被删掉，共 131.1 MB",
+                  "variant": "caption"
+                },
+                {
+                  "component": "Text",
+                  "id": "r1500-t4",
+                  "text": "临时目录里有 25 个 wings-* 没被删掉，共 131.1 MB",
+                  "variant": "caption"
+                },
+                {
+                  "component": "Text",
+                  "id": "r1500-t5",
+                  "text": "临时目录里有 25 个 wings-* 没被删掉，共 131.1 MB",
+                  "variant": "caption"
+                },
+                {
+                  "component": "Text",
+                  "id": "r1500-t6",
+                  "text": "临时目录里有 25 个 wings-* 没被删掉，共 131.1 MB",
+                  "variant": "caption"
+                },
+                {
+                  "component": "Text",
+                  "id": "r1500-t7",
+                  "text": "临时目录里有 25 个 wings-* 没被删掉，共 131.1 MB",
+                  "variant": "caption"
+                },
+                {
+                  "component": "Text",
+                  "id": "r1500-t8",
+                  "text": "临时目录里有 25 个 wings-* 没被删掉，共 131.1 MB",
+                  "variant": "caption"
+                },
+                {
+                  "component": "Text",
+                  "id": "r1500-t9",
+                  "text": "临时目录里有 25 个 wings-* 没被删掉，共 131.1 MB",
+                  "variant": "caption"
+                },
+                {
+                  "component": "Text",
+                  "id": "r1500-t10",
+                  "text": "临时目录里有 25 个 wings-* 没被删掉，共 131.1 MB",
+                  "variant": "caption"
+                },
+                {
+                  "component": "Text",
+                  "id": "r1500-t11",
+                  "text": "临时目录里有 25 个 wings-* 没被删掉，共 131.1 MB",
+                  "variant": "caption"
+                },
+                {
+                  "component": "Text",
+                  "id": "r1500-t12",
+                  "text": "等 25 项，都记在清理记录里",
+                  "variant": "caption"
+                }
+              ],
+              "surfaceId": "cleaned"
+            },
+            "version": "v0.9"
+          }
+        ],
+        "done": true
+      }
+    }
+  },
+  "request": {
+    "id": 11,
+    "jsonrpc": "2.0",
+    "method": "tools/call",
+    "params": {
+      "_meta": {
+        "ai.luoke/user-action": {
+          "at": "2026-10-20T21:05:00+08:00",
+          "componentId": "b5",
+          "surfaceId": "cleaned"
+        },
+        "io.modelcontextprotocol/clientCapabilities": {},
+        "io.modelcontextprotocol/clientInfo": {
+          "name": "luoke-agent",
+          "version": "fixtures"
+        },
+        "io.modelcontextprotocol/protocolVersion": "2026-07-28"
+      },
+      "arguments": {
+        "id": "p-000000000002"
+      },
+      "name": "scan_restore"
+    }
+  }
+}

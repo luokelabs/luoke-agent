@@ -1,0 +1,103 @@
+{
+  "id": "decide-3",
+  "normalised": {
+    "$TMPDIR": "假目录的临时目录（$FIXTURE/tmp）",
+    "000000000001…": "由路径、随机数算出的 12 位编号，按在本场景里出现的先后编号",
+    "resources/read": "contents[0].text 解开成了 JSON 值；线上是 JSON 文字",
+    "~": "假用户目录（$FIXTURE/home）",
+    "~/.Trash": "假目录的废纸篓（$FIXTURE/Trash）"
+  },
+  "produced": {
+    "changes": [
+      "pip 的缓存长到 60 MB",
+      "删掉了 ~/Downloads/eicar-test.com",
+      "删掉了 ~/Downloads/update.scpt",
+      "删掉了 ~/Library/LaunchAgents/io.example.gone.plist",
+      "删掉了 ~/Library/Application Support/io.example.removed",
+      "删掉了 ~/Library/Preferences/io.example.removed.plist",
+      "删掉了 ~/Library/Group Containers/ABCDE12345.io.example.removed",
+      "删掉了 ~/Library/Containers/ABCDE12345.io.example.removed"
+    ],
+    "fixture": [
+      "blackbox/fx.py 造的假目录：blackbox/cases/base.py 的 `build`（照单元测试的 Fixture.build 摆），fakes.json 是 `fx.standard_fakes`（和单元测试的 Fixture.Fakes.standard 一样）",
+      "luoke-scan update --data $FIXTURE/data --tool-dir $FIXTURE/tools --force（假的 freshclam，daily 27000，库文件的时间 2026-10-20T01:00:00Z）",
+      "luoke-scan scan --fixture $FIXTURE --clock 2026-10-17T12:00:00Z（3 天前查过一轮：pip 的缓存还是空的）"
+    ],
+    "mcp": "luoke-scan mcp --fixture $FIXTURE --clock <那一步的时钟>：一个请求一个进程，标准输入一条 JSON-RPC，标准输出是答复",
+    "tz": "Asia/Shanghai",
+    "user_action_at": "点按时的 at 是那一步的时钟，按 Asia/Shanghai 写"
+  },
+  "situation": "查完一轮，没有急事。一轮的卡片上有一份三项的清理方案：pip 的缓存（放心删，默认删掉：会自己重建，删了马上腾出空间）、测试留下的 25 个临时文件夹和一个推送过的老项目（要确认，默认先不动）；下面另列要去系统设置里收回的权限、进不了方案的一条和一条高风险提醒。",
+  "steps": [
+    {
+      "clock": "2026-10-20T12:00:00Z",
+      "do": "查一轮（agent 叫的那种，只读、不自动清）：luoke-scan scan --fixture $FIXTURE --clock 2026-10-20T12:00:00Z --for-agent"
+    },
+    {
+      "clock": "2026-10-20T12:00:00Z",
+      "do": "server/discover",
+      "file": "server-discover.json"
+    },
+    {
+      "clock": "2026-10-20T12:00:00Z",
+      "do": "列工具（agent 认 readOnlyHint）",
+      "file": "tools-list.json"
+    },
+    {
+      "clock": "2026-10-20T12:00:00Z",
+      "do": "列资源",
+      "file": "resources-list.json"
+    },
+    {
+      "clock": "2026-10-20T12:00:00Z",
+      "do": "读 outbox（每分钟一次）",
+      "file": "read-outbox.json"
+    },
+    {
+      "clock": "2026-10-20T12:00:00Z",
+      "do": "读概览（侧栏的计数和一句话）",
+      "file": "read-summary.json"
+    },
+    {
+      "clock": "2026-10-20T12:00:00Z",
+      "do": "读权限的状态",
+      "file": "read-permissions.json"
+    },
+    {
+      "clock": "2026-10-20T12:00:00Z",
+      "do": "读基础页 page/overview",
+      "file": "read-page-overview.json"
+    },
+    {
+      "clock": "2026-10-20T12:00:00Z",
+      "do": "读基础页 page/cleaned",
+      "file": "read-page-cleaned.json"
+    },
+    {
+      "clock": "2026-10-20T12:00:00Z",
+      "do": "对话里问「要我看的是哪些」：模型调 scan_findings（只读）",
+      "file": "call-scan_findings.json"
+    },
+    {
+      "clock": "2026-10-20T12:05:00Z",
+      "do": "用户在一轮的卡片上照默认的选项点「按这个处理」",
+      "file": "call-scan_apply.json"
+    },
+    {
+      "clock": "2026-10-20T12:05:00Z",
+      "do": "点完再读 outbox",
+      "file": "read-outbox-after-apply.json"
+    },
+    {
+      "clock": "2026-10-20T12:05:00Z",
+      "do": "点完再读概览",
+      "file": "read-summary-after-apply.json"
+    }
+  ],
+  "title": "要你决定 3 项的清理方案",
+  "window": [
+    "一轮的那件是 `findings`、`low`：照 agent 现在的分段规则在「顺便看看」，不在「要你决定」（见下面「要对齐的」）。",
+    "卡片上每项一个 `ChoicePicker`（移到废纸篓 / 先不动 / 以后别提；会重建的缓存第一个是「删掉（会自动重建）」，值 `remove`），按钮「按这个处理」把 `/choices` 换成当时的选项转给 `scan_apply`。",
+    "点完答复带 `done: true`：卡片换成结果（移了什么、[放回]），这一件从 outbox 撤下。"
+  ]
+}

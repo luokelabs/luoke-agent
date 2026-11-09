@@ -1,0 +1,145 @@
+{
+  "reply": {
+    "id": 9,
+    "jsonrpc": "2.0",
+    "result": {
+      "content": [
+        {
+          "text": "[要确认] 进程 100（gone）的程序已经被删掉了，它还在跑\n[要确认] /opt/gone/tool 已经不在这台 Mac 上，还拿着「录屏」\n[要确认] io.example.removed 已经不在这台 Mac 上，还拿着「完全磁盘访问」\n[要确认] 临时目录里有 25 个 wings-* 没被删掉，共 131.1 MB\n[要确认] io.example.stillused 的数据还在，但这台 Mac 上没有这个应用\n[要确认] old-pushed 半年多没动过，都已推送，删了能从远程找回",
+          "type": "text"
+        }
+      ],
+      "isError": false,
+      "resultType": "complete",
+      "structuredContent": {
+        "card": [
+          {
+            "createSurface": {
+              "catalogId": "ai.luoke/a2ui/agent/1",
+              "surfaceId": "scan-000000000003"
+            },
+            "version": "v0.9"
+          },
+          {
+            "updateComponents": {
+              "components": [
+                {
+                  "children": [
+                    "h1",
+                    "t2",
+                    "t3",
+                    "t4",
+                    "t5",
+                    "t6",
+                    "t7",
+                    "t8",
+                    "t9",
+                    "t10",
+                    "t11",
+                    "t12",
+                    "t13"
+                  ],
+                  "component": "Column",
+                  "id": "root"
+                },
+                {
+                  "component": "Text",
+                  "id": "h1",
+                  "text": "发现 6 条",
+                  "variant": "h4"
+                },
+                {
+                  "component": "Text",
+                  "id": "t2",
+                  "text": "[要确认] 进程 100（gone）的程序已经被删掉了，它还在跑"
+                },
+                {
+                  "component": "Text",
+                  "id": "t3",
+                  "text": "~/Applications/Gone.app/Contents/MacOS/gone",
+                  "variant": "caption"
+                },
+                {
+                  "component": "Text",
+                  "id": "t4",
+                  "text": "[要确认] /opt/gone/tool 已经不在这台 Mac 上，还拿着「录屏」"
+                },
+                {
+                  "component": "Text",
+                  "id": "t5",
+                  "text": "/opt/gone/tool\n以后装上同名的东西，会直接拿到这些权限\n系统设置 → 隐私与安全性 → 录屏，选中它点「−」（会要你的密码）。应用卸载以后用命令行（tccutil）删不掉，只能在这一页删",
+                  "variant": "caption"
+                },
+                {
+                  "component": "Text",
+                  "id": "t6",
+                  "text": "[要确认] io.example.removed 已经不在这台 Mac 上，还拿着「完全磁盘访问」"
+                },
+                {
+                  "component": "Text",
+                  "id": "t7",
+                  "text": "io.example.removed\n以后装上同名的东西，会直接拿到这些权限\n系统设置 → 隐私与安全性 → 完全磁盘访问，选中它点「−」（会要你的密码）。应用卸载以后用命令行（tccutil）删不掉，只能在这一页删",
+                  "variant": "caption"
+                },
+                {
+                  "component": "Text",
+                  "id": "t8",
+                  "text": "[要确认] 临时目录里有 25 个 wings-* 没被删掉，共 131.1 MB"
+                },
+                {
+                  "component": "Text",
+                  "id": "t9",
+                  "text": "$TMPDIR/wings-*\n多半是某个程序每次运行都建一个临时目录、用完不删；找到它修掉，比反复清理更管用",
+                  "variant": "caption"
+                },
+                {
+                  "component": "Text",
+                  "id": "t10",
+                  "text": "[要确认] io.example.stillused 的数据还在，但这台 Mac 上没有这个应用"
+                },
+                {
+                  "component": "Text",
+                  "id": "t11",
+                  "text": "~/Library/Caches/io.example.stillused\n有的应用把文档、本地数据库放在这里；删之前确认里面没有你还要的东西，或者新版本已经导入过",
+                  "variant": "caption"
+                },
+                {
+                  "component": "Text",
+                  "id": "t12",
+                  "text": "[要确认] old-pushed 半年多没动过，都已推送，删了能从远程找回"
+                },
+                {
+                  "component": "Text",
+                  "id": "t13",
+                  "text": "~/Projects/old-pushed",
+                  "variant": "caption"
+                }
+              ],
+              "surfaceId": "scan-000000000003"
+            },
+            "version": "v0.9"
+          }
+        ]
+      }
+    }
+  },
+  "request": {
+    "id": 9,
+    "jsonrpc": "2.0",
+    "method": "tools/call",
+    "params": {
+      "_meta": {
+        "io.modelcontextprotocol/clientCapabilities": {},
+        "io.modelcontextprotocol/clientInfo": {
+          "name": "luoke-agent",
+          "version": "fixtures"
+        },
+        "io.modelcontextprotocol/protocolVersion": "2026-07-28"
+      },
+      "arguments": {
+        "verdict": "confirm"
+      },
+      "name": "scan_findings"
+    }
+  }
+}

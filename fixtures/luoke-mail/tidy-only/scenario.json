@@ -1,0 +1,50 @@
+{
+  "id": "tidy-only",
+  "normalised": {
+    "resources/read": "contents[0].text 解开成了 JSON 值；线上是 JSON 文字"
+  },
+  "produced": {
+    "fixture": [
+      "假的 IMAP 服务器（tests/fakes.py，Gmail 那种）的收件箱放 15 封 luoke_mail/samples.py 的虚构邮件；照后台分拣那样过 pipeline.sync，模型的答复用 bench/results 里 Qwen3.5-9B 对这几封的真实答复（15 封；archive 15）"
+    ],
+    "mcp": "luoke-mail 的 agent socket（luoke_mail/agent.py 的 Agent，同一个 ToolServer.handle）在进程里直接答：一个请求一份答复",
+    "tz": "Asia/Shanghai",
+    "user_action_at": "点按时的 at 是那一步的时钟，按 Asia/Shanghai 写"
+  },
+  "situation": "没有要回的、没有可疑的，刚分拣完的都是可以归档或移到垃圾箱的。",
+  "steps": [
+    {
+      "clock": "2026-10-12T02:30:00Z",
+      "do": "后台分拣完了：都是可以整理的（通知、推送、订阅）"
+    },
+    {
+      "clock": "2026-10-12T02:30:00Z",
+      "do": "server/discover",
+      "file": "server-discover.json"
+    },
+    {
+      "clock": "2026-10-12T02:30:00Z",
+      "do": "列工具（agent 认 readOnlyHint）",
+      "file": "tools-list.json"
+    },
+    {
+      "clock": "2026-10-12T02:30:00Z",
+      "do": "列资源",
+      "file": "resources-list.json"
+    },
+    {
+      "clock": "2026-10-12T02:30:00Z",
+      "do": "读 outbox（每分钟一次）",
+      "file": "read-outbox.json"
+    },
+    {
+      "clock": "2026-10-12T02:30:00Z",
+      "do": "读权限的状态",
+      "file": "read-permissions.json"
+    }
+  ],
+  "title": "只有可以整理的：通知、推送、订阅",
+  "window": [
+    "一件 `new-mail`、`low`：标题「这几封打算整理」，只有「照建议处理 / 先不动」那一行。"
+  ]
+}

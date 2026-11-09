@@ -1,0 +1,81 @@
+{
+  "id": "first-run-no-fda",
+  "normalised": {
+    "$TMPDIR": "假目录的临时目录（$FIXTURE/tmp）",
+    "000000000001…": "由路径、随机数算出的 12 位编号，按在本场景里出现的先后编号",
+    "resources/read": "contents[0].text 解开成了 JSON 值；线上是 JSON 文字",
+    "~": "假用户目录（$FIXTURE/home）",
+    "~/.Trash": "假目录的废纸篓（$FIXTURE/Trash）"
+  },
+  "produced": {
+    "changes": [
+      "pip 的缓存 60 MB（~/Library/Caches/pip/http/blob，半天前写的），之前没查过：没有它 3 天前的大小",
+      "~/Library/Application Support/com.apple.TCC/TCC.db 改成读不了（chmod 000）：没有完全磁盘访问时 macOS 也不让读它"
+    ],
+    "fixture": [
+      "blackbox/fx.py 造的假目录：blackbox/cases/base.py 的 `build`（照单元测试的 Fixture.build 摆），fakes.json 是 `fx.standard_fakes`（和单元测试的 Fixture.Fakes.standard 一样）",
+      "luoke-scan update --data $FIXTURE/data --tool-dir $FIXTURE/tools --force（假的 freshclam，daily 27000，库文件的时间 2026-10-20T01:00:00Z）"
+    ],
+    "mcp": "luoke-scan mcp --fixture $FIXTURE --clock <那一步的时钟> --no-full-disk-access：一个请求一个进程，标准输入一条 JSON-RPC，标准输出是答复",
+    "tz": "Asia/Shanghai",
+    "user_action_at": "点按时的 at 是那一步的时钟，按 Asia/Shanghai 写"
+  },
+  "situation": "刚装好螺壳，还没在系统设置里给「螺壳」打开完全磁盘访问。扫描第一次查这台 Mac：下载、文稿、桌面和别的应用的容器都没看（看了 macOS 会弹框问），别处照查。",
+  "steps": [
+    {
+      "clock": "2026-10-20T12:00:00Z",
+      "do": "查一轮（agent 叫的那种，只读、不自动清）：luoke-scan scan --fixture $FIXTURE --clock 2026-10-20T12:00:00Z --for-agent --no-full-disk-access"
+    },
+    {
+      "clock": "2026-10-20T12:00:00Z",
+      "do": "server/discover",
+      "file": "server-discover.json"
+    },
+    {
+      "clock": "2026-10-20T12:00:00Z",
+      "do": "列工具（agent 认 readOnlyHint）",
+      "file": "tools-list.json"
+    },
+    {
+      "clock": "2026-10-20T12:00:00Z",
+      "do": "列资源",
+      "file": "resources-list.json"
+    },
+    {
+      "clock": "2026-10-20T12:00:00Z",
+      "do": "读 outbox（每分钟一次）",
+      "file": "read-outbox.json"
+    },
+    {
+      "clock": "2026-10-20T12:00:00Z",
+      "do": "读概览（侧栏的计数和一句话）",
+      "file": "read-summary.json"
+    },
+    {
+      "clock": "2026-10-20T12:00:00Z",
+      "do": "读权限的状态",
+      "file": "read-permissions.json"
+    },
+    {
+      "clock": "2026-10-20T12:00:00Z",
+      "do": "读基础页 page/overview",
+      "file": "read-page-overview.json"
+    },
+    {
+      "clock": "2026-10-20T12:00:00Z",
+      "do": "读基础页 page/cleaned",
+      "file": "read-page-cleaned.json"
+    },
+    {
+      "clock": "2026-10-20T12:00:00Z",
+      "do": "对话里问「扫描怎么样了」：模型调 scan_status（只读，答一张新卡片）",
+      "file": "call-scan_status.json"
+    }
+  ],
+  "title": "第一次扫描，还没给完全磁盘访问",
+  "window": [
+    "「今天 · 要你决定」里一张「扫描需要「完全磁盘访问」」，按钮「打开设置」；应用页的 `needs` 里有 `fda`。",
+    "完全磁盘访问在清单里写着 `owner: \"luoke\"`：权限页照螺壳.app 报的（`POST /host`）画，工具报的 `denied` 只作参考；螺壳.app 报了 `granted` 以后 agent 撤掉这张。",
+    "一轮的那件（`findings`，low）在「顺便看看」；概览页写「有 N 项没查成，下一轮再查」。"
+  ]
+}

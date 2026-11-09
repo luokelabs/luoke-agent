@@ -1,0 +1,640 @@
+{
+ "_about": "scripts/window_samples.py 用 fixtures/luoke-scan/first-run-no-fda（luoke-scan 27544abc5e9c）接上真核心生成的，不要手改",
+ "app": "luoke-scan",
+ "apps": {
+  "apps": [
+   {
+    "id": "luoke-scan",
+    "needs": [
+     "fda"
+    ],
+    "pages": [
+     {
+      "id": "overview",
+      "title": "概览"
+     },
+     {
+      "id": "cleaned",
+      "title": "清理记录"
+     }
+    ],
+    "running": true,
+    "summary": {
+     "count": 7,
+     "text": "能清出 62.9 MB，另外有 6 件事值得看一眼"
+    },
+    "ui": null
+   }
+  ]
+ },
+ "asked": [
+  "read-outbox.json",
+  "tools-list.json",
+  "read-summary.json",
+  "read-permissions.json",
+  "read-page-overview.json",
+  "read-page-cleaned.json"
+ ],
+ "clock": "2026-10-20T12:00:00Z",
+ "events": [
+  [
+   "a2ui",
+   {
+    "createSurface": {
+     "catalogId": "ai.luoke/a2ui/agent/1",
+     "surfaceId": "luoke-scan/round-000000000001"
+    },
+    "version": "v0.9"
+   }
+  ],
+  [
+   "a2ui",
+   {
+    "updateComponents": {
+     "components": [
+      {
+       "children": [
+        "h1",
+        "t2",
+        "c-i0",
+        "t3",
+        "c-i1",
+        "t4",
+        "c-i2",
+        "t5",
+        "c-i3",
+        "t6",
+        "c-i4",
+        "t7",
+        "r10",
+        "d11",
+        "t12",
+        "t13",
+        "d14",
+        "t15",
+        "t16",
+        "t17",
+        "t18"
+       ],
+       "component": "Column",
+       "id": "root"
+      },
+      {
+       "component": "Text",
+       "id": "h1",
+       "text": "能清出 62.9 MB，另外有 6 件事值得看一眼",
+       "variant": "h4"
+      },
+      {
+       "component": "Text",
+       "id": "t2",
+       "text": "会自动重建的缓存直接删掉，别的放心删的移到废纸篓，要你确认的先不动。",
+       "variant": "caption"
+      },
+      {
+       "component": "ChoicePicker",
+       "id": "c-i0",
+       "label": "后台任务 io.example.gone 指向已经不存在的位置",
+       "options": [
+        {
+         "label": "移到废纸篓",
+         "value": "trash"
+        },
+        {
+         "label": "先不动",
+         "value": "keep"
+        },
+        {
+         "label": "以后别提",
+         "value": "ignore"
+        }
+       ],
+       "value": {
+        "path": "/choices/i0"
+       }
+      },
+      {
+       "component": "Text",
+       "id": "t3",
+       "text": "~/Library/LaunchAgents/io.example.gone.plist",
+       "variant": "caption"
+      },
+      {
+       "component": "ChoicePicker",
+       "id": "c-i1",
+       "label": "临时目录里有 25 个 wings-* 没被删掉，共 131.1 MB",
+       "options": [
+        {
+         "label": "移到废纸篓",
+         "value": "trash"
+        },
+        {
+         "label": "先不动",
+         "value": "keep"
+        },
+        {
+         "label": "以后别提",
+         "value": "ignore"
+        }
+       ],
+       "value": {
+        "path": "/choices/i1"
+       }
+      },
+      {
+       "component": "Text",
+       "id": "t4",
+       "text": "$TMPDIR 里的 25 项",
+       "variant": "caption"
+      },
+      {
+       "component": "ChoicePicker",
+       "id": "c-i2",
+       "label": "pip 的缓存，删了会自动重建（62.9 MB）",
+       "options": [
+        {
+         "label": "删掉（会自动重建）",
+         "value": "remove"
+        },
+        {
+         "label": "先不动",
+         "value": "keep"
+        },
+        {
+         "label": "以后别提",
+         "value": "ignore"
+        }
+       ],
+       "value": {
+        "path": "/choices/i2"
+       }
+      },
+      {
+       "component": "Text",
+       "id": "t5",
+       "text": "~/Library/Caches/pip",
+       "variant": "caption"
+      },
+      {
+       "component": "ChoicePicker",
+       "id": "c-i3",
+       "label": "io.example.removed 的数据还在，但这台 Mac 上没有这个应用（2.1 MB）",
+       "options": [
+        {
+         "label": "移到废纸篓",
+         "value": "trash"
+        },
+        {
+         "label": "先不动",
+         "value": "keep"
+        },
+        {
+         "label": "以后别提",
+         "value": "ignore"
+        }
+       ],
+       "value": {
+        "path": "/choices/i3"
+       }
+      },
+      {
+       "component": "Text",
+       "id": "t6",
+       "text": "~/Library/Application Support 里的 2 项",
+       "variant": "caption"
+      },
+      {
+       "component": "ChoicePicker",
+       "id": "c-i4",
+       "label": "old-pushed 半年多没动过，都已推送，删了能从远程找回（147 KB）",
+       "options": [
+        {
+         "label": "移到废纸篓",
+         "value": "trash"
+        },
+        {
+         "label": "先不动",
+         "value": "keep"
+        },
+        {
+         "label": "以后别提",
+         "value": "ignore"
+        }
+       ],
+       "value": {
+        "path": "/choices/i4"
+       }
+      },
+      {
+       "component": "Text",
+       "id": "t7",
+       "text": "~/Projects/old-pushed",
+       "variant": "caption"
+      },
+      {
+       "action": {
+        "event": {
+         "context": {
+          "choices": {
+           "path": "/choices"
+          },
+          "plan_id": "p-000000000002"
+         },
+         "name": "scan_apply"
+        }
+       },
+       "child": "b8-text",
+       "component": "Button",
+       "id": "b8",
+       "variant": "primary"
+      },
+      {
+       "component": "Text",
+       "id": "b8-text",
+       "text": "按这个处理"
+      },
+      {
+       "action": {
+        "event": {
+         "context": {
+          "on": true
+         },
+         "name": "scan_autoclean"
+        }
+       },
+       "child": "b9-text",
+       "component": "Button",
+       "id": "b9"
+      },
+      {
+       "component": "Text",
+       "id": "b9-text",
+       "text": "以后自动清"
+      },
+      {
+       "children": [
+        "b8",
+        "b9"
+       ],
+       "component": "Row",
+       "id": "r10"
+      },
+      {
+       "component": "Divider",
+       "id": "d11"
+      },
+      {
+       "component": "Text",
+       "id": "t12",
+       "text": "这几样螺壳不替你动，你可以自己看看：",
+       "variant": "caption"
+      },
+      {
+       "component": "Text",
+       "id": "t13",
+       "text": "进程 100（gone）的程序已经被删掉了，它还在跑"
+      },
+      {
+       "component": "Divider",
+       "id": "d14"
+      },
+      {
+       "component": "Text",
+       "id": "t15",
+       "text": "这几条值得留意，有空看一下：",
+       "variant": "caption"
+      },
+      {
+       "component": "Text",
+       "id": "t16",
+       "text": "FileVault 没开：电脑丢了，硬盘上的东西能直接被读出来"
+      },
+      {
+       "component": "Text",
+       "id": "t17",
+       "text": "怎么办：系统设置 → 隐私与安全性 → FileVault",
+       "variant": "caption"
+      },
+      {
+       "component": "Text",
+       "id": "t18",
+       "text": "另有 14 条仅供参考，问我就列给你。",
+       "variant": "caption"
+      }
+     ],
+     "surfaceId": "luoke-scan/round-000000000001"
+    },
+    "version": "v0.9"
+   }
+  ],
+  [
+   "a2ui",
+   {
+    "updateDataModel": {
+     "path": "/",
+     "surfaceId": "luoke-scan/round-000000000001",
+     "value": {
+      "choices": {
+       "i0": [
+        "keep"
+       ],
+       "i1": [
+        "keep"
+       ],
+       "i2": [
+        "remove"
+       ],
+       "i3": [
+        "keep"
+       ],
+       "i4": [
+        "keep"
+       ]
+      }
+     }
+    },
+    "version": "v0.9"
+   }
+  ],
+  [
+   "a2ui",
+   {
+    "createSurface": {
+     "catalogId": "ai.luoke/a2ui/agent/1",
+     "surfaceId": "luoke-scan/access-000000000003"
+    },
+    "version": "v0.9"
+   }
+  ],
+  [
+   "a2ui",
+   {
+    "updateComponents": {
+     "components": [
+      {
+       "children": [
+        "h1",
+        "t2",
+        "r4"
+       ],
+       "component": "Column",
+       "id": "root"
+      },
+      {
+       "component": "Text",
+       "id": "h1",
+       "text": "下载、文稿、桌面还没查",
+       "variant": "h4"
+      },
+      {
+       "component": "Text",
+       "id": "t2",
+       "text": "给「螺壳」打开「完全磁盘访问」就能查，删掉的应用留下的数据和权限也会一起查。",
+       "variant": "caption"
+      },
+      {
+       "action": {
+        "event": {
+         "context": {
+          "grant": "完全磁盘访问"
+         },
+         "name": "scan_open_settings"
+        }
+       },
+       "child": "b3-text",
+       "component": "Button",
+       "id": "b3",
+       "variant": "primary"
+      },
+      {
+       "component": "Text",
+       "id": "b3-text",
+       "text": "打开设置"
+      },
+      {
+       "children": [
+        "b3"
+       ],
+       "component": "Row",
+       "id": "r4"
+      }
+     ],
+     "surfaceId": "luoke-scan/access-000000000003"
+    },
+    "version": "v0.9"
+   }
+  ],
+  [
+   "feed",
+   {
+    "brief": {
+     "next": "2026-10-20T08:00:00+08:00"
+    },
+    "cards": [
+     {
+      "app": "luoke-scan",
+      "id": "luoke-scan/round-000000000001",
+      "kind": "findings",
+      "section": "later",
+      "time": "2026-10-20T20:00:00+08:00",
+      "title": "能清出 62.9 MB，另外有 6 件事值得看一眼"
+     },
+     {
+      "app": "luoke-scan",
+      "host_ask": {
+       "button": "b3",
+       "permission": "fda"
+      },
+      "id": "luoke-scan/access-000000000003",
+      "kind": "needs-access",
+      "section": "decide",
+      "time": "2026-10-20T20:00:00+08:00",
+      "title": "下载、文稿、桌面还没查"
+     }
+    ],
+    "notices": [],
+    "open": 2,
+    "order": [
+     "luoke-scan/round-000000000001",
+     "luoke-scan/access-000000000003"
+    ],
+    "paused_until": null
+   }
+  ]
+ ],
+ "host": {
+  "fda": "denied"
+ },
+ "pages": {
+  "cleaned": {
+   "messages": [
+    {
+     "createSurface": {
+      "catalogId": "ai.luoke/a2ui/agent/1",
+      "surfaceId": "luoke-scan/page/cleaned"
+     },
+     "version": "v0.9"
+    },
+    {
+     "updateComponents": {
+      "components": [
+       {
+        "children": [
+         "h1",
+         "t2"
+        ],
+        "component": "Column",
+        "id": "root"
+       },
+       {
+        "component": "Text",
+        "id": "h1",
+        "text": "清理记录",
+        "variant": "h4"
+       },
+       {
+        "component": "Text",
+        "id": "t2",
+        "text": "还没清理过。"
+       }
+      ],
+      "surfaceId": "luoke-scan/page/cleaned"
+     },
+     "version": "v0.9"
+    }
+   ]
+  },
+  "overview": {
+   "messages": [
+    {
+     "createSurface": {
+      "catalogId": "ai.luoke/a2ui/agent/1",
+      "surfaceId": "luoke-scan/page/overview"
+     },
+     "version": "v0.9"
+    },
+    {
+     "updateComponents": {
+      "components": [
+       {
+        "children": [
+         "h1",
+         "t2",
+         "t3",
+         "t4",
+         "t5",
+         "t6",
+         "r8"
+        ],
+        "component": "Column",
+        "id": "root"
+       },
+       {
+        "component": "Text",
+        "id": "h1",
+        "text": "扫描",
+        "variant": "h4"
+       },
+       {
+        "component": "Text",
+        "id": "t2",
+        "text": "能清出 62.9 MB，另外有 6 件事值得看一眼"
+       },
+       {
+        "component": "Text",
+        "id": "t3",
+        "text": "上一轮 10月20日 20:00：放心删 1、要确认 5、仅供参考 15",
+        "variant": "caption"
+       },
+       {
+        "component": "Text",
+        "id": "t4",
+        "text": "病毒库 daily 27000（2026-10-20）",
+        "variant": "caption"
+       },
+       {
+        "component": "Text",
+        "id": "t5",
+        "text": "有 9 项没查成，下一轮再查",
+        "variant": "caption"
+       },
+       {
+        "component": "Text",
+        "id": "t6",
+        "text": "自动清：关",
+        "variant": "caption"
+       },
+       {
+        "action": {
+         "event": {
+          "context": {},
+          "name": "scan_now"
+         }
+        },
+        "child": "b7-text",
+        "component": "Button",
+        "id": "b7"
+       },
+       {
+        "component": "Text",
+        "id": "b7-text",
+        "text": "现在查一下"
+       },
+       {
+        "children": [
+         "b7"
+        ],
+        "component": "Row",
+        "id": "r8"
+       }
+      ],
+      "surfaceId": "luoke-scan/page/overview"
+     },
+     "version": "v0.9"
+    }
+   ]
+  }
+ },
+ "permissions": {
+  "rows": [
+   {
+    "app": "luoke-scan",
+    "can": [
+     "settings"
+    ],
+    "facts": [
+     "看文件名、大小、修改时间",
+     "重复文件、散落的密钥、AI 的 skill 和说明文件在本机读内容",
+     "结果不出这台 Mac"
+    ],
+    "id": "fda",
+    "kind": "system",
+    "owner": "luoke",
+    "state": "denied",
+    "tcc": "SystemPolicyAllFiles",
+    "title": "完全磁盘访问",
+    "without": "degrade"
+   },
+   {
+    "app": "luoke-scan",
+    "can": [
+     "on"
+    ],
+    "id": "auto",
+    "kind": "delegate",
+    "state": "off",
+    "title": "不用点就清 4 类"
+   },
+   {
+    "app": "luoke-scan",
+    "id": "admin",
+    "kind": "each-time",
+    "state": "ask",
+    "title": "删除系统目录里的东西（要 Mac 的密码）"
+   }
+  ]
+ },
+ "scenario": "first-run-no-fda",
+ "title": "第一次扫描，还没给完全磁盘访问",
+ "version": "0.3.5"
+}

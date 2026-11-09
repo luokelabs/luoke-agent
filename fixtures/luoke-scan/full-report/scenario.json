@@ -1,0 +1,77 @@
+{
+  "id": "full-report",
+  "normalised": {
+    "$TMPDIR": "假目录的临时目录（$FIXTURE/tmp）",
+    "000000000001…": "由路径、随机数算出的 12 位编号，按在本场景里出现的先后编号",
+    "resources/read": "contents[0].text 解开成了 JSON 值；线上是 JSON 文字",
+    "~": "假用户目录（$FIXTURE/home）",
+    "~/.Trash": "假目录的废纸篓（$FIXTURE/Trash）"
+  },
+  "produced": {
+    "changes": [
+      "pip 的缓存长到 60 MB",
+      "加了五样会重建的缓存（go-build、uv、npm、Xcode 的 DerivedData、Bun，各 52–58 MB）、25 天前下载的 Hugging Face 模型、8 年多没打开过的视频、Gemini 的 MCP 设置里明文写的密钥（别人也能读）、一个从网上下载代码直接运行的 skill、一个临时签名的程序在看所有应用的按键"
+    ],
+    "fixture": [
+      "blackbox/fx.py 造的假目录：blackbox/cases/base.py 的 `build`（照单元测试的 Fixture.build 摆），fakes.json 是 `fx.standard_fakes`（和单元测试的 Fixture.Fakes.standard 一样）",
+      "luoke-scan update --data $FIXTURE/data --tool-dir $FIXTURE/tools --force（假的 freshclam，daily 27000，库文件的时间 2026-10-20T01:00:00Z）",
+      "luoke-scan scan --fixture $FIXTURE --clock 2026-10-17T12:00:00Z（3 天前查过一轮：pip 的缓存还是空的）",
+      "luoke-scan update --data $FIXTURE/data --tool-dir $FIXTURE/tools --force（假的 freshclam，daily 27000，库文件的时间 2026-10-20T01:00:00Z）"
+    ],
+    "mcp": "luoke-scan mcp --fixture $FIXTURE --clock <那一步的时钟>：一个请求一个进程，标准输入一条 JSON-RPC，标准输出是答复",
+    "tz": "Asia/Shanghai",
+    "user_action_at": "点按时的 at 是那一步的时钟，按 Asia/Shanghai 写"
+  },
+  "situation": "基础假目录不去掉东西（报毒的两个文件、坏了的 LaunchAgent、删了的应用留下的数据都在），再加上开发机上常见的：几样会重建的缓存、很久没用的模型、多年没打开过的视频、明文写在 MCP 设置里的密钥、从网上下载代码直接运行的 skill、临时签名的程序在看所有应用的按键。查完一轮：急事、一份很长的清理方案、一串螺壳不替你动的提醒都有。",
+  "steps": [
+    {
+      "clock": "2026-10-20T12:00:00Z",
+      "do": "查一轮（agent 叫的那种，只读、不自动清）：luoke-scan scan --fixture $FIXTURE --clock 2026-10-20T12:00:00Z --for-agent"
+    },
+    {
+      "clock": "2026-10-20T12:00:00Z",
+      "do": "server/discover",
+      "file": "server-discover.json"
+    },
+    {
+      "clock": "2026-10-20T12:00:00Z",
+      "do": "列工具（agent 认 readOnlyHint）",
+      "file": "tools-list.json"
+    },
+    {
+      "clock": "2026-10-20T12:00:00Z",
+      "do": "列资源",
+      "file": "resources-list.json"
+    },
+    {
+      "clock": "2026-10-20T12:00:00Z",
+      "do": "读 outbox（每分钟一次）",
+      "file": "read-outbox.json"
+    },
+    {
+      "clock": "2026-10-20T12:00:00Z",
+      "do": "读概览（侧栏的计数和一句话）",
+      "file": "read-summary.json"
+    },
+    {
+      "clock": "2026-10-20T12:00:00Z",
+      "do": "读权限的状态",
+      "file": "read-permissions.json"
+    },
+    {
+      "clock": "2026-10-20T12:00:00Z",
+      "do": "读基础页 page/overview",
+      "file": "read-page-overview.json"
+    },
+    {
+      "clock": "2026-10-20T12:00:00Z",
+      "do": "读基础页 page/cleaned",
+      "file": "read-page-cleaned.json"
+    }
+  ],
+  "title": "用了一阵的开发机：一轮查出一长串",
+  "window": [
+    "急事卡片几张（报毒的文件、看按键的程序……），一轮的那件是一张很长的卡片：「能清出 X，另外有 N 件事值得看一眼」，每项一个选择（会重建的缓存是「删掉（会自动重建）」），后面是「这几样螺壳不替你动」「这几条值得留意」，各带「怎么办」和按钮。",
+    "窗口要画得下这么长的卡片：截图和真机上看到的一样长。"
+  ]
+}
