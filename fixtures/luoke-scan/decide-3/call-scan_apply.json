@@ -1,6 +1,6 @@
 {
   "reply": {
-    "id": 10,
+    "id": 11,
     "jsonrpc": "2.0",
     "result": {
       "content": [
@@ -18,15 +18,49 @@
               "components": [
                 {
                   "children": [
-                    "r97900-t1"
+                    "r97900-h1",
+                    "r97900-t2",
+                    "r97900-r4"
                   ],
                   "component": "Column",
                   "id": "root"
                 },
                 {
                   "component": "Text",
-                  "id": "r97900-t1",
-                  "text": "删掉会重建的缓存 1 项（腾出 62.9 MB）。"
+                  "id": "r97900-h1",
+                  "text": "7 项等你处理",
+                  "variant": "h4"
+                },
+                {
+                  "component": "Text",
+                  "id": "r97900-t2",
+                  "text": "已删掉会重建的缓存 1 项（腾出 62.9 MB）；另外 7 项在「螺壳扫描」里等你看。",
+                  "variant": "caption"
+                },
+                {
+                  "action": {
+                    "event": {
+                      "context": {
+                        "on": true
+                      },
+                      "name": "scan_autoclean"
+                    }
+                  },
+                  "child": "r97900-b3-text",
+                  "component": "Button",
+                  "id": "r97900-b3"
+                },
+                {
+                  "component": "Text",
+                  "id": "r97900-b3-text",
+                  "text": "打开自动清理"
+                },
+                {
+                  "children": [
+                    "r97900-b3"
+                  ],
+                  "component": "Row",
+                  "id": "r97900-r4"
                 }
               ],
               "surfaceId": "round-000000000001"
@@ -34,19 +68,19 @@
             "version": "v0.9"
           }
         ],
-        "done": true
+        "done": false
       }
     }
   },
   "request": {
-    "id": 10,
+    "id": 11,
     "jsonrpc": "2.0",
     "method": "tools/call",
     "params": {
       "_meta": {
         "ai.luoke/user-action": {
           "at": "2026-10-20T20:05:00+08:00",
-          "componentId": "b7",
+          "componentId": "b3",
           "surfaceId": "round-000000000001"
         },
         "io.modelcontextprotocol/clientCapabilities": {},
@@ -58,17 +92,8 @@
       },
       "arguments": {
         "choices": {
-          "i0": [
-            "keep"
-          ],
           "i1": [
             "remove"
-          ],
-          "i2": [
-            "keep"
-          ],
-          "i3": [
-            "keep"
           ]
         },
         "plan_id": "p-000000000002"

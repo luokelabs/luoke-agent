@@ -1,0 +1,100 @@
+{
+  "reply": {
+    "id": 9,
+    "jsonrpc": "2.0",
+    "result": {
+      "contents": [
+        {
+          "mimeType": "application/json",
+          "text": [
+            {
+              "createSurface": {
+                "catalogId": "ai.luoke/a2ui/agent/1",
+                "surfaceId": "people"
+              },
+              "version": "v0.9"
+            },
+            {
+              "updateComponents": {
+                "components": [
+                  {
+                    "children": [
+                      "h1",
+                      "t2",
+                      "t3",
+                      "r5"
+                    ],
+                    "component": "Column",
+                    "id": "root"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "h1",
+                    "text": "人",
+                    "variant": "h4"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "t2",
+                    "text": "你写信给的人，和你在发出的邮件里写到的人：同一个人的几种叫法、邮箱地址和关于这个人的事放在一起。人名会给语音输入当热词。改名、两个并成一个、拆开，在整份记忆里做。",
+                    "variant": "caption"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "t3",
+                    "text": "还没有。各应用用起来以后，记忆会从你发出的邮件里认出你常写信给的人。"
+                  },
+                  {
+                    "action": {
+                      "event": {
+                        "context": {
+                          "page": "people"
+                        },
+                        "name": "mem_open"
+                      }
+                    },
+                    "child": "b4-text",
+                    "component": "Button",
+                    "id": "b4"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "b4-text",
+                    "text": "在整份记忆里看"
+                  },
+                  {
+                    "children": [
+                      "b4"
+                    ],
+                    "component": "Row",
+                    "id": "r5"
+                  }
+                ],
+                "surfaceId": "people"
+              },
+              "version": "v0.9"
+            }
+          ],
+          "uri": "page/people"
+        }
+      ],
+      "resultType": "complete"
+    }
+  },
+  "request": {
+    "id": 9,
+    "jsonrpc": "2.0",
+    "method": "resources/read",
+    "params": {
+      "_meta": {
+        "io.modelcontextprotocol/clientCapabilities": {},
+        "io.modelcontextprotocol/clientInfo": {
+          "name": "luoke-agent",
+          "version": "fixtures"
+        },
+        "io.modelcontextprotocol/protocolVersion": "2026-07-28"
+      },
+      "uri": "page/people"
+    }
+  }
+}

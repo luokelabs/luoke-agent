@@ -2,6 +2,7 @@
 
 - 核心在窗口该看的那一刻问的，工具都录过答复；
 - 在核心交给窗口的卡片和页上点样例里录的那几下，核心发给工具的和工具录下的一样；
+- 卡片和页上的 `agent.open_page` 点了换到这个工具登记的页，参数照按钮写的，不交给工具；
 - 窗口的示例（window/Sources/LuokeWindow/Resources/samples）跟得上样例。
 
 不过就是两边对不上：看是工具改了（重新拷样例：scripts/sync-tool-fixtures.sh）还是核心改了。"""
@@ -19,7 +20,7 @@ import sys
 import time
 import unittest
 
-from luoke_agent import replay_tool
+from luoke_agent import a2ui, replay_tool
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SCENARIOS = replay_tool.scenarios(os.path.join(ROOT, "fixtures"))
@@ -92,10 +93,53 @@ class ToolFixturesTest(unittest.TestCase):
                         self.assertEqual(sent[0]["file"], rec["file"])
                         self.assertEqual(replay_tool.comparable(sent[0]["request"]), replay_tool.comparable(rec["request"]),
                                          "核心发给工具的和工具录下的不一样")
-                        self.assertFalse(r.get("error"), r.get("text"))
+                        # 工具录的就是一次拒绝（记忆：没勾「我知道删了找不回来」、改成的话里有密码），核心照样说没做成
+                        refused = bool(((rec.get("reply") or {}).get("result") or {}).get("isError"))
+                        self.assertEqual(bool(r.get("error")), refused, r.get("text"))
                         taps += 1
                     s.agent.poll()   # 点完以后核心再读一遍（runner 平时一分钟内会读）
         self.assertGreaterEqual(taps, 1)
+
+    def test_open_page_buttons_go_to_the_tools_own_pages(self):
+        """核心交给窗口的卡片和页上的 `agent.open_page`（工具协议 §5；带 `args` 的是 §4 pageArgs）：点了换到这个工具登记的那一页，
+        参数照按钮写的，不交给工具"""
+        opened, with_args = 0, 0
+        for sc in SCENARIOS:
+            s = self.session(sc)
+            with contextlib.redirect_stderr(io.StringIO()):
+                s.run()
+                s.snapshot()            # 每一页都取一遍：页上的按钮也点得到
+            pages = {p["id"] for p in s.source.service["pages"]}
+            shown = [(sid, surface) for sid, (_key, surface) in s.agent.surfaces.items()] + \
+                    [(sid, surface) for sid, (_app, _page, surface) in s.agent.pages.items()]
+            for sid, surface in shown:
+                for cid in sorted(surface.components):
+                    try:
+                        event, ctx = surface.button_event(cid)
+                    except a2ui.CardError:
+                        continue        # 不是按钮，或不在画着的那一棵树上
+                    if event != "agent.open_page":
+                        continue
+                    with self.subTest(f"{name(sc)} {sid} {cid}"):
+                        before = len(s.replay.served)
+                        r = s.agent.tap(sid, cid, {})
+                        self.assertFalse(r.get("error"), r.get("text"))
+                        self.assertIn(ctx.get("page"), pages, "开的是这个工具登记的页")
+                        args = ctx.get("args") or {}
+                        want = {"app": s.app, "page": ctx["page"]}
+                        if args:
+                            if all(isinstance(v, str) for v in args.values()):
+                                want["args"] = args
+                            else:       # 有取数据模型的值（{"path": …}）：只比键
+                                self.assertEqual(sorted(r.get("page", {}).get("args", {})), sorted(args))
+                                want["args"] = r["page"]["args"]
+                        self.assertEqual(r.get("page"), want)
+                        self.assertEqual([x["file"] for x in s.replay.served[before:]
+                                          if x["request"].get("method") == "tools/call"], [], "核心自己换页，不交给工具")
+                        opened += 1
+                        with_args += bool(args)
+        self.assertGreaterEqual(opened, 1)
+        self.assertGreaterEqual(with_args, 1, "样例里有带参数的（邮件助手只讲一封的卡片上的「在邮件助手里看」）")
 
     def test_window_samples_are_current(self):
         r = subprocess.run([sys.executable, "-B", os.path.join(ROOT, "scripts", "window_samples.py"), "--check"],

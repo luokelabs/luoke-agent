@@ -20,6 +20,7 @@ struct AskLayer: View {
                 if model.askOpen, let a = model.answer { AnswerPanel(answer: a, model: model) }
                 Pill(model: model)
             }
+            .padding(.horizontal, LKSpace.x6)
             .padding(.bottom, 18)
         }
     }
@@ -32,7 +33,7 @@ struct Pill: View {
     var body: some View {
         Button { if model.askOpen { model.closeAsk() } else { model.openAsk() } } label: {
             HStack(spacing: 8) {
-                Image(systemName: "sparkle").font(.system(size: 14)).foregroundStyle(p.mutedFg)
+                LKIcon("sparkle", size: 16).foregroundStyle(p.mutedFg)
                 if let chip = chipText {
                     Text(chip).font(LKFont.ui(LKType.caption)).padding(.horizontal, 8).frame(height: 26)
                         .background(RoundedRectangle(cornerRadius: LKRadius.control, style: .continuous).fill(p.muted))
@@ -42,11 +43,11 @@ struct Pill: View {
                     .lineLimit(1)
                 Spacer(minLength: 8)
                 Kbd(text: "⌘K")
-                Image(systemName: "arrow.up").font(.system(size: 12, weight: .semibold)).foregroundStyle(p.mutedFg)
+                LKIcon("arrow-up", size: 14).foregroundStyle(p.mutedFg)
                     .frame(width: 30, height: 30).background(RoundedRectangle(cornerRadius: LKRadius.control, style: .continuous).fill(p.muted))
             }
             .padding(EdgeInsets(top: 6, leading: 14, bottom: 6, trailing: 6))
-            .frame(width: 640, height: 48)
+            .frame(maxWidth: 640, minHeight: 48, maxHeight: 48)   // 最小窗口里内容区比 640 窄：跟着收
             .background(RoundedRectangle(cornerRadius: LKRadius.sheet, style: .continuous).fill(p.card))
             .overlay(RoundedRectangle(cornerRadius: LKRadius.sheet, style: .continuous).strokeBorder(p.input, lineWidth: 1))
             .shadow(color: .black.opacity(0.1), radius: 12, y: 6)
@@ -61,7 +62,7 @@ struct Pill: View {
     private var chipText: String? {
         switch model.page {
         case .today: return model.askContext
-        case .mail, .scan, .mem, .searchApp, .search, .activity, .prefs, .apps: return model.askContext ?? model.page.title
+        case .mail, .scan, .mem, .searchApp, .ime, .search, .activity, .prefs, .apps: return model.askContext ?? model.page.title
         case .chat: return nil
         }
     }
@@ -75,7 +76,7 @@ struct AnswerPanel: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
             HStack(spacing: 8) {
-                Image(systemName: "person").font(.system(size: 12))
+                LKIcon("user", size: 14)
                 Text(answer.question).lineLimit(1)
                 Spacer()
             }
@@ -109,14 +110,14 @@ struct AnswerPanel: View {
             HStack(spacing: 6) {
                 Spacer()
                 if model.page == .today || !answer.rows.isEmpty {
-                    Button { model.go(.search) } label: { IconText("搜索结果", symbol: "magnifyingglass") }.buttonStyle(LKButtonStyle(kind: .text))
+                    Button { model.go(.search) } label: { IconText("搜索结果", symbol: "search") }.buttonStyle(LKButtonStyle(kind: .text))
                 }
                 Button { model.pinAnswer() } label: { IconText("钉到今天", symbol: "pin") }.buttonStyle(LKButtonStyle(kind: .text))
-                Button { model.expandAnswer() } label: { IconText("展开", symbol: "arrow.up.left.and.arrow.down.right") }.buttonStyle(LKButtonStyle(kind: .text))
+                Button { model.expandAnswer() } label: { IconText("展开", symbol: "maximize-2") }.buttonStyle(LKButtonStyle(kind: .text))
             }
         }
         .padding(14)
-        .frame(width: 640, alignment: .leading)
+        .frame(maxWidth: 640, alignment: .leading)
         .background(RoundedRectangle(cornerRadius: LKRadius.sheet, style: .continuous).fill(p.card.opacity(0.97)))
         .overlay(RoundedRectangle(cornerRadius: LKRadius.sheet, style: .continuous).strokeBorder(p.border, lineWidth: 1))
         .shadow(color: .black.opacity(0.18), radius: 25, y: 12)

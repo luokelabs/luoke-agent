@@ -5,6 +5,7 @@ import collections
 import hashlib
 import http.client
 import json
+import math
 import os
 import re
 import socket
@@ -14,8 +15,8 @@ import time
 from typing import Any, Callable, Dict, List, Optional, Set
 
 from . import __version__, a2ui, apps, cards
-from .items import RANK, URGENCY, Item, tool_surface_id
-from .mcp import NotRunning, RpcError, TimedOut, ToolClient
+from .items import RANK, UNREAD, URGENCY, Item, tool_surface_id
+from .mcp import BAD_TOKEN, NotRunning, RpcError, TimedOut, ToolClient
 from .safety import refuse_real
 
 HUB_CONTRACT = 1
@@ -31,8 +32,34 @@ class HubRefused(Exception):
     """主控不认这个版本的 agent（配方的已验证版本里没有）。"""
 
 
+class HubNotReady(Exception):
+    """主控在，还没准备好：答 503（启动时 `busy`、退出时 `engine_failed`，luoke-core V1 §2）。
+    `retry_after` 是主控说的多久以后再来（秒）；没说是 None。"""
+
+    def __init__(self, path: str, retry_after: Optional[float] = None):
+        super().__init__(path)
+        self.retry_after = retry_after
+
+
+def _retry_after(body: bytes, header: Optional[str]) -> Optional[float]:
+    """拒绝的答复里主控说的多久以后再来：正文的 `retry_after`（秒），没有就看 `Retry-After` 头。认不出是 None。"""
+    try:
+        data = json.loads(body)
+    except ValueError:
+        data = None
+    for v in ((data.get("retry_after") if isinstance(data, dict) else None), header):
+        try:
+            got = float(v) if v is not None and not isinstance(v, bool) else None
+        except (TypeError, ValueError):
+            got = None
+        if got is not None and math.isfinite(got) and got > 0:
+            return got
+    return None
+
+
 def hub_get(hub_socket: str, path: str, *, timeout: float = 5.0) -> Optional[dict]:
-    """GET 主控的一个接口，答 200 的 JSON 对象；主控没在运行、答别的返回 None。"""
+    """GET 主控的一个接口，答 200 的 JSON 对象；主控没在运行、答别的返回 None。
+    不认这个版本抛 HubRefused；答 503（还在启动、正在退出）抛 HubNotReady，带上主控说的多久以后再来。"""
     refuse_real(hub_socket, "主控")
     conn = http.client.HTTPConnection("localhost", timeout=timeout)
     s = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
@@ -55,6 +82,8 @@ def hub_get(hub_socket: str, path: str, *, timeout: float = 5.0) -> Optional[dic
         print(f"luoke-agent: 主控 {path} 答 {resp.status}", file=sys.stderr)
         if b"unknown_accessory" in body:
             raise HubRefused(path)
+        if resp.status == 503:
+            raise HubNotReady(path, _retry_after(body, resp.getheader("Retry-After")))
         return None
     try:
         data = json.loads(body)
@@ -74,6 +103,8 @@ def hub_luoke_mem(hub_socket: str, *, tries: int = 3, wait: float = 2.0) -> Opti
             data = hub_get(hub_socket, "/tasks")
         except HubRefused:
             return None
+        except HubNotReady:
+            data = None
         if data is not None:
             break
     lm = (data or {}).get("luoke_mem")
@@ -83,7 +114,8 @@ def hub_luoke_mem(hub_socket: str, *, tries: int = 3, wait: float = 2.0) -> Opti
 
 def discover(hub_socket: str, *, timeout: float = 5.0, home: Optional[str] = None,
              stdio: bool = False) -> Optional[List[dict]]:
-    """问主控装了哪些工具（luoke-core V1 §8 `GET /accessories`）。主控没在运行返回 None，不认这个版本抛 HubRefused。
+    """问主控装了哪些工具（luoke-core V1 §8 `GET /accessories`）。主控没在运行返回 None，不认这个版本抛 HubRefused，
+    还没准备好（启动时答 503）抛 HubNotReady。
 
     只要声明了本协议（`capabilities.protocol == 1`，有 socket，或 `transport: "stdio"`）的，返回 `{accessory, name, socket,
     transport, reports, service, permissions}`（后两样是清单原样的，ToolSource 再认）。`stdio`：这个核心有本体给的通道
@@ -206,7 +238,7 @@ def accessories(data: dict, *, home: Optional[str] = None, stdio: bool = False) 
 
 
 class ToolSource:
-    """一个工具。`poll` 读 outbox（没在运行返回 None），`handle` 转点按。
+    """一个工具。`poll` 读 outbox（没在运行返回 None，答了错误返回 UNREAD），`handle` 转点按。
 
     也是窗口上的一个「应用」（docs/界面接口.md §6、§10）：清单的 `service`、`permissions`，工具报的概览
     （`summary`）和权限状态（`perm_states`），以及它在 outbox 里要了哪几项权限（`asking`，`needs-access` 的 `permission`）。
@@ -216,8 +248,9 @@ class ToolSource:
     def __init__(self, accessory: str, socket_path: str, *, name: Optional[str] = None,
                  reports: Optional[List[dict]] = None, service: Any = None, permissions: Any = None,
                  socket_dirs: Optional[List[str]] = None, home: Optional[str] = None,
-                 opener: Optional[Callable[[], socket.socket]] = None):
-        """`opener`：连接不是连 socket，而是每个请求向它要一条（本体给的、或开发时自己起的，hostlink.py）；
+                 opener: Optional[Callable[[], socket.socket]] = None,
+                 token: Optional[Callable[[bool], Optional[str]]] = None):
+        """`token`：工具要的口令从哪儿拿（hostlink.HostToken.get，ToolClient 带在每个请求里）。`opener`：连接不是连 socket，而是每个请求向它要一条（本体给的、或开发时自己起的，hostlink.py）；
         这时 `socket_path` 只是个名字（`stdio:<配件>`、`exec:<配件>`）。"""
         if opener is None:
             refuse_real(socket_path, "工具")
@@ -232,7 +265,7 @@ class ToolSource:
         self._socket_dirs = socket_dirs
         self._home = home or os.path.expanduser("~")
         self._socket_said: Optional[str] = None
-        self.client = ToolClient(socket_path, client_version=__version__, opener=opener,
+        self.client = ToolClient(socket_path, client_version=__version__, opener=opener, token=token,
                                  check=self._socket_ok if socket_dirs is not None and opener is None else None)
         self.read_only: Dict[str, bool] = {}
         self.running = False
@@ -270,17 +303,26 @@ class ToolSource:
                               for t in self.client.list_tools() if isinstance(t.get("name"), str)}
         return self.read_only
 
-    def poll(self, now: float) -> Optional[List[Item]]:
+    def poll(self, now: float) -> Any:
+        """这一轮的事（`[Item]`）；没在运行是 None；答了错误是 UNREAD。"""
+        what = "outbox"
         try:
             raw = self.client.outbox(self.source)
+            what = "工具列表"
             self._tools()
-        except NotRunning:
+        except NotRunning:          # 口令重新要过还不对，ToolClient 也当成这个（§2「口令」）
             self._down()
             return None
         except RpcError as e:
-            print(f"luoke-agent: {self.source} 的 outbox 读不了（{e.code}）", file=sys.stderr)
-            self._down()
-            return None
+            print(f"luoke-agent: {self.source} 的{what}读不了（{e.code}）", file=sys.stderr)
+            if e.code == BAD_TOKEN:  # 要口令，却没处要（§2「口令」）：照旧当它没在运行
+                self._down()
+                return None
+            # 答了错误不算没在运行（§2）：这一轮没读到。上一轮的事不撤、不新加，outbox 里要的权限也照上一轮的；
+            # 概览、权限状态照它们自己读到的
+            self.running = True
+            self.refresh_app()
+            return UNREAD if self.running else None
         self.running = True
         self.asking = {r["permission"] for r in raw if r.get("kind") == "needs-access" and isinstance(r.get("permission"), str)}
         self.refresh_app()
@@ -309,15 +351,23 @@ class ToolSource:
     def _read(self, uri: str, parse: Any) -> Any:
         try:
             value = parse(self.client.read_json(uri))
-        except RpcError as e:
-            print(f"luoke-agent: {self.source} 的 {uri} 读不了（{e.code}）", file=sys.stderr)
+        except RpcError as e:      # 只记资源本身，不记查询串（带参数读的页，参数里是用户填的字；工具协议 §1a）
+            print(f"luoke-agent: {self.source} 的 {uri.split('?', 1)[0]} 读不了（{e.code}）", file=sys.stderr)
             return None
         self.running = True
         return value
 
-    def read_page(self, page: str) -> Any:
-        """基础页 `page/<id>` 的 A2UI 消息（没查过）。没在运行抛 NotRunning，读不了抛 RpcError。"""
-        return self.client.read_json(f"page/{page}")
+    def read_page(self, page: str, args: Optional[Dict[str, str]] = None) -> Any:
+        """基础页 `page/<id>` 的 A2UI 消息（没查过）。`args`：带参数读（`page/<id>?<键>=<值>&…`，§4 pageArgs），
+        已经核过形状。没在运行抛 NotRunning，读不了抛 RpcError。"""
+        return self.client.read_json(a2ui.page_uri(page, args))
+
+    def tool_names(self, want: Any = ()) -> Set[str]:
+        """这个工具 `tools/list` 里的名字；`want` 里有没列过的，重新列一次（工具升过级）。"""
+        tools = self._tools()
+        if not set(want) <= set(tools):
+            tools = self._tools(refresh=True)
+        return set(tools)
 
     def search(self, query: str, limit: int) -> Any:
         """问一次清单 `service.ask.search` 写的工具（docs/界面接口.md §7）。只读，不带 user_action。
@@ -362,7 +412,7 @@ class ToolSource:
         return self.call(tool_surface_id(item.card), name, ctx, user_action)
 
     def call(self, surface: str, name: str, ctx: dict, user_action: dict, *, write: Optional[bool] = None) -> Dict[str, Any]:
-        """转一次用户的点按：卡片、基础页（`surface` 是页 id）、权限页和「打开完整界面」。
+        """转一次用户的点按：卡片、基础页（`surface` 是页 id）、权限页和打开工具自己的界面（`POST /open`）。
         `write`：不按工具的 readOnlyHint，直接定带不带 user_action（权限的开关、申请、移除照协议 §1a 都是写入）。"""
         try:
             tools = self._tools()
@@ -385,6 +435,12 @@ class ToolSource:
             out["card"] = result.card
         if result.code:
             out["code"] = result.code
+        if "file" in result.structured and not result.is_error:   # 存文件（§4 saveFile）：形状对才交给窗口
+            f = a2ui.save_file(result.structured["file"])
+            if f is not None:
+                out["file"] = f
+            else:
+                print(f"luoke-agent: {self.source} 的 {name} 答复里的文件交不了（形状不对或太大）", file=sys.stderr)
         return out
 
     def ack(self, item: Item, state: str) -> None:

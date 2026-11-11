@@ -1,0 +1,45 @@
+{
+  "reply": {
+    "id": 12,
+    "jsonrpc": "2.0",
+    "result": {
+      "content": [
+        {
+          "text": "记忆不保存密码、验证码和证件号码，改一下再点。",
+          "type": "text"
+        }
+      ],
+      "isError": true,
+      "resultType": "complete",
+      "structuredContent": {
+        "code": "invalid"
+      }
+    }
+  },
+  "request": {
+    "id": 12,
+    "jsonrpc": "2.0",
+    "method": "tools/call",
+    "params": {
+      "_meta": {
+        "ai.luoke/user-action": {
+          "at": "2026-11-06T10:06:00+08:00",
+          "componentId": "b9",
+          "surfaceId": "ask-2"
+        },
+        "io.modelcontextprotocol/clientCapabilities": {},
+        "io.modelcontextprotocol/clientInfo": {
+          "name": "luoke-agent",
+          "version": "fixtures"
+        },
+        "io.modelcontextprotocol/protocolVersion": "2026-07-28"
+      },
+      "arguments": {
+        "ask": 2,
+        "choice": "revise",
+        "text": "在读博士，验证码 834921"
+      },
+      "name": "mem_reply"
+    }
+  }
+}

@@ -1,0 +1,568 @@
+{
+  "reply": {
+    "id": 8,
+    "jsonrpc": "2.0",
+    "result": {
+      "contents": [
+        {
+          "mimeType": "application/json",
+          "text": [
+            {
+              "createSurface": {
+                "catalogId": "ai.luoke/a2ui/agent/1",
+                "surfaceId": "kept"
+              },
+              "version": "v0.9"
+            },
+            {
+              "updateComponents": {
+                "components": [
+                  {
+                    "children": [
+                      "h1",
+                      "t2",
+                      "k-sure",
+                      "t3",
+                      "t4",
+                      "r7",
+                      "t8",
+                      "t9",
+                      "r12",
+                      "t13",
+                      "t14",
+                      "r17",
+                      "t18",
+                      "t19",
+                      "r22",
+                      "t23",
+                      "t24",
+                      "r27",
+                      "t28",
+                      "t29",
+                      "r32",
+                      "t33",
+                      "t34",
+                      "r37",
+                      "r39"
+                    ],
+                    "component": "Column",
+                    "id": "root"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "h1",
+                    "text": "记下的",
+                    "variant": "h4"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "t2",
+                    "text": "螺壳的工具会用这些。不对的点「不对」，以后不再提；「忘掉」连它的依据一起删掉，删了找不回来。",
+                    "variant": "caption"
+                  },
+                  {
+                    "component": "CheckBox",
+                    "id": "k-sure",
+                    "label": "我知道删了找不回来",
+                    "value": {
+                      "path": "/checks/sure"
+                    }
+                  },
+                  {
+                    "component": "Text",
+                    "id": "t3",
+                    "text": "林晓"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "t4",
+                    "text": "常用说法 · 依据 2 条 · 11月5日",
+                    "variant": "caption"
+                  },
+                  {
+                    "action": {
+                      "event": {
+                        "context": {
+                          "note": 8,
+                          "op": "reject"
+                        },
+                        "name": "mem_note"
+                      }
+                    },
+                    "child": "b5-text",
+                    "component": "Button",
+                    "id": "b5",
+                    "variant": "borderless"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "b5-text",
+                    "text": "不对"
+                  },
+                  {
+                    "action": {
+                      "event": {
+                        "context": {
+                          "note": 8,
+                          "op": "forget",
+                          "sure": {
+                            "path": "/checks/sure"
+                          }
+                        },
+                        "name": "mem_note"
+                      }
+                    },
+                    "child": "b6-text",
+                    "component": "Button",
+                    "id": "b6",
+                    "variant": "borderless"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "b6-text",
+                    "text": "忘掉"
+                  },
+                  {
+                    "children": [
+                      "b5",
+                      "b6"
+                    ],
+                    "component": "Row",
+                    "id": "r7"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "t8",
+                    "text": "Lei Wang"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "t9",
+                    "text": "常用说法 · 依据 6 条 · 11月5日",
+                    "variant": "caption"
+                  },
+                  {
+                    "action": {
+                      "event": {
+                        "context": {
+                          "note": 7,
+                          "op": "reject"
+                        },
+                        "name": "mem_note"
+                      }
+                    },
+                    "child": "b10-text",
+                    "component": "Button",
+                    "id": "b10",
+                    "variant": "borderless"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "b10-text",
+                    "text": "不对"
+                  },
+                  {
+                    "action": {
+                      "event": {
+                        "context": {
+                          "note": 7,
+                          "op": "forget",
+                          "sure": {
+                            "path": "/checks/sure"
+                          }
+                        },
+                        "name": "mem_note"
+                      }
+                    },
+                    "child": "b11-text",
+                    "component": "Button",
+                    "id": "b11",
+                    "variant": "borderless"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "b11-text",
+                    "text": "忘掉"
+                  },
+                  {
+                    "children": [
+                      "b10",
+                      "b11"
+                    ],
+                    "component": "Row",
+                    "id": "r12"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "t13",
+                    "text": "Wang Lei"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "t14",
+                    "text": "常用说法 · 依据 6 条 · 11月5日",
+                    "variant": "caption"
+                  },
+                  {
+                    "action": {
+                      "event": {
+                        "context": {
+                          "note": 6,
+                          "op": "reject"
+                        },
+                        "name": "mem_note"
+                      }
+                    },
+                    "child": "b15-text",
+                    "component": "Button",
+                    "id": "b15",
+                    "variant": "borderless"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "b15-text",
+                    "text": "不对"
+                  },
+                  {
+                    "action": {
+                      "event": {
+                        "context": {
+                          "note": 6,
+                          "op": "forget",
+                          "sure": {
+                            "path": "/checks/sure"
+                          }
+                        },
+                        "name": "mem_note"
+                      }
+                    },
+                    "child": "b16-text",
+                    "component": "Button",
+                    "id": "b16",
+                    "variant": "borderless"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "b16-text",
+                    "text": "忘掉"
+                  },
+                  {
+                    "children": [
+                      "b15",
+                      "b16"
+                    ],
+                    "component": "Row",
+                    "id": "r17"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "t18",
+                    "text": "王磊"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "t19",
+                    "text": "常用说法 · 依据 6 条 · 11月5日",
+                    "variant": "caption"
+                  },
+                  {
+                    "action": {
+                      "event": {
+                        "context": {
+                          "note": 5,
+                          "op": "reject"
+                        },
+                        "name": "mem_note"
+                      }
+                    },
+                    "child": "b20-text",
+                    "component": "Button",
+                    "id": "b20",
+                    "variant": "borderless"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "b20-text",
+                    "text": "不对"
+                  },
+                  {
+                    "action": {
+                      "event": {
+                        "context": {
+                          "note": 5,
+                          "op": "forget",
+                          "sure": {
+                            "path": "/checks/sure"
+                          }
+                        },
+                        "name": "mem_note"
+                      }
+                    },
+                    "child": "b21-text",
+                    "component": "Button",
+                    "id": "b21",
+                    "variant": "borderless"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "b21-text",
+                    "text": "忘掉"
+                  },
+                  {
+                    "children": [
+                      "b20",
+                      "b21"
+                    ],
+                    "component": "Row",
+                    "id": "r22"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "t23",
+                    "text": "合作方：Wang Lei（wanglei@corp.example）"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "t24",
+                    "text": "关于你 · 依据 2 条 · 11月5日",
+                    "variant": "caption"
+                  },
+                  {
+                    "action": {
+                      "event": {
+                        "context": {
+                          "note": 2,
+                          "op": "reject"
+                        },
+                        "name": "mem_note"
+                      }
+                    },
+                    "child": "b25-text",
+                    "component": "Button",
+                    "id": "b25",
+                    "variant": "borderless"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "b25-text",
+                    "text": "不对"
+                  },
+                  {
+                    "action": {
+                      "event": {
+                        "context": {
+                          "note": 2,
+                          "op": "forget",
+                          "sure": {
+                            "path": "/checks/sure"
+                          }
+                        },
+                        "name": "mem_note"
+                      }
+                    },
+                    "child": "b26-text",
+                    "component": "Button",
+                    "id": "b26",
+                    "variant": "borderless"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "b26-text",
+                    "text": "忘掉"
+                  },
+                  {
+                    "children": [
+                      "b25",
+                      "b26"
+                    ],
+                    "component": "Row",
+                    "id": "r27"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "t28",
+                    "text": "同事：王磊（wanglei@corp.example）"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "t29",
+                    "text": "关于你 · 依据 2 条 · 11月5日",
+                    "variant": "caption"
+                  },
+                  {
+                    "action": {
+                      "event": {
+                        "context": {
+                          "note": 1,
+                          "op": "reject"
+                        },
+                        "name": "mem_note"
+                      }
+                    },
+                    "child": "b30-text",
+                    "component": "Button",
+                    "id": "b30",
+                    "variant": "borderless"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "b30-text",
+                    "text": "不对"
+                  },
+                  {
+                    "action": {
+                      "event": {
+                        "context": {
+                          "note": 1,
+                          "op": "forget",
+                          "sure": {
+                            "path": "/checks/sure"
+                          }
+                        },
+                        "name": "mem_note"
+                      }
+                    },
+                    "child": "b31-text",
+                    "component": "Button",
+                    "id": "b31",
+                    "variant": "borderless"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "b31-text",
+                    "text": "忘掉"
+                  },
+                  {
+                    "children": [
+                      "b30",
+                      "b31"
+                    ],
+                    "component": "Row",
+                    "id": "r32"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "t33",
+                    "text": "主控"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "t34",
+                    "text": "常用说法 · 依据 1 条 · 11月3日",
+                    "variant": "caption"
+                  },
+                  {
+                    "action": {
+                      "event": {
+                        "context": {
+                          "note": 4,
+                          "op": "reject"
+                        },
+                        "name": "mem_note"
+                      }
+                    },
+                    "child": "b35-text",
+                    "component": "Button",
+                    "id": "b35",
+                    "variant": "borderless"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "b35-text",
+                    "text": "不对"
+                  },
+                  {
+                    "action": {
+                      "event": {
+                        "context": {
+                          "note": 4,
+                          "op": "forget",
+                          "sure": {
+                            "path": "/checks/sure"
+                          }
+                        },
+                        "name": "mem_note"
+                      }
+                    },
+                    "child": "b36-text",
+                    "component": "Button",
+                    "id": "b36",
+                    "variant": "borderless"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "b36-text",
+                    "text": "忘掉"
+                  },
+                  {
+                    "children": [
+                      "b35",
+                      "b36"
+                    ],
+                    "component": "Row",
+                    "id": "r37"
+                  },
+                  {
+                    "action": {
+                      "event": {
+                        "context": {},
+                        "name": "mem_open"
+                      }
+                    },
+                    "child": "b38-text",
+                    "component": "Button",
+                    "id": "b38"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "b38-text",
+                    "text": "打开整份记忆"
+                  },
+                  {
+                    "children": [
+                      "b38"
+                    ],
+                    "component": "Row",
+                    "id": "r39"
+                  }
+                ],
+                "surfaceId": "kept"
+              },
+              "version": "v0.9"
+            },
+            {
+              "updateDataModel": {
+                "path": "/",
+                "surfaceId": "kept",
+                "value": {
+                  "checks": {
+                    "sure": false
+                  }
+                }
+              },
+              "version": "v0.9"
+            }
+          ],
+          "uri": "page/kept"
+        }
+      ],
+      "resultType": "complete"
+    }
+  },
+  "request": {
+    "id": 8,
+    "jsonrpc": "2.0",
+    "method": "resources/read",
+    "params": {
+      "_meta": {
+        "io.modelcontextprotocol/clientCapabilities": {},
+        "io.modelcontextprotocol/clientInfo": {
+          "name": "luoke-agent",
+          "version": "fixtures"
+        },
+        "io.modelcontextprotocol/protocolVersion": "2026-07-28"
+      },
+      "uri": "page/kept"
+    }
+  }
+}

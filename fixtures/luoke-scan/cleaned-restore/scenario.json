@@ -19,7 +19,7 @@
       "删掉了 ~/Library/Containers/ABCDE12345.io.example.removed"
     ],
     "fixture": [
-      "blackbox/fx.py 造的假目录：blackbox/cases/base.py 的 `build`（照单元测试的 Fixture.build 摆），fakes.json 是 `fx.standard_fakes`（和单元测试的 Fixture.Fakes.standard 一样）",
+      "blackbox/fx.py 造的假目录：blackbox/cases/base.py 的 `build`（照单元测试的 Fixture.build 摆），fakes.json 是 `fx.standard_fakes`（和单元测试的 Fixture.Fakes.standard 一样），另加一块 494 GB、还剩 182 GB 的硬盘",
       "luoke-scan update --data $FIXTURE/data --tool-dir $FIXTURE/tools --force（假的 freshclam，daily 27000，库文件的时间 2026-10-20T01:00:00Z）",
       "luoke-scan scan --fixture $FIXTURE --clock 2026-10-17T12:00:00Z（3 天前查过一轮：pip 的缓存还是空的）"
     ],
@@ -27,36 +27,61 @@
     "tz": "Asia/Shanghai",
     "user_action_at": "点按时的 at 是那一步的时钟，按 Asia/Shanghai 写"
   },
-  "situation": "用户在一轮的卡片上把临时文件夹也改成移到废纸篓，点了「按这个处理」：pip 的缓存删掉了（放不回，工具会重建），25 个临时文件夹进了废纸篓。一小时后打开扫描的「清理记录」页，那一批有「放回」；点了以后整批回到原处。",
+  "situation": "用户在扫描页上把临时文件夹改成移到废纸篓，点了「按上面的选择清理」：25 个临时文件夹进了废纸篓（缓存有自己的「清理」，这一下不动它）。一小时后打开扫描的「清理记录」页，那一批有「放回」；点了以后整批回到原处。",
   "steps": [
     {
       "clock": "2026-10-20T12:00:00Z",
       "do": "查一轮（agent 叫的那种，只读、不自动清）：luoke-scan scan --fixture $FIXTURE --clock 2026-10-20T12:00:00Z --for-agent"
     },
     {
-      "clock": "2026-10-20T12:00:00Z",
-      "do": "读 outbox（一轮的卡片上有三项的方案）",
-      "file": "read-outbox-before.json"
-    },
-    {
       "clock": "2026-10-20T12:05:00Z",
-      "do": "用户把「临时目录里有 25 个 wings-*」也改成移到废纸篓，点「按这个处理」",
-      "file": "call-scan_apply.json"
-    },
-    {
-      "clock": "2026-10-20T13:00:00Z",
       "do": "server/discover",
       "file": "server-discover.json"
     },
     {
-      "clock": "2026-10-20T13:00:00Z",
+      "clock": "2026-10-20T12:05:00Z",
       "do": "列工具（agent 认 readOnlyHint）",
       "file": "tools-list.json"
     },
     {
-      "clock": "2026-10-20T13:00:00Z",
+      "clock": "2026-10-20T12:05:00Z",
       "do": "列资源",
       "file": "resources-list.json"
+    },
+    {
+      "clock": "2026-10-20T12:05:00Z",
+      "do": "读 outbox（每分钟一次）",
+      "file": "read-outbox-before.json"
+    },
+    {
+      "clock": "2026-10-20T12:05:00Z",
+      "do": "读概览（侧栏的计数和一句话）",
+      "file": "read-summary-before.json"
+    },
+    {
+      "clock": "2026-10-20T12:05:00Z",
+      "do": "读权限的状态",
+      "file": "read-permissions-before.json"
+    },
+    {
+      "clock": "2026-10-20T12:05:00Z",
+      "do": "读基础页 page/overview",
+      "file": "read-page-overview-before.json"
+    },
+    {
+      "clock": "2026-10-20T12:05:00Z",
+      "do": "读基础页 page/mac",
+      "file": "read-page-mac-before.json"
+    },
+    {
+      "clock": "2026-10-20T12:05:00Z",
+      "do": "读基础页 page/cleaned",
+      "file": "read-page-cleaned-before.json"
+    },
+    {
+      "clock": "2026-10-20T12:05:00Z",
+      "do": "用户在扫描页上把临时文件夹改成移到废纸篓，点「按上面的选择清理」",
+      "file": "call-scan_apply.json"
     },
     {
       "clock": "2026-10-20T13:00:00Z",
@@ -77,6 +102,11 @@
       "clock": "2026-10-20T13:00:00Z",
       "do": "读基础页 page/overview",
       "file": "read-page-overview.json"
+    },
+    {
+      "clock": "2026-10-20T13:00:00Z",
+      "do": "读基础页 page/mac",
+      "file": "read-page-mac.json"
     },
     {
       "clock": "2026-10-20T13:00:00Z",

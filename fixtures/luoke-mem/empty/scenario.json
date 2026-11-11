@@ -1,0 +1,69 @@
+{
+  "id": "empty",
+  "normalised": {
+    "resources/read": "contents[0].text 解开成了 JSON 值；线上是 JSON 文字"
+  },
+  "produced": {
+    "mcp": "python3 -m luoke_mem --path <假记忆> mcp --clock <那一步的时钟>：一个请求一个进程",
+    "seed": [
+      "没有记忆文件：还没有应用往记忆里写过东西（mcp 不替它建一个）"
+    ],
+    "tz": "Asia/Shanghai",
+    "user_action_at": "点按时的 at 是那一步的时钟，按 Asia/Shanghai 写"
+  },
+  "situation": "刚装好螺壳，还没有应用往记忆里写过东西：记忆文件还不存在。",
+  "steps": [
+    {
+      "clock": "2026-11-06T10:00:00",
+      "do": "server/discover",
+      "file": "server-discover.json"
+    },
+    {
+      "clock": "2026-11-06T10:00:00",
+      "do": "列工具（agent 认 readOnlyHint）",
+      "file": "tools-list.json"
+    },
+    {
+      "clock": "2026-11-06T10:00:00",
+      "do": "列资源",
+      "file": "resources-list.json"
+    },
+    {
+      "clock": "2026-11-06T10:00:00",
+      "do": "读 outbox（每分钟一次）",
+      "file": "read-outbox.json"
+    },
+    {
+      "clock": "2026-11-06T10:00:00",
+      "do": "读概览（侧栏的计数和一句话）",
+      "file": "read-summary.json"
+    },
+    {
+      "clock": "2026-11-06T10:00:00",
+      "do": "打开应用页的「overview」",
+      "file": "read-page-overview.json"
+    },
+    {
+      "clock": "2026-11-06T10:00:00",
+      "do": "打开应用页的「guesses」",
+      "file": "read-page-guesses.json"
+    },
+    {
+      "clock": "2026-11-06T10:00:00",
+      "do": "打开应用页的「kept」",
+      "file": "read-page-kept.json"
+    },
+    {
+      "clock": "2026-11-06T10:00:00",
+      "do": "打开应用页的「people」",
+      "file": "read-page-people.json"
+    },
+    {
+      "clock": "2026-11-06T10:00:00",
+      "do": "打开应用页的「sources」",
+      "file": "read-page-sources.json"
+    }
+  ],
+  "title": "刚装好，记忆是空的",
+  "window": "侧栏「螺壳记忆」不带计数；五页都只有标题和一句「还没有……」；「今天」里没有记忆的卡片。"
+}

@@ -1,0 +1,83 @@
+{
+  "reply": {
+    "id": 10,
+    "jsonrpc": "2.0",
+    "result": {
+      "content": [
+        {
+          "text": "删掉会重建的缓存 2 项（腾出 119.5 MB），部分处理了 1 项。Xcode 的缓存：未删完，1 个文件已锁定，剩 1 MB。",
+          "type": "text"
+        }
+      ],
+      "isError": false,
+      "resultType": "complete",
+      "structuredContent": {
+        "card": [
+          {
+            "updateComponents": {
+              "components": [
+                {
+                  "children": [
+                    "r97900-t1",
+                    "r97900-t2"
+                  ],
+                  "component": "Column",
+                  "id": "root"
+                },
+                {
+                  "component": "Text",
+                  "id": "r97900-t1",
+                  "text": "删掉会重建的缓存 2 项（腾出 119.5 MB），部分处理了 1 项。"
+                },
+                {
+                  "component": "Text",
+                  "id": "r97900-t2",
+                  "text": "Xcode 的缓存：未删完，1 个文件已锁定，剩 1 MB",
+                  "variant": "caption"
+                }
+              ],
+              "surfaceId": "overview"
+            },
+            "version": "v0.9"
+          }
+        ],
+        "done": false
+      }
+    }
+  },
+  "request": {
+    "id": 10,
+    "jsonrpc": "2.0",
+    "method": "tools/call",
+    "params": {
+      "_meta": {
+        "ai.luoke/user-action": {
+          "at": "2026-10-20T20:05:00+08:00",
+          "componentId": "b31",
+          "surfaceId": "overview"
+        },
+        "io.modelcontextprotocol/clientCapabilities": {},
+        "io.modelcontextprotocol/clientInfo": {
+          "name": "luoke-agent",
+          "version": "fixtures"
+        },
+        "io.modelcontextprotocol/protocolVersion": "2026-07-28"
+      },
+      "arguments": {
+        "choices": {
+          "i13": [
+            "remove"
+          ],
+          "i14": [
+            "remove"
+          ],
+          "i15": [
+            "remove"
+          ]
+        },
+        "plan_id": "p-000000000008"
+      },
+      "name": "scan_apply"
+    }
+  }
+}

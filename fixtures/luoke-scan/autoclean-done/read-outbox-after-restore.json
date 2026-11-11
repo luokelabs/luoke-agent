@@ -1,6 +1,6 @@
 {
   "reply": {
-    "id": 11,
+    "id": 12,
     "jsonrpc": "2.0",
     "result": {
       "contents": [
@@ -30,26 +30,7 @@
                             "r8",
                             "d9",
                             "h10",
-                            "t11",
-                            "c-i0",
-                            "t12",
-                            "c-i1",
-                            "t13",
-                            "r15",
-                            "d16",
-                            "t17",
-                            "t18",
-                            "r20",
-                            "t21",
-                            "r23",
-                            "d24",
-                            "t25",
-                            "t26",
-                            "d27",
-                            "t28",
-                            "t29",
-                            "t30",
-                            "t31"
+                            "t11"
                           ],
                           "component": "Column",
                           "id": "root"
@@ -80,7 +61,7 @@
                         {
                           "component": "Text",
                           "id": "t5",
-                          "text": "测试工具留下的临时文件夹：puppeteer_dev_chrome_profile-P00000、puppeteer_dev_chrome_profile-P00001、puppeteer_dev_chrome_profile-P00002 等 21 项",
+                          "text": "测试工具留下的临时文件夹：Puppeteer 留下的临时文件夹等 21 项",
                           "variant": "caption"
                         },
                         {
@@ -117,7 +98,7 @@
                         {
                           "component": "Text",
                           "id": "b7-text",
-                          "text": "以后别自动清"
+                          "text": "关掉自动清理"
                         },
                         {
                           "children": [
@@ -134,231 +115,17 @@
                         {
                           "component": "Text",
                           "id": "h10",
-                          "text": "有 6 件事值得看一眼",
+                          "text": "6 项等你处理",
                           "variant": "h4"
                         },
                         {
                           "component": "Text",
                           "id": "t11",
-                          "text": "会自动重建的缓存直接删掉，别的放心删的移到废纸篓，要你确认的先不动。",
-                          "variant": "caption"
-                        },
-                        {
-                          "component": "ChoicePicker",
-                          "id": "c-i0",
-                          "label": "临时目录里有 25 个 wings-* 没被删掉，共 131.1 MB",
-                          "options": [
-                            {
-                              "label": "移到废纸篓",
-                              "value": "trash"
-                            },
-                            {
-                              "label": "先不动",
-                              "value": "keep"
-                            },
-                            {
-                              "label": "以后别提",
-                              "value": "ignore"
-                            }
-                          ],
-                          "value": {
-                            "path": "/choices/i0"
-                          }
-                        },
-                        {
-                          "component": "Text",
-                          "id": "t12",
-                          "text": "$TMPDIR 里的 25 项",
-                          "variant": "caption"
-                        },
-                        {
-                          "component": "ChoicePicker",
-                          "id": "c-i1",
-                          "label": "old-pushed 半年多没动过，都已推送，删了能从远程找回（147 KB）",
-                          "options": [
-                            {
-                              "label": "移到废纸篓",
-                              "value": "trash"
-                            },
-                            {
-                              "label": "先不动",
-                              "value": "keep"
-                            },
-                            {
-                              "label": "以后别提",
-                              "value": "ignore"
-                            }
-                          ],
-                          "value": {
-                            "path": "/choices/i1"
-                          }
-                        },
-                        {
-                          "component": "Text",
-                          "id": "t13",
-                          "text": "~/Projects/old-pushed",
-                          "variant": "caption"
-                        },
-                        {
-                          "action": {
-                            "event": {
-                              "context": {
-                                "choices": {
-                                  "path": "/choices"
-                                },
-                                "plan_id": "p-000000000002"
-                              },
-                              "name": "scan_apply"
-                            }
-                          },
-                          "child": "b14-text",
-                          "component": "Button",
-                          "id": "b14",
-                          "variant": "primary"
-                        },
-                        {
-                          "component": "Text",
-                          "id": "b14-text",
-                          "text": "按这个处理"
-                        },
-                        {
-                          "children": [
-                            "b14"
-                          ],
-                          "component": "Row",
-                          "id": "r15"
-                        },
-                        {
-                          "component": "Divider",
-                          "id": "d16"
-                        },
-                        {
-                          "component": "Text",
-                          "id": "t17",
-                          "text": "这几个应用已经删了，权限还留着，可以在系统设置里移除：",
-                          "variant": "caption"
-                        },
-                        {
-                          "component": "Text",
-                          "id": "t18",
-                          "text": "/opt/gone/tool 已经不在这台 Mac 上，还拿着「录屏」"
-                        },
-                        {
-                          "action": {
-                            "event": {
-                              "context": {
-                                "grant": "录屏"
-                              },
-                              "name": "scan_open_settings"
-                            }
-                          },
-                          "child": "b19-text",
-                          "component": "Button",
-                          "id": "b19"
-                        },
-                        {
-                          "component": "Text",
-                          "id": "b19-text",
-                          "text": "打开「录屏」设置"
-                        },
-                        {
-                          "children": [
-                            "b19"
-                          ],
-                          "component": "Row",
-                          "id": "r20"
-                        },
-                        {
-                          "component": "Text",
-                          "id": "t21",
-                          "text": "io.example.removed 已经不在这台 Mac 上，还拿着「完全磁盘访问」"
-                        },
-                        {
-                          "action": {
-                            "event": {
-                              "context": {
-                                "grant": "完全磁盘访问"
-                              },
-                              "name": "scan_open_settings"
-                            }
-                          },
-                          "child": "b22-text",
-                          "component": "Button",
-                          "id": "b22"
-                        },
-                        {
-                          "component": "Text",
-                          "id": "b22-text",
-                          "text": "打开「完全磁盘访问」设置"
-                        },
-                        {
-                          "children": [
-                            "b22"
-                          ],
-                          "component": "Row",
-                          "id": "r23"
-                        },
-                        {
-                          "component": "Divider",
-                          "id": "d24"
-                        },
-                        {
-                          "component": "Text",
-                          "id": "t25",
-                          "text": "这几样螺壳不替你动，你可以自己看看：",
-                          "variant": "caption"
-                        },
-                        {
-                          "component": "Text",
-                          "id": "t26",
-                          "text": "进程 100（gone）的程序已经被删掉了，它还在跑"
-                        },
-                        {
-                          "component": "Divider",
-                          "id": "d27"
-                        },
-                        {
-                          "component": "Text",
-                          "id": "t28",
-                          "text": "这几条值得留意，有空看一下：",
-                          "variant": "caption"
-                        },
-                        {
-                          "component": "Text",
-                          "id": "t29",
-                          "text": "FileVault 没开：电脑丢了，硬盘上的东西能直接被读出来"
-                        },
-                        {
-                          "component": "Text",
-                          "id": "t30",
-                          "text": "怎么办：系统设置 → 隐私与安全性 → FileVault",
-                          "variant": "caption"
-                        },
-                        {
-                          "component": "Text",
-                          "id": "t31",
-                          "text": "另有 18 条仅供参考，问我就列给你。",
+                          "text": "另外 6 项在「螺壳扫描」里等你看。",
                           "variant": "caption"
                         }
                       ],
                       "surfaceId": "round-000000000001"
-                    },
-                    "version": "v0.9"
-                  },
-                  {
-                    "updateDataModel": {
-                      "path": "/",
-                      "surfaceId": "round-000000000001",
-                      "value": {
-                        "choices": {
-                          "i0": [
-                            "keep"
-                          ],
-                          "i1": [
-                            "keep"
-                          ]
-                        }
-                      }
                     },
                     "version": "v0.9"
                   }
@@ -368,8 +135,8 @@
                 "expires": "2026-10-27T12:00:00Z",
                 "id": "round/2026-10-20T12:00:00Z",
                 "kind": "auto-done",
-                "summary": "清了 62.9 MB 的工具缓存（pip），用到时会重新下载。移到废纸篓：装好了的应用的安装包 1 项（6.3 MB）、下载文件夹里的重复文件 1 项（2.1 MB）、测试工具留下的临时文件夹 21 项（110.2 MB）。放心删 0 条、要确认 5 条、仅供参考 19 条（其中需要留意的 1 条）。",
-                "title": "自动移到废纸篓 23 项（118.6 MB），清了 62.9 MB 的工具缓存；有 6 件事值得看一眼",
+                "summary": "清了 62.9 MB 的工具缓存（pip），用到时会重新下载。移到废纸篓：装好了的应用的安装包 1 项（6.3 MB）、下载文件夹里的重复文件 1 项（2.1 MB）、测试工具留下的临时文件夹 21 项（110.2 MB）。另外 6 项在「螺壳扫描」里等你看。",
+                "title": "自动移到废纸篓 23 项（118.6 MB），清了 62.9 MB 的工具缓存；6 项等你处理",
                 "urgency": "normal",
                 "why_now": "不用点就清的几类，这一轮清了"
               }
@@ -382,7 +149,7 @@
     }
   },
   "request": {
-    "id": 11,
+    "id": 12,
     "jsonrpc": "2.0",
     "method": "resources/read",
     "params": {

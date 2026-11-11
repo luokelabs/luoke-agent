@@ -1,0 +1,66 @@
+{
+  "reply": {
+    "id": 3,
+    "jsonrpc": "2.0",
+    "result": {
+      "resources": [
+        {
+          "mimeType": "application/json",
+          "name": "记忆想问的事和建议",
+          "uri": "luoke://luoke-mem/outbox"
+        },
+        {
+          "mimeType": "application/json",
+          "name": "记忆想问的事和建议",
+          "uri": "outbox"
+        },
+        {
+          "mimeType": "application/json",
+          "name": "概览",
+          "uri": "summary"
+        },
+        {
+          "mimeType": "application/json",
+          "name": "概览",
+          "uri": "page/overview"
+        },
+        {
+          "mimeType": "application/json",
+          "name": "猜测",
+          "uri": "page/guesses"
+        },
+        {
+          "mimeType": "application/json",
+          "name": "记下的",
+          "uri": "page/kept"
+        },
+        {
+          "mimeType": "application/json",
+          "name": "人",
+          "uri": "page/people"
+        },
+        {
+          "mimeType": "application/json",
+          "name": "各应用写的",
+          "uri": "page/sources"
+        }
+      ],
+      "resultType": "complete"
+    }
+  },
+  "request": {
+    "id": 3,
+    "jsonrpc": "2.0",
+    "method": "resources/list",
+    "params": {
+      "_meta": {
+        "io.modelcontextprotocol/clientCapabilities": {},
+        "io.modelcontextprotocol/clientInfo": {
+          "name": "luoke-agent",
+          "version": "fixtures"
+        },
+        "io.modelcontextprotocol/protocolVersion": "2026-07-28"
+      }
+    }
+  }
+}

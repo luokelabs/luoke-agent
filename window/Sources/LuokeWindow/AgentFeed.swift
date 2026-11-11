@@ -14,7 +14,7 @@ public protocol WindowBackend: AnyObject {
     func reloadApps()
     /// 取一页基础页（§6 `GET /apps/<id>/pages/<页>`）
     func reloadPage(app: String, page: String)
-    /// 用户点了「打开完整界面」或深页（§6 `POST /open`）
+    /// 打开工具自己的界面（§6 `POST /open`）。窗口不再调它：应用的事都在窗口里做（11-09 定）
     func openApp(_ app: String, page: String?)
     /// 重新取「设置 · 权限」（§10 `GET /permissions`）
     func reloadPermissions()
@@ -24,6 +24,12 @@ public protocol WindowBackend: AnyObject {
     func reportHost(permissions: [String: JSONValue], confirmed: [String: [String: String]]?)
     /// 用户在搜索框按了回车（§7 `POST /search`）
     func search(query: String)
+    /// 要一条结果的缩略图（§7 `GET /thumb`）；答来了调 `WindowModel.setThumb`
+    func searchThumb(app: String, ref: String)
+    /// 用户点了结果上的按钮、按了回车或 ⌘↩（§7 `POST /hit`）：`action` 是它在这条结果 `actions` 里的序号
+    func searchHit(search: Int, app: String, hit: String, action: Int)
+    /// 窗口换了一页（§11 `POST /window` 的 `page`）
+    func windowPageChanged()
 }
 
 /// 只管「今天」和提醒的后端不用实现应用的页和权限
@@ -35,6 +41,9 @@ public extension WindowBackend {
     func permission(app: String, id: String, op: String) {}
     func reportHost(permissions: [String: JSONValue], confirmed: [String: [String: String]]?) {}
     func search(query: String) {}
+    func searchThumb(app: String, ref: String) {}
+    func searchHit(search: Int, app: String, hit: String, action: Int) {}
+    func windowPageChanged() {}
 }
 
 /// 核心要螺壳.app 发的一条系统通知（`/feed` 的 `notify`）
@@ -67,6 +76,9 @@ public final class AgentFeed {
     public var onNotify: ((AgentNotification) -> Void)?
     private weak var model: WindowModel?
     private var gotFeed = false
+    /// 核心删了、下一份 feed 还没到的卡片：照旧画着。核心换卡片时先删旧的、再发新的、最后发 feed，
+    /// 删的那一下就把它从「今天」拿掉的话，一件件处理会当成工具收走了、跳到下一件；等 feed 到了再一起换
+    private var held: [String: SurfaceModel] = [:]
 
     public init(model: WindowModel) {
         self.model = model
@@ -82,6 +94,7 @@ public final class AgentFeed {
                 guard let cat = body["catalogId"]?.string, let s = try? Surface(surfaceId: sid, catalogId: cat) else { return }
                 surfaces[sid] = SurfaceModel(surface: s)
             } else if kind == "deleteSurface" {
+                if held[sid] == nil { held[sid] = surfaces[sid] }
                 surfaces[sid] = nil
             } else if let m = surfaces[sid] {
                 try? m.receive(v)    // 核心已经整组查过
@@ -93,8 +106,11 @@ public final class AgentFeed {
                                                           kind: "", section: "decide", title: "", time: nil) }
             }
             model?.notices = (v["notices"]?.array ?? []).compactMap(\.string)
+            model?.agentDot = v["dot"]?.bool         // 老的核心不给：照有没有急事
+            model?.lastSeen = model?.now()
             if let p = v["paused_until"] { model?.setPausedFromAgent(Self.date(p).map(Self.hhmm)) }
             gotFeed = true
+            held = [:]
             rebuild()
             model?.feedArrived()
         case "settings":
@@ -106,6 +122,7 @@ public final class AgentFeed {
         case "result":
             guard let sid = v["surfaceId"]?.string else { return }
             surface(sid)?.busy = false
+            surface(sid)?.pressed = nil
             let text = v["text"]?.string ?? ""
             let error = v["error"]?.bool ?? false
             let replaced = v["replaced"]?.bool ?? false      // 卡片已经换成结果：那句话上面有了
@@ -146,7 +163,7 @@ public final class AgentFeed {
 
     /// 卡片或基础页（页上的点按也有 busy、result）
     func surface(_ sid: String) -> SurfaceModel? {
-        surfaces[sid] ?? model?.agentPages[sid]?.surface ?? model?.searchAnswer?.cards.first { $0.id == sid }?.surface
+        surfaces[sid] ?? held[sid] ?? model?.agentPages[sid]?.surface ?? model?.searchAnswer?.cards.first { $0.id == sid }?.surface
     }
 
     // MARK: 应用的页、权限（§6、§10）
@@ -162,22 +179,34 @@ public final class AgentFeed {
         model.loadVisible(onlyMissing: true)
     }
 
-    /// `GET /apps/<id>/pages/<页>` 的答复（status 0 是没连上）：画得出就换上，画不出、拿不到写一句为什么
-    public func applyPage(app: String, page: String, status: Int, body: Data) {
+    /// `GET /apps/<id>/pages/<页>` 的答复（status 0 是没连上）：画得出就换上，画不出、拿不到写一句为什么。
+    /// `args`：这次是带着什么参数取的（工具协议 §4 pageArgs）；这一页现在的参数已经换了，这份就不要了
+    public func applyPage(app: String, page: String, status: Int, body: Data, args: [String: String] = [:]) {
         guard let model else { return }
         let key = Self.pageKey(app, page)
+        if (model.pageArgs[key] ?? [:]) != args { return }
         let v = try? JSONValue.parse(body)
         var out = AgentPage(app: app, page: page, surface: nil, error: nil)
-        if status == 200, let msgs = v?["messages"]?.array, let s = try? Surface.build(msgs) {
-            out.surface = SurfaceModel(surface: s)
+        let old = model.agentPages[key]?.surface
+        if status == 200, let msgs = v?["messages"]?.array, let s = try? Surface.build(msgs, page: true) {
+            let fresh = SurfaceModel(surface: s)
+            // 同一页重新取（点完按钮、定时刷新）：用户填了、这次没交出去的密码框照留（§4 secureField）。工具给的初值只能是空的，
+            // 留不留由窗口定；交出去的点按时已经清了，离开这一页时全清了，都不会带过来
+            for p in s.secureFieldPaths {
+                if let v = old?.value(p), v != .string(""), (try? s.data.value(at: p)) != nil { fresh.set(p, v) }
+            }
+            out.surface = fresh
         } else if status == 200 {
             out.error = "这一页画不了。"
         } else if status == 0 {
-            out.error = "没连上螺壳的核心。"
+            out.error = "\(WindowModel.offlineShort)，打不开这一页。"
+            out.offline = true
         } else {
             out.error = v?["error"]?.string ?? "这一页现在拿不到。"
         }
+        model.coreReachable = status != 0
         if out.surface == nil, model.agentPages[key]?.surface != nil, status == 0 { return }   // 断了：先留着上次的
+        old?.clearSecureFields()          // 换下来的那份不留填的字（要留的上面已经搬到新的里）
         model.agentPages[key] = out
         if let p = v?["host_ask"]?["permission"]?.string, let b = v?["host_ask"]?["button"]?.string {
             model.pageHostAsks[key] = HostAsk(app: app, id: p, button: b, then: v?["host_ask"]?["then"]?.bool == true)
@@ -192,17 +221,30 @@ public final class AgentFeed {
         let v = try? JSONValue.parse(body)
         var out = SearchAnswer()
         if status == 200, let results = v?["results"]?.array {
+            out.search = v?["search"]?.number.map { Int($0) }
+            var hits: [WindowHit] = []
             for r in results {
-                if let msgs = r["messages"]?.array, let s = try? Surface.build(msgs), let app = r["app"]?.string {
-                    out.cards.append(SearchCard(id: "\(app)/search", surface: SurfaceModel(surface: s)))
+                // 给了 hits 的：窗口按类型分组自己画（工具协议 §1b）；没给的画它的卡片。
+                // hits 一条动作都没带、又有卡片的，也画卡片：不然卡片上的「打开」跟着没了，结果打不开
+                let app = r["app"]?.string
+                let got = app.map { app in (r["hits"]?.array ?? []).compactMap { WindowHit(app: app, $0) } } ?? []
+                let card = r["messages"]?.array.flatMap { try? Surface.build($0) }
+                if !got.isEmpty, card == nil || got.contains(where: { !$0.actions.isEmpty }) {
+                    hits += got
+                } else if let app, let card {
+                    out.cards.append(SearchCard(id: "\(app)/search", surface: SurfaceModel(surface: card)))
                 } else if let name = r["name"]?.string {
                     out.failed.append(name)
                 }
             }
+            out.hits = hits
             out.failed += (v?["failed"]?.array ?? []).compactMap(\.string)
+            out.asked = v?["asked"]?.number.map { Int($0) }
             out.note = v?["text"]?.string
         } else {
-            out.note = status == 0 ? "没连上螺壳的核心。" : (v?["error"]?.string ?? "这次没搜成。")
+            let q = model.searchQuery.isEmpty ? "" : "「\(model.searchQuery)」"
+            out.note = status == 0 ? "\(WindowModel.offlineShort)，搜不了\(q)。" : (v?["error"]?.string ?? "没能搜成\(q)。")
+            out.retry = true
         }
         model.searching = false
         model.searchAnswer = out
@@ -219,7 +261,7 @@ public final class AgentFeed {
         func refs(_ a: JSONValue?) -> [AgentApp.PageRef] {
             (a?.array ?? []).compactMap { p in
                 guard let id = p["id"]?.string, let t = p["title"]?.string else { return nil }
-                return AgentApp.PageRef(id: id, title: t)
+                return AgentApp.PageRef(id: id, title: t, hidden: p["hidden"]?.bool == true)
             }
         }
         var summary: AgentApp.Summary?
@@ -237,31 +279,33 @@ public final class AgentFeed {
                                state: v["state"]?.string, can: kind == "each-time" ? nil : (v["can"]?.array ?? []).compactMap(\.string))
     }
 
-    /// 按 `cards` 的分段，把有卡片的放进「今天」的四段
+    /// 按 `cards` 的分段，把有卡片的放进「今天」的四段。删了、feed 还没到的画删之前那张：同编号换内容时，
+    /// 新的那张在 feed 到了以后才换上，不会先露出一张还没画完的
     func rebuild() {
         guard let model else { return }
         var urgent: [UrgentItem] = [], decide: [TodayCard] = [], done: [DoneRow] = [], later: [QuietRow] = []
         for c in cards {
-            guard let s = surfaces[c.id] else { continue }
+            guard let s = held[c.id] ?? surfaces[c.id] else { continue }
             let tool = Self.tool(c.app)
             let time = c.time.map(Self.display) ?? ""
             switch c.section {
             case "urgent":
                 urgent.append(UrgentItem(id: c.id, tool: tool, title: c.title, time: time, primary: "", primarySymbol: nil,
-                                         secondary: "", surface: s))
+                                         secondary: "", surface: s, kind: c.kind))
             case "done":
-                done.append(DoneRow(id: c.id, tool: tool, text: c.title, time: time, undoLabel: nil, surface: s))
+                let g = s.surface.doneGroup.map { DoneGroup(key: $0.key, text: $0.text, n: $0.n, label: $0.label, badge: $0.badge) }
+                done.append(DoneRow(id: c.id, tool: tool, text: c.title, time: time, undoLabel: nil, surface: s, group: g))
             case "later":
                 later.append(QuietRow(id: c.id, tool: tool, text: c.title, surface: s))
             default:
-                decide.append(TodayCard(id: c.id, tool: tool, time: c.time.map(Self.display), surface: s, title: c.title))
+                decide.append(TodayCard(id: c.id, tool: tool, time: c.time.map(Self.display), surface: s, title: c.title, kind: c.kind))
             }
         }
         model.hostAsks = Dictionary(cards.compactMap { c in c.hostAsk.map { (c.id, $0) } }, uniquingKeysWith: { a, _ in a })
         model.urgent = urgent
         model.cards = decide
         model.done = done
-        model.quiet = later
+        model.quiet = later + model.updateRows()      // 「有新版本」是本体报的，接在核心给的后面
     }
 
     // MARK: 小工具
@@ -311,7 +355,8 @@ public final class AgentFeed {
         if Calendar.current.isDateInYesterday(d) { return "昨天 " + hhmm(d) }
         let f = DateFormatter()
         f.locale = Locale(identifier: "zh_CN")
-        f.dateFormat = "M月d日"
+        // 工具给的时间可能是往年的（例如很早收到的信）：不是今年的带上年份
+        f.dateFormat = Calendar.current.isDate(d, equalTo: Date(), toGranularity: .year) ? "M月d日" : "yyyy年M月d日"
         return f.string(from: d)
     }
 
@@ -348,6 +393,14 @@ public final class AgentConnection: WindowBackend {
     private var lastNotifications: JSONValue?
     private var presence: Presence?
     private var presenceTimer: Timer?
+    /// 每一页最近一次定的再读（工具协议 §4 pageRefresh）：只认最近定的那次
+    private var refreshSerial: [String: Int] = [:]
+    /// 过一会儿再做（页的 refresh）；测试换成自己拨的钟
+    public var after: (TimeInterval, @escaping @MainActor () -> Void) -> Void = { delay, work in
+        DispatchQueue.main.asyncAfter(deadline: .now() + delay) { MainActor.assumeIsolated { work() } }
+    }
+    /// 点按的答复带了文件（工具协议 §4 saveFile）：弹出存文件的框。nil 用 NSSavePanel；测试换成自己的
+    public var fileSaver: ((_ name: String, _ text: String) -> Void)?
 
     /// socketPath：核心的 `<数据目录>/run/agent.sock`
     public convenience init(socketPath: String, model: WindowModel) {
@@ -386,6 +439,7 @@ public final class AgentConnection: WindowBackend {
     func setConnected(_ ok: Bool) {
         let was = connected
         connected = ok
+        model.coreReachable = ok
         if ok && !was {
             reloadSettings()
             reloadApps()          // 来了以后，正看着的应用页没取过就取
@@ -395,7 +449,7 @@ public final class AgentConnection: WindowBackend {
             reportPresenceNow()
             model.loadVisible()   // 重连：正看着的那一页、权限再取一遍
         }
-        if !ok && was { model.notices = ["正在连螺壳的核心…"] }
+        if !ok && was { model.notices = [] }   // 核心的那几句是断开前的；「今天」顶上有「连不上螺壳」那一张
     }
 
     public func reloadSettings() {
@@ -411,23 +465,104 @@ public final class AgentConnection: WindowBackend {
         // 上一下点按还没答完：不再发（快按两次 ⏎、连点两下都只交一次）
         if feed.surface(surfaceId)?.busy == true { return }
         feed.surface(surfaceId)?.busy = true
+        feed.surface(surfaceId)?.pressed = componentId
         let page = model.agentPages[surfaceId]
         let body = JSONValue.object(["surfaceId": .string(surfaceId), "sourceComponentId": .string(componentId), "context": context])
-        send("POST", "/action", body.serialized()) { [weak self] status, _ in
+        // 密码框里填的字（工具协议 §4 secureField）只随这一次交出去：交了的就清掉，不管成没成；这个按钮没交的照留
+        if let s = feed.surface(surfaceId) { s.clearSecureFields(only: s.surface.sentSecureFieldPaths(componentId)) }
+        send("POST", "/action", body.serialized()) { [weak self] status, reply in
             guard let self else { return }
             self.feed.surface(surfaceId)?.busy = false
-            if status == 0 { self.model.show("没连上螺壳的核心。") }
+            self.feed.surface(surfaceId)?.pressed = nil
+            if status == 0 { self.model.show(WindowModel.offlineFailed) }
+            // 答复带了文件（工具协议 §4 saveFile）：用户选了位置才存
+            if status == 200, let file = Self.savedFile(reply) { self.saveFile(file.name, file.text) }
+            // agent.open_page（工具协议 §5）：核心核过是这个应用自己的页，换过去（带 args 时读这一页带上，§4 pageArgs）
+            if status == 200, let (app, p, args) = Self.openedPage(reply) {
+                self.model.openAgentPage(app: app, page: p, args: args)
+                if let page, page.app == app, page.page == p { return }   // 换到的就是这一页：换页时已经重新取了
+            }
             // 基础页上点完：工具答复里的卡片不画，重新取这一页（§6）
             if let page, status != 0 { self.reloadPage(app: page.app, page: page.page) }
+        }
+    }
+
+    /// `POST /action` 的答复里的文件（`{"file": {"name", "mediaType", "text"}}`，界面接口 §4）：形状不对是 nil
+    nonisolated static func savedFile(_ body: Data) -> (name: String, mediaType: String, text: String)? {
+        guard let v = try? JSONValue.parse(body) else { return nil }
+        return A2UI.saveFile(v["file"])
+    }
+
+    private func saveFile(_ name: String, _ text: String) {
+        if let fileSaver { return fileSaver(name, text) }
+        let panel = NSSavePanel()
+        panel.nameFieldStringValue = name
+        panel.canCreateDirectories = true
+        // 螺壳只有一个窗口（11-10 定）：存文件的框挂在主窗口上（点按就在这个窗口里），不单独浮着；窗口不在时才单独开
+        if let w = NSApp.keyWindow ?? NSApp.mainWindow, w.isVisible {
+            panel.beginSheetModal(for: w) { [weak self] r in
+                guard r == .OK, !AgentConnection.write(text, to: panel.url) else { return }
+                MainActor.assumeIsolated { self?.model.show("没存成。") }
+            }
+        } else {
+            panel.begin { [weak self] r in
+                guard r == .OK, !AgentConnection.write(text, to: panel.url) else { return }
+                MainActor.assumeIsolated { self?.model.show("没存成。") }
+            }
+        }
+    }
+
+    /// 把要存的字写进用户选的位置；没给位置不算没存成
+    nonisolated static func write(_ text: String, to url: URL?) -> Bool {
+        guard let url else { return true }
+        do {
+            try Data(text.utf8).write(to: url, options: .atomic)
+            return true
+        } catch {
+            return false
         }
     }
 
     public func search(query: String) {
         searchSerial += 1
         let serial = searchSerial
-        send("POST", "/search", JSONValue.object(["query": .string(query)]).serialized()) { [weak self] status, body in
+        let body = JSONValue.object(["query": .string(query), "limit": .number(Double(Self.searchLimit))]).serialized()
+        send("POST", "/search", body) { [weak self] status, body in
             guard let self, serial == self.searchSerial else { return }     // 又搜了别的：这个不要了
             self.feed.applySearch(status: status, body: body)
+        }
+    }
+
+    /// 一次要几条：每组先列四个，「还有 N 个」要有得数（§7 limit 1 到 50）
+    nonisolated static let searchLimit = 20
+
+    public func searchThumb(app: String, ref: String) {
+        // 查询串里只留 ASCII 字母、数字和 -._~，别的（+ & = / 和非 ASCII）都编码
+        send("GET", "/thumb?app=\(Self.segment(app))&ref=\(Self.segment(ref))", nil) { [weak self] status, body in
+            guard let self, status == 200, let image = Self.thumbImage(body) else { return }   // 读不到：占位框
+            self.model.setThumb(app: app, ref: ref, image: image)
+        }
+    }
+
+    /// 核心已经核过；这里再看一遍是 JPEG、PNG，不超过 256 KB、长边不超过 2048（工具协议 §1b）
+    nonisolated static func thumbImage(_ data: Data) -> NSImage? {
+        let jpeg = data.starts(with: [0xFF, 0xD8, 0xFF]), png = data.starts(with: [0x89, 0x50, 0x4E, 0x47])
+        guard (jpeg || png), data.count <= 256 * 1024, let rep = NSBitmapImageRep(data: data),
+              rep.pixelsWide > 0, rep.pixelsHigh > 0, max(rep.pixelsWide, rep.pixelsHigh) <= 2048 else { return nil }
+        let image = NSImage(size: NSSize(width: rep.pixelsWide, height: rep.pixelsHigh))
+        image.addRepresentation(rep)
+        return image
+    }
+
+    public func searchHit(search: Int, app: String, hit: String, action: Int) {
+        let body = JSONValue.object(["search": .number(Double(search)), "app": .string(app), "hit": .string(hit),
+                                     "action": .number(Double(action))]).serialized()
+        send("POST", "/hit", body) { [weak self] status, body in
+            guard let self else { return }
+            let v = try? JSONValue.parse(body)
+            if status != 200 || v?["error"]?.bool == true {
+                self.model.show(status == 0 ? WindowModel.offlineFailed : (v?["text"]?.string ?? "没打开。"))
+            }
         }
     }
 
@@ -438,7 +573,7 @@ public final class AgentConnection: WindowBackend {
             if status == 200, let v {
                 self.feed.applySettings(v)
             } else {
-                self.model.show(status == 0 ? "没连上螺壳的核心。" : (v?["error"]?.string ?? "没改成。"))
+                self.model.show(status == 0 ? WindowModel.offlineFailed : (v?["error"]?.string ?? "没改成。"))
                 self.reloadSettings()       // 改回核心里现在的值
             }
         }
@@ -451,10 +586,39 @@ public final class AgentConnection: WindowBackend {
         }
     }
 
+    /// `POST /action` 的答复里要换去的页（`{"page": {"app", "page", "args"}}`，界面接口 §4）。`args` 不对的整个不认
+    nonisolated static func openedPage(_ body: Data) -> (String, String, [String: String])? {
+        guard let v = try? JSONValue.parse(body), let app = v["page"]?["app"]?.string, let page = v["page"]?["page"]?.string,
+              !app.isEmpty, !page.isEmpty else { return nil }
+        guard let a = v["page"]?["args"] else { return (app, page, [:]) }
+        guard A2UI.pageArgsProblem(a) == nil, let o = a.object else { return nil }
+        return (app, page, o.compactMapValues { $0.string })
+    }
+
+    /// 取一页基础页；这一页带着参数（§4 pageArgs）时带上。画出来的页写了 `refresh` 时，看得见就过一会儿再取
     public func reloadPage(app: String, page: String) {
-        let path = "/apps/\(Self.segment(app))/pages/\(Self.segment(page))"
-        once("page:" + AgentFeed.pageKey(app, page), path) { [weak self] status, body in
-            self?.feed.applyPage(app: app, page: page, status: status, body: body)
+        let key = AgentFeed.pageKey(app, page)
+        let args = model.pageArgs[key] ?? [:]
+        let query = args.isEmpty ? "" : "?" + A2UI.pageQuery(args)
+        let path = "/apps/\(Self.segment(app))/pages/\(Self.segment(page))" + query
+        once("page:" + key + query, path) { [weak self] status, body in
+            guard let self else { return }
+            self.feed.applyPage(app: app, page: page, status: status, body: body, args: args)
+            self.refreshLater(app: app, page: page)
+        }
+    }
+
+    /// 页的 root 写了 `refresh`（工具协议 §4 pageRefresh）：过这么久，这一页还看得见（窗口开着、正开在这一页）就再取。
+    /// 只认最近定的那次；还没答完的不再取（`once`）
+    private func refreshLater(app: String, page: String) {
+        let key = AgentFeed.pageKey(app, page)
+        let serial = (refreshSerial[key] ?? 0) + 1
+        refreshSerial[key] = serial
+        guard let n = model.agentPages[key]?.surface?.surface.refreshSeconds else { return }
+        after(TimeInterval(n)) { [weak self] in
+            guard let self, self.refreshSerial[key] == serial, self.model.visibleAgentPageKey == key,
+                  self.lastWindow?["open"]?.bool != false else { return }
+            self.reloadPage(app: app, page: page)
         }
     }
 
@@ -510,14 +674,33 @@ public final class AgentConnection: WindowBackend {
         send("POST", "/host", body.serialized()) { _, _ in }
     }
 
-    /// 螺壳.app 报窗口开没开、在不在最前面（§11）。开着：没关（最小化也算）；在最前面：用户正看着它
+    /// 螺壳.app 报窗口开没开、在不在最前面（§11）。开着：没关（最小化也算）；在最前面：用户正看着它。
+    /// 开着时带上窗口开在哪一页（`page`），换页时这边自己再报（`windowPageChanged`），螺壳.app 不用管
     public func reportWindow(open: Bool, front: Bool) {
-        let body = JSONValue.object(["open": .bool(open), "front": .bool(front)])
-        lastWindow = body
-        send("POST", "/window", body.serialized()) { _, _ in }
+        var body: [String: JSONValue] = ["open": .bool(open), "front": .bool(front)]
+        if open { body["page"] = .string(model.hostShowing ? "host" : Self.wirePage(model.page)) }   // 本体的界面盖着：不算看着「今天」
+        let v = JSONValue.object(body)
+        lastWindow = v
+        send("POST", "/window", v.serialized()) { _, _ in }
     }
 
-    /// 螺壳.app 报系统通知的授权（§12）：被拒、横幅关着时核心在「今天」里说一句。
+    public func windowPageChanged() {
+        guard let w = lastWindow, w["open"]?.bool == true else { return }
+        reportWindow(open: true, front: w["front"]?.bool ?? false)
+    }
+
+    /// §11 的页名：`today`、`activity`、`app:<配件标识>`、`search`、`settings`、`apps`（添加应用）、`chat`；
+    /// 本体的界面（`HostPage`）盖着时报 `host`（`reportWindow`）
+    static func wirePage(_ p: Page) -> String {
+        if let tool = p.appTool { return "app:" + tool.accessory }
+        switch p {
+        case .prefs: return "settings"
+        case .apps: return "apps"
+        default: return p.rawValue
+        }
+    }
+
+    /// 螺壳.app 报系统通知的授权（§11）：被拒、横幅关着时核心在「今天」里说一句。
     /// status 用 `AgentNotification.authName`；alerts：横幅没被关掉
     public func reportNotifications(status: String, alerts: Bool) {
         let body = JSONValue.object(["status": .string(status), "alerts": .bool(alerts)])
@@ -562,7 +745,7 @@ public final class AgentConnection: WindowBackend {
 
     /// `{"text", "error"}` 的答复；连不上、答复不对算出错
     static func answer(_ status: Int, _ body: Data) -> (String, Bool) {
-        if status == 0 { return ("没连上螺壳的核心。", true) }
+        if status == 0 { return (WindowModel.offlineFailed, true) }
         let v = try? JSONValue.parse(body)
         let text = v?["text"]?.string ?? v?["error"]?.string ?? ""
         return (text, status != 200 || (v?["error"]?.bool ?? false) || v?["error"]?.string != nil)

@@ -1,6 +1,6 @@
 {
   "reply": {
-    "id": 9,
+    "id": 10,
     "jsonrpc": "2.0",
     "result": {
       "content": [
@@ -22,43 +22,16 @@
                     "r98200-t2",
                     "r98200-t3",
                     "r98200-t4",
-                    "r98200-t5",
-                    "r98200-t6",
+                    "r98200-d5",
+                    "r98200-h6",
                     "r98200-t7",
                     "r98200-t8",
                     "r98200-t9",
                     "r98200-t10",
-                    "r98200-t11",
-                    "r98200-t12",
-                    "r98200-d13",
-                    "r98200-h14",
-                    "r98200-t15",
-                    "r98200-t16",
-                    "r98200-t17",
-                    "r98200-t18",
-                    "r98200-r21",
-                    "r98200-d22",
-                    "r98200-h23",
-                    "r98200-t24",
-                    "r98200-c-i0",
-                    "r98200-t25",
-                    "r98200-c-i1",
-                    "r98200-t26",
-                    "r98200-r28",
-                    "r98200-d29",
-                    "r98200-t30",
-                    "r98200-t31",
-                    "r98200-r33",
-                    "r98200-t34",
-                    "r98200-r36",
-                    "r98200-d37",
-                    "r98200-t38",
-                    "r98200-t39",
-                    "r98200-d40",
-                    "r98200-t41",
-                    "r98200-t42",
-                    "r98200-t43",
-                    "r98200-t44"
+                    "r98200-r13",
+                    "r98200-d14",
+                    "r98200-h15",
+                    "r98200-t16"
                   ],
                   "component": "Column",
                   "id": "root"
@@ -83,88 +56,40 @@
                 {
                   "component": "Text",
                   "id": "r98200-t4",
-                  "text": "临时文件夹 puppeteer_dev_chrome_profile-P00020",
-                  "variant": "caption"
-                },
-                {
-                  "component": "Text",
-                  "id": "r98200-t5",
-                  "text": "临时文件夹 puppeteer_dev_chrome_profile-P00019",
-                  "variant": "caption"
-                },
-                {
-                  "component": "Text",
-                  "id": "r98200-t6",
-                  "text": "临时文件夹 puppeteer_dev_chrome_profile-P00018",
-                  "variant": "caption"
-                },
-                {
-                  "component": "Text",
-                  "id": "r98200-t7",
-                  "text": "临时文件夹 puppeteer_dev_chrome_profile-P00017",
-                  "variant": "caption"
-                },
-                {
-                  "component": "Text",
-                  "id": "r98200-t8",
-                  "text": "临时文件夹 puppeteer_dev_chrome_profile-P00016",
-                  "variant": "caption"
-                },
-                {
-                  "component": "Text",
-                  "id": "r98200-t9",
-                  "text": "临时文件夹 puppeteer_dev_chrome_profile-P00015",
-                  "variant": "caption"
-                },
-                {
-                  "component": "Text",
-                  "id": "r98200-t10",
-                  "text": "临时文件夹 puppeteer_dev_chrome_profile-P00014",
-                  "variant": "caption"
-                },
-                {
-                  "component": "Text",
-                  "id": "r98200-t11",
-                  "text": "临时文件夹 puppeteer_dev_chrome_profile-P00013",
-                  "variant": "caption"
-                },
-                {
-                  "component": "Text",
-                  "id": "r98200-t12",
-                  "text": "等 23 项，都记在清理记录里",
+                  "text": "Puppeteer 留下的临时文件夹",
                   "variant": "caption"
                 },
                 {
                   "component": "Divider",
-                  "id": "r98200-d13"
+                  "id": "r98200-d5"
                 },
                 {
                   "component": "Text",
-                  "id": "r98200-h14",
+                  "id": "r98200-h6",
                   "text": "自动移到废纸篓 23 项（118.6 MB），清了 62.9 MB 的工具缓存",
                   "variant": "h4"
                 },
                 {
                   "component": "Text",
-                  "id": "r98200-t15",
+                  "id": "r98200-t7",
                   "text": "清了 62.9 MB 的工具缓存（pip），用到时会重新下载。移到废纸篓：装好了的应用的安装包 1 项（6.3 MB）、下载文件夹里的重复文件 1 项（2.1 MB）、测试工具留下的临时文件夹 21 项（110.2 MB）。"
                 },
                 {
                   "component": "Text",
-                  "id": "r98200-t16",
+                  "id": "r98200-t8",
                   "text": "装好了的应用的安装包：Fixtureapp-2.0.dmg",
                   "variant": "caption"
                 },
                 {
                   "component": "Text",
-                  "id": "r98200-t17",
+                  "id": "r98200-t9",
                   "text": "下载文件夹里的重复文件：report-2026.pdf",
                   "variant": "caption"
                 },
                 {
                   "component": "Text",
-                  "id": "r98200-t18",
-                  "text": "测试工具留下的临时文件夹：puppeteer_dev_chrome_profile-P00000、puppeteer_dev_chrome_profile-P00001、puppeteer_dev_chrome_profile-P00002 等 21 项",
+                  "id": "r98200-t10",
+                  "text": "测试工具留下的临时文件夹：Puppeteer 留下的临时文件夹等 21 项",
                   "variant": "caption"
                 },
                 {
@@ -176,13 +101,13 @@
                       "name": "scan_restore"
                     }
                   },
-                  "child": "r98200-b19-text",
+                  "child": "r98200-b11-text",
                   "component": "Button",
-                  "id": "r98200-b19"
+                  "id": "r98200-b11"
                 },
                 {
                   "component": "Text",
-                  "id": "r98200-b19-text",
+                  "id": "r98200-b11-text",
                   "text": "放回"
                 },
                 {
@@ -194,234 +119,37 @@
                       "name": "scan_autoclean"
                     }
                   },
-                  "child": "r98200-b20-text",
+                  "child": "r98200-b12-text",
                   "component": "Button",
-                  "id": "r98200-b20"
+                  "id": "r98200-b12"
                 },
                 {
                   "component": "Text",
-                  "id": "r98200-b20-text",
-                  "text": "以后别自动清"
+                  "id": "r98200-b12-text",
+                  "text": "关掉自动清理"
                 },
                 {
                   "children": [
-                    "r98200-b19",
-                    "r98200-b20"
+                    "r98200-b11",
+                    "r98200-b12"
                   ],
                   "component": "Row",
-                  "id": "r98200-r21"
+                  "id": "r98200-r13"
                 },
                 {
                   "component": "Divider",
-                  "id": "r98200-d22"
+                  "id": "r98200-d14"
                 },
                 {
                   "component": "Text",
-                  "id": "r98200-h23",
-                  "text": "有 6 件事值得看一眼",
+                  "id": "r98200-h15",
+                  "text": "6 项等你处理",
                   "variant": "h4"
                 },
                 {
                   "component": "Text",
-                  "id": "r98200-t24",
-                  "text": "会自动重建的缓存直接删掉，别的放心删的移到废纸篓，要你确认的先不动。",
-                  "variant": "caption"
-                },
-                {
-                  "component": "ChoicePicker",
-                  "id": "r98200-c-i0",
-                  "label": "临时目录里有 25 个 wings-* 没被删掉，共 131.1 MB",
-                  "options": [
-                    {
-                      "label": "移到废纸篓",
-                      "value": "trash"
-                    },
-                    {
-                      "label": "先不动",
-                      "value": "keep"
-                    },
-                    {
-                      "label": "以后别提",
-                      "value": "ignore"
-                    }
-                  ],
-                  "value": {
-                    "path": "/choices/i0"
-                  }
-                },
-                {
-                  "component": "Text",
-                  "id": "r98200-t25",
-                  "text": "$TMPDIR 里的 25 项",
-                  "variant": "caption"
-                },
-                {
-                  "component": "ChoicePicker",
-                  "id": "r98200-c-i1",
-                  "label": "old-pushed 半年多没动过，都已推送，删了能从远程找回（147 KB）",
-                  "options": [
-                    {
-                      "label": "移到废纸篓",
-                      "value": "trash"
-                    },
-                    {
-                      "label": "先不动",
-                      "value": "keep"
-                    },
-                    {
-                      "label": "以后别提",
-                      "value": "ignore"
-                    }
-                  ],
-                  "value": {
-                    "path": "/choices/i1"
-                  }
-                },
-                {
-                  "component": "Text",
-                  "id": "r98200-t26",
-                  "text": "~/Projects/old-pushed",
-                  "variant": "caption"
-                },
-                {
-                  "action": {
-                    "event": {
-                      "context": {
-                        "choices": {
-                          "path": "/choices"
-                        },
-                        "plan_id": "p-000000000002"
-                      },
-                      "name": "scan_apply"
-                    }
-                  },
-                  "child": "r98200-b27-text",
-                  "component": "Button",
-                  "id": "r98200-b27",
-                  "variant": "primary"
-                },
-                {
-                  "component": "Text",
-                  "id": "r98200-b27-text",
-                  "text": "按这个处理"
-                },
-                {
-                  "children": [
-                    "r98200-b27"
-                  ],
-                  "component": "Row",
-                  "id": "r98200-r28"
-                },
-                {
-                  "component": "Divider",
-                  "id": "r98200-d29"
-                },
-                {
-                  "component": "Text",
-                  "id": "r98200-t30",
-                  "text": "这几个应用已经删了，权限还留着，可以在系统设置里移除：",
-                  "variant": "caption"
-                },
-                {
-                  "component": "Text",
-                  "id": "r98200-t31",
-                  "text": "/opt/gone/tool 已经不在这台 Mac 上，还拿着「录屏」"
-                },
-                {
-                  "action": {
-                    "event": {
-                      "context": {
-                        "grant": "录屏"
-                      },
-                      "name": "scan_open_settings"
-                    }
-                  },
-                  "child": "r98200-b32-text",
-                  "component": "Button",
-                  "id": "r98200-b32"
-                },
-                {
-                  "component": "Text",
-                  "id": "r98200-b32-text",
-                  "text": "打开「录屏」设置"
-                },
-                {
-                  "children": [
-                    "r98200-b32"
-                  ],
-                  "component": "Row",
-                  "id": "r98200-r33"
-                },
-                {
-                  "component": "Text",
-                  "id": "r98200-t34",
-                  "text": "io.example.removed 已经不在这台 Mac 上，还拿着「完全磁盘访问」"
-                },
-                {
-                  "action": {
-                    "event": {
-                      "context": {
-                        "grant": "完全磁盘访问"
-                      },
-                      "name": "scan_open_settings"
-                    }
-                  },
-                  "child": "r98200-b35-text",
-                  "component": "Button",
-                  "id": "r98200-b35"
-                },
-                {
-                  "component": "Text",
-                  "id": "r98200-b35-text",
-                  "text": "打开「完全磁盘访问」设置"
-                },
-                {
-                  "children": [
-                    "r98200-b35"
-                  ],
-                  "component": "Row",
-                  "id": "r98200-r36"
-                },
-                {
-                  "component": "Divider",
-                  "id": "r98200-d37"
-                },
-                {
-                  "component": "Text",
-                  "id": "r98200-t38",
-                  "text": "这几样螺壳不替你动，你可以自己看看：",
-                  "variant": "caption"
-                },
-                {
-                  "component": "Text",
-                  "id": "r98200-t39",
-                  "text": "进程 100（gone）的程序已经被删掉了，它还在跑"
-                },
-                {
-                  "component": "Divider",
-                  "id": "r98200-d40"
-                },
-                {
-                  "component": "Text",
-                  "id": "r98200-t41",
-                  "text": "这几条值得留意，有空看一下：",
-                  "variant": "caption"
-                },
-                {
-                  "component": "Text",
-                  "id": "r98200-t42",
-                  "text": "FileVault 没开：电脑丢了，硬盘上的东西能直接被读出来"
-                },
-                {
-                  "component": "Text",
-                  "id": "r98200-t43",
-                  "text": "怎么办：系统设置 → 隐私与安全性 → FileVault",
-                  "variant": "caption"
-                },
-                {
-                  "component": "Text",
-                  "id": "r98200-t44",
-                  "text": "另有 18 条仅供参考，问我就列给你。",
+                  "id": "r98200-t16",
+                  "text": "另外 6 项在「螺壳扫描」里等你看。",
                   "variant": "caption"
                 }
               ],
@@ -435,7 +163,7 @@
     }
   },
   "request": {
-    "id": 9,
+    "id": 10,
     "jsonrpc": "2.0",
     "method": "tools/call",
     "params": {

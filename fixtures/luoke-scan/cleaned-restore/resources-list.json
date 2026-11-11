@@ -1,6 +1,6 @@
 {
   "reply": {
-    "id": 5,
+    "id": 3,
     "jsonrpc": "2.0",
     "result": {
       "resources": [
@@ -18,6 +18,11 @@
           "mimeType": "application/json",
           "name": "清理记录",
           "uri": "page/cleaned"
+        },
+        {
+          "mimeType": "application/json",
+          "name": "状态",
+          "uri": "page/mac"
         },
         {
           "mimeType": "application/json",
@@ -39,7 +44,7 @@
     }
   },
   "request": {
-    "id": 5,
+    "id": 3,
     "jsonrpc": "2.0",
     "method": "resources/list",
     "params": {

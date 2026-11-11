@@ -1,0 +1,41 @@
+{
+  "reply": {
+    "id": 12,
+    "jsonrpc": "2.0",
+    "result": {
+      "content": [
+        {
+          "text": "忘掉了螺壳扫描写的：记录 1 条，理解 0 条。",
+          "type": "text"
+        }
+      ],
+      "isError": false,
+      "resultType": "complete"
+    }
+  },
+  "request": {
+    "id": 12,
+    "jsonrpc": "2.0",
+    "method": "tools/call",
+    "params": {
+      "_meta": {
+        "ai.luoke/user-action": {
+          "at": "2026-11-06T10:06:00+08:00",
+          "componentId": "b10",
+          "surfaceId": "sources"
+        },
+        "io.modelcontextprotocol/clientCapabilities": {},
+        "io.modelcontextprotocol/clientInfo": {
+          "name": "luoke-agent",
+          "version": "fixtures"
+        },
+        "io.modelcontextprotocol/protocolVersion": "2026-07-28"
+      },
+      "arguments": {
+        "sure": true,
+        "tool": "luoke-scan"
+      },
+      "name": "mem_forget_tool"
+    }
+  }
+}

@@ -61,8 +61,16 @@ class FakeMail:
         self.mailbox = "granted"
         self.auto = False
         self.page_override: Optional[Any] = None   # 测试用：基础页换成这个（例如画不了的）
+        self.page_args: List[dict] = []         # 每次读页带来的参数（协议 §4 pageArgs），测试看
+        self.connected: List[bool] = []         # 加邮箱时交来的授权码对不对（协议 §4 secureField；只记对不对）
+        self.export_file: Optional[Any] = None  # 测试用：导出规则答复里的 file 换成这个
         self.find_override: Optional[dict] = None  # 测试用：搜索的答复换成这个
         self.finds: List[dict] = []
+        self.thumbs: Dict[str, Any] = {}      # 测试用：搜索结果的缩略图 `thumb/<id>` → 图的字节（协议 §1b）
+        # 测试用：像 luoke-search 那样同时最多画几张、每张画多久；满了的那张不等，直接答没有
+        self.thumb_slots: Optional[threading.Semaphore] = None
+        self.thumb_delay = 0.0
+        self.thumb_reads: List[str] = []      # 测试看：被读过的缩略图
         self.user_actions: List[dict] = []    # 会改动东西的调用带来的 ai.luoke/user-action，测试看
         self._ids = itertools.count(1)
         self.seed()
@@ -163,6 +171,7 @@ class FakeMail:
                 pub = {k: v for k, v in it.items() if not k.startswith("_")}
                 pub["card"] = it.get("_card") or cards.plan_card(
                     it["_plan"], it["_title"], it["_rows"], apply_event="mail_apply_plan", plan_id=it["_plan"],
+                    apply_label="按选的处理",
                     extra_buttons=[cards.button("在邮件助手里看", "mail_open", {"plan_id": it["_plan"]})])
                 out.append(pub)
             return {"items": out}
@@ -177,7 +186,8 @@ class FakeMail:
             return {"fda": self.fda, "contacts": self.contacts, "mailbox": self.mailbox,
                     "auto": "on" if self.auto else "off", "send": "ask"}
 
-    def page(self, page_id: str) -> Any:
+    def page(self, page_id: str, args: Optional[dict] = None) -> Any:
+        self.page_args.append(dict(args or {}))
         if self.page_override is not None:
             return self.page_override
         card = cards.Card(page_id)
@@ -192,6 +202,9 @@ class FakeMail:
                              cards.open_url_button("帮助", "https://help.example.com/mail"))
             else:
                 card.heading("规则")
+                q = (args or {}).get("q")
+                if q:
+                    card.text(f"搜「{q}」")
                 card.text("某某商城的促销：归档")
         return card.messages()
 
@@ -253,7 +266,7 @@ class FakeMail:
                 it = self.items[plan["item"]]
                 card = cards.plan_card(
                     plan_id, it["_title"], it["_rows"], apply_event="mail_apply_plan", plan_id=plan_id,
-                    note="先在邮件助手的设置里开启处理模式，再回来点。",
+                    apply_label="按选的处理", note="先在邮件助手的设置里开启处理模式，再回来点。",
                     extra_buttons=[cards.button("打开设置", "mail_open_settings")],
                     update=True, id_prefix=f"s{next(self._ids)}-")
                 raise ToolError("needs_setup", "先在邮件助手的设置里开启处理模式。", card=card)
@@ -320,6 +333,20 @@ class FakeMail:
         self.opened.append(str(args.get("plan_id")))
         return {"text": "（假工具）这里会在邮件助手里打开这批邮件。"}
 
+    def thumb(self, ref: str) -> Any:
+        """缩略图 `thumb/<id>`（协议 §1b）。给了 `thumb_slots` 时像 luoke-search：画满了的不等，答没有。"""
+        self.thumb_reads.append(ref)
+        slots = self.thumb_slots
+        if slots is not None and not slots.acquire(blocking=False):
+            return None
+        try:
+            if self.thumb_delay:
+                time.sleep(self.thumb_delay)
+            return self.thumbs.get(ref)
+        finally:
+            if slots is not None:
+                slots.release()
+
     def find(self, args: dict, meta: dict) -> dict:
         """协议 §1b 的搜索：一条结果和一张带「打开」的卡片。"""
         self.finds.append(dict(args))
@@ -333,6 +360,22 @@ class FakeMail:
     def open_settings(self, args: dict, meta: dict) -> dict:
         self.opened.append("settings")
         return {"text": "（假工具）这里会打开邮件助手的设置。"}
+
+    def connect(self, args: dict, meta: dict) -> dict:
+        """加邮箱（协议 §4 secureField）：授权码只用来核对，不记、不写回。"""
+        self._record(meta)
+        ok = args.get("code") == "abcd-efgh"
+        self.connected.append(ok)
+        if not ok:
+            raise ToolError("failed", "授权码不对。")
+        return {"text": "邮箱加上了。"}
+
+    def export_rules(self, args: dict, meta: dict) -> dict:
+        """导出规则（协议 §4 saveFile）：答复里带一个文件，窗口弹出存文件的框。"""
+        f = self.export_file if self.export_file is not None else {
+            "name": "gmail-filters.xml", "mediaType": "application/xml",
+            "text": "<?xml version='1.0' encoding='UTF-8'?><feed><entry/></feed>"}
+        return {"text": "规则文件好了，选个位置存。", "file": f}
 
     def server(self) -> ToolServer:
         s = ToolServer(ACCESSORY, "0")
@@ -354,9 +397,14 @@ class FakeMail:
         s.resource("summary", self.summary, name="概览")
         s.resource("permissions", self.permission_states, name="权限的状态")
         for p in SERVICE["pages"]:
-            s.resource(f"page/{p['id']}", lambda pid=p["id"]: self.page(pid), name=p["title"])
+            s.resource(f"page/{p['id']}", lambda a, pid=p["id"]: self.page(pid, a), name=p["title"], args=True)
+        s.tool("mail_connect", self.connect, title="加邮箱", read_only=False,
+               input_schema={"type": "object", "required": ["code"], "properties": {"code": {"type": "string"}}})
+        s.tool("mail_export_rules", self.export_rules, title="把规则导出成 Gmail 过滤器")
         s.tool("mail_find", self.find, title="搜索邮件",
                input_schema={"type": "object", "properties": {"query": {"type": "string"}, "limit": {"type": "integer"}}})
+        for i in range(1, 7):
+            s.resource(f"thumb/{i}", lambda ref=f"thumb/{i}": self.thumb(ref), name="缩略图", mime_type="image/png")
         s.tool("mail_ui_open", self.ui_open, title="打开邮件助手的窗口",
                input_schema={"type": "object", "properties": {"page": {"type": "string"}}})
         s.tool("mail_auto", self.set_auto, title="开或关促销邮件不用点就归档", read_only=False,

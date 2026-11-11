@@ -1,0 +1,207 @@
+{
+  "reply": {
+    "id": 2,
+    "jsonrpc": "2.0",
+    "result": {
+      "resultType": "complete",
+      "tools": [
+        {
+          "annotations": {
+            "destructiveHint": false,
+            "readOnlyHint": false
+          },
+          "description": "把用户在卡片上的回答交回记忆：choice 是 yes / no / past / revise / later / answer / useful / useless / never",
+          "inputSchema": {
+            "properties": {
+              "ask": {
+                "type": "integer"
+              },
+              "choice": {
+                "type": "string"
+              },
+              "text": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "ask",
+              "choice"
+            ],
+            "type": "object"
+          },
+          "name": "mem_reply",
+          "title": "交回回答"
+        },
+        {
+          "annotations": {
+            "destructiveHint": true,
+            "readOnlyHint": false
+          },
+          "description": "",
+          "inputSchema": {
+            "properties": {
+              "note": {
+                "type": "integer"
+              },
+              "op": {
+                "enum": [
+                  "confirm",
+                  "reject",
+                  "forget"
+                ],
+                "type": "string"
+              },
+              "sure": {
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "note",
+              "op"
+            ],
+            "type": "object"
+          },
+          "name": "mem_note",
+          "title": "确认、否定或忘掉一条"
+        },
+        {
+          "annotations": {
+            "destructiveHint": true,
+            "readOnlyHint": false
+          },
+          "description": "",
+          "inputSchema": {
+            "properties": {
+              "sure": {
+                "type": "boolean"
+              },
+              "tool": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "tool",
+              "sure"
+            ],
+            "type": "object"
+          },
+          "name": "mem_forget_tool",
+          "title": "忘掉某个应用写的"
+        },
+        {
+          "annotations": {
+            "destructiveHint": true,
+            "readOnlyHint": false
+          },
+          "description": "",
+          "inputSchema": {
+            "properties": {
+              "confirm": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "confirm"
+            ],
+            "type": "object"
+          },
+          "name": "mem_forget_all",
+          "title": "清空整份记忆"
+        },
+        {
+          "annotations": {
+            "destructiveHint": true,
+            "readOnlyHint": false
+          },
+          "description": "",
+          "inputSchema": {
+            "properties": {
+              "op": {
+                "enum": [
+                  "reject",
+                  "forget"
+                ],
+                "type": "string"
+              },
+              "person": {
+                "type": "integer"
+              },
+              "sure": {
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "person",
+              "op"
+            ],
+            "type": "object"
+          },
+          "name": "mem_person",
+          "title": "不是一个人，或者忘掉这个人"
+        },
+        {
+          "_meta": {
+            "ai.luoke/where": "mac"
+          },
+          "annotations": {
+            "destructiveHint": false,
+            "readOnlyHint": true
+          },
+          "description": "在 Mac 上打开螺壳记忆的页面；note 是某一条，page 是 recent 时打开最近记下的，people 时打开「人」",
+          "inputSchema": {
+            "properties": {
+              "note": {
+                "type": "integer"
+              },
+              "page": {
+                "type": "string"
+              }
+            },
+            "type": "object"
+          },
+          "name": "mem_open",
+          "title": "打开整份记忆"
+        },
+        {
+          "annotations": {
+            "destructiveHint": false,
+            "readOnlyHint": true
+          },
+          "description": "",
+          "inputSchema": {
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "state": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "id",
+              "state"
+            ],
+            "type": "object"
+          },
+          "name": "outbox_ack",
+          "title": "记下说过了"
+        }
+      ]
+    }
+  },
+  "request": {
+    "id": 2,
+    "jsonrpc": "2.0",
+    "method": "tools/list",
+    "params": {
+      "_meta": {
+        "io.modelcontextprotocol/clientCapabilities": {},
+        "io.modelcontextprotocol/clientInfo": {
+          "name": "luoke-agent",
+          "version": "fixtures"
+        },
+        "io.modelcontextprotocol/protocolVersion": "2026-07-28"
+      }
+    }
+  }
+}

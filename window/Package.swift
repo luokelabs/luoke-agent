@@ -20,7 +20,7 @@ let package = Package(
                 resources: [.copy("Resources")], swiftSettings: v5),
         .executableTarget(name: "LuokeWindowDemo", dependencies: ["LuokeWindow"], swiftSettings: v5),
         .executableTarget(name: "LuokeWindowShots", dependencies: ["LuokeWindow"], swiftSettings: v5),
-        .testTarget(name: "LuokeWindowTests", dependencies: ["LuokeWindow", .product(name: "LuokeA2UICore", package: "a2ui")],
+        .testTarget(name: "LuokeWindowTests", dependencies: ["LuokeWindow", .product(name: "LuokeA2UICore", package: "a2ui"), .product(name: "LuokeA2UI", package: "a2ui")],
                     swiftSettings: v5),
     ]
 )

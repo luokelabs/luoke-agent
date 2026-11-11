@@ -1,0 +1,1349 @@
+{
+ "_about": "scripts/window_samples.py 用 fixtures/luoke-mem/people（luoke-mem 403be74661c2）接上真核心生成的，不要手改",
+ "app": "luoke-mem",
+ "apps": {
+  "apps": [
+   {
+    "id": "luoke-mem",
+    "needs": [],
+    "pages": [
+     {
+      "id": "overview",
+      "title": "概览"
+     },
+     {
+      "id": "guesses",
+      "title": "猜测"
+     },
+     {
+      "id": "kept",
+      "title": "记下的"
+     },
+     {
+      "id": "people",
+      "title": "人"
+     },
+     {
+      "id": "sources",
+      "title": "各应用写的"
+     }
+    ],
+    "running": true,
+    "summary": {
+     "count": 1,
+     "text": "记下了 7 条，有 1 条猜测等你确认。"
+    },
+    "ui": {
+     "pages": []
+    }
+   }
+  ]
+ },
+ "asked": [
+  "read-outbox.json",
+  "read-page-guesses.json",
+  "read-page-kept.json",
+  "read-page-overview.json",
+  "read-page-people.json",
+  "read-page-sources.json",
+  "read-summary.json",
+  "tools-list.json"
+ ],
+ "clock": "2026-11-06T02:00:00Z",
+ "events": [
+  [
+   "feed",
+   {
+    "brief": {
+     "next": "2026-11-06T08:00:00+08:00"
+    },
+    "cards": [],
+    "dot": false,
+    "notices": [],
+    "open": 0,
+    "order": [],
+    "paused_until": null
+   }
+  ]
+ ],
+ "host": {},
+ "pages": {
+  "guesses": {
+   "messages": [
+    {
+     "createSurface": {
+      "catalogId": "ai.luoke/a2ui/agent/1",
+      "surfaceId": "luoke-mem/page/guesses"
+     },
+     "version": "v0.9"
+    },
+    {
+     "updateComponents": {
+      "components": [
+       {
+        "children": [
+         "h1",
+         "t2",
+         "t3",
+         "t4",
+         "r7",
+         "r9"
+        ],
+        "component": "Column",
+        "id": "root"
+       },
+       {
+        "component": "Text",
+        "id": "h1",
+        "text": "猜测",
+        "variant": "h4"
+       },
+       {
+        "component": "Text",
+        "id": "t2",
+        "text": "猜测不拿来用；你点「对」，螺壳的工具才会用它。点「不对」，以后不再提。",
+        "variant": "caption"
+       },
+       {
+        "component": "Text",
+        "id": "t3",
+        "text": "上级：Mira"
+       },
+       {
+        "component": "Text",
+        "id": "t4",
+        "text": "关于你 · 依据 1 条 · 11月5日",
+        "variant": "caption"
+       },
+       {
+        "action": {
+         "event": {
+          "context": {
+           "note": 3,
+           "op": "confirm"
+          },
+          "name": "mem_note"
+         }
+        },
+        "child": "b5-text",
+        "component": "Button",
+        "id": "b5",
+        "variant": "borderless"
+       },
+       {
+        "component": "Text",
+        "id": "b5-text",
+        "text": "对"
+       },
+       {
+        "action": {
+         "event": {
+          "context": {
+           "note": 3,
+           "op": "reject"
+          },
+          "name": "mem_note"
+         }
+        },
+        "child": "b6-text",
+        "component": "Button",
+        "id": "b6",
+        "variant": "borderless"
+       },
+       {
+        "component": "Text",
+        "id": "b6-text",
+        "text": "不对"
+       },
+       {
+        "children": [
+         "b5",
+         "b6"
+        ],
+        "component": "Row",
+        "id": "r7"
+       },
+       {
+        "action": {
+         "event": {
+          "context": {},
+          "name": "mem_open"
+         }
+        },
+        "child": "b8-text",
+        "component": "Button",
+        "id": "b8"
+       },
+       {
+        "component": "Text",
+        "id": "b8-text",
+        "text": "在整份记忆里看依据"
+       },
+       {
+        "children": [
+         "b8"
+        ],
+        "component": "Row",
+        "id": "r9"
+       }
+      ],
+      "surfaceId": "luoke-mem/page/guesses"
+     },
+     "version": "v0.9"
+    }
+   ]
+  },
+  "kept": {
+   "messages": [
+    {
+     "createSurface": {
+      "catalogId": "ai.luoke/a2ui/agent/1",
+      "surfaceId": "luoke-mem/page/kept"
+     },
+     "version": "v0.9"
+    },
+    {
+     "updateComponents": {
+      "components": [
+       {
+        "children": [
+         "h1",
+         "t2",
+         "k-sure",
+         "t3",
+         "t4",
+         "r7",
+         "t8",
+         "t9",
+         "r12",
+         "t13",
+         "t14",
+         "r17",
+         "t18",
+         "t19",
+         "r22",
+         "t23",
+         "t24",
+         "r27",
+         "t28",
+         "t29",
+         "r32",
+         "t33",
+         "t34",
+         "r37",
+         "r39"
+        ],
+        "component": "Column",
+        "id": "root"
+       },
+       {
+        "component": "Text",
+        "id": "h1",
+        "text": "记下的",
+        "variant": "h4"
+       },
+       {
+        "component": "Text",
+        "id": "t2",
+        "text": "螺壳的工具会用这些。不对的点「不对」，以后不再提；「忘掉」连它的依据一起删掉，删了找不回来。",
+        "variant": "caption"
+       },
+       {
+        "component": "CheckBox",
+        "id": "k-sure",
+        "label": "我知道删了找不回来",
+        "value": {
+         "path": "/checks/sure"
+        }
+       },
+       {
+        "component": "Text",
+        "id": "t3",
+        "text": "林晓"
+       },
+       {
+        "component": "Text",
+        "id": "t4",
+        "text": "常用说法 · 依据 2 条 · 11月5日",
+        "variant": "caption"
+       },
+       {
+        "action": {
+         "event": {
+          "context": {
+           "note": 8,
+           "op": "reject"
+          },
+          "name": "mem_note"
+         }
+        },
+        "child": "b5-text",
+        "component": "Button",
+        "id": "b5",
+        "variant": "borderless"
+       },
+       {
+        "component": "Text",
+        "id": "b5-text",
+        "text": "不对"
+       },
+       {
+        "action": {
+         "event": {
+          "context": {
+           "note": 8,
+           "op": "forget",
+           "sure": {
+            "path": "/checks/sure"
+           }
+          },
+          "name": "mem_note"
+         }
+        },
+        "child": "b6-text",
+        "component": "Button",
+        "id": "b6",
+        "variant": "borderless"
+       },
+       {
+        "component": "Text",
+        "id": "b6-text",
+        "text": "忘掉"
+       },
+       {
+        "children": [
+         "b5",
+         "b6"
+        ],
+        "component": "Row",
+        "id": "r7"
+       },
+       {
+        "component": "Text",
+        "id": "t8",
+        "text": "Lei Wang"
+       },
+       {
+        "component": "Text",
+        "id": "t9",
+        "text": "常用说法 · 依据 6 条 · 11月5日",
+        "variant": "caption"
+       },
+       {
+        "action": {
+         "event": {
+          "context": {
+           "note": 7,
+           "op": "reject"
+          },
+          "name": "mem_note"
+         }
+        },
+        "child": "b10-text",
+        "component": "Button",
+        "id": "b10",
+        "variant": "borderless"
+       },
+       {
+        "component": "Text",
+        "id": "b10-text",
+        "text": "不对"
+       },
+       {
+        "action": {
+         "event": {
+          "context": {
+           "note": 7,
+           "op": "forget",
+           "sure": {
+            "path": "/checks/sure"
+           }
+          },
+          "name": "mem_note"
+         }
+        },
+        "child": "b11-text",
+        "component": "Button",
+        "id": "b11",
+        "variant": "borderless"
+       },
+       {
+        "component": "Text",
+        "id": "b11-text",
+        "text": "忘掉"
+       },
+       {
+        "children": [
+         "b10",
+         "b11"
+        ],
+        "component": "Row",
+        "id": "r12"
+       },
+       {
+        "component": "Text",
+        "id": "t13",
+        "text": "Wang Lei"
+       },
+       {
+        "component": "Text",
+        "id": "t14",
+        "text": "常用说法 · 依据 6 条 · 11月5日",
+        "variant": "caption"
+       },
+       {
+        "action": {
+         "event": {
+          "context": {
+           "note": 6,
+           "op": "reject"
+          },
+          "name": "mem_note"
+         }
+        },
+        "child": "b15-text",
+        "component": "Button",
+        "id": "b15",
+        "variant": "borderless"
+       },
+       {
+        "component": "Text",
+        "id": "b15-text",
+        "text": "不对"
+       },
+       {
+        "action": {
+         "event": {
+          "context": {
+           "note": 6,
+           "op": "forget",
+           "sure": {
+            "path": "/checks/sure"
+           }
+          },
+          "name": "mem_note"
+         }
+        },
+        "child": "b16-text",
+        "component": "Button",
+        "id": "b16",
+        "variant": "borderless"
+       },
+       {
+        "component": "Text",
+        "id": "b16-text",
+        "text": "忘掉"
+       },
+       {
+        "children": [
+         "b15",
+         "b16"
+        ],
+        "component": "Row",
+        "id": "r17"
+       },
+       {
+        "component": "Text",
+        "id": "t18",
+        "text": "王磊"
+       },
+       {
+        "component": "Text",
+        "id": "t19",
+        "text": "常用说法 · 依据 6 条 · 11月5日",
+        "variant": "caption"
+       },
+       {
+        "action": {
+         "event": {
+          "context": {
+           "note": 5,
+           "op": "reject"
+          },
+          "name": "mem_note"
+         }
+        },
+        "child": "b20-text",
+        "component": "Button",
+        "id": "b20",
+        "variant": "borderless"
+       },
+       {
+        "component": "Text",
+        "id": "b20-text",
+        "text": "不对"
+       },
+       {
+        "action": {
+         "event": {
+          "context": {
+           "note": 5,
+           "op": "forget",
+           "sure": {
+            "path": "/checks/sure"
+           }
+          },
+          "name": "mem_note"
+         }
+        },
+        "child": "b21-text",
+        "component": "Button",
+        "id": "b21",
+        "variant": "borderless"
+       },
+       {
+        "component": "Text",
+        "id": "b21-text",
+        "text": "忘掉"
+       },
+       {
+        "children": [
+         "b20",
+         "b21"
+        ],
+        "component": "Row",
+        "id": "r22"
+       },
+       {
+        "component": "Text",
+        "id": "t23",
+        "text": "合作方：Wang Lei（wanglei@corp.example）"
+       },
+       {
+        "component": "Text",
+        "id": "t24",
+        "text": "关于你 · 依据 2 条 · 11月5日",
+        "variant": "caption"
+       },
+       {
+        "action": {
+         "event": {
+          "context": {
+           "note": 2,
+           "op": "reject"
+          },
+          "name": "mem_note"
+         }
+        },
+        "child": "b25-text",
+        "component": "Button",
+        "id": "b25",
+        "variant": "borderless"
+       },
+       {
+        "component": "Text",
+        "id": "b25-text",
+        "text": "不对"
+       },
+       {
+        "action": {
+         "event": {
+          "context": {
+           "note": 2,
+           "op": "forget",
+           "sure": {
+            "path": "/checks/sure"
+           }
+          },
+          "name": "mem_note"
+         }
+        },
+        "child": "b26-text",
+        "component": "Button",
+        "id": "b26",
+        "variant": "borderless"
+       },
+       {
+        "component": "Text",
+        "id": "b26-text",
+        "text": "忘掉"
+       },
+       {
+        "children": [
+         "b25",
+         "b26"
+        ],
+        "component": "Row",
+        "id": "r27"
+       },
+       {
+        "component": "Text",
+        "id": "t28",
+        "text": "同事：王磊（wanglei@corp.example）"
+       },
+       {
+        "component": "Text",
+        "id": "t29",
+        "text": "关于你 · 依据 2 条 · 11月5日",
+        "variant": "caption"
+       },
+       {
+        "action": {
+         "event": {
+          "context": {
+           "note": 1,
+           "op": "reject"
+          },
+          "name": "mem_note"
+         }
+        },
+        "child": "b30-text",
+        "component": "Button",
+        "id": "b30",
+        "variant": "borderless"
+       },
+       {
+        "component": "Text",
+        "id": "b30-text",
+        "text": "不对"
+       },
+       {
+        "action": {
+         "event": {
+          "context": {
+           "note": 1,
+           "op": "forget",
+           "sure": {
+            "path": "/checks/sure"
+           }
+          },
+          "name": "mem_note"
+         }
+        },
+        "child": "b31-text",
+        "component": "Button",
+        "id": "b31",
+        "variant": "borderless"
+       },
+       {
+        "component": "Text",
+        "id": "b31-text",
+        "text": "忘掉"
+       },
+       {
+        "children": [
+         "b30",
+         "b31"
+        ],
+        "component": "Row",
+        "id": "r32"
+       },
+       {
+        "component": "Text",
+        "id": "t33",
+        "text": "主控"
+       },
+       {
+        "component": "Text",
+        "id": "t34",
+        "text": "常用说法 · 依据 1 条 · 11月3日",
+        "variant": "caption"
+       },
+       {
+        "action": {
+         "event": {
+          "context": {
+           "note": 4,
+           "op": "reject"
+          },
+          "name": "mem_note"
+         }
+        },
+        "child": "b35-text",
+        "component": "Button",
+        "id": "b35",
+        "variant": "borderless"
+       },
+       {
+        "component": "Text",
+        "id": "b35-text",
+        "text": "不对"
+       },
+       {
+        "action": {
+         "event": {
+          "context": {
+           "note": 4,
+           "op": "forget",
+           "sure": {
+            "path": "/checks/sure"
+           }
+          },
+          "name": "mem_note"
+         }
+        },
+        "child": "b36-text",
+        "component": "Button",
+        "id": "b36",
+        "variant": "borderless"
+       },
+       {
+        "component": "Text",
+        "id": "b36-text",
+        "text": "忘掉"
+       },
+       {
+        "children": [
+         "b35",
+         "b36"
+        ],
+        "component": "Row",
+        "id": "r37"
+       },
+       {
+        "action": {
+         "event": {
+          "context": {},
+          "name": "mem_open"
+         }
+        },
+        "child": "b38-text",
+        "component": "Button",
+        "id": "b38"
+       },
+       {
+        "component": "Text",
+        "id": "b38-text",
+        "text": "打开整份记忆"
+       },
+       {
+        "children": [
+         "b38"
+        ],
+        "component": "Row",
+        "id": "r39"
+       }
+      ],
+      "surfaceId": "luoke-mem/page/kept"
+     },
+     "version": "v0.9"
+    },
+    {
+     "updateDataModel": {
+      "path": "/",
+      "surfaceId": "luoke-mem/page/kept",
+      "value": {
+       "checks": {
+        "sure": false
+       }
+      }
+     },
+     "version": "v0.9"
+    }
+   ]
+  },
+  "overview": {
+   "messages": [
+    {
+     "createSurface": {
+      "catalogId": "ai.luoke/a2ui/agent/1",
+      "surfaceId": "luoke-mem/page/overview"
+     },
+     "version": "v0.9"
+    },
+    {
+     "updateComponents": {
+      "components": [
+       {
+        "children": [
+         "h1",
+         "t2",
+         "t3",
+         "d4",
+         "t5",
+         "t6",
+         "t7",
+         "t8",
+         "t9",
+         "t10",
+         "t11",
+         "t12",
+         "t13",
+         "t14",
+         "t15",
+         "d16",
+         "t17",
+         "t18",
+         "t19",
+         "r21"
+        ],
+        "component": "Column",
+        "id": "root"
+       },
+       {
+        "component": "Text",
+        "id": "h1",
+        "text": "概览",
+        "variant": "h4"
+       },
+       {
+        "component": "Text",
+        "id": "t2",
+        "text": "记下了 7 条，有 1 条猜测等你确认。"
+       },
+       {
+        "component": "Text",
+        "id": "t3",
+        "text": "关于你 2 · 常用说法 5",
+        "variant": "caption"
+       },
+       {
+        "component": "Divider",
+        "id": "d4"
+       },
+       {
+        "component": "Text",
+        "id": "t5",
+        "text": "最近记下的（没问你就记下的，不对就在「记下的」里点「不对」）",
+        "variant": "caption"
+       },
+       {
+        "component": "Text",
+        "id": "t6",
+        "text": "林晓"
+       },
+       {
+        "component": "Text",
+        "id": "t7",
+        "text": "常用说法 · 根据你发出的邮件和你在邮件助手里的操作 · 11月5日",
+        "variant": "caption"
+       },
+       {
+        "component": "Text",
+        "id": "t8",
+        "text": "Lei Wang"
+       },
+       {
+        "component": "Text",
+        "id": "t9",
+        "text": "常用说法 · 根据你发出的邮件和你在邮件助手里的操作 · 11月5日",
+        "variant": "caption"
+       },
+       {
+        "component": "Text",
+        "id": "t10",
+        "text": "Wang Lei"
+       },
+       {
+        "component": "Text",
+        "id": "t11",
+        "text": "常用说法 · 根据你发出的邮件和你在邮件助手里的操作 · 11月5日",
+        "variant": "caption"
+       },
+       {
+        "component": "Text",
+        "id": "t12",
+        "text": "王磊"
+       },
+       {
+        "component": "Text",
+        "id": "t13",
+        "text": "常用说法 · 根据你发出的邮件和你在邮件助手里的操作 · 11月5日",
+        "variant": "caption"
+       },
+       {
+        "component": "Text",
+        "id": "t14",
+        "text": "合作方：Wang Lei（wanglei@corp.example）"
+       },
+       {
+        "component": "Text",
+        "id": "t15",
+        "text": "关于你 · 根据你发出的邮件和你在邮件助手里的操作 · 11月5日",
+        "variant": "caption"
+       },
+       {
+        "component": "Divider",
+        "id": "d16"
+       },
+       {
+        "component": "Text",
+        "id": "t17",
+        "text": "最近 14 天各应用记下的",
+        "variant": "caption"
+       },
+       {
+        "component": "Text",
+        "id": "t18",
+        "text": "邮件助手：6 条"
+       },
+       {
+        "component": "Text",
+        "id": "t19",
+        "text": "螺壳记忆：1 条"
+       },
+       {
+        "action": {
+         "event": {
+          "context": {},
+          "name": "mem_open"
+         }
+        },
+        "child": "b20-text",
+        "component": "Button",
+        "id": "b20"
+       },
+       {
+        "component": "Text",
+        "id": "b20-text",
+        "text": "打开整份记忆"
+       },
+       {
+        "children": [
+         "b20"
+        ],
+        "component": "Row",
+        "id": "r21"
+       }
+      ],
+      "surfaceId": "luoke-mem/page/overview"
+     },
+     "version": "v0.9"
+    }
+   ]
+  },
+  "people": {
+   "messages": [
+    {
+     "createSurface": {
+      "catalogId": "ai.luoke/a2ui/agent/1",
+      "surfaceId": "luoke-mem/page/people"
+     },
+     "version": "v0.9"
+    },
+    {
+     "updateComponents": {
+      "components": [
+       {
+        "children": [
+         "h1",
+         "t2",
+         "k-sure",
+         "t3",
+         "t4",
+         "r7",
+         "t8",
+         "t9",
+         "r12",
+         "t13",
+         "t14",
+         "r17",
+         "r19"
+        ],
+        "component": "Column",
+        "id": "root"
+       },
+       {
+        "component": "Text",
+        "id": "h1",
+        "text": "人",
+        "variant": "h4"
+       },
+       {
+        "component": "Text",
+        "id": "t2",
+        "text": "你写信给的人，和你在发出的邮件里写到的人：同一个人的几种叫法、邮箱地址和关于这个人的事放在一起。人名会给语音输入当热词。改名、两个并成一个、拆开，在整份记忆里做。",
+        "variant": "caption"
+       },
+       {
+        "component": "CheckBox",
+        "id": "k-sure",
+        "label": "我知道删了找不回来",
+        "value": {
+         "path": "/checks/sure"
+        }
+       },
+       {
+        "component": "Text",
+        "id": "t3",
+        "text": "王磊"
+       },
+       {
+        "component": "Text",
+        "id": "t4",
+        "text": "同事、合作方 · 也叫 wanglei@corp.example、Wang Lei、Lei Wang · 最近一次 2026年10月，2 个月共 15 封 · 常谈 主控 · 关于这个人的 5 条",
+        "variant": "caption"
+       },
+       {
+        "action": {
+         "event": {
+          "context": {
+           "op": "reject",
+           "person": 1
+          },
+          "name": "mem_person"
+         }
+        },
+        "child": "b5-text",
+        "component": "Button",
+        "id": "b5",
+        "variant": "borderless"
+       },
+       {
+        "component": "Text",
+        "id": "b5-text",
+        "text": "不是一个人"
+       },
+       {
+        "action": {
+         "event": {
+          "context": {
+           "op": "forget",
+           "person": 1,
+           "sure": {
+            "path": "/checks/sure"
+           }
+          },
+          "name": "mem_person"
+         }
+        },
+        "child": "b6-text",
+        "component": "Button",
+        "id": "b6",
+        "variant": "borderless"
+       },
+       {
+        "component": "Text",
+        "id": "b6-text",
+        "text": "忘掉"
+       },
+       {
+        "children": [
+         "b5",
+         "b6"
+        ],
+        "component": "Row",
+        "id": "r7"
+       },
+       {
+        "component": "Text",
+        "id": "t8",
+        "text": "Mira"
+       },
+       {
+        "component": "Text",
+        "id": "t9",
+        "text": "上级 · 猜测 · 关于这个人的 1 条",
+        "variant": "caption"
+       },
+       {
+        "action": {
+         "event": {
+          "context": {
+           "op": "reject",
+           "person": 2
+          },
+          "name": "mem_person"
+         }
+        },
+        "child": "b10-text",
+        "component": "Button",
+        "id": "b10",
+        "variant": "borderless"
+       },
+       {
+        "component": "Text",
+        "id": "b10-text",
+        "text": "不是一个人"
+       },
+       {
+        "action": {
+         "event": {
+          "context": {
+           "op": "forget",
+           "person": 2,
+           "sure": {
+            "path": "/checks/sure"
+           }
+          },
+          "name": "mem_person"
+         }
+        },
+        "child": "b11-text",
+        "component": "Button",
+        "id": "b11",
+        "variant": "borderless"
+       },
+       {
+        "component": "Text",
+        "id": "b11-text",
+        "text": "忘掉"
+       },
+       {
+        "children": [
+         "b10",
+         "b11"
+        ],
+        "component": "Row",
+        "id": "r12"
+       },
+       {
+        "component": "Text",
+        "id": "t13",
+        "text": "林晓"
+       },
+       {
+        "component": "Text",
+        "id": "t14",
+        "text": "也叫 linxiao@corp.example · 最近一次 2026年10月，2 个月共 5 封 · 关于这个人的 1 条",
+        "variant": "caption"
+       },
+       {
+        "action": {
+         "event": {
+          "context": {
+           "op": "reject",
+           "person": 3
+          },
+          "name": "mem_person"
+         }
+        },
+        "child": "b15-text",
+        "component": "Button",
+        "id": "b15",
+        "variant": "borderless"
+       },
+       {
+        "component": "Text",
+        "id": "b15-text",
+        "text": "不是一个人"
+       },
+       {
+        "action": {
+         "event": {
+          "context": {
+           "op": "forget",
+           "person": 3,
+           "sure": {
+            "path": "/checks/sure"
+           }
+          },
+          "name": "mem_person"
+         }
+        },
+        "child": "b16-text",
+        "component": "Button",
+        "id": "b16",
+        "variant": "borderless"
+       },
+       {
+        "component": "Text",
+        "id": "b16-text",
+        "text": "忘掉"
+       },
+       {
+        "children": [
+         "b15",
+         "b16"
+        ],
+        "component": "Row",
+        "id": "r17"
+       },
+       {
+        "action": {
+         "event": {
+          "context": {
+           "page": "people"
+          },
+          "name": "mem_open"
+         }
+        },
+        "child": "b18-text",
+        "component": "Button",
+        "id": "b18"
+       },
+       {
+        "component": "Text",
+        "id": "b18-text",
+        "text": "在整份记忆里看"
+       },
+       {
+        "children": [
+         "b18"
+        ],
+        "component": "Row",
+        "id": "r19"
+       }
+      ],
+      "surfaceId": "luoke-mem/page/people"
+     },
+     "version": "v0.9"
+    },
+    {
+     "updateDataModel": {
+      "path": "/",
+      "surfaceId": "luoke-mem/page/people",
+      "value": {
+       "checks": {
+        "sure": false
+       }
+      }
+     },
+     "version": "v0.9"
+    }
+   ]
+  },
+  "sources": {
+   "messages": [
+    {
+     "createSurface": {
+      "catalogId": "ai.luoke/a2ui/agent/1",
+      "surfaceId": "luoke-mem/page/sources"
+     },
+     "version": "v0.9"
+    },
+    {
+     "updateComponents": {
+      "components": [
+       {
+        "children": [
+         "h1",
+         "t2",
+         "k-sure",
+         "t3",
+         "r5",
+         "t6",
+         "d7",
+         "t8",
+         "f-clear",
+         "r10"
+        ],
+        "component": "Column",
+        "id": "root"
+       },
+       {
+        "component": "Text",
+        "id": "h1",
+        "text": "各应用写的",
+        "variant": "h4"
+       },
+       {
+        "component": "Text",
+        "id": "t2",
+        "text": "忘掉某个应用写的：它的记录、它归纳的、只靠它的记录得出的理解都删掉；你确认过、否定过、改过的留下。删了找不回来。",
+        "variant": "caption"
+       },
+       {
+        "component": "CheckBox",
+        "id": "k-sure",
+        "label": "我知道删了找不回来",
+        "value": {
+         "path": "/checks/sure"
+        }
+       },
+       {
+        "component": "Text",
+        "id": "t3",
+        "text": "邮件助手：记录 9 条，理解 3 条"
+       },
+       {
+        "action": {
+         "event": {
+          "context": {
+           "sure": {
+            "path": "/checks/sure"
+           },
+           "tool": "luoke-mail"
+          },
+          "name": "mem_forget_tool"
+         }
+        },
+        "child": "b4-text",
+        "component": "Button",
+        "id": "b4",
+        "variant": "borderless"
+       },
+       {
+        "component": "Text",
+        "id": "b4-text",
+        "text": "忘掉邮件助手写的"
+       },
+       {
+        "children": [
+         "b4"
+        ],
+        "component": "Row",
+        "id": "r5"
+       },
+       {
+        "component": "Text",
+        "id": "t6",
+        "text": "你说的和记忆归纳的：理解 5 条（在「记下的」里一条条删，或者清空整份记忆）",
+        "variant": "caption"
+       },
+       {
+        "component": "Divider",
+        "id": "d7"
+       },
+       {
+        "component": "Text",
+        "id": "t8",
+        "text": "清空整份记忆：所有应用写的和记忆归纳的都删掉，找不回来。要清空，在下面输入「清空」。",
+        "variant": "caption"
+       },
+       {
+        "component": "TextField",
+        "id": "f-clear",
+        "label": "输入「清空」",
+        "value": {
+         "path": "/fields/clear"
+        }
+       },
+       {
+        "action": {
+         "event": {
+          "context": {
+           "confirm": {
+            "path": "/fields/clear"
+           }
+          },
+          "name": "mem_forget_all"
+         }
+        },
+        "child": "b9-text",
+        "component": "Button",
+        "id": "b9"
+       },
+       {
+        "component": "Text",
+        "id": "b9-text",
+        "text": "清空整份记忆"
+       },
+       {
+        "children": [
+         "b9"
+        ],
+        "component": "Row",
+        "id": "r10"
+       }
+      ],
+      "surfaceId": "luoke-mem/page/sources"
+     },
+     "version": "v0.9"
+    },
+    {
+     "updateDataModel": {
+      "path": "/",
+      "surfaceId": "luoke-mem/page/sources",
+      "value": {
+       "checks": {
+        "sure": false
+       },
+       "fields": {
+        "clear": ""
+       }
+      }
+     },
+     "version": "v0.9"
+    }
+   ]
+  }
+ },
+ "permissions": {
+  "rows": []
+ },
+ "replies": [],
+ "scenario": "people",
+ "title": "记忆认出的人",
+ "version": "$VERSION"
+}

@@ -1,6 +1,6 @@
 {
   "reply": {
-    "id": 12,
+    "id": 13,
     "jsonrpc": "2.0",
     "result": {
       "contents": [
@@ -8,7 +8,7 @@
           "mimeType": "application/json",
           "text": {
             "count": 8,
-            "text": "能清出 62.9 MB，另外有 7 件事值得看一眼"
+            "text": "7 项等你处理"
           },
           "uri": "summary"
         }
@@ -17,7 +17,7 @@
     }
   },
   "request": {
-    "id": 12,
+    "id": 13,
     "jsonrpc": "2.0",
     "method": "resources/read",
     "params": {

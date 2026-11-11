@@ -1,0 +1,984 @@
+{
+  "reply": {
+    "id": 4,
+    "jsonrpc": "2.0",
+    "result": {
+      "contents": [
+        {
+          "mimeType": "application/json",
+          "text": {
+            "items": [
+              {
+                "card": [
+                  {
+                    "createSurface": {
+                      "catalogId": "ai.luoke/a2ui/agent/1",
+                      "surfaceId": "ask-3"
+                    },
+                    "version": "v0.9"
+                  },
+                  {
+                    "updateComponents": {
+                      "components": [
+                        {
+                          "children": [
+                            "h1",
+                            "t2",
+                            "t3",
+                            "t4",
+                            "t5",
+                            "f-revise",
+                            "r12"
+                          ],
+                          "component": "Column",
+                          "id": "root"
+                        },
+                        {
+                          "component": "Text",
+                          "id": "h1",
+                          "text": "记忆想问你",
+                          "variant": "h4"
+                        },
+                        {
+                          "component": "Text",
+                          "id": "t2",
+                          "text": "「爬山」，对吗？"
+                        },
+                        {
+                          "component": "Text",
+                          "id": "t3",
+                          "text": "打字里谈到爬香山，只有一天。确认后，邮件助手挑订阅精选时会优先这个话题。"
+                        },
+                        {
+                          "component": "Text",
+                          "id": "t4",
+                          "text": "依据",
+                          "variant": "caption"
+                        },
+                        {
+                          "component": "Text",
+                          "id": "t5",
+                          "text": "螺壳输入法 · 11月5日：这周末又要去爬香山",
+                          "variant": "caption"
+                        },
+                        {
+                          "component": "TextField",
+                          "id": "f-revise",
+                          "label": "不太对的话，改成",
+                          "value": {
+                            "path": "/fields/revise"
+                          }
+                        },
+                        {
+                          "action": {
+                            "event": {
+                              "context": {
+                                "ask": 3,
+                                "choice": "yes"
+                              },
+                              "name": "mem_reply"
+                            }
+                          },
+                          "child": "b6-text",
+                          "component": "Button",
+                          "id": "b6",
+                          "variant": "primary"
+                        },
+                        {
+                          "component": "Text",
+                          "id": "b6-text",
+                          "text": "对"
+                        },
+                        {
+                          "action": {
+                            "event": {
+                              "context": {
+                                "ask": 3,
+                                "choice": "no"
+                              },
+                              "name": "mem_reply"
+                            }
+                          },
+                          "child": "b7-text",
+                          "component": "Button",
+                          "id": "b7"
+                        },
+                        {
+                          "component": "Text",
+                          "id": "b7-text",
+                          "text": "不对"
+                        },
+                        {
+                          "action": {
+                            "event": {
+                              "context": {
+                                "ask": 3,
+                                "choice": "past"
+                              },
+                              "name": "mem_reply"
+                            }
+                          },
+                          "child": "b8-text",
+                          "component": "Button",
+                          "id": "b8"
+                        },
+                        {
+                          "component": "Text",
+                          "id": "b8-text",
+                          "text": "以前是，现在不是"
+                        },
+                        {
+                          "action": {
+                            "event": {
+                              "context": {
+                                "ask": 3,
+                                "choice": "revise",
+                                "text": {
+                                  "path": "/fields/revise"
+                                }
+                              },
+                              "name": "mem_reply"
+                            }
+                          },
+                          "child": "b9-text",
+                          "component": "Button",
+                          "id": "b9"
+                        },
+                        {
+                          "component": "Text",
+                          "id": "b9-text",
+                          "text": "按我改的"
+                        },
+                        {
+                          "action": {
+                            "event": {
+                              "context": {
+                                "ask": 3,
+                                "choice": "later"
+                              },
+                              "name": "mem_reply"
+                            }
+                          },
+                          "child": "b10-text",
+                          "component": "Button",
+                          "id": "b10"
+                        },
+                        {
+                          "component": "Text",
+                          "id": "b10-text",
+                          "text": "以后再说"
+                        },
+                        {
+                          "action": {
+                            "event": {
+                              "context": {
+                                "note": 3
+                              },
+                              "name": "mem_open"
+                            }
+                          },
+                          "child": "b11-text",
+                          "component": "Button",
+                          "id": "b11"
+                        },
+                        {
+                          "component": "Text",
+                          "id": "b11-text",
+                          "text": "在螺壳记忆里看"
+                        },
+                        {
+                          "children": [
+                            "b6",
+                            "b7",
+                            "b8",
+                            "b9",
+                            "b10",
+                            "b11"
+                          ],
+                          "component": "Row",
+                          "id": "r12"
+                        }
+                      ],
+                      "surfaceId": "ask-3"
+                    },
+                    "version": "v0.9"
+                  },
+                  {
+                    "updateDataModel": {
+                      "path": "/",
+                      "surfaceId": "ask-3",
+                      "value": {
+                        "fields": {
+                          "revise": ""
+                        }
+                      }
+                    },
+                    "version": "v0.9"
+                  }
+                ],
+                "created": "2026-11-05T20:45:00",
+                "deadline": null,
+                "expires": "2026-11-20T10:00:00",
+                "id": "ask/3",
+                "kind": "question",
+                "summary": "打字里谈到爬香山，只有一天。确认后，邮件助手挑订阅精选时会优先这个话题。",
+                "title": "记忆想问：「爬山」，对吗？",
+                "urgency": "normal",
+                "why_now": "打字里谈到爬香山，只有一天。确认后，邮件助手挑订阅精选时会优先这个话题。"
+              },
+              {
+                "card": [
+                  {
+                    "createSurface": {
+                      "catalogId": "ai.luoke/a2ui/agent/1",
+                      "surfaceId": "ask-2"
+                    },
+                    "version": "v0.9"
+                  },
+                  {
+                    "updateComponents": {
+                      "components": [
+                        {
+                          "children": [
+                            "h1",
+                            "t2",
+                            "t3",
+                            "t4",
+                            "t5",
+                            "f-revise",
+                            "r12"
+                          ],
+                          "component": "Column",
+                          "id": "root"
+                        },
+                        {
+                          "component": "Text",
+                          "id": "h1",
+                          "text": "记忆想问你",
+                          "variant": "h4"
+                        },
+                        {
+                          "component": "Text",
+                          "id": "t2",
+                          "text": "「在读博士」，对吗？"
+                        },
+                        {
+                          "component": "Text",
+                          "id": "t3",
+                          "text": "打字里说到导师和开题，记忆不确定是不是在读博士。确认后，邮件助手起草回复时会知道。"
+                        },
+                        {
+                          "component": "Text",
+                          "id": "t4",
+                          "text": "依据",
+                          "variant": "caption"
+                        },
+                        {
+                          "component": "Text",
+                          "id": "t5",
+                          "text": "螺壳输入法 · 11月3日：下午和导师过一下开题",
+                          "variant": "caption"
+                        },
+                        {
+                          "component": "TextField",
+                          "id": "f-revise",
+                          "label": "不太对的话，改成",
+                          "value": {
+                            "path": "/fields/revise"
+                          }
+                        },
+                        {
+                          "action": {
+                            "event": {
+                              "context": {
+                                "ask": 2,
+                                "choice": "yes"
+                              },
+                              "name": "mem_reply"
+                            }
+                          },
+                          "child": "b6-text",
+                          "component": "Button",
+                          "id": "b6",
+                          "variant": "primary"
+                        },
+                        {
+                          "component": "Text",
+                          "id": "b6-text",
+                          "text": "对"
+                        },
+                        {
+                          "action": {
+                            "event": {
+                              "context": {
+                                "ask": 2,
+                                "choice": "no"
+                              },
+                              "name": "mem_reply"
+                            }
+                          },
+                          "child": "b7-text",
+                          "component": "Button",
+                          "id": "b7"
+                        },
+                        {
+                          "component": "Text",
+                          "id": "b7-text",
+                          "text": "不对"
+                        },
+                        {
+                          "action": {
+                            "event": {
+                              "context": {
+                                "ask": 2,
+                                "choice": "past"
+                              },
+                              "name": "mem_reply"
+                            }
+                          },
+                          "child": "b8-text",
+                          "component": "Button",
+                          "id": "b8"
+                        },
+                        {
+                          "component": "Text",
+                          "id": "b8-text",
+                          "text": "以前是，现在不是"
+                        },
+                        {
+                          "action": {
+                            "event": {
+                              "context": {
+                                "ask": 2,
+                                "choice": "revise",
+                                "text": {
+                                  "path": "/fields/revise"
+                                }
+                              },
+                              "name": "mem_reply"
+                            }
+                          },
+                          "child": "b9-text",
+                          "component": "Button",
+                          "id": "b9"
+                        },
+                        {
+                          "component": "Text",
+                          "id": "b9-text",
+                          "text": "按我改的"
+                        },
+                        {
+                          "action": {
+                            "event": {
+                              "context": {
+                                "ask": 2,
+                                "choice": "later"
+                              },
+                              "name": "mem_reply"
+                            }
+                          },
+                          "child": "b10-text",
+                          "component": "Button",
+                          "id": "b10"
+                        },
+                        {
+                          "component": "Text",
+                          "id": "b10-text",
+                          "text": "以后再说"
+                        },
+                        {
+                          "action": {
+                            "event": {
+                              "context": {
+                                "note": 2
+                              },
+                              "name": "mem_open"
+                            }
+                          },
+                          "child": "b11-text",
+                          "component": "Button",
+                          "id": "b11"
+                        },
+                        {
+                          "component": "Text",
+                          "id": "b11-text",
+                          "text": "在螺壳记忆里看"
+                        },
+                        {
+                          "children": [
+                            "b6",
+                            "b7",
+                            "b8",
+                            "b9",
+                            "b10",
+                            "b11"
+                          ],
+                          "component": "Row",
+                          "id": "r12"
+                        }
+                      ],
+                      "surfaceId": "ask-2"
+                    },
+                    "version": "v0.9"
+                  },
+                  {
+                    "updateDataModel": {
+                      "path": "/",
+                      "surfaceId": "ask-2",
+                      "value": {
+                        "fields": {
+                          "revise": ""
+                        }
+                      }
+                    },
+                    "version": "v0.9"
+                  }
+                ],
+                "created": "2026-11-05T20:45:00",
+                "deadline": null,
+                "expires": "2026-11-20T10:00:00",
+                "id": "ask/2",
+                "kind": "question",
+                "summary": "打字里说到导师和开题，记忆不确定是不是在读博士。确认后，邮件助手起草回复时会知道。",
+                "title": "记忆想问：「在读博士」，对吗？",
+                "urgency": "normal",
+                "why_now": "打字里说到导师和开题，记忆不确定是不是在读博士。确认后，邮件助手起草回复时会知道。"
+              },
+              {
+                "card": [
+                  {
+                    "createSurface": {
+                      "catalogId": "ai.luoke/a2ui/agent/1",
+                      "surfaceId": "ask-1"
+                    },
+                    "version": "v0.9"
+                  },
+                  {
+                    "updateComponents": {
+                      "components": [
+                        {
+                          "children": [
+                            "h1",
+                            "t2",
+                            "t3",
+                            "t4",
+                            "t5",
+                            "f-revise",
+                            "r12"
+                          ],
+                          "component": "Column",
+                          "id": "root"
+                        },
+                        {
+                          "component": "Text",
+                          "id": "h1",
+                          "text": "记忆想问你",
+                          "variant": "h4"
+                        },
+                        {
+                          "component": "Text",
+                          "id": "t2",
+                          "text": "「本地大模型」，对吗？"
+                        },
+                        {
+                          "component": "Text",
+                          "id": "t3",
+                          "text": "这几天打字常谈到「本地大模型」。确认后，邮件助手挑订阅精选时会优先这个话题。"
+                        },
+                        {
+                          "component": "Text",
+                          "id": "t4",
+                          "text": "依据",
+                          "variant": "caption"
+                        },
+                        {
+                          "component": "Text",
+                          "id": "t5",
+                          "text": "螺壳输入法 · 10月28日：本地大模型的量化到底掉多少点",
+                          "variant": "caption"
+                        },
+                        {
+                          "component": "TextField",
+                          "id": "f-revise",
+                          "label": "不太对的话，改成",
+                          "value": {
+                            "path": "/fields/revise"
+                          }
+                        },
+                        {
+                          "action": {
+                            "event": {
+                              "context": {
+                                "ask": 1,
+                                "choice": "yes"
+                              },
+                              "name": "mem_reply"
+                            }
+                          },
+                          "child": "b6-text",
+                          "component": "Button",
+                          "id": "b6",
+                          "variant": "primary"
+                        },
+                        {
+                          "component": "Text",
+                          "id": "b6-text",
+                          "text": "对"
+                        },
+                        {
+                          "action": {
+                            "event": {
+                              "context": {
+                                "ask": 1,
+                                "choice": "no"
+                              },
+                              "name": "mem_reply"
+                            }
+                          },
+                          "child": "b7-text",
+                          "component": "Button",
+                          "id": "b7"
+                        },
+                        {
+                          "component": "Text",
+                          "id": "b7-text",
+                          "text": "不对"
+                        },
+                        {
+                          "action": {
+                            "event": {
+                              "context": {
+                                "ask": 1,
+                                "choice": "past"
+                              },
+                              "name": "mem_reply"
+                            }
+                          },
+                          "child": "b8-text",
+                          "component": "Button",
+                          "id": "b8"
+                        },
+                        {
+                          "component": "Text",
+                          "id": "b8-text",
+                          "text": "以前是，现在不是"
+                        },
+                        {
+                          "action": {
+                            "event": {
+                              "context": {
+                                "ask": 1,
+                                "choice": "revise",
+                                "text": {
+                                  "path": "/fields/revise"
+                                }
+                              },
+                              "name": "mem_reply"
+                            }
+                          },
+                          "child": "b9-text",
+                          "component": "Button",
+                          "id": "b9"
+                        },
+                        {
+                          "component": "Text",
+                          "id": "b9-text",
+                          "text": "按我改的"
+                        },
+                        {
+                          "action": {
+                            "event": {
+                              "context": {
+                                "ask": 1,
+                                "choice": "later"
+                              },
+                              "name": "mem_reply"
+                            }
+                          },
+                          "child": "b10-text",
+                          "component": "Button",
+                          "id": "b10"
+                        },
+                        {
+                          "component": "Text",
+                          "id": "b10-text",
+                          "text": "以后再说"
+                        },
+                        {
+                          "action": {
+                            "event": {
+                              "context": {
+                                "note": 1
+                              },
+                              "name": "mem_open"
+                            }
+                          },
+                          "child": "b11-text",
+                          "component": "Button",
+                          "id": "b11"
+                        },
+                        {
+                          "component": "Text",
+                          "id": "b11-text",
+                          "text": "在螺壳记忆里看"
+                        },
+                        {
+                          "children": [
+                            "b6",
+                            "b7",
+                            "b8",
+                            "b9",
+                            "b10",
+                            "b11"
+                          ],
+                          "component": "Row",
+                          "id": "r12"
+                        }
+                      ],
+                      "surfaceId": "ask-1"
+                    },
+                    "version": "v0.9"
+                  },
+                  {
+                    "updateDataModel": {
+                      "path": "/",
+                      "surfaceId": "ask-1",
+                      "value": {
+                        "fields": {
+                          "revise": ""
+                        }
+                      }
+                    },
+                    "version": "v0.9"
+                  }
+                ],
+                "created": "2026-11-05T20:45:00",
+                "deadline": null,
+                "expires": "2026-11-20T10:00:00",
+                "id": "ask/1",
+                "kind": "question",
+                "summary": "这几天打字常谈到「本地大模型」。确认后，邮件助手挑订阅精选时会优先这个话题。",
+                "title": "记忆想问：「本地大模型」，对吗？",
+                "urgency": "normal",
+                "why_now": "这几天打字常谈到「本地大模型」。确认后，邮件助手挑订阅精选时会优先这个话题。"
+              },
+              {
+                "card": [
+                  {
+                    "createSurface": {
+                      "catalogId": "ai.luoke/a2ui/agent/1",
+                      "surfaceId": "ask-4"
+                    },
+                    "version": "v0.9"
+                  },
+                  {
+                    "updateComponents": {
+                      "components": [
+                        {
+                          "children": [
+                            "h1",
+                            "t2",
+                            "t3",
+                            "t4",
+                            "t5",
+                            "r10"
+                          ],
+                          "component": "Column",
+                          "id": "root"
+                        },
+                        {
+                          "component": "Text",
+                          "id": "h1",
+                          "text": "记忆有个建议",
+                          "variant": "h4"
+                        },
+                        {
+                          "component": "Text",
+                          "id": "t2",
+                          "text": "以后某商城的促销邮件都归档？"
+                        },
+                        {
+                          "component": "Text",
+                          "id": "t3",
+                          "text": "这个月你亲手归档了 6 封某商城的促销。"
+                        },
+                        {
+                          "component": "Text",
+                          "id": "t4",
+                          "text": "依据",
+                          "variant": "caption"
+                        },
+                        {
+                          "component": "Text",
+                          "id": "t5",
+                          "text": "邮件助手 · 11月5日：亲手归档：某商城 · 促销",
+                          "variant": "caption"
+                        },
+                        {
+                          "action": {
+                            "event": {
+                              "context": {
+                                "ask": 4,
+                                "choice": "useful"
+                              },
+                              "name": "mem_reply"
+                            }
+                          },
+                          "child": "b6-text",
+                          "component": "Button",
+                          "id": "b6",
+                          "variant": "primary"
+                        },
+                        {
+                          "component": "Text",
+                          "id": "b6-text",
+                          "text": "好"
+                        },
+                        {
+                          "action": {
+                            "event": {
+                              "context": {
+                                "ask": 4,
+                                "choice": "useless"
+                              },
+                              "name": "mem_reply"
+                            }
+                          },
+                          "child": "b7-text",
+                          "component": "Button",
+                          "id": "b7"
+                        },
+                        {
+                          "component": "Text",
+                          "id": "b7-text",
+                          "text": "不用"
+                        },
+                        {
+                          "action": {
+                            "event": {
+                              "context": {
+                                "ask": 4,
+                                "choice": "never"
+                              },
+                              "name": "mem_reply"
+                            }
+                          },
+                          "child": "b8-text",
+                          "component": "Button",
+                          "id": "b8"
+                        },
+                        {
+                          "component": "Text",
+                          "id": "b8-text",
+                          "text": "别再提"
+                        },
+                        {
+                          "action": {
+                            "event": {
+                              "context": {
+                                "note": 4
+                              },
+                              "name": "mem_open"
+                            }
+                          },
+                          "child": "b9-text",
+                          "component": "Button",
+                          "id": "b9"
+                        },
+                        {
+                          "component": "Text",
+                          "id": "b9-text",
+                          "text": "在螺壳记忆里看"
+                        },
+                        {
+                          "children": [
+                            "b6",
+                            "b7",
+                            "b8",
+                            "b9"
+                          ],
+                          "component": "Row",
+                          "id": "r10"
+                        }
+                      ],
+                      "surfaceId": "ask-4"
+                    },
+                    "version": "v0.9"
+                  }
+                ],
+                "created": "2026-11-05T20:45:00",
+                "deadline": null,
+                "expires": "2026-11-20T10:00:00",
+                "id": "ask/4",
+                "kind": "suggestion",
+                "summary": "这个月你亲手归档了 6 封某商城的促销。",
+                "title": "记忆建议：以后某商城的促销邮件都归档？",
+                "urgency": "normal",
+                "why_now": "这个月你亲手归档了 6 封某商城的促销。"
+              },
+              {
+                "card": [
+                  {
+                    "createSurface": {
+                      "catalogId": "ai.luoke/a2ui/agent/1",
+                      "surfaceId": "ask-5"
+                    },
+                    "version": "v0.9"
+                  },
+                  {
+                    "updateComponents": {
+                      "components": [
+                        {
+                          "children": [
+                            "h1",
+                            "t2",
+                            "t3",
+                            "c-reply",
+                            "r6"
+                          ],
+                          "component": "Column",
+                          "id": "root"
+                        },
+                        {
+                          "component": "Text",
+                          "id": "h1",
+                          "text": "记忆想问你",
+                          "variant": "h4"
+                        },
+                        {
+                          "component": "Text",
+                          "id": "t2",
+                          "text": "你的论文主要是哪个方向？"
+                        },
+                        {
+                          "component": "Text",
+                          "id": "t3",
+                          "text": "邮件里常提到论文，知道方向以后挑精选更准。"
+                        },
+                        {
+                          "component": "ChoicePicker",
+                          "id": "c-reply",
+                          "label": "选一个",
+                          "options": [
+                            {
+                              "label": "机器学习",
+                              "value": "机器学习"
+                            },
+                            {
+                              "label": "系统",
+                              "value": "系统"
+                            },
+                            {
+                              "label": "别的",
+                              "value": "别的"
+                            }
+                          ],
+                          "value": {
+                            "path": "/choices/reply"
+                          }
+                        },
+                        {
+                          "action": {
+                            "event": {
+                              "context": {
+                                "ask": 5,
+                                "choice": "answer",
+                                "text": {
+                                  "path": "/choices/reply"
+                                }
+                              },
+                              "name": "mem_reply"
+                            }
+                          },
+                          "child": "b4-text",
+                          "component": "Button",
+                          "id": "b4",
+                          "variant": "primary"
+                        },
+                        {
+                          "component": "Text",
+                          "id": "b4-text",
+                          "text": "交回"
+                        },
+                        {
+                          "action": {
+                            "event": {
+                              "context": {
+                                "ask": 5,
+                                "choice": "later"
+                              },
+                              "name": "mem_reply"
+                            }
+                          },
+                          "child": "b5-text",
+                          "component": "Button",
+                          "id": "b5"
+                        },
+                        {
+                          "component": "Text",
+                          "id": "b5-text",
+                          "text": "以后再说"
+                        },
+                        {
+                          "children": [
+                            "b4",
+                            "b5"
+                          ],
+                          "component": "Row",
+                          "id": "r6"
+                        }
+                      ],
+                      "surfaceId": "ask-5"
+                    },
+                    "version": "v0.9"
+                  },
+                  {
+                    "updateDataModel": {
+                      "path": "/",
+                      "surfaceId": "ask-5",
+                      "value": {
+                        "choices": {
+                          "reply": [
+                            "机器学习"
+                          ]
+                        }
+                      }
+                    },
+                    "version": "v0.9"
+                  }
+                ],
+                "created": "2026-11-05T20:45:00",
+                "deadline": null,
+                "expires": "2026-11-20T10:00:00",
+                "id": "ask/5",
+                "kind": "question",
+                "summary": "邮件里常提到论文，知道方向以后挑精选更准。",
+                "title": "记忆想问：你的论文主要是哪个方向？",
+                "urgency": "normal",
+                "why_now": "邮件里常提到论文，知道方向以后挑精选更准。"
+              }
+            ]
+          },
+          "uri": "luoke://luoke-mem/outbox"
+        }
+      ],
+      "resultType": "complete"
+    }
+  },
+  "request": {
+    "id": 4,
+    "jsonrpc": "2.0",
+    "method": "resources/read",
+    "params": {
+      "_meta": {
+        "io.modelcontextprotocol/clientCapabilities": {},
+        "io.modelcontextprotocol/clientInfo": {
+          "name": "luoke-agent",
+          "version": "fixtures"
+        },
+        "io.modelcontextprotocol/protocolVersion": "2026-07-28"
+      },
+      "uri": "luoke://luoke-mem/outbox"
+    }
+  }
+}

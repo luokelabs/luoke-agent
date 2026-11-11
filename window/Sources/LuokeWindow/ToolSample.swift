@@ -19,15 +19,24 @@ public struct ToolSample {
     public let pages: [String: JSONValue]
     /// `GET /permissions` 的行
     public let permissions: [JSONValue]
+    /// 用户点了卡片上的按钮、工具答复的卡片（样例里的 call-*.json）：（文件名，窗口里的卡片 id，A2UI 消息，答复的那句话）
+    public var replies: [(file: String, surface: String, card: [JSONValue], text: String)] = []
     /// 螺壳.app 报的、在螺壳名下的权限（`POST /host`）
     public let host: [String: String]
 
     /// 截图、测试默认用的扫描场景：第一次扫描、还没给完全磁盘访问（新用户最先看到的）
     public static let defaultScan = "first-run-no-fda"
-    /// 截图、测试默认用的邮件助手场景。还没录（没有这个文件）时，邮件助手的部分照旧手写
-    public static let defaultMail = "morning"
+    /// 截图、测试默认用的邮件助手场景
+    public static var defaultMail: String { local.scenario ?? "suspicious" }
     /// 用了一阵的开发机：一轮查出一长串（一张很长的卡片）。截图里「螺壳.app 现在的样子」默认用它，和真机上常见的一样
-    public static let fullScan = "full-report"
+    public static var fullScan: String { local.scenario ?? "full-report" }
+
+    /// 本机录的一轮（只在本机看，不进仓库）：`LUOKE_WINDOW_SAMPLES=<目录>` 先从 `<目录>/<工具>/<场景>.json` 找，
+    /// `LUOKE_WINDOW_SCENARIO=<场景>` 让截图默认用那个场景（邮件、扫描一样）
+    static var local: (dir: String?, scenario: String?) {
+        let env = ProcessInfo.processInfo.environment
+        return (env["LUOKE_WINDOW_SAMPLES"].flatMap { $0.isEmpty ? nil : $0 }, env["LUOKE_WINDOW_SCENARIO"].flatMap { $0.isEmpty ? nil : $0 })
+    }
 
     private static func dir(_ app: String) -> String { "Resources/samples/\(app)" }
 
@@ -37,18 +46,33 @@ public struct ToolSample {
             .map { $0.deletingPathExtension().lastPathComponent }.sorted()
     }
 
-    public static func load(_ app: String, _ scenario: String) -> ToolSample? {
-        guard let url = ResourceBundle.bundle?.url(forResource: scenario, withExtension: "json", subdirectory: dir(app)),
-              let data = try? Data(contentsOf: url), let v = try? JSONValue.parse(data) else { return nil }
+    /// 截图用：读样例时把这些字换掉（看超长文件名的样子）。只在画一张图的那一下设，画完清空
+    @MainActor static var renames: [(String, String)] = []
+
+    @MainActor public static func load(_ app: String, _ scenario: String) -> ToolSample? {
+        let mine = local.dir.map { URL(fileURLWithPath: $0).appendingPathComponent(app).appendingPathComponent(scenario + ".json") }
+        guard let url = mine.flatMap({ FileManager.default.fileExists(atPath: $0.path) ? $0 : nil })
+                ?? ResourceBundle.bundle?.url(forResource: scenario, withExtension: "json", subdirectory: dir(app)),
+              var data = try? Data(contentsOf: url) else { return nil }
+        if !renames.isEmpty, var text = String(data: data, encoding: .utf8) {
+            for (a, b) in renames { text = text.replacingOccurrences(of: a, with: b) }
+            data = Data(text.utf8)
+        }
+        guard let v = try? JSONValue.parse(data) else { return nil }
         let events: [(String, Data)] = (v["events"]?.array ?? []).compactMap { e in
             guard let pair = e.array, pair.count == 2, let name = pair[0].string else { return nil }
             return (name, pair[1].serialized())
         }
         var host: [String: String] = [:]
         for (k, s) in v["host"]?.object ?? [:] { if let s = s.string { host[k] = s } }
-        return ToolSample(app: app, scenario: scenario, title: v["title"]?.string ?? scenario, version: v["version"]?.string ?? "", events: events,
-                          apps: v["apps"]?["apps"]?.array ?? [], pages: v["pages"]?.object ?? [:],
-                          permissions: v["permissions"]?["rows"]?.array ?? [], host: host)
+        var sample = ToolSample(app: app, scenario: scenario, title: v["title"]?.string ?? scenario, version: v["version"]?.string ?? "", events: events,
+                                apps: v["apps"]?["apps"]?.array ?? [], pages: v["pages"]?.object ?? [:],
+                                permissions: v["permissions"]?["rows"]?.array ?? [], host: host)
+        sample.replies = (v["replies"]?.array ?? []).compactMap { r in
+            guard let f = r["file"]?.string, let sid = r["surface"]?.string, let card = r["card"]?.array else { return nil }
+            return (f, sid, card, r["text"]?.string ?? "")
+        }
+        return sample
     }
 
     /// `/feed` 先给的 A2UI 消息

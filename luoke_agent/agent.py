@@ -1,9 +1,9 @@
 """agent 的核心：收事项、画卡片、挑时机说、转点按（DESIGN §2–§5）。
 
 来源有两种：记忆（memsource.MemorySource）和工具（toolsource.ToolSource），都有
-`poll(now) -> [Item] | None`（None 表示没在运行）和 `handle(...)`。界面（ui.py）订阅事件、送点按。
+`poll(now) -> [Item] | None | UNREAD`（None 表示没在运行，UNREAD 是在运行但这一轮没读到）和 `handle(...)`。界面（ui.py）订阅事件、送点按。
 事项的内容和卡片存在本机的状态库（state.py）：核心重启后答完的卡片照样在、[撤销] 还能点。
-工具也是窗口上的「应用」：基础页、「打开完整界面」、权限（docs/界面接口.md §6、§10），有 `refresh_app` 的来源才算。
+工具也是窗口上的「应用」：基础页、权限（docs/界面接口.md §6、§10），有 `refresh_app` 的来源才算。
 """
 from __future__ import annotations
 
@@ -19,8 +19,8 @@ import webbrowser
 from concurrent.futures import ThreadPoolExecutor
 from typing import Any, Callable, Dict, List, Optional, Tuple
 
-from . import a2ui, apps, cards
-from .items import RANK, Item, tool_surface_id
+from . import a2ui, apps, cards, searchhits
+from .items import RANK, UNREAD, Item, tool_surface_id
 from .mcp import NotRunning, RpcError, TimedOut
 from .state import State
 
@@ -33,7 +33,13 @@ MORNING = "08:00"                # 没设免打扰时，早上那份从几点起
 EVENING = "18:00"                # 早晚各一次时，晚上那份从几点起
 MODES = ("now", "brief", "window", "off")
 SEARCH_LIMIT = 10                # 搜索框一次要几条
+THUMBS_AT_ONCE = 2               # 向一个工具同时要几张缩略图：luoke-search 同时只画两张，多的直接答没有
+THUMB_QUEUE_WAIT = 10.0          # 排队等多久（加上读的 10 秒，在窗口一个请求的 30 秒以内）
 HHMM = __import__("re").compile(r"^([01]\d|2[0-3]):[0-5]\d$")
+# 记忆由本体当工具起（工具协议 §2a，清单写了 `capabilities`）时的应用编号；清单有 `reports` 就用它的 outbox，
+# 记忆这一路（memsource，来源 "memory"）不再拼卡片，只留给更早的、清单没写 `capabilities` 的记忆
+MEMORY_TOOL = "luoke-mem"
+MEMORY_ITEM_PAGE = "item"        # 记忆在窗口里看一条的页（`{"id": <编号>}`），核心认 pageArgs 时卡片上「在螺壳记忆里看」去这里
 
 Event = Tuple[str, Any]
 
@@ -49,8 +55,27 @@ def parse_time(s: Optional[str]) -> Optional[float]:
     return t.timestamp()
 
 
+def item_time(it: Optional[Item], first_seen: Optional[float]) -> Optional[float]:
+    """一件事的时间：工具给的 `created`（例如邮件的收信时间），没给或读不懂退回第一次见到它的时间。
+    「今天」上写的和排序用的都是它。"""
+    return (parse_time(it.created) if it is not None else None) or first_seen
+
+
+def sort_key(it: Item, when: Optional[float]) -> tuple:
+    """「今天」里的先后：急的在前；同样急的先按截止日；再新的在上。"""
+    return (RANK.get(it.urgency, 1), parse_time(it.deadline) or float("inf"), -(when or 0.0))
+
+
 def iso(ts: float) -> str:
     return dt.datetime.fromtimestamp(ts).astimezone().isoformat(timespec="seconds")
+
+
+def _note_id(v: Any) -> Optional[str]:
+    """记忆里一条的编号（正整数）写成页参数的值；不是就是 None。"""
+    if isinstance(v, bool) or not isinstance(v, (int, str)):
+        return None
+    t = str(v)
+    return t if t.isascii() and t.isdigit() and int(t) > 0 and len(t) <= 18 else None
 
 
 def rename(messages: List[dict], sid: str) -> List[dict]:
@@ -61,6 +86,10 @@ def rename(messages: List[dict], sid: str) -> List[dict]:
             if k in m:
                 m[k]["surfaceId"] = sid
     return out
+
+
+# 工具连着答错误（在运行、读不到它的事）这么久，「今天」上提一句（每分钟读一次，约 3 轮）
+UNREAD_NOTICE_AFTER = 180.0
 
 
 class Agent:
@@ -82,14 +111,25 @@ class Agent:
         # 答完的卡片做了什么（工具答复的那句话）：「已经替你做了」那一行收起时写它，不写事项原来的标题
         self.done_text: Dict[str, str] = {}
         self.notices: Dict[str, str] = {}         # 来源 → 一句状态（"邮件助手没在运行"）
+        self._unread_since: Dict[str, float] = {}  # 来源 → 从什么时候起一直读不到它的事（在运行，答了错误）
+        # 记忆改由自己的 outbox 报时，旧路已经说过、看过的事：新编号列出来时回一次 shown（旧路没有 ack，记忆还不知道）
+        self._owe_shown: set = set()
         self.presence: Optional[dict] = None
         self.window_open = False
         self.window_front = False                 # 窗口在最前面：用户正看着它（开着不等于看着）
+        self.window_page: Optional[str] = None    # 窗口开在哪一页（today、app:<id>……）；没报是 None，当「今天」
         self.notifications: Optional[dict] = None   # 壳报的系统通知授权（只有状态）
         self.host_confirmed: Optional[Dict[str, Dict[str, str]]] = None   # 用户确认过的：{应用: {权限 id: 时间}}；没报是 None
         self.host: Dict[str, str] = {}            # 螺壳.app 报的它自己的权限状态（POST /host，只在内存里）
         self.pages: Dict[str, Tuple[str, str, a2ui.Surface]] = {}   # 基础页：<应用>/page/<页> → (应用, 页, 卡片)
         self._app_seen: Dict[str, str] = {}       # 每个应用上次报给窗口的样子：变了才发 apps 事件
+        # 搜索框的结果（§7）。每次搜索问工具之前先领一个编号（search_seq 是最近领出去的）；
+        # 答完时只有它还是最新的一次，才把每个应用交给窗口的 hits（应用 → 结果编号 → 结果）换上，记下它的编号（search_shown）。
+        # 两次搜索同时在跑、先搜的后答完，不会盖掉后搜的。点结果上的按钮（POST /hit）、读缩略图（GET /thumb）只认 search_shown 这次的
+        self.search_seq = 0
+        self.search_shown = 0
+        self.search_hits: Dict[str, Dict[str, dict]] = {}
+        self._thumb_slots: Dict[str, threading.BoundedSemaphore] = {}   # 应用 → 向它要缩略图的名额
         self.listeners: List["queue.Queue[Event]"] = []
         self._restore()
 
@@ -106,8 +146,7 @@ class Agent:
             self.kept[it.key] = it
             self.surfaces[sid] = (it.key, surface)
             st = self.state.item(it.key)
-            self.sort_keys[sid] = (RANK.get(it.urgency, 1), parse_time(it.deadline) or float("inf"),
-                                   st["first_seen"] if st else row["done_at"])
+            self.sort_keys[sid] = sort_key(it, item_time(it, st["first_seen"] if st else row["done_at"]))
             self.done_at[sid] = row["done_at"]
             if isinstance(row["item"].get("done_text"), str) and row["item"]["done_text"]:
                 self.done_text[sid] = row["item"]["done_text"]
@@ -135,6 +174,7 @@ class Agent:
     def remove_source(self, name: str) -> None:
         with self._lock:
             self.sources.pop(name, None)
+            self._unread_since.pop(name, None)
             self._merge(name, None, gone=True)
             for sid in [sid for sid, (app, _, _) in self.pages.items() if app == name]:
                 del self.pages[sid]
@@ -145,14 +185,81 @@ class Agent:
         for name, src in list(self.sources.items()):
             if names is not None and name not in names:
                 continue
+            if name == "memory" and self.memory_by_tool():
+                with self._lock:          # 记忆自己报：这一路的卡片撤下，用户定过的提醒方式搬过去
+                    self._hand_memory_over()
+                continue
             try:
                 items = src.poll(self.clock())
             except Exception as e:  # 一个来源出毛病不能拖垮别的
                 print(f"luoke-agent: 读 {name} 出错 {type(e).__name__}", file=sys.stderr)
                 items = None
             with self._lock:
-                self._merge(name, items)
+                if name == MEMORY_TOOL and getattr(src, "reports", None):
+                    # 新出现的记忆当轮就读，旧的 memory 那一路最多要等 5 分钟才轮到：先在这里交接，同一件事不会两张卡
+                    self._hand_memory_over()
+                if items is UNREAD:
+                    self._unread(name, src)
+                else:
+                    self._unread_since.pop(name, None)
+                    self._merge(name, items)
                 self._check_app(name)
+
+    def _unread(self, name: str, src: Any) -> None:
+        """在运行，这一轮没读到它的事（工具答了错误，工具协议 §2），持锁调：事不撤、不新加，不说它没在运行。
+        连着读不到 UNREAD_NOTICE_AFTER 秒，提一句列着的可能不是最新的；读到一次（或者真没在运行）就换掉。"""
+        now = self.clock()
+        since = self._unread_since.setdefault(name, now)
+        text = (f"{getattr(src, 'name', name)}暂时读不到新的事，列着的可能不是最新的。"
+                if now - since >= UNREAD_NOTICE_AFTER else None)
+        if self.notices.get(name) != text:
+            if text is None:
+                self.notices.pop(name, None)
+            else:
+                self.notices[name] = text
+            self._emit_feed()
+
+    def memory_by_tool(self) -> bool:
+        """记忆的事由它自己的 outbox 报：本体起的记忆（`luoke-mem`）连着这个核心，清单里有 `reports`（清单写了
+        `capabilities.reports` 的工具，事都由它自己的 outbox 报，工具协议 §3）。没在运行也算：那时窗口照别的工具说它没在运行，
+        不退回这边再拼一份。"""
+        with self._lock:
+            src = self.sources.get(MEMORY_TOOL)
+            return src is not None and bool(getattr(src, "reports", None))
+
+    def _hand_memory_over(self) -> None:
+        """记忆改由它自己的 outbox 报，旧的 memory 那一路交出去（持锁调）。读到带 `reports` 的 luoke-mem 时、轮到 memory 那一路时
+        都调，哪个先到哪个做，做过一遍再调什么都不变：
+        - 旧路还开着的事，新编号（`luoke-mem/ask/3` 对 `memory/ask/3`，记忆的问题编号两路一样）照它到了哪一步记下：
+          说过、看过的不再说一遍，在「今天」里的位置也不变；新编号已经记下的不动；
+        - 旧路的卡片撤下（算撤回，只撤一次）；
+        - 「设置 · 提醒」里记忆那几类改用清单 `reports` 的（`luoke-mem:question` 这些）：用户给 `memory:<类>` 定过的方式
+          搬到 `luoke-mem:<类>`，那边已经定过的不动。"""
+        old = [r for r in self.state.open_items() if r["source"] == "memory"]
+        for row in old:
+            new = MEMORY_TOOL + row["key"][len("memory"):]
+            if self.state.carry(row["key"], new, MEMORY_TOOL) and row["status"] in ("notified", "seen"):
+                self._owe_shown.add(new)
+        if old or "memory" in self.notices or any(it.source == "memory" for it in self.items.values()):
+            self._merge("memory", [])
+        modes = dict(self.state.setting("modes") or {})
+        old = [c for c in modes if c.startswith("memory:")]
+        if not old:
+            return
+        for cat in old:
+            modes.setdefault(MEMORY_TOOL + cat[len("memory"):], modes[cat])
+            del modes[cat]
+        self.state.set_setting("modes", modes)
+        self._emit_settings()
+
+    def memory_item_page(self) -> bool:
+        """卡片上「在螺壳记忆里看」能不能换到窗口里记忆的那一条：核心认 pageArgs（页能带参数），记忆经本体连着、
+        清单的页里有 `item`。不能就照旧打开记忆自己的界面。"""
+        if "pageArgs" not in a2ui.A2UI_FEATURES:
+            return False
+        with self._lock:
+            src = self._app(MEMORY_TOOL)
+            return src is not None and any(p["id"] == MEMORY_ITEM_PAGE for p in src.service["pages"])
 
     def _merge(self, source: str, items: Optional[List[Item]], gone: bool = False) -> None:
         now = self.clock()
@@ -160,7 +267,7 @@ class Agent:
         if items is None:
             if not gone:   # 暂时没在运行：卡片先收起来，状态不动，回来了照旧
                 name = getattr(src, "name", source)
-                self.notices[source] = f"{name}现在没在运行。" if source != "memory" else "螺壳记忆现在打不开。"
+                self.notices[source] = f"{name}现在没在运行，它的事恢复后会自动列回来，不用你做什么。" if source != "memory" else "螺壳记忆现在打不开。"
                 if source == "memory" and getattr(src, "status", "") == "too_new":
                     self.notices[source] = "螺壳记忆比螺壳新，请更新螺壳。"
                 elif source == "memory" and getattr(src, "status", "") == "missing":
@@ -188,6 +295,9 @@ class Agent:
             if row["status"] in ("done", "gone"):
                 continue
             keep.add(it.key)
+            if it.key in self._owe_shown:     # 旧路说过、看过的（_hand_memory_over）：告诉记忆一次
+                self._owe_shown.discard(it.key)
+                self._ack_shown(it)
             if row["status"] == "queued" and self._watching(now):
                 self.state.set_status(it.key, "seen", now)   # 用户正看着窗口，不用再通知
                 self._ack_shown(it)
@@ -203,7 +313,7 @@ class Agent:
                     continue   # 来源已经查过；查不过的不画
                 had = sid in self.surfaces
                 self.surfaces[sid] = (it.key, surface)
-                self.sort_keys[sid] = (RANK.get(it.urgency, 1), parse_time(it.deadline) or float("inf"), row["first_seen"])
+                self.sort_keys[sid] = sort_key(it, item_time(it, row["first_seen"]))
                 self._save(it, sid)
                 if had:
                     self._emit("a2ui", {"version": a2ui.VERSION, "deleteSurface": {"surfaceId": sid}})
@@ -263,10 +373,10 @@ class Agent:
         """这张卡片放在「今天」的哪一段（docs/界面接口.md §3）。"""
         if sid in self.done_at or (it is not None and it.kind == "auto-done"):
             return "done"
-        if it is not None and it.urgency == "urgent":
-            return "urgent"
         if it is not None and it.kind == "needs-access":
             return "decide"      # 要权限是要用户定的事：放「要你决定」，不管工具报的急不急（协议 §1a 默认 low）
+        if it is not None and it.urgency == "urgent":
+            return "urgent"
         if it is not None and it.urgency == "low":
             return "later"
         return "decide"
@@ -277,7 +387,7 @@ class Agent:
             key = self.surfaces[sid][0]
             it = self.items.get(key) or self.kept.get(key)
             row = self.state.item(key)
-            when = self.done_at.get(sid) or (row["first_seen"] if row else None)
+            when = self.done_at.get(sid) or item_time(it, row["first_seen"] if row else None)
             out.append({"id": sid, "app": it.source if it else key.split("/", 1)[0], "kind": it.kind if it else "",
                         "section": self._section(sid, it),
                         "title": self.done_text.get(sid) or (it.title if it else ""),
@@ -332,7 +442,19 @@ class Agent:
         nxt = self._next_brief(self.clock())
         paused = self._paused_until(self.clock())
         return {"order": self.order(), "open": waiting, "notices": list(self.notices.values()), "cards": self._cards(),
-                "brief": {"next": iso(nxt) if nxt else None}, "paused_until": iso(paused) if paused else None}
+                "brief": {"next": iso(nxt) if nxt else None}, "paused_until": iso(paused) if paused else None,
+                "dot": self._dot()}
+
+    def _dot(self) -> bool:
+        """菜单栏图标要不要小点（docs/界面接口.md §3）：急事那一段里有「当场说」的那几类，主动提醒开着。
+        暂停着照旧有（§9）；放进简报、只放在窗口里的急事在横幅里，不点小点。"""
+        if not self.state.setting("proactive"):
+            return False
+        for sid, (key, _) in self.surfaces.items():
+            it = self.items.get(key)
+            if it is not None and self._section(sid, it) == "urgent" and self.mode(it) == "now":
+                return True
+        return False
 
     def _emit(self, event: str, data: Any) -> None:
         for q in list(self.listeners):
@@ -364,7 +486,7 @@ class Agent:
                     "sources": {n: getattr(s, "status", "running" if getattr(s, "running", True) else "down")
                                 for n, s in self.sources.items()},
                     "brief_due": self.state.meta("brief_due"), "window_open": self.window_open,
-                    "window_front": self.window_front,
+                    "window_front": self.window_front, "window_page": self.window_page,
                     "notifications": self.notifications,
                     "present": self._is_present(self.clock())}
 
@@ -392,24 +514,28 @@ class Agent:
             if status == "not_determined":        # 窗口里有「打开通知」的按钮，用户点了才问（界面接口 §10）
                 self.notices.pop("notifications", None)
             elif not self._can_notify():
-                self.notices["notifications"] = "系统通知被关掉了，螺壳的简报和急事提醒你收不到。要收的话，在系统设置 → 通知 里找到「螺壳 agent」，打开“允许通知”。"
+                self.notices["notifications"] = "系统通知被关掉了，螺壳的简报和急事提醒你收不到。要收的话，在系统设置 → 通知 里找到「螺壳」，打开“允许通知”。"
             else:
                 self.notices.pop("notifications", None)
             if old != self.notifications:
                 print(f"luoke-agent: 系统通知 {status}{'' if alerts else '（横幅关着）'}", file=sys.stderr, flush=True)
                 self._emit_feed()
 
-    def set_window(self, is_open: bool, front: Optional[bool] = None) -> None:
-        """`front`：窗口在最前面（壳报；老的壳不报，开着就算）。用户看着窗口时，现在的事项都算看过了。"""
+    def set_window(self, is_open: bool, front: Optional[bool] = None, page: Optional[str] = None) -> None:
+        """`front`：窗口在最前面（壳报；老的壳不报，开着就算）。`page`：窗口开在哪一页（docs/界面接口.md §11；
+        不报当「今天」）。用户看着「今天」时，现在的事项都算看过了。"""
         with self._lock:
             self.window_open = is_open
             self.window_front = is_open if front is None else bool(front) and is_open
+            self.window_page = page
             self._see(self.clock())
             self._emit_feed()
 
     def _watching(self, now: float) -> bool:
-        """用户正看着窗口：窗口在最前面，人也在（没报过在不在时信窗口）。最小化、切到别的应用、人走开都不算。"""
-        return self.window_front and (self.presence is None or self._is_present(now))
+        """用户正看着「今天」：窗口在最前面、开在「今天」，人也在（没报过在不在时信窗口）。
+        最小化、切到别的应用、在别的页上、人走开都不算。"""
+        return self.window_front and self.window_page in (None, "today") \
+            and (self.presence is None or self._is_present(now))
 
     def _see(self, now: float) -> None:
         if not self._watching(now):
@@ -490,6 +616,8 @@ class Agent:
             seen = {f"{c['source']}:{c['kind']}": c["urgent"] for c in self.state.categories()}
             for cat in list(self.labels) + list(modes):
                 seen.setdefault(cat, False)
+            if self.memory_by_tool():        # 记忆那几类照它清单的 reports（luoke-mem:…），不再列这一路的
+                seen = {c: u for c, u in seen.items() if not c.startswith("memory:")}
             kinds = []
             for cat, urgent in sorted(seen.items()):
                 default = "now" if urgent else "brief"
@@ -561,6 +689,10 @@ class Agent:
     def tick(self) -> None:
         now = self.clock()
         with self._lock:
+            reread = ("memory" in self.sources or MEMORY_TOOL in self.sources) and self._brief_now(now, self._is_present(now))
+        if reread:      # 简报这一下就要发：先重读记忆，待确认的可能已经自己生效了（luoke-mem 0.14）
+            self.poll(["memory", MEMORY_TOOL])
+        with self._lock:
             self._expire(now)
             self._see(now)
             present = self._is_present(now)
@@ -589,19 +721,12 @@ class Agent:
             if present and not self._quiet(now) and self._last_slot(now) > float(self.state.meta("last_brief", 0)):
                 self.state.set_meta("last_brief", now)   # 到了时刻、用户在、没什么可说：这一份就不发了
             return
-        mode = self.state.setting("brief")
-        if mode == "on_open" or not self._may_speak(now):
-            return          # 只在打开时看、关了主动提醒、暂停着：不发；打开窗口时「今天」排好
-        if mode == "every":   # 开发用：第一件进来时开始计时，攒满 brief_minutes 就发
-            if due is None:
-                self.state.set_meta("brief_due", now + 60 * float(self.state.setting("brief_minutes")))
-                return
-            if now < due:
-                return
-        elif self._last_slot(now) <= float(self.state.meta("last_brief", 0)):
-            return          # 这一时段的已经发过了（或者那时用户在、没什么可说），等下一个时刻
-        if not present or self._quiet(now) or not self._can_notify():
-            return          # 不在 Mac 前、免打扰时段、系统通知到不了：等
+        if self.state.setting("brief") == "every" and due is None and self._may_speak(now):
+            # 开发用：第一件进来时开始计时，攒满 brief_minutes 就发
+            self.state.set_meta("brief_due", now + 60 * float(self.state.setting("brief_minutes")))
+            return
+        if not self._brief_now(now, present):
+            return
         batch = sorted(normal, key=lambda it: self.sort_keys.get(it.surface_id(), (9,))) + low[:LOW_PER_BRIEF]
         for row in self.state.notified_unseen():      # 上一份说了、用户一直没打开看的：算没理
             it = self.items.get(row["key"])
@@ -618,6 +743,21 @@ class Agent:
         self.state.set_meta("brief_due", None)
         self.state.set_meta("last_brief", now)
         self.state.set_meta("brief_unopened", True)
+
+    def _brief_now(self, now: float, present: bool) -> bool:
+        """有要说的话时，这一下就发简报（`_brief`；`tick` 据此先重读记忆）。不发的时候：只在打开时看、关了主动提醒、
+        暂停着（打开窗口时「今天」排好）；还没攒满（开发用的 every）；这一时段的已经发过了（或者那时用户在、没什么可说），
+        等下一个时刻；不在 Mac 前、免打扰时段、系统通知到不了：等。"""
+        mode = self.state.setting("brief")
+        if mode == "on_open" or not self._may_speak(now):
+            return False
+        if mode == "every":
+            due = self.state.meta("brief_due")
+            if due is None or now < due:
+                return False
+        elif self._last_slot(now) <= float(self.state.meta("last_brief", 0)):
+            return False
+        return present and not self._quiet(now) and self._can_notify()
 
     def _brief_parts(self, batch: List[Item]) -> Tuple[List[Item], List[Item], List[Item]]:
         """简报说的三样：等你的、还没处理的急事（只算这一类没关掉提醒的，即 now、brief）、替你做了的（auto-done）。
@@ -663,29 +803,36 @@ class Agent:
                               "surfaceId": surface})
 
     def _expire(self, now: float) -> None:
+        """过期的事项、答完留够了的卡片（窗口关着时）收走。收走了就在最后发一份 `feed`，收走几张都只发一次：
+        窗口照 `feed` 才把删掉的卡片拿下来（docs/界面接口.md §3）。"""
+        dropped = False
         for key, it in list(self.items.items()):
             exp = parse_time(it.expires)
             if exp is not None and exp <= now:
                 self._merge_one_gone(key, it, now)
+                dropped = True
         if not self.window_open:
             for sid, t in list(self.done_at.items()):
                 if now - t > DONE_KEEP_SECONDS:
                     ik = self.surfaces.get(sid, ("",))[0]
                     self.kept.pop(ik, None)
                     self._drop_surface(sid)
+                    dropped = True
             self.state.forget_old(now - 30 * 24 * 3600)
+        if dropped:
+            self._emit_feed()
 
     def _merge_one_gone(self, key: str, it: Item, now: float) -> None:
+        """过期了：收走（`feed` 由 `_expire` 最后发）。"""
         del self.items[key]
         row = self.state.item(key)
         self.state.set_status(key, "gone", now, "expired")
         if row and row["status"] == "notified" and self.state.mark_batch_counted(row):
             self._ignored(it)
         self._drop_surface(it.surface_id())
-        self._emit_feed()
 
     def _ignored(self, it: Item) -> None:
-        """说了没理：连着几次就不再为这一类发通知，只放窗口，并说一次（DESIGN §5）。"""
+        """说了没理、放下了：连着几次就不再为这一类发通知，只放窗口，并说一次（DESIGN §5）。"""
         streak = self.state.react(it.category, "ignored")
         if streak < int(self.state.setting("ignore_limit")) or self.mode(it) != "brief":
             return
@@ -704,8 +851,22 @@ class Agent:
     def _label(self, category: str) -> str:
         return self.labels.get(category) or "这一类事"
 
+    def set_labels(self, source: str, reports: Any) -> None:
+        """清单 `reports` 里每一类的名字（「设置 · 提醒」的每类事、「以后少提醒」用）。有变的再推一次 settings：
+        窗口一连上就取一次设置，那时主控可能还没答（刚开机、主控在启动，见 runner），不推的话这几行一直是「这一类事」，
+        也少了没出过事的几类。"""
+        new = {f"{source}:{r['kind']}": r["title"] for r in (reports if isinstance(reports, list) else [])
+               if isinstance(r, dict) and isinstance(r.get("kind"), str) and r["kind"]
+               and isinstance(r.get("title"), str) and r["title"].strip()}
+        with self._lock:
+            changed = {k: v for k, v in new.items() if self.labels.get(k) != v}
+            if not changed:
+                return
+            self.labels.update(changed)
+            self._emit_settings()
+
     def _less_card(self, category: str, label: str) -> str:
-        """"以后少提醒"的卡片；用户点了才收起，核心重启也画回来（设置页还没有，这是改回去的唯一入口）。"""
+        """"以后少提醒"的卡片；用户点了才收起，核心重启也画回来。卡片上的「还是提醒我」和「设置 · 提醒」里这一类的方式都能改回去。"""
         card = cards.Card("less-" + hashlib.sha256(category.encode()).hexdigest()[:12])
         card.text(f"「{label}」你最近都没看，以后只放在这里，不再提醒。")
         card.buttons(cards.button("还是提醒我", "agent.remind", {"category": category}),
@@ -717,7 +878,7 @@ class Agent:
         self.state.set_status(notice.key, "seen", self.clock())   # 它自己不发通知，只放窗口
         sid = notice.surface_id()
         self.surfaces[sid] = (notice.key, a2ui.build(notice.card))
-        self.sort_keys[sid] = (RANK["low"], float("inf"), self.clock())
+        self.sort_keys[sid] = sort_key(notice, self.clock())
         return sid
 
     def _less_answered(self, item: Item) -> None:
@@ -751,6 +912,9 @@ class Agent:
             self._emit("busy", {"surfaceId": sid})
         if name.startswith("agent."):
             result = self._agent_action(item, sid, name, ctx)
+        elif item.source == "memory" and name == "mem.open" and _note_id(ctx.get("note")) and self.memory_item_page():
+            # 「在螺壳记忆里看」：窗口换到记忆的那一条（同 agent.open_page，带参数），不再打开记忆自己的界面
+            result = self._open_page(MEMORY_TOOL, {"page": MEMORY_ITEM_PAGE, "args": {"id": _note_id(ctx.get("note"))}})
         elif item.source == "memory" and src is not None:
             result = src.handle(item, name, ctx, now)
         elif src is not None:
@@ -780,7 +944,10 @@ class Agent:
             first_time = item.key in self.items
             self.state.set_status(item.key, "done", now, result.get("outcome", "answered"))
             if first_time:
-                self.state.react(item.category, "ignored" if result.get("outcome") == "dismissed" else "answered")
+                if result.get("outcome") == "dismissed":
+                    self._ignored(item)        # 放下也算没理：连着够数了，这一类同样少说
+                else:
+                    self.state.react(item.category, "answered")
                 self.kept[item.key] = self.items.pop(item.key)
                 src = self.sources.get(item.source)
                 if src is not None and hasattr(src, "ack"):
@@ -821,9 +988,30 @@ class Agent:
         self.url_opener(url)
         return {"text": f"在浏览器里打开了 {site}。"}
 
+    def _open_page(self, app: str, ctx: dict) -> Dict[str, Any]:
+        """`agent.open_page`：只开出这张卡片、这一页的应用自己的页（清单 service.pages 里的）；别的应用的、没登记的不开。
+        答复里的 `page` 交给窗口，窗口换到那一页（界面接口 §4）。`args`（§4 pageArgs）已经按点的时候的数据模型取好值，
+        这里再核一遍形状，窗口读这一页时带上。"""
+        page = ctx.get("page")
+        with self._lock:
+            src = self._app(app)
+            known = [p["id"] for p in src.service["pages"]] if src is not None else []
+        if not isinstance(page, str) or page not in known or not set(ctx) <= {"page", "args"}:
+            return {"text": "这一页打不开。", "error": True}
+        args = ctx.get("args") or {}
+        if a2ui.page_args_problem(args) is not None:
+            long = isinstance(args, dict) and any(isinstance(v, str) and len(v) > a2ui.MAX_PAGE_ARG for v in args.values())
+            return {"text": f"填的字太长了，最多 {a2ui.MAX_PAGE_ARG} 个字。" if long else "这一页打不开。", "error": True}
+        out: Dict[str, Any] = {"app": app, "page": page}
+        if args:
+            out["args"] = dict(args)
+        return {"text": "", "page": out}
+
     def _agent_action(self, item: Item, sid: str, name: str, ctx: dict) -> Dict[str, Any]:
         if name == "agent.open_url":
             return self._open_url(ctx)
+        if name == "agent.open_page":
+            return self._open_page(item.source, ctx)
         if name == "agent.dismiss":
             if item.kind == "less" and item.source == "agent":
                 self._less_answered(item)
@@ -881,9 +1069,10 @@ class Agent:
         with self._lock:
             self._check_app(name)
 
-    def page(self, app: str, page: str) -> Tuple[int, dict]:
-        """GET /apps/<id>/pages/<页>：读工具的 `page/<页>`，校验和上限同卡片；画不了的换成一句纯文本。
-        surfaceId 换成 `<应用>/page/<页>`，页上的按钮照卡片走 /action。"""
+    def page(self, app: str, page: str, args: Optional[Dict[str, str]] = None) -> Tuple[int, dict]:
+        """GET /apps/<id>/pages/<页>：读工具的 `page/<页>`，照页的规矩校验（§4：上限 400 个组件，能写 refresh、密码框）；
+        画不了的换成一句纯文本。surfaceId 换成 `<应用>/page/<页>`，页上的按钮照卡片走 /action。
+        `args`：带参数读（§4 pageArgs，界面接口 §6），由 ui.py 核过形状；读工具的 `page/<页>?<键>=<值>&…`。"""
         with self._lock:
             src = self._app(app)
             spec = next((p for p in src.service["pages"] if p["id"] == page), None) if src is not None else None
@@ -892,7 +1081,7 @@ class Agent:
         if spec is None:
             return 404, {"error": "没有这一页"}
         try:
-            surface = a2ui.build(src.read_page(page))
+            surface = a2ui.build(src.read_page(page, args), page=True)
         except NotRunning:
             return 503, {"error": f"{src.name}现在没在运行。"}
         except (RpcError, a2ui.CardError) as e:
@@ -901,7 +1090,7 @@ class Agent:
             card = cards.Card(page)
             card.heading(spec["title"])
             card.text("这一页画不了。", caption=True)
-            surface = a2ui.build(card.messages())
+            surface = a2ui.build(card.messages(), page=True)
         sid = f"{app}/page/{page}"
         src.refresh_app()        # 页是现读的；标题旁的概览也照工具现在报的，不等下一轮读 outbox（不然两处数字对不上）
         with self._lock:
@@ -915,40 +1104,134 @@ class Agent:
 
     def search(self, query: str, limit: int = SEARCH_LIMIT) -> dict:
         """POST /search：问每个写了 `service.ask.search` 的工具，不经模型（docs/界面接口.md §7）。
-        工具给的 A2UI 卡片校验过交给窗口，surfaceId 是 `<应用>/search`，卡片上的按钮照基础页走 /action。
-        只给结果不给卡片的工具这一版不画。日志不记搜了什么、命中了什么。"""
+        给了 `hits` 的，核过形状原样交给窗口（窗口按类型分组自己画），按钮走 POST /hit、缩略图走 GET /thumb；
+        工具的 A2UI 卡片照旧校验过一起给（surfaceId 是 `<应用>/search`，按钮照基础页走 /action），只给卡片的工具窗口画卡片。
+        只给结果不给卡片的工具、给的卡片画不了的工具，核心照核过的 hits 画成一张纯文本的卡片（`_hits_card`）。日志不记搜了什么、命中了什么。"""
         with self._lock:
             sources = [s for s in self._apps() if s.service["search"]]
-        if not sources:
-            return {"results": [], "failed": [], "text": "还没有能搜的应用。"}
+            if not sources:
+                return {"results": [], "failed": [], "text": "还没有能搜的应用。"}
+            seq = self.search_seq = self.search_seq + 1
         with ThreadPoolExecutor(max_workers=len(sources)) as pool:
             answers = list(pool.map(lambda s: self._search_one(s, query, limit), sources))
         results: List[dict] = []
         failed: List[str] = []
         with self._lock:
-            for src, surface in zip(sources, answers):
-                if surface is False:
+            latest = seq == self.search_seq    # 答完前又搜了一次：这次的结果窗口不画，留下的按钮、缩略图也不换
+            if latest:
+                self.search_shown = seq
+                self.search_hits = {}
+            for src, answer in zip(sources, answers):
+                if answer is False:
                     failed.append(src.name)
-                elif surface is not None:
+                elif answer is not None:
+                    surface, hits = answer
                     sid = f"{src.source}/search"
-                    self.pages[sid] = (src.source, "search", surface)
-                    results.append({"app": src.source, "name": src.name, "messages": self._present(sid, surface)})
-        return {"results": results, "failed": failed}
+                    if latest:
+                        self.pages[sid] = (src.source, "search", surface)
+                    r = {"app": src.source, "name": src.name, "messages": self._present(sid, surface)}
+                    if hits:
+                        r["hits"] = searchhits.for_window(hits)
+                        if latest:
+                            self.search_hits[src.source] = {h["id"]: h for h in hits}
+                    results.append(r)
+            return {"search": seq, "results": results, "failed": failed, "asked": len(sources)}
 
     def _search_one(self, src: Any, query: str, limit: int) -> Any:
-        """一个工具的答复：画得了的卡片；没搜到或没给卡片是 None；没答上来是 False。"""
+        """一个工具的答复：(画得了的卡片, 核过的 hits)，只给 hits 的卡片照 hits 画；没搜到是 None；没答上来是 False。"""
         try:
             result = src.search(query, limit)
             if result.is_error:
                 return False
-            if not result.card or result.structured.get("hits") == []:
+            raw = result.structured.get("hits")
+            if raw == [] or (not result.card and not raw):
                 return None
-            return a2ui.build(result.card)
+            hits = searchhits.hits(raw, limit)
+            if any(h["actions"] for h in hits):
+                hits = searchhits.only_tools(hits, src.tool_names(a["name"] for h in hits for a in h["actions"]))
+            surface = None
+            if result.card:
+                try:
+                    surface = a2ui.build(result.card)
+                except a2ui.CardError as e:
+                    if not hits:
+                        raise
+                    # 卡片画不了、hits 是好的：只丢卡片，旧窗口照 hits 画（新窗口有 hits 时本来就不画卡片）
+                    print(f"luoke-agent: {src.source} 的搜索卡片画不了：{len(e.problems)} 处问题，照结果画", file=sys.stderr)
+            return (surface if surface is not None else a2ui.build(self._hits_card(hits))), hits
         except (NotRunning, TimedOut, RpcError):
             return False
         except a2ui.CardError as e:
             print(f"luoke-agent: {src.source} 的搜索结果画不了：{len(e.problems)} 处问题", file=sys.stderr)
             return False
+
+    def search_hit(self, search: Any, app: Any, hit: Any, action: Any) -> Dict[str, Any]:
+        """POST /hit：用户点了窗口画的一条结果上的按钮（打开、在访达中显示……），或者按了回车、⌘↩。
+        只认窗口正画着的那次搜索（search_shown）里这条结果给过的动作（`action` 是它在 `actions` 里的序号：同名的动作参数可以不同），
+        参数从留下的结果里取，不从窗口来；转给出这条结果的工具，带 user_action。"""
+        now = self.clock()
+        with self._lock:
+            if search != self.search_shown or isinstance(search, bool):
+                return {"text": "这次搜索的结果已经换了，再搜一次。", "error": True}
+            h = self.search_hits.get(app, {}).get(hit) if isinstance(app, str) and isinstance(hit, str) else None
+            acts = h["actions"] if h is not None else []
+            if h is None or not isinstance(action, int) or isinstance(action, bool) or not 0 <= action < len(acts):
+                return {"text": "这条结果上没有这个按钮了。", "error": True}
+            src = self._app(app)
+            act = acts[action]
+        if src is None:
+            return {"text": "这个应用现在不在了。", "error": True}
+        result = src.call(f"{app}/search", act["name"], dict(act["args"]), {"componentId": f"hit-{action}", "at": iso(now)})
+        return {"text": result.get("text", ""), "error": bool(result.get("error"))}
+
+    def search_thumb(self, app: str, ref: str) -> Optional[Tuple[bytes, str]]:
+        """GET /thumb：窗口正画着的那次搜索里这个应用给过的缩略图，向工具读（`resources/read`，blob）。
+        不是 JPEG、PNG，超过 256 KB，长边超过 2048，或者读不到，都是 None（窗口画占位框）。不写磁盘。
+        窗口一屏的格子同时要，工具画满了的那张直接答没有、窗口也不再要：所以向一个工具同时最多要 THUMBS_AT_ONCE 张，
+        别的在这里排队；排到时这次搜索已经换了就不要了。"""
+        def given() -> bool:
+            return any(h.get("thumb") == ref for h in self.search_hits.get(app, {}).values())
+
+        with self._lock:
+            src = self._app(app) if given() else None
+            client = getattr(src, "client", None)
+            if client is None or not searchhits.THUMB_REF.fullmatch(ref):
+                return None
+            # 只给真给过这张图的应用建名额：随便传一个 app= 不留东西
+            slots = self._thumb_slots.setdefault(app, threading.BoundedSemaphore(THUMBS_AT_ONCE))
+        if not slots.acquire(timeout=THUMB_QUEUE_WAIT):
+            return None
+        try:
+            with self._lock:
+                if not given():
+                    return None
+            data = client.read_blob(ref)
+        except (NotRunning, TimedOut, RpcError):
+            return None
+        finally:
+            slots.release()
+        mime = searchhits.thumb_ok(data)
+        return (data, mime) if mime else None
+
+    @staticmethod
+    def _hits_card(hits: List[dict]) -> List[dict]:
+        """旧窗口用的卡片：工具只给 `hits` 不给卡片（工具协议 §1b 里 `card` 只是后备），或者给的卡片画不了。
+        照 `searchhits.hits` 核过的结果画（和交给新窗口的是同一份）：文字一律是纯文本，每条前两个动作画成按钮，
+        点了照样经 /action 转给工具。一张卡片最多 15 条，免得超过组件上限。没有结果是空的（算没答上来）。"""
+        card = cards.Card("search")
+        for i, h in enumerate(hits[:15]):
+            if i:
+                card.divider()
+            card.text(h["title"])
+            line = " · ".join(h[k] for k in ("line", "date") if k in h)
+            if line:
+                card.text(line, caption=True)
+            if "snippet" in h:
+                card.text(h["snippet"][:300], caption=True)
+            acts = [cards.button(a["title"], a["name"], a["args"]) for a in h["actions"][:2]]
+            if acts:
+                card.buttons(*[dict(b, variant="borderless") for b in acts])
+        return card.messages() if hits else []
 
     def _tap_page(self, sid: str, component_id: str, client_context: Optional[dict]) -> Dict[str, Any]:
         """基础页上的点按：转给出这一页的工具，user_action 的 surfaceId 是页 id。工具回的卡片不画：
@@ -968,6 +1251,8 @@ class Agent:
             self._emit("busy", {"surfaceId": sid})
         if name == "agent.open_url":
             result = self._open_url(ctx)
+        elif name == "agent.open_page":
+            result = self._open_page(app, ctx)
         elif name.startswith("agent."):
             result = {"text": "不认识这个按钮。", "error": True}
         elif src is None:
@@ -979,10 +1264,15 @@ class Agent:
         with self._lock:
             self._emit("result", dict(out, surfaceId=sid, replaced=False))
             self._check_app(app)
+        if result.get("page"):
+            out["page"] = result["page"]
+        if result.get("file"):
+            out["file"] = result["file"]          # 存文件（§4 saveFile）：toolsource 核过形状
         return out
 
     def open_ui(self, app: str, page: Optional[str] = None) -> Dict[str, Any]:
-        """POST /open：用户点了「打开完整界面」或深页。调工具的 `service.ui.open`（只读，由工具自己打开窗口）。"""
+        """POST /open：调工具的 `service.ui.open`（只读，由工具自己打开窗口）。
+        窗口从 11-09 起不再调（应用的事都在窗口的页里做），邮件、记忆的页做好以后再看删不删。"""
         with self._lock:
             src = self._app(app)
         if src is None:

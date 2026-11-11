@@ -8,7 +8,7 @@
 :root {
   --bg: #FCFAF7; --fg: #3A1F14; --card: #FFFFFF; --sidebar: #F7F2EB; --primary: #3A1F14; --primary-fg: #FFF8EE;
   --muted: #F4EEE6; --muted-fg: #7A6558; --border: #ECE4DA; --input: #E2D8CC; --brand: #E8556B; --brand-soft: #FCE8EA; --brand-text: #B4364C;
-  --success: #2F7A4F; --success-soft: #E4F2E8; --warning: #A86A12; --warning-soft: #FBF0D9; --danger: #C2412D; --danger-soft: #FBE9E5; --danger-fill: #C2412D;
+  --success: #2C744B; --success-soft: #E4F2E8; --warning: #A86A12; --warning-soft: #FBF0D9; --danger: #B83C29; --danger-soft: #FBE9E5; --danger-fill: #C2412D;
   --desk: #E9E2D8; --shadow: 0 1px 2px rgba(43,26,18,.06); --win-shadow: 0 18px 50px rgba(43,26,18,.16), 0 2px 6px rgba(43,26,18,.08);
   --tint: rgba(58,31,20,.06); --soft: rgba(58,31,20,.10); --sel: rgba(58,31,20,.07); --sel-solid: #EAE3DC; --sunk: #F7F2EB;
   --card-shadow: 0 1px 2px rgba(58,31,20,.06), 0 4px 12px -6px rgba(58,31,20,.10); --pop: 0 1px 2px rgba(58,31,20,.08), 0 18px 40px -18px rgba(58,31,20,.35);
@@ -390,7 +390,7 @@ button.sel { font-family: inherit; color: var(--fg); cursor: pointer; }
 .who { color: var(--muted-fg); display: inline-flex; }
 .seg { display: inline-flex; padding: 2px; background: var(--muted); border-radius: 8px; gap: 2px; }
 .seg button { width: 30px; height: 26px; border: 0; border-radius: 6px; background: transparent; color: var(--muted-fg); display: grid; place-items: center; cursor: pointer; }
-.seg button.on { background: var(--card); color: var(--fg); box-shadow: 0 1px 2px rgba(0,0,0,.08); }
+.seg button.on { background: var(--card); color: var(--fg); box-shadow: inset 0 0 0 1px var(--muted-fg), 0 1px 2px rgba(0,0,0,.08); }
 .seg-mini { display: inline-flex; gap: 6px; color: var(--muted-fg); }
 .ptabs { display: flex; gap: 4px; padding: 4px; background: var(--muted); border-radius: 8px; width: max-content; margin-bottom: 16px; }
 .pt { border: 0; background: transparent; padding: 6px 12px; border-radius: 6px; font: 13px/1 inherit; font-family: inherit; color: var(--muted-fg); cursor: pointer; display: inline-flex; align-items: center; gap: 4px; }
@@ -451,8 +451,22 @@ button.sel { font-family: inherit; color: var(--fg); cursor: pointer; }
 .appsrow .stack.pick .app:not(.cur)::after { content: ""; position: absolute; inset: 0; background: var(--sel-solid); opacity: .6; }
 .applist { display: grid; padding-left: 14px; }
 .nav.sub { height: 30px; font-size: 13px; }
-.hit .t .meta { margin-left: 6px; }
-.hit .s { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.hit .t { font-size: 12px; }
+.hit .fd, .tile .fd { display: block; font-size: 11px; color: var(--muted-fg); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.hit { cursor: pointer; }
+.hitwrap { display: grid; grid-template-columns: minmax(0, 1fr); gap: 16px; align-items: start; }
+.hitwrap.previewing { grid-template-columns: minmax(0, 1fr) 240px; }
+.tiles { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; }
+.hitwrap.previewing .tiles { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.tile { background: var(--card); border: 0; border-radius: 10px; box-shadow: var(--card-shadow); padding: 8px; text-align: left; font: inherit; color: var(--fg); cursor: pointer; min-width: 0; }
+.tile .thumb, .hitprev .thumb { position: relative; display: block; aspect-ratio: 4 / 3; border-radius: 6px; background: var(--muted); }
+.tile .corner { position: absolute; right: 4px; bottom: 4px; font-size: 11px; background: var(--card); border-radius: 4px; padding: 0 4px; }
+.tile .nm { display: block; font-size: 12px; margin-top: 6px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.tile.picked, .hit.picked { outline: 2px solid var(--primary); outline-offset: -2px; }
+.more-n { border: 0; background: none; padding: 0; margin-top: 8px; font: inherit; font-size: 12px; color: var(--muted-fg); cursor: pointer; }
+.hitprev { position: sticky; top: 0; background: var(--card); border-radius: 14px; box-shadow: var(--card-shadow); padding: 12px; display: grid; gap: 8px; }
+.hitprev p { margin: 0; font-size: 12px; color: var(--muted-fg); }
+.hitprev .acts { display: flex; flex-wrap: wrap; gap: 6px; }
 .note { color: var(--muted-fg); font-size: 12px; margin: 14px 2px 0; }
 .card .from { display: block; }
 details.more { margin-top: 18px; border-top: 1px solid var(--border); padding-top: 10px; }
@@ -490,6 +504,10 @@ details.more[open] summary .i { transform: rotate(90deg); }
 .f-top b { font-size: 15px; font-weight: 600; }
 .f-top .of { font-size: 13px; color: var(--muted-fg); }
 .f-top .close { margin-left: auto; }
+/* 按类处理：要你决定有两类以上时，段标题下面列出不止一件的那几类 */
+.kinds { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin: -4px 0 12px; }
+.kinds .lbl { font-size: 13px; color: var(--muted-fg); }
+.kinds .chip .ct { color: var(--muted-fg); }
 .f-prog { display: flex; gap: 4px; width: 180px; }
 .f-prog i { flex: 1; height: 3px; border-radius: 2px; background: var(--border); position: relative; overflow: hidden; }
 .f-prog i::after { content: ""; position: absolute; inset: 0; background: var(--fg); transform: scaleX(0); transform-origin: 0 50%; transition: transform 260ms cubic-bezier(.77,0,.175,1); }
@@ -689,8 +707,9 @@ details.more[open] summary .i { transform: rotate(90deg); }
     <div class="row"><span class="app  img-mail" role="img" aria-label="邮件助手" title="邮件助手"></span><div class="grow"><span class="t">归档 7 · 加标签 2</span></div><span class="meta num">08:30</span><button class="btn u" type="button" data-act="restore">撤销</button></div>
   </div>
   <div class="sec">要你决定 <span class="ct num" id="cnt-decide">4</span></div>
+  <div class="kinds" id="kinds" hidden></div>
   <div class="cards" id="decide">
-    <div class="card" data-card="plan">
+    <div class="card" data-card="plan" data-kind="mail:new-mail" data-kname="新邮件分拣好了">
       <div class="hd"><span class="app l img-mail" role="img" aria-label="邮件助手" title="邮件助手"></span><div class="grow"><div class="ttl">5 封新邮件</div></div><span class="badge br" title="周五前要回"><svg class="i s12"><use href="#i-cal"/></svg>周五</span><span class="meta num">09:02</span></div>
       <ul class="plan">
         <li><span class="grow">王老师 · 答辩时间</span><span class="badge" title="起草回复"><svg class="i s12"><use href="#i-pen"/></svg></span></li>
@@ -699,16 +718,16 @@ details.more[open] summary .i { transform: rotate(90deg); }
       </ul>
       <div class="acts"><button class="btn sm primary" type="button" data-act="do-plan">按这个处理</button><button class="btn sm ghost" type="button" data-act="open-mailwin">逐封看</button></div>
     </div>
-    <div class="card" data-card="ask-mem">
+    <div class="card" data-card="ask-mem" data-kind="mem:question" data-kname="记忆想问的事">
       <div class="hd"><span class="app l img-memory" role="img" aria-label="记忆" title="记忆"></span><div class="grow"><div class="ttl">在准备硕士答辩？</div></div><svg class="i s14"><use href="#i-bulb"/></svg></div>
       <div class="quote">「答辩定在 11 月中旬」—— 王老师</div>
       <div class="acts"><button class="btn sm primary" type="button" data-act="answer">对</button><button class="btn sm" type="button" data-act="answer">不对</button><button class="btn sm ghost" type="button" data-act="answer">以后再说</button></div>
     </div>
-    <div class="card" data-card="perm-cal">
+    <div class="card" data-card="perm-cal" data-kind="core:needs-access" data-kname="需要你允许">
       <div class="hd"><span class="app l img-core" role="img" aria-label="螺壳" title="螺壳"></span><div class="grow"><div class="ttl">让螺壳读写日历？</div><span class="from">邮件助手想把「房东 · 续租合同」加进日程</span></div></div>
       <div class="acts"><button class="btn sm primary" type="button" data-perm="calendar">允许</button><button class="btn sm ghost" type="button" data-act="later">先不用</button></div>
     </div>
-    <div class="card" data-card="ai">
+    <div class="card" data-card="ai" data-kind="scan:findings" data-kname="扫描结果">
       <div class="hd"><span class="app l img-scan" role="img" aria-label="螺壳扫描" title="螺壳扫描"></span><div class="grow"><div class="ttl">AI 模型和对话记录</div></div><span class="num">15.5 GB</span><button class="btn sm ghost" type="button" data-go="audit" aria-label="去处理"><svg class="i s14"><use href="#i-right"/></svg></button></div>
     </div>
   </div>
@@ -738,7 +757,7 @@ details.more[open] summary .i { transform: rotate(90deg); }
   </div></div>
 </div></section><section class="page" data-page="mail" data-ask="mail">
 <div class="scroll">
-  <div class="ph"><span class="app xl img-mail" role="img" aria-label="邮件助手" title="邮件助手"></span><div><h4>邮件助手</h4><div class="sub"><span class="mono">0.18.11</span> <span class="light ok" title="me@example.com 已连上" aria-label="me@example.com 已连上"></span></div></div><span class="grow"></span><button class="btn " type="button" data-act="open-mailwin"><svg class="i s14"><use href="#i-ext"/></svg>打开完整界面</button></div>
+  <div class="ph"><span class="app xl img-mail" role="img" aria-label="邮件助手" title="邮件助手"></span><div><h4>邮件助手</h4><div class="sub"><span class="mono">0.18.11</span> <span class="light ok" title="me@example.com 已连上" aria-label="me@example.com 已连上"></span></div></div><span class="grow"></span></div>
   <div class="ptabs"><button type="button" class="pt on" data-tab="ov">概览</button><button type="button" class="pt" data-tab="log">操作记录</button><button type="button" class="pt" data-act="open-mailwin">收件箱<svg class="i s12"><use href="#i-ext"/></svg></button><button type="button" class="pt" data-act="open-mailwin">规则<svg class="i s12"><use href="#i-ext"/></svg></button></div>
   <div data-sub="ov">
   <div class="stat"><div class="card"><div class="k">今天处理</div><div class="v num">12</div></div><div class="card"><div class="k">要你回</div><div class="v num">2</div></div><div class="card"><div class="k">自动归档</div><div class="v num">7</div></div></div>
@@ -763,7 +782,7 @@ details.more[open] summary .i { transform: rotate(90deg); }
   </div>
 </div></section><section class="page" data-page="audit" data-ask="audit">
 <div class="scroll">
-  <div class="ph"><span class="app xl img-scan" role="img" aria-label="螺壳扫描" title="螺壳扫描"></span><div><h4>螺壳扫描</h4><div class="sub"><span class="mono">0.1.0</span> <span class="light ok" title="没有发现病毒 · 今天 09:12 查过" aria-label="没有发现病毒 · 今天 09:12 查过"></span></div></div><span class="grow"></span><button class="btn " type="button" data-act="toast-own"><svg class="i s14"><use href="#i-ext"/></svg>打开完整界面</button></div>
+  <div class="ph"><span class="app xl img-scan" role="img" aria-label="螺壳扫描" title="螺壳扫描"></span><div><h4>螺壳扫描</h4><div class="sub"><span class="mono">0.1.0</span> <span class="light ok" title="没有发现病毒 · 今天 09:12 查过" aria-label="没有发现病毒 · 今天 09:12 查过"></span></div></div><span class="grow"></span></div>
   <div class="ptabs"><button type="button" class="pt on" data-tab="ov">概览</button><button type="button" class="pt" data-tab="log">清理记录</button><button type="button" class="pt" data-act="toast-own">全部明细<svg class="i s12"><use href="#i-ext"/></svg></button><button type="button" class="pt" data-act="toast-own">规则<svg class="i s12"><use href="#i-ext"/></svg></button></div>
   <div data-sub="ov">
   <div class="stat"><div class="card"><div class="k">这周清掉</div><div class="v num">6.4 GB</div></div><div class="card"><div class="k">要你决定</div><div class="v num">26.6 GB</div></div><div class="card"><div class="k">可用</div><div class="v num">38 GB</div></div></div>
@@ -789,7 +808,7 @@ details.more[open] summary .i { transform: rotate(90deg); }
   </div>
 </div></section><section class="page" data-page="mem" data-ask="mem">
 <div class="scroll">
-  <div class="ph"><span class="app xl img-memory" role="img" aria-label="记忆" title="记忆"></span><div><h4>记忆</h4><div class="sub"><span class="mono">0.26.0</span> <span class="light ok" title="就绪" aria-label="就绪"></span></div></div><span class="grow"></span><button class="btn " type="button" data-act="toast-own"><svg class="i s14"><use href="#i-ext"/></svg>打开完整界面</button></div>
+  <div class="ph"><span class="app xl img-memory" role="img" aria-label="记忆" title="记忆"></span><div><h4>记忆</h4><div class="sub"><span class="mono">0.26.0</span> <span class="light ok" title="就绪" aria-label="就绪"></span></div></div><span class="grow"></span></div>
   <div class="stat"><div class="card"><div class="k">记下的</div><div class="v num">1,284</div></div><div class="card"><div class="k">理解</div><div class="v num">46</div></div><div class="card"><div class="k">想问你</div><div class="v num">1</div></div></div>
   <div class="sec">想问你 <span class="ct num">1</span></div>
   <div class="group"><div class="row"><svg class="i "><use href="#i-bulb"/></svg><div class="grow"><span class="t">在准备硕士答辩？</span></div><button class="btn sm" type="button" data-act="answer">对</button><button class="btn sm" type="button" data-act="answer">不对</button></div></div>
@@ -802,27 +821,33 @@ details.more[open] summary .i { transform: rotate(90deg); }
 <div class="scroll">
   <div class="ph"><h4>搜索</h4><span class="ctxchip"><svg class="i s14"><use href="#i-search"/></svg>租房合同</span><span class="grow"></span></div>
   <div class="chips" data-filter>
-    <button class="chip on" type="button" data-f="all">全部</button>
-    <button class="chip" type="button" data-f="files"><span class="app  img-search" role="img" aria-label="螺壳搜索" title="螺壳搜索"></span>文件</button>
-    <button class="chip" type="button" data-f="photos"><span class="app  img-search" role="img" aria-label="螺壳搜索" title="螺壳搜索"></span>照片和视频</button>
-    <button class="chip" type="button" data-f="mail"><span class="app  img-mail" role="img" aria-label="邮件助手" title="邮件助手"></span><span class="mono">me@example.com</span></button>
+    <button class="chip on" type="button" data-f="all">全部 <span class="ct num">13</span></button>
+    <button class="chip" type="button" data-f="pdf">PDF <span class="ct num">5</span></button>
+    <button class="chip" type="button" data-f="sheet">表格 <span class="ct num">1</span></button>
+    <button class="chip" type="button" data-f="image">图片 <span class="ct num">2</span></button>
+    <button class="chip" type="button" data-f="doc">文稿 <span class="ct num">1</span></button>
+    <button class="chip" type="button" data-f="mail">邮件 <span class="ct num">4</span></button>
   </div>
-  <div class="sec">最相关</div>
-  <div class="group">
-    <div class="row hit hoverask" data-app="files" data-ctx="租房合同.pdf"><span class="app l img-search" role="img" aria-label="螺壳搜索" title="螺壳搜索"></span><div class="grow"><span class="t">租房合同.pdf<span class="meta">第 3 页 · 10-03</span></span><span class="s">…押金两个月，退租前 30 天书面通知…</span></div><button class="btn sm" type="button" data-act="hit-open">打开</button><button class="btn sm ghost" type="button" data-act="hit-reveal" aria-label="在访达中显示" title="在访达中显示"><svg class="i s14"><use href="#i-folder"/></svg></button></div>
-    <div class="row hit hoverask" data-app="mail" data-ctx="房东 · 续租合同"><span class="app l img-mail" role="img" aria-label="邮件助手" title="邮件助手"></span><div class="grow"><span class="t">房东 · 续租合同<span class="meta">10-24</span></span><span class="s">合同 11 月底到期，续租的话押金不变…</span></div><button class="btn sm" type="button" data-act="open-mailwin">打开</button></div>
-  </div>
-  <div data-app="files"><div class="sec">文件 <span class="ct num">12</span></div>
-  <div class="group">
-    <div class="row hit hoverask" data-app="files" data-ctx="租房合同（旧）.docx"><span class="app l img-search" role="img" aria-label="螺壳搜索" title="螺壳搜索"></span><div class="grow"><span class="t">租房合同（旧）.docx<span class="meta">2025-10-02</span></span><span class="s">…甲方：…乙方：…租期一年…</span></div><button class="btn sm" type="button" data-act="hit-open">打开</button><button class="btn sm ghost" type="button" data-act="hit-similar">找相似的</button></div>
-    <div class="row hit hoverask" data-app="files" data-ctx="押金收据.png"><span class="app l img-search" role="img" aria-label="螺壳搜索" title="螺壳搜索"></span><div class="grow"><span class="t">押金收据.png<span class="meta">截图 · 10-05</span></span><span class="s">…收到押金 ¥9,000…</span></div><button class="btn sm" type="button" data-act="hit-open">打开</button><button class="btn sm ghost" type="button" data-act="hit-similar">找相似的</button></div>
-  </div></div>
+  <div class="hitwrap" id="hitwrap">
+  <div class="hitlist">
+  <div data-app="pdf"><div class="sec">PDF <span class="ct num">5</span></div>
+  <div class="tiles"><button class="tile" type="button" data-act="hit-select" data-ctx="租房合同.pdf" data-snip="…押金两个月，退租前 30 天书面通知…" data-reveal="1"><span class="thumb"><span class="corner num">第 3 页</span></span><span class="nm">租房合同.pdf</span><span class="fd">文稿 › 租房</span></button><button class="tile" type="button" data-act="hit-select" data-ctx="续租补充协议.pdf" data-snip="…续租一年，租金不变…" data-reveal="1"><span class="thumb"><span class="corner num">第 1 页</span></span><span class="nm">续租补充协议.pdf</span><span class="fd">下载</span></button><button class="tile" type="button" data-act="hit-select" data-ctx="房屋交接单.pdf" data-snip="…钥匙三把，水电读数…" data-reveal="1"><span class="thumb"><span class="corner num">第 2 页</span></span><span class="nm">房屋交接单.pdf</span><span class="fd">文稿 › 租房</span></button><button class="tile" type="button" data-act="hit-select" data-ctx="中介服务合同.pdf" data-snip="…中介费为一个月租金…" data-reveal="1"><span class="thumb"><span class="corner num">第 4 页</span></span><span class="nm">中介服务合同.pdf</span><span class="fd">下载</span></button></div>
+  <button class="more-n" type="button" data-f="pdf">还有 1 个 ›</button></div>
+  <div data-app="sheet"><div class="sec">表格 <span class="ct num">1</span></div>
+  <div class="tiles"><button class="tile" type="button" data-act="hit-select" data-ctx="房租账目.xlsx" data-snip="…押金 9,000，已付…" data-reveal="1"><span class="thumb"><span class="corner num">2025</span></span><span class="nm">房租账目.xlsx</span><span class="fd">文稿</span></button></div></div>
+  <div data-app="image"><div class="sec">图片 <span class="ct num">2</span></div>
+  <div class="tiles"><button class="tile" type="button" data-act="hit-select" data-ctx="押金收据.png" data-snip="…收到押金 ¥9,000…" data-reveal="1"><span class="thumb"></span><span class="nm">押金收据.png</span><span class="fd">桌面</span></button><button class="tile" type="button" data-act="hit-select" data-ctx="合同签字页.jpg" data-snip="…乙方签字…" data-reveal="1"><span class="thumb"></span><span class="nm">合同签字页.jpg</span><span class="fd">图片</span></button></div>
+  <div class="group" style="margin-top:10px"><div class="row"><svg class="i "><use href="#i-lock"/></svg><div class="grow"><span class="t">照片还没允许搜</span><span class="s">允许以后，照片里的文字和场景也能搜到</span></div><span data-perm-light="photos"><span class="light off" title="先不用" aria-label="先不用"></span></span><button class="btn sm" type="button" data-perm="photos">允许</button></div></div></div>
+  <div data-app="doc"><div class="sec">文稿 <span class="ct num">1</span></div>
+  <div class="group"><div class="row hit" data-act="hit-select" data-ctx="租房合同（旧）.docx" data-snip="…甲方：…乙方：…租期一年…" data-reveal="1"><div class="grow"><span class="t">租房合同（旧）.docx</span><span class="fd">文稿 › 租房 · 2025-10-02</span></div></div></div></div>
   <div data-app="mail"><div class="sec">邮件 · <span class="mono">me@example.com</span> <span class="ct num">3</span></div>
-  <div class="group">
-    <div class="row hit hoverask" data-app="mail" data-ctx="中介 · 房源确认"><span class="app l img-mail" role="img" aria-label="邮件助手" title="邮件助手"></span><div class="grow"><span class="t">中介 · 房源确认<span class="meta">2025-09-28</span></span><span class="s">…合同下周一签，带身份证…</span></div><button class="btn sm" type="button" data-act="open-mailwin">打开</button></div>
-  </div></div>
-  <div data-app="photos"><div class="sec">照片和视频</div>
-  <div class="group"><div class="row"><svg class="i "><use href="#i-lock"/></svg><div class="grow"><span class="t">照片还没允许搜</span><span class="s">允许以后，照片里的文字和场景也能搜到</span></div><span data-perm-light="photos"><span class="light off" title="先不用" aria-label="先不用"></span></span><button class="btn sm" type="button" data-perm="photos">允许</button></div></div></div>
+  <div class="group"><div class="row hit" data-act="hit-select" data-ctx="房东 · 续租合同" data-snip="合同 11 月底到期，续租的话押金不变…"><div class="grow"><span class="t">房东 · 续租合同</span><span class="fd">10-24</span></div></div><div class="row hit" data-act="hit-select" data-ctx="中介 · 房源确认" data-snip="…合同下周一签，带身份证…"><div class="grow"><span class="t">中介 · 房源确认</span><span class="fd">2025-09-28</span></div></div><div class="row hit" data-act="hit-select" data-ctx="物业 · 交房提醒" data-snip="…交房当天抄水电表…"><div class="grow"><span class="t">物业 · 交房提醒</span><span class="fd">2025-10-01</span></div></div></div>
+  <div class="sec">邮件 · <span class="mono">work@example.com</span> <span class="ct num">1</span></div>
+  <div class="group"><div class="row hit" data-act="hit-select" data-ctx="人事 · 租房补贴" data-snip="…附上租房合同首页…"><div class="grow"><span class="t">人事 · 租房补贴</span><span class="fd">10-20</span></div></div></div></div>
+  </div>
+  <aside class="hitprev" id="hitprev" hidden><span class="thumb"></span><b id="hp-name"></b><p id="hp-snip"></p>
+    <div class="acts"><button class="btn sm primary" type="button" data-act="hit-open">打开 ↩</button><button class="btn sm ghost" type="button" data-act="hit-reveal" id="hp-reveal"><svg class="i s14"><use href="#i-folder"/></svg>在访达中显示 ⌘↩</button></div></aside>
+  </div>
 </div></section><section class="page" data-page="apps" data-ask="apps">
 <div class="scroll">
   <div class="ph"><h4>应用</h4><span class="grow"></span></div>
@@ -1095,7 +1120,7 @@ details.more[open] summary .i { transform: rotate(90deg); }
     <tr><td>顶部菜单（完整入口）</td><td>主控</td><td>主控</td></tr>
     <tr><td>菜单栏图标（状态、急事）</td><td>哪件算急事由 agent 说，照「设置 · 提醒」里「当场说」的那几类</td><td>主控</td></tr>
     <tr><td>「今天」里主控自己的卡片（有新版本、装好了）</td><td>主控</td><td>主控</td></tr>
-    <tr><td>搜索结果页（<span class="mono">HitsList</span>）</td><td>各工具回结果（<span class="mono">service.ask.search</span>），agent 汇总</td><td>主控</td></tr>
+    <tr><td>搜索结果（窗口按类型分组画各工具的 <span class="mono">hits</span>）</td><td>各工具回结果（<span class="mono">service.ask.search</span>），agent 汇总</td><td>主控</td></tr>
     <tr><td>「今天」：出哪些事、什么顺序、什么时候出</td><td>agent</td><td>主控</td></tr>
     <tr><td>卡片</td><td>工具写内容（A2UI，放 outbox），agent 校验、挑时机</td><td>主控</td></tr>
     <tr><td>工具的基础页</td><td>工具写（资源 <span class="mono">page/&lt;id&gt;</span>）</td><td>主控</td></tr>
@@ -1112,7 +1137,7 @@ details.more[open] summary .i { transform: rotate(90deg); }
   <h2>搜索和问螺壳：同一条输入条，不用抽屉</h2>
   <p>beta 2 上（<span class="mono">luoke-agent.chat</span> 要先交评测集、过发布评测，ADR 0017）。抽屉是把对话当成窗口的一部分，常年占掉三分之一的宽度，打开它就得在两块之间来回看。换成「就地问」：</p>
   <ul>
-    <li><b>搜索和问螺壳合成一条</b>：打字就出搜索结果，不经模型，各来源先回先画；回车再让螺壳回答。回答里引用的结果带「打开」，点了才开。「搜索结果」进整页，按来源分段、能筛选。</li>
+    <li><b>搜索和问螺壳合成一条</b>：打字就出搜索结果，不经模型，各来源先回先画；回车再让螺壳回答。回答里引用的结果带「打开」，点了才开。「搜索结果」进整页，按类型跨工具分组（邮件再按收件的邮箱分块），顶上按类型筛选。</li>
     <li><b>底部一条浮动输入条</b>，⌘K 或直接开始打字就叫出；它带着上下文标签（你在哪一页、选中了哪一行），可以点掉。</li>
     <li><b>回答浮在当前页上</b>，半透明、不遮整屏；还是卡片，会改动东西的照样要你点。Esc 收起。</li>
     <li><b>一问一答就够的不留痕迹</b>；想留着的「钉到今天」，想接着聊的「展开」成整页对话（对话记录在「活动」里能找回）。</li>
@@ -1158,7 +1183,7 @@ details.more[open] summary .i { transform: rotate(90deg); }
       <tr><td class="mono">service.summary</td><td>资源 <span class="mono">summary</span>：<span class="mono">{"count", "text"}</span>。应用页的概览、「应用」展开后每行的计数；不弹通知，不进简报</td></tr>
       <tr><td class="mono">service.ask</td><td><span class="mono">search</span>：搜索结果页和输入条下的结果；<span class="mono">suggest</span>：问螺壳打开时的推荐（工具协议 §1b）</td></tr>
       <tr><td class="mono">service.pages</td><td>资源 <span class="mono">page/&lt;id&gt;</span>：一组 A2UI 消息，和卡片一样校验（200 个组件、2000 字）。应用页里的基础页</td></tr>
-      <tr><td class="mono">service.ui</td><td>深页只写页 id；<span class="mono">open</span> 是工具的只读动作（<span class="mono">{"page"}</span>），由工具自己打开。「打开完整界面」和各深页入口；手机上灰掉，写「在 Mac 上」</td></tr>
+      <tr><td class="mono">service.ui</td><td>深页只写页 id；<span class="mono">open</span> 是工具的只读动作（<span class="mono">{"page"}</span>），由工具自己打开。窗口从 11-09 起不打开工具自己的界面（应用的事都在窗口里做）</td></tr>
       <tr><td class="mono">permissions</td><td>「添加应用」的详情、「设置 · 权限」、「今天」里的权限卡片和申请弹窗</td></tr>
       <tr><td class="mono">listing</td><td>发布流水线抄进发布清单，「添加应用」读发布清单；大小由流水线实测，档位由配方和评测定</td></tr>
     </table>
@@ -1325,10 +1350,25 @@ resources/read permissions
   function primaryIndex(c) {
     return $$('.acts button', c).findIndex(b => b.classList.contains('primary'));
   }
+  // 按类处理：同一个应用同一类的（data-kind）放一起，次序照第一张出现的位置；有两类以上时列出不止一件的那几类
+  function kindsOf() {
+    const g = new Map();
+    decideCards().forEach(c => { const k = c.dataset.kind || 'card:' + c.dataset.card; if (!g.has(k)) g.set(k, []); g.get(k).push(c); });
+    return [...g.entries()];
+  }
+  const kindName = c => c.dataset.kname || nameOf(c);
+  function renderKinds() {
+    const box = $('#kinds'); if (!box) return;
+    const all = kindsOf(), picks = all.length > 1 ? all.filter(([, cs]) => cs.length > 1) : [];
+    box.hidden = !picks.length;
+    box.innerHTML = picks.length ? '<span class="lbl">按类处理</span>' + picks.map(([k, cs]) =>
+      `<button class="chip" type="button" data-kind-focus="${k}" title="「${kindName(cs[0])}」的 ${cs.length} 件一次只摆一件：⏎ 答，↓ 跳过，Esc 回来">${appOf(cs[0])}${kindName(cs[0])} <span class="ct num">${cs.length}</span></button>`).join('') : '';
+  }
   function syncOne() {
     const n = +$('#cnt-decide').textContent;
     $$('[data-one]').forEach(x => x.textContent = n);
     $$('[data-act="focus"]').forEach(b => b.disabled = n === 0);
+    renderKinds();
     renderBrief();
     if (focus && focus.cur && !visible(cardById(focus.cur)) && !focus.skipped.has(focus.cur)) {
       if (!focus.answered.includes(focus.cur)) focus.answered.push(focus.cur);
@@ -1373,9 +1413,12 @@ resources/read permissions
     clearTimeout(c._ring);
     c._ring = setTimeout(() => { c.classList.remove('ring'); void c.offsetWidth; c.classList.add('ring'); c._ring = setTimeout(() => c.classList.remove('ring'), 1200); }, reduced() ? 0 : 320);
   }
-  function enterFocus() {
-    const ids = decideCards().map(c => c.dataset.card); if (!ids.length) return;
-    focus = { ids, answered: [], skipped: new Set(), cur: null };
+  // 次序照「今天」：一类处理完再下一类；给了 kind（「按类处理」里点的）只走这一类
+  function enterFocus(kind) {
+    const all = kindsOf(), picked = kind ? all.filter(([k]) => k === kind) : all;
+    const ids = picked.flatMap(([, cs]) => cs.map(c => c.dataset.card)); if (!ids.length) return;
+    focus = { ids, answered: [], skipped: new Set(), cur: null, kind: kind ? kindName(picked[0][1][0]) : null };
+    $('.f-top b').textContent = focus.kind ? '一件件处理 · ' + focus.kind : '一件件处理';
     $('#today-std').hidden = true; $('#today-cmp').hidden = true; $('#focus').hidden = false; win.classList.add('focusing');
     $('.page[data-page="today"] > .scroll').scrollTop = 0;
     renderFocus();
@@ -1390,7 +1433,9 @@ resources/read permissions
     const back = '<div class="acts"><button class="btn lg primary" type="button" data-act="focus-close">回到今天</button></div>';
     if (!id) {
       const kept = focus.ids.filter(x => visible(cardById(x))).length;
-      box.innerHTML = kept
+      box.innerHTML = !kept && focus.kind && left
+        ? `<div class="f-end"><h4>「${focus.kind}」都处理完了</h4><p class="body">「要你决定」里还有 ${left} 件别的事，在「今天」里。</p>${back}</div>`
+        : kept
         ? `<div class="f-end"><h4>还有 ${kept} 件留着</h4><p class="body">跳过的事还在「今天」里，等你有空再看。</p>${back}</div>`
         : `<div class="f-end"><img src="${MASCOT}" alt=""><h4>今天没什么要你操心的</h4><p class="body">做了的都在「今天」和「活动」里，随时能撤销。</p>${back}</div>`;
     } else {
@@ -1509,13 +1554,14 @@ resources/read permissions
     }
     const f = e.target.closest('[data-f]');
     if (f) {
-      $$('[data-f]', f.parentElement).forEach(b => b.classList.toggle('on', b === f));
+      $$('[data-filter] [data-f]', f.closest('.page')).forEach(b => b.classList.toggle('on', b.dataset.f === f.dataset.f));   // 「还有 N 个 ›」也是筛这一类
       $$('[data-app]', f.closest('.page')).forEach(r => r.hidden = f.dataset.f !== 'all' && r.dataset.app !== f.dataset.f);
       return;
     }
     const h = e.target.closest('.hoverask');
     if (h && !e.target.closest('button')) { ctx = h.dataset.ctx; chips(); return openAsk(); }
     const perm = e.target.closest('[data-perm]'); if (perm) return openSheet(perm.dataset.perm);
+    const kf = e.target.closest('[data-kind-focus]'); if (kf) return enterFocus(kf.dataset.kindFocus);
     const m = e.target.closest('[data-mail]');
     if (m) {
       $$('.mrow').forEach(r => r.classList.toggle('on', r === m));
@@ -1560,7 +1606,14 @@ resources/read permissions
       case 'apps-toggle': { $('#applist').hidden = !$('#applist').hidden; appsRow(); try { localStorage.setItem('agent-proto-apps', $('#applist').hidden ? '' : '1'); } catch (e) {} break; }
       case 'hit-open': toast('用它的默认程序打开（只在你点了以后）'); break;
       case 'hit-reveal': toast('在访达中显示'); break;
-      case 'hit-similar': toast('找相似的：新结果画在这一条下面'); break;
+      case 'hit-select': {
+        const on = !a.classList.contains('picked');
+        $$('.page[data-page="search"] .picked').forEach(x => x.classList.remove('picked'));
+        a.classList.toggle('picked', on);
+        $('#hitwrap').classList.toggle('previewing', on); $('#hitprev').hidden = !on;
+        if (on) { $('#hp-name').textContent = a.dataset.ctx; $('#hp-snip').textContent = a.dataset.snip; $('#hp-reveal').hidden = !a.dataset.reveal; }
+        break;
+      }
       case 'answer': {
         const c = a.closest('[data-card]') || a.closest('.row'), back = vanish(c);
         const ev = c.dataset.card ? logActivity(appOf($('.hd', c)), `${titleOf(c)}：${a.textContent.trim()}`) : null;
@@ -1735,6 +1788,19 @@ resources/read permissions
         check('点简报里的一件，那张卡片亮一圈', $('[data-card="ask-mem"]').classList.contains('ring'));
         click('#brief [data-act="brief-close"]');
         check('「收起」把便条收起来', $('#brief').hidden);
+        check('按类处理：四张各是一类，不出这一行', $('#kinds').hidden);
+        {
+          const extra = cardById('ask-mem').cloneNode(true); extra.dataset.card = 'ask-mem-2'; $('#decide').append(extra); count('cnt-decide', 1);
+          check('按类处理：记忆多了一件，列出「记忆想问的事 2」', !$('#kinds').hidden && $$('#kinds .chip').length === 1
+            && $('#kinds .chip').textContent.replace(/\s+/g, ' ').trim() === '记忆想问的事 2');
+          click('#kinds .chip');
+          check('按类处理：点了只走这一类', !$('#focus').hidden && $('.f-top b').textContent === '一件件处理 · 记忆想问的事' && $$('#f-prog i').length === 2);
+          key('ArrowDown'); key('ArrowDown');
+          check('按类处理：跳过两件，说还有 2 件留着', $('.f-end h4') && $('.f-end h4').textContent === '还有 2 件留着');
+          click('.f-top [data-act="focus-close"]');
+          extra.remove(); count('cnt-decide', -1);
+          check('按类处理：拿掉那一件，这一行又收起', $('#kinds').hidden && $('#cnt-decide').textContent === '4');
+        }
         // 一件件处理
         click('#one-btn');
         check('一件件处理：今天换成一块面板', !$('#focus').hidden && $('#today-std').hidden && css('.f-surface', 'borderTopLeftRadius') === '16px'
@@ -1813,9 +1879,13 @@ resources/read permissions
         click('.page[data-page="prefs"] .pt[data-tab="al"]');
         click('[data-nav="today"]'); click('#pill'); click('#answers [data-go="search"]');
         check('从输入条进搜索结果', $('.page[data-page="search"]').classList.contains('on') && $('#answers').hidden);
-        click('.page[data-page="search"] [data-f="files"]');
-        check('只看文件：邮件那段收起', $('.page[data-page="search"] [data-app="mail"]').hidden && !$('.page[data-page="search"] div[data-app="files"]').hidden);
-        click('.page[data-page="search"] [data-f="all"]');
+        click('.page[data-page="search"] .chip[data-f="pdf"]');
+        check('只看 PDF：邮件那段收起', $('.page[data-page="search"] [data-app="mail"]').hidden && !$('.page[data-page="search"] div[data-app="pdf"]').hidden);
+        click('.page[data-page="search"] .chip[data-f="all"]');
+        click('.page[data-page="search"] .tile');
+        check('选中一条：右边出预览，格子一行三个', !$('#hitprev').hidden && $('#hitwrap').classList.contains('previewing') && $('#hp-name').textContent === '租房合同.pdf');
+        click('.page[data-page="search"] .tile');
+        check('再点一下取消选中', $('#hitprev').hidden);
         click('#pill'); await wait(600); check('在搜索页问螺壳，回答带出处', $('#a').textContent.includes('第 3 页')); click('[data-act="pin"]');
         click('[data-nav="apps"]'); click('.mk[data-mk="ime"] [data-act="install-ime"]'); await wait(4200);
         check('装好输入法：侧栏多一项、今天多一张', !$('.nav[data-nav="ime"]').hidden && $('#decide').textContent.includes('启用输入法'));

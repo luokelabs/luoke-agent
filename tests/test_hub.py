@@ -1,4 +1,4 @@
-"""问主控：装了哪些工具、它带的 luoke_mem 在哪（用临时目录里的假主控）。"""
+"""问主控：装了哪些工具、它带的 luoke_mem 在哪，多久问一次（用临时目录里的假主控）。"""
 from __future__ import annotations
 
 import os as _os
@@ -19,10 +19,14 @@ import tempfile
 import threading
 import unittest
 
+from luoke_agent import runner as runner_mod
+from luoke_agent.agent import Agent
 from luoke_agent.memsource import VENDOR
 from luoke_agent.mcp import NotRunning, ToolClient
-from luoke_agent.toolsource import (RESERVED, HubRefused, ToolSource, accessories, data_dirs, discover, hub_luoke_mem,
-                                    socket_problem)
+from luoke_agent.runner import Runner
+from luoke_agent.state import State
+from luoke_agent.toolsource import (RESERVED, HubNotReady, HubRefused, ToolSource, accessories, data_dirs, discover,
+                                    hub_luoke_mem, socket_problem)
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -30,6 +34,12 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 class FakeHub(socketserver.ThreadingMixIn, socketserver.UnixStreamServer):
     daemon_threads = True
     answers: dict = {}
+    hits: list = []          # 问过的路径，按先后
+
+
+def starting(retry_after=5, header=True):
+    """主控刚起来时的答复（luoke-core：启动期间除了 /status、/tasks 都答 503 busy，带 retry_after）。"""
+    return ("starting", retry_after, header)
 
 
 class Handler(http.server.BaseHTTPRequestHandler):
@@ -40,7 +50,18 @@ class Handler(http.server.BaseHTTPRequestHandler):
         pass
 
     def do_GET(self):
+        self.server.hits.append(self.path)
         body = self.server.answers.get(self.path)
+        if isinstance(body, tuple) and body[0] == "starting":
+            _, after, header = body
+            data = json.dumps({"code": "busy", "message": "螺壳正在启动", "retry_after": after}).encode()
+            self.send_response(503)
+            if header and after is not None:
+                self.send_header("Retry-After", str(int(after)))
+            self.send_header("Content-Length", str(len(data)))
+            self.end_headers()
+            self.wfile.write(data)
+            return
         if body == "refused":
             data = b'{"error": "unknown_accessory"}'
             self.send_response(400)
@@ -67,6 +88,7 @@ class HubTest(unittest.TestCase):
         self.sock = os.path.join(self.dir, "hub.sock")
         self.hub = FakeHub(self.sock, Handler)
         self.hub.answers = {}
+        self.hub.hits = []
         threading.Thread(target=self.hub.serve_forever, daemon=True).start()
 
     def tearDown(self):
@@ -199,6 +221,23 @@ class HubTest(unittest.TestCase):
             self.assertIsNone(listed.poll(1))
         self.assertEqual(err.getvalue().count("不连 luoke-scan：socket 那个路径不是 socket"), 1, "同一个问题只说一次")
 
+    def test_hub_still_starting(self):
+        """主控刚起来答 503：discover 抛 HubNotReady，带上它说的多久以后再来；luoke_mem 那一路当没问到。"""
+        self.hub.answers = {"/accessories": starting(5), "/tasks": starting(5)}
+        with contextlib.redirect_stderr(io.StringIO()):
+            with self.assertRaises(HubNotReady) as got:
+                discover(self.sock)
+            self.assertEqual(got.exception.retry_after, 5)
+            self.hub.answers["/accessories"] = starting(3, header=False)
+            with self.assertRaises(HubNotReady) as got:
+                discover(self.sock)
+            self.assertEqual(got.exception.retry_after, 3, "正文里的 retry_after")
+            self.hub.answers["/accessories"] = starting(None)
+            with self.assertRaises(HubNotReady) as got:
+                discover(self.sock)
+            self.assertIsNone(got.exception.retry_after, "没说多久")
+            self.assertIsNone(hub_luoke_mem(self.sock, tries=1))
+
     def test_hub_does_not_know_this_version(self):
         self.hub.answers = {"/accessories": "refused", "/tasks": "refused"}
         with self.assertRaises(HubRefused):
@@ -232,6 +271,139 @@ class HubTest(unittest.TestCase):
         v, f = self._which(broken)
         self.assertEqual(v, "None")
         self.assertTrue(f.startswith(VENDOR), "导不进来：用自带的")
+
+
+class RunnerHubTest(unittest.TestCase):
+    """主控还在启动（503）、连不上时几秒后再问，退避到平常的间隔；平时勤问，清单变了马上换，没变什么都不动。"""
+
+    def setUp(self):
+        self.dir = tempfile.mkdtemp(prefix="la")
+        self.sock = os.path.join(self.dir, "hub.sock")
+        self.hub = FakeHub(self.sock, Handler)
+        self.hub.answers = {}
+        self.hub.hits = []
+        threading.Thread(target=self.hub.serve_forever, daemon=True).start()
+        self.state = State(os.path.join(self.dir, "agent"))
+        self.agent = Agent(self.state, [])
+        self.q = self.agent.subscribe()
+        self.now = 1000.0
+        self.runner = Runner(self.agent, hub=self.sock, home=self.dir, clock=lambda: self.now)
+
+    def tearDown(self):
+        self.hub.shutdown()
+        self.hub.server_close()
+        self.state.close()
+        shutil.rmtree(self.dir, ignore_errors=True)
+
+    @staticmethod
+    def tool(acc, **caps):
+        return {"accessory": acc, "capabilities": dict({"protocol": 1, "socket": f"~/.{acc}/run/agent.sock"}, **caps)}
+
+    def listed(self, *accs):
+        self.hub.answers["/accessories"] = {"contract": 1, "accessories": [self.tool(a) for a in accs]}
+
+    def refresh(self):
+        with contextlib.redirect_stderr(io.StringIO()):
+            self.runner.refresh_tools()
+
+    def events(self):
+        out = []
+        while not self.q.empty():
+            out.append(self.q.get_nowait())
+        return out
+
+    def test_retries_soon_while_the_hub_is_starting(self):
+        self.hub.answers["/accessories"] = starting(5)
+        self.refresh()
+        self.assertEqual(self.runner.next_hub, self.now + 5, "照主控说的 retry_after")
+        self.assertEqual(self.agent.notices["hub"], "螺壳还没准备好，工具过一会儿列出来。")
+        self.assertIn("feed", [e for e, _ in self.events()], "那一句马上给窗口")
+        self.hub.answers["/accessories"] = starting(None)
+        self.refresh()
+        self.assertEqual(self.runner.next_hub, self.now + runner_mod.HUB_RETRY * 2, "没说多久：2、4、8… 秒")
+        self.runner.hub = os.path.join(self.dir, "gone.sock")      # 连不上
+        self.refresh()
+        self.assertEqual(self.runner.next_hub, self.now + 8)
+        self.assertEqual(self.agent.notices["hub"], "螺壳没在运行，暂时找不到工具。")
+        self.refresh()
+        self.assertEqual(self.runner.next_hub, self.now + runner_mod.HUB_EVERY, "退避到平常的间隔为止")
+        self.hub.answers["/accessories"] = starting(60)
+        self.runner.hub = self.sock
+        self.refresh()
+        self.assertEqual(self.runner.next_hub, self.now + 60, "主控说的比退避长：至少等它说的")
+        self.hub.answers["/accessories"] = starting(10 ** 6)
+        self.refresh()
+        self.assertEqual(self.runner.next_hub, self.now + runner_mod.HUB_WAIT_MAX, "说得太长的不全信")
+        self.listed("luoke-scan")
+        self.refresh()
+        self.assertIn("luoke-scan", self.agent.sources, "主控起来了：工具马上列出来")
+        self.assertNotIn("hub", self.agent.notices)
+        self.assertEqual((self.runner.hub_misses, self.runner.next_hub), (0, self.now + runner_mod.HUB_EVERY))
+
+    def test_refused_waits_long(self):
+        self.hub.answers["/accessories"] = "refused"
+        self.refresh()
+        self.assertEqual(self.runner.next_hub, self.now + runner_mod.HUB_REFUSED_EVERY, "主控不认这一版：勤问也没用")
+
+    def test_step_asks_when_due_and_naps_until_then(self):
+        self.hub.answers["/accessories"] = starting(None)
+        with contextlib.redirect_stderr(io.StringIO()):
+            self.runner.step()                                   # 起来先问一次
+            self.assertEqual(self.hub.hits, ["/accessories"])
+            self.assertEqual(self.runner.nap(), runner_mod.HUB_RETRY, "2 秒后再问：不睡满一个 TICK")
+            self.now += 1
+            self.runner.step()
+            self.assertEqual(len(self.hub.hits), 1, "还没到时候")
+            self.now += 1
+            self.runner.step()
+            self.assertEqual(len(self.hub.hits), 2)
+            self.listed()
+            self.now += 4
+            self.runner.step()
+            self.assertEqual(self.runner.nap(), runner_mod.TICK, "平常：睡一个 TICK")
+            self.now += runner_mod.HUB_EVERY - 1
+            self.runner.step()
+            self.assertEqual(len(self.hub.hits), 3)
+            self.now += 1
+            self.runner.step()
+            self.assertEqual(len(self.hub.hits), 4, "平常每 HUB_EVERY 秒问一次")
+            self.runner.poll_soon()
+            self.runner.step()
+            self.assertEqual(len(self.hub.hits), 5, "窗口打开：马上问")
+
+    def test_changes_are_picked_up_and_the_same_list_does_nothing(self):
+        self.listed("luoke-scan")
+        self.refresh()
+        scan = self.agent.sources["luoke-scan"]
+        self.assertIn(("apps", {"app": "luoke-scan"}), self.events())
+        calls = []
+        scan.set_manifest = lambda *a, **k: calls.append(a)
+        self.refresh()
+        self.assertEqual((calls, self.events()), ([], []), "清单没变：什么都不动")
+        self.listed("luoke-scan", "luoke-mail")
+        self.refresh()
+        self.assertIs(self.agent.sources["luoke-scan"], scan)
+        self.assertIn("luoke-mail", self.agent.sources, "开启、装好的：下一次问就有")
+        self.assertIn(("apps", {"app": "luoke-mail"}), self.events())
+        self.listed("luoke-mail")
+        self.refresh()
+        self.assertNotIn("luoke-scan", self.agent.sources, "停用、卸载的：下一次问就撤")
+        self.assertIn(("apps", {"app": "luoke-scan"}), self.events())
+        self.hub.answers["/accessories"] = {"contract": 1, "accessories": [
+            self.tool("luoke-mail", reports=[{"kind": "suspicious", "title": "可疑邮件", "urgency": "urgent"}])]}
+        self.refresh()
+        self.assertEqual(self.agent.sources["luoke-mail"].reports["suspicious"]["urgency"], "urgent", "升级了：清单跟着换")
+
+    def test_hub_down_keeps_the_tools(self):
+        self.listed("luoke-scan")
+        self.refresh()
+        self.runner.hub = os.path.join(self.dir, "gone.sock")
+        self.refresh()
+        self.assertIn("luoke-scan", self.agent.sources, "主控没在运行：先照旧")
+        self.runner.hub = self.sock
+        self.refresh()
+        self.assertNotIn("hub", self.agent.notices)
+        self.assertIn("luoke-scan", self.agent.sources)
 
 
 if __name__ == "__main__":

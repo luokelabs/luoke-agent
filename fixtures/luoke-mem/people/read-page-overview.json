@@ -1,0 +1,199 @@
+{
+  "reply": {
+    "id": 6,
+    "jsonrpc": "2.0",
+    "result": {
+      "contents": [
+        {
+          "mimeType": "application/json",
+          "text": [
+            {
+              "createSurface": {
+                "catalogId": "ai.luoke/a2ui/agent/1",
+                "surfaceId": "overview"
+              },
+              "version": "v0.9"
+            },
+            {
+              "updateComponents": {
+                "components": [
+                  {
+                    "children": [
+                      "h1",
+                      "t2",
+                      "t3",
+                      "d4",
+                      "t5",
+                      "t6",
+                      "t7",
+                      "t8",
+                      "t9",
+                      "t10",
+                      "t11",
+                      "t12",
+                      "t13",
+                      "t14",
+                      "t15",
+                      "d16",
+                      "t17",
+                      "t18",
+                      "t19",
+                      "r21"
+                    ],
+                    "component": "Column",
+                    "id": "root"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "h1",
+                    "text": "概览",
+                    "variant": "h4"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "t2",
+                    "text": "记下了 7 条，有 1 条猜测等你确认。"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "t3",
+                    "text": "关于你 2 · 常用说法 5",
+                    "variant": "caption"
+                  },
+                  {
+                    "component": "Divider",
+                    "id": "d4"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "t5",
+                    "text": "最近记下的（没问你就记下的，不对就在「记下的」里点「不对」）",
+                    "variant": "caption"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "t6",
+                    "text": "林晓"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "t7",
+                    "text": "常用说法 · 根据你发出的邮件和你在邮件助手里的操作 · 11月5日",
+                    "variant": "caption"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "t8",
+                    "text": "Lei Wang"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "t9",
+                    "text": "常用说法 · 根据你发出的邮件和你在邮件助手里的操作 · 11月5日",
+                    "variant": "caption"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "t10",
+                    "text": "Wang Lei"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "t11",
+                    "text": "常用说法 · 根据你发出的邮件和你在邮件助手里的操作 · 11月5日",
+                    "variant": "caption"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "t12",
+                    "text": "王磊"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "t13",
+                    "text": "常用说法 · 根据你发出的邮件和你在邮件助手里的操作 · 11月5日",
+                    "variant": "caption"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "t14",
+                    "text": "合作方：Wang Lei（wanglei@corp.example）"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "t15",
+                    "text": "关于你 · 根据你发出的邮件和你在邮件助手里的操作 · 11月5日",
+                    "variant": "caption"
+                  },
+                  {
+                    "component": "Divider",
+                    "id": "d16"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "t17",
+                    "text": "最近 14 天各应用记下的",
+                    "variant": "caption"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "t18",
+                    "text": "邮件助手：6 条"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "t19",
+                    "text": "螺壳记忆：1 条"
+                  },
+                  {
+                    "action": {
+                      "event": {
+                        "context": {},
+                        "name": "mem_open"
+                      }
+                    },
+                    "child": "b20-text",
+                    "component": "Button",
+                    "id": "b20"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "b20-text",
+                    "text": "打开整份记忆"
+                  },
+                  {
+                    "children": [
+                      "b20"
+                    ],
+                    "component": "Row",
+                    "id": "r21"
+                  }
+                ],
+                "surfaceId": "overview"
+              },
+              "version": "v0.9"
+            }
+          ],
+          "uri": "page/overview"
+        }
+      ],
+      "resultType": "complete"
+    }
+  },
+  "request": {
+    "id": 6,
+    "jsonrpc": "2.0",
+    "method": "resources/read",
+    "params": {
+      "_meta": {
+        "io.modelcontextprotocol/clientCapabilities": {},
+        "io.modelcontextprotocol/clientInfo": {
+          "name": "luoke-agent",
+          "version": "fixtures"
+        },
+        "io.modelcontextprotocol/protocolVersion": "2026-07-28"
+      },
+      "uri": "page/overview"
+    }
+  }
+}

@@ -1,12 +1,12 @@
 {
   "reply": {
-    "id": 3,
+    "id": 1,
     "jsonrpc": "2.0",
     "result": {
       "_meta": {
         "io.modelcontextprotocol/serverInfo": {
           "name": "luoke-scan",
-          "version": "0.3.5"
+          "version": "0.3.26"
         }
       },
       "capabilities": {
@@ -20,7 +20,7 @@
     }
   },
   "request": {
-    "id": 3,
+    "id": 1,
     "jsonrpc": "2.0",
     "method": "server/discover",
     "params": {

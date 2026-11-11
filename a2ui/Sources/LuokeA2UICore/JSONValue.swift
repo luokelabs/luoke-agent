@@ -36,6 +36,16 @@ public enum JSONValue: Equatable, Hashable {
         if let o = object, o.count == 1, let p = o["path"]?.string { return p }
         return nil
     }
+
+    /// 里面所有绑定的路径（按钮上下文用）。同 `luoke_agent/a2ui.py` 的 `bindings`
+    public var bindingPaths: [String] {
+        if let p = bindingPath { return [p] }
+        switch self {
+        case .object(let o): return o.values.flatMap { $0.bindingPaths }
+        case .array(let a): return a.flatMap { $0.bindingPaths }
+        default: return []
+        }
+    }
 }
 
 extension JSONValue: Codable {
@@ -77,6 +87,21 @@ func pointerTokens(_ path: String) throws -> [String] {
     }
 }
 
+/// 数组下标照 RFC 6901：`0`，或者不以 0 开头的 ASCII 数字，还要在数组里。别的写法（`00`、`+0`、`-0`）取不到：不然 `/l/00`
+/// 取到的是 `/l/0`，密码框的路径按段比（`pointerCovers`）就拦不住它。同 `luoke_agent/a2ui.py` 的 `_index`
+func pointerIndex(_ t: String, count: Int) -> Int? {
+    // 位数比数组长度的位数多的一定越界，先拦下（同 Python 的 `_index`；`Int(t)` 溢出时本来也是 nil，不会崩）
+    guard !t.isEmpty, t.utf8.allSatisfy({ $0 >= 0x30 && $0 <= 0x39 }), t == "0" || t.utf8.first != 0x30,
+          t.utf8.count <= String(count).utf8.count, let i = Int(t), i < count else { return nil }
+    return i
+}
+
+/// `outer` 取到的值里有没有 `inner`：同一个路径，或者是它上面的一层（按段比）。同 `luoke_agent/a2ui.py` 的 `_covers`
+func pointerCovers(_ outer: String, _ inner: String) -> Bool {
+    guard let a = try? pointerTokens(outer), let b = try? pointerTokens(inner) else { return false }
+    return b.count >= a.count && Array(b.prefix(a.count)) == a
+}
+
 public extension JSONValue {
     /// 按 JSON 指针取值，取不到抛 PathError。
     func value(at path: String) throws -> JSONValue {
@@ -87,7 +112,7 @@ public extension JSONValue {
                 guard let v = o[t] else { throw PathError(path: path) }
                 cur = v
             case .array(let a):
-                guard let i = Int(t), i >= 0, i < a.count else { throw PathError(path: path) }
+                guard let i = pointerIndex(t, count: a.count) else { throw PathError(path: path) }
                 cur = a[i]
             default:
                 throw PathError(path: path)
@@ -112,7 +137,7 @@ public extension JSONValue {
         let rest = toks.dropFirst()
         switch node {
         case .array(var a):
-            guard let i = Int(head), i >= 0, i < a.count else { throw PathError(path: path) }
+            guard let i = pointerIndex(head, count: a.count) else { throw PathError(path: path) }
             if rest.isEmpty {
                 if let v = value { a[i] = v } else { a.remove(at: i) }
             } else {

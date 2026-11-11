@@ -3,7 +3,7 @@ import Foundation
 import IOKit
 import UserNotifications
 
-// 螺壳.app 接核心要的几样（docs/界面接口.md §11、§12、§14）：系统通知、用户在不在、通知授权。
+// 螺壳.app 接核心要的几样（docs/界面接口.md §11、§14）：系统通知、用户在不在、通知授权。
 // 照 luoke-agent 原来的壳（app/Sources/Luoke）搬过来，本体直接用，不用再拷。
 
 public extension AgentNotification {
@@ -40,7 +40,7 @@ public extension AgentNotification {
         (userInfo[userInfoKey] != nil, userInfo["surfaceId"] as? String)
     }
 
-    /// 通知授权的名字（§12 `POST /notifications` 的 `status`）
+    /// 通知授权的名字（§11 `POST /notifications` 的 `status`）
     static func authName(_ s: UNAuthorizationStatus) -> String {
         switch s {
         case .notDetermined: return "not_determined"

@@ -337,12 +337,15 @@ class Session:
 
 
 def comparable(request: dict) -> dict:
-    """比两条请求时不看的：JSON-RPC 的 id、clientInfo 的版本（样例里写 fixtures）。"""
+    """比两条请求时不看的：JSON-RPC 的 id、clientInfo 的版本（样例里写 fixtures）、clientCapabilities（核心认的卡片写法，
+    样例录的时候是什么都行）。"""
     r = copy.deepcopy(request)
     r.pop("id", None)
-    info = ((r.get("params") or {}).get("_meta") or {}).get("io.modelcontextprotocol/clientInfo")
+    meta = (r.get("params") or {}).get("_meta") or {}
+    info = meta.get("io.modelcontextprotocol/clientInfo")
     if isinstance(info, dict):
         info.pop("version", None)
+    meta.pop("io.modelcontextprotocol/clientCapabilities", None)
     return r
 
 

@@ -21,6 +21,11 @@
         },
         {
           "mimeType": "application/json",
+          "name": "状态",
+          "uri": "page/mac"
+        },
+        {
+          "mimeType": "application/json",
           "name": "概览",
           "uri": "page/overview"
         },

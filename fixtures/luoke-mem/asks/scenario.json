@@ -1,0 +1,115 @@
+{
+  "id": "asks",
+  "normalised": {
+    "resources/read": "contents[0].text 解开成了 JSON 值；线上是 JSON 文字"
+  },
+  "produced": {
+    "mcp": "python3 -m luoke_mem --path <假记忆> mcp --clock <那一步的时钟>：一个请求一个进程",
+    "seed": [
+      "螺壳输入法记了三段打字，邮件助手记了一次亲手归档某商城的促销邮件",
+      "三条猜测各有一个问题：「本地大模型」「在读博士」「爬山」；处理习惯「某商城的促销邮件归档」有一条建议；另有一个记忆自己的、带选项的问题（论文方向）。都在 11月5日 20:45 提出，11月20日过期"
+    ],
+    "tz": "Asia/Shanghai",
+    "user_action_at": "点按时的 at 是那一步的时钟，按 Asia/Shanghai 写"
+  },
+  "situation": "记忆在空闲时想好了要问的（每天最多几个，记忆定）：三条猜测各一个问题、一条处理习惯的建议、一个自己想知道的带选项的问题。agent 把它们放进「今天」，用户一张张答。",
+  "steps": [
+    {
+      "clock": "2026-11-06T10:00:00",
+      "do": "server/discover",
+      "file": "server-discover.json"
+    },
+    {
+      "clock": "2026-11-06T10:00:00",
+      "do": "列工具（agent 认 readOnlyHint）",
+      "file": "tools-list.json"
+    },
+    {
+      "clock": "2026-11-06T10:00:00",
+      "do": "列资源",
+      "file": "resources-list.json"
+    },
+    {
+      "clock": "2026-11-06T10:00:00",
+      "do": "读 outbox（每分钟一次）",
+      "file": "read-outbox.json"
+    },
+    {
+      "clock": "2026-11-06T10:00:00",
+      "do": "读概览（侧栏的计数和一句话）",
+      "file": "read-summary.json"
+    },
+    {
+      "clock": "2026-11-06T10:00:00",
+      "do": "打开应用页的「overview」",
+      "file": "read-page-overview.json"
+    },
+    {
+      "clock": "2026-11-06T10:00:00",
+      "do": "打开应用页的「guesses」",
+      "file": "read-page-guesses.json"
+    },
+    {
+      "clock": "2026-11-06T10:00:00",
+      "do": "打开应用页的「kept」",
+      "file": "read-page-kept.json"
+    },
+    {
+      "clock": "2026-11-06T10:00:00",
+      "do": "打开应用页的「people」",
+      "file": "read-page-people.json"
+    },
+    {
+      "clock": "2026-11-06T10:00:00",
+      "do": "打开应用页的「sources」",
+      "file": "read-page-sources.json"
+    },
+    {
+      "clock": "2026-11-06T10:05:00",
+      "do": "在「本地大模型」的卡片上点「对」",
+      "file": "call-mem_reply-yes.json"
+    },
+    {
+      "clock": "2026-11-06T10:06:00",
+      "do": "「在读博士」的卡片上，改成的内容里带了验证码，点「按我改的」：记忆不收，卡片留着",
+      "file": "call-mem_reply-revise-refused.json"
+    },
+    {
+      "clock": "2026-11-06T10:07:00",
+      "do": "改掉验证码，再点「按我改的」",
+      "file": "call-mem_reply-revise.json"
+    },
+    {
+      "clock": "2026-11-06T10:08:00",
+      "do": "「爬山」的卡片上点「以后再说」",
+      "file": "call-mem_reply-later.json"
+    },
+    {
+      "clock": "2026-11-06T10:09:00",
+      "do": "处理习惯的建议上点「好」",
+      "file": "call-mem_reply-useful.json"
+    },
+    {
+      "clock": "2026-11-06T10:10:00",
+      "do": "论文方向选「系统」，点「交回」",
+      "file": "call-mem_reply-answer.json"
+    },
+    {
+      "clock": "2026-11-06T10:11:00",
+      "do": "再读 outbox：都答完了",
+      "file": "read-outbox-after.json"
+    },
+    {
+      "clock": "2026-11-06T10:11:00",
+      "do": "概览",
+      "file": "read-summary-after.json"
+    },
+    {
+      "clock": "2026-11-06T10:11:00",
+      "do": "「记下的」：答过的那几条",
+      "file": "read-page-kept-after.json"
+    }
+  ],
+  "title": "记忆想问的事和建议",
+  "window": "「今天」里五张记忆的卡片：三张「记忆想问你」（输入框、对 / 不对 / 以前是，现在不是 / 按我改的 / 以后再说 / 在螺壳记忆里看）、一张「记忆有个建议」（好 / 不用 / 别再提 / 在螺壳记忆里看）、一张带选项的问题（选一个、交回 / 以后再说）。带验证码的改法被拒时卡片留着、上面一句话；其余答完换成一句话的结果。"
+}

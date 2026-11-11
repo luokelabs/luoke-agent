@@ -102,6 +102,16 @@ class State:
                 self.db.execute("UPDATE items SET status=?, outcome=?, done_at=? WHERE key=? AND status NOT IN ('done','gone')",
                                 (status, outcome, now, key))
 
+    def carry(self, old: str, new: str, source: str) -> bool:
+        """同一件事换了来源（记忆改由自己的 outbox 报）：新编号照旧编号到了哪一步记下（排着、说过、看过，第一次见的时间），
+        说过的不再说。旧编号没开着、新编号已经记下的都不动；记下了返回 True。"""
+        with self._lock, self.db:
+            cur = self.db.execute(
+                "INSERT OR IGNORE INTO items (key, source, kind, urgency, status, first_seen, notified_at, counted)"
+                " SELECT ?, ?, kind, urgency, status, first_seen, notified_at, counted FROM items"
+                " WHERE key=? AND status IN ('queued','notified','seen')", (new, source, old))
+        return cur.rowcount > 0
+
     def open_items(self) -> List[dict]:
         with self._lock:
             return [dict(r) for r in self.db.execute("SELECT * FROM items WHERE status NOT IN ('done','gone')")]

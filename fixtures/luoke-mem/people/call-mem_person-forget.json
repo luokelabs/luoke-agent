@@ -1,0 +1,42 @@
+{
+  "reply": {
+    "id": 12,
+    "jsonrpc": "2.0",
+    "result": {
+      "content": [
+        {
+          "text": "从记忆里忘掉了林晓。",
+          "type": "text"
+        }
+      ],
+      "isError": false,
+      "resultType": "complete"
+    }
+  },
+  "request": {
+    "id": 12,
+    "jsonrpc": "2.0",
+    "method": "tools/call",
+    "params": {
+      "_meta": {
+        "ai.luoke/user-action": {
+          "at": "2026-11-06T10:06:00+08:00",
+          "componentId": "b16",
+          "surfaceId": "people"
+        },
+        "io.modelcontextprotocol/clientCapabilities": {},
+        "io.modelcontextprotocol/clientInfo": {
+          "name": "luoke-agent",
+          "version": "fixtures"
+        },
+        "io.modelcontextprotocol/protocolVersion": "2026-07-28"
+      },
+      "arguments": {
+        "op": "forget",
+        "person": 3,
+        "sure": true
+      },
+      "name": "mem_person"
+    }
+  }
+}

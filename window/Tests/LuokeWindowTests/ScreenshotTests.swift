@@ -12,6 +12,13 @@ final class ScreenshotTests: XCTestCase {
         XCTAssertGreaterThanOrEqual(screens.count, 25)
         XCTAssertEqual(Set(screens.map(\.name)).count, screens.count, "名字不能重")
         let dir = ProcessInfo.processInfo.environment["LUOKE_SHOTS_DIR"].map { URL(fileURLWithPath: $0) }
+        Snapshot.missingSamples = []
+        defer {
+            // 截图点名的工具场景都有样例：写错了名字，图照样画得出来，只是少了那个应用（用本机录的样例时不核）
+            if ToolSample.local.dir == nil && ToolSample.local.scenario == nil {
+                XCTAssertEqual(Snapshot.missingSamples, [], "截图点名的场景没有样例")
+            }
+        }
         for s in screens {
             for dark in [false, true] {
                 let png = try XCTUnwrap(Snapshot.png(s, dark: dark, scale: 1), "\(s.name) 画不出")

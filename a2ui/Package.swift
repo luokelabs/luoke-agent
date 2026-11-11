@@ -16,5 +16,7 @@ let package = Package(
         .target(name: "LuokeA2UI", dependencies: ["LuokeA2UICore"], swiftSettings: [.swiftLanguageMode(.v5)]),
         .testTarget(name: "LuokeA2UICoreTests", dependencies: ["LuokeA2UICore"], resources: [.copy("Fixtures")],
                     swiftSettings: [.swiftLanguageMode(.v5)]),
+        // 画法：在 Mac 上真的量一遍、摆一遍（NSHostingView）
+        .testTarget(name: "LuokeA2UITests", dependencies: ["LuokeA2UI", "LuokeA2UICore"], swiftSettings: [.swiftLanguageMode(.v5)]),
     ]
 )

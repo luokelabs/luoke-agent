@@ -1,0 +1,101 @@
+{
+  "id": "feedback-152",
+  "normalised": {
+    "$TMPDIR": "假目录的临时目录（$FIXTURE/tmp）",
+    "000000000001…": "由路径、随机数算出的 12 位编号，按在本场景里出现的先后编号",
+    "resources/read": "contents[0].text 解开成了 JSON 值；线上是 JSON 文字",
+    "~": "假用户目录（$FIXTURE/home）",
+    "~/.Trash": "假目录的废纸篓（$FIXTURE/Trash）"
+  },
+  "produced": {
+    "changes": [
+      "pip 的缓存长到 60 MB",
+      "Gradle 的缓存（54 MB，其中一个文件夹只读）、Xcode 的 DerivedData（53 MB，另有一个锁定的文件）",
+      "pip、uv 编译过源码包",
+      "5 个 AI 插件（3 个在 ~/.claude/skills，2 个是插件市场装的）",
+      "Hugging Face 缓存里 4 个模型的 tokenizer_config.json 里多了一段把密码和密钥发出去、不告诉用户的话",
+      "TCC 里已经删掉的 Discord 还拿着录屏和麦克风"
+    ],
+    "fixture": [
+      "blackbox/fx.py 造的假目录：blackbox/cases/base.py 的 `build`（照单元测试的 Fixture.build 摆），fakes.json 是 `fx.standard_fakes`（和单元测试的 Fixture.Fakes.standard 一样），另加一块 494 GB、还剩 182 GB 的硬盘",
+      "luoke-scan update --data $FIXTURE/data --tool-dir $FIXTURE/tools --force（假的 freshclam，daily 27000，库文件的时间 2026-10-20T01:00:00Z）",
+      "luoke-scan scan --fixture $FIXTURE --clock 2026-10-17T12:00:00Z（3 天前查过一轮：pip 的缓存还是空的）",
+      "luoke-scan update --data $FIXTURE/data --tool-dir $FIXTURE/tools --force（假的 freshclam，daily 27000，库文件的时间 2026-10-20T01:00:00Z）"
+    ],
+    "mcp": "luoke-scan mcp --fixture $FIXTURE --clock <那一步的时钟>：一个请求一个进程，标准输入一条 JSON-RPC，标准输出是答复",
+    "tz": "Asia/Shanghai",
+    "user_action_at": "点按时的 at 是那一步的时钟，按 Asia/Shanghai 写"
+  },
+  "situation": "基础假目录上再加 luoke-scan#152 里报的几样：Gradle、Xcode 的缓存里各有删不掉的（一个只读的文件夹、一个锁定的文件），pip 和 uv 编译过源码包，5 个 AI 插件，4 个对话模板里多了话的本机模型，已经删掉的 Discord 还拿着权限。查完一轮，用户在扫描页上点缓存那一行的「清理」。",
+  "steps": [
+    {
+      "clock": "2026-10-20T12:00:00Z",
+      "do": "查一轮（agent 叫的那种，只读、不自动清）：luoke-scan scan --fixture $FIXTURE --clock 2026-10-20T12:00:00Z --for-agent"
+    },
+    {
+      "clock": "2026-10-20T12:00:00Z",
+      "do": "server/discover",
+      "file": "server-discover.json"
+    },
+    {
+      "clock": "2026-10-20T12:00:00Z",
+      "do": "列工具（agent 认 readOnlyHint）",
+      "file": "tools-list.json"
+    },
+    {
+      "clock": "2026-10-20T12:00:00Z",
+      "do": "列资源",
+      "file": "resources-list.json"
+    },
+    {
+      "clock": "2026-10-20T12:00:00Z",
+      "do": "读 outbox（每分钟一次）",
+      "file": "read-outbox.json"
+    },
+    {
+      "clock": "2026-10-20T12:00:00Z",
+      "do": "读概览（侧栏的计数和一句话）",
+      "file": "read-summary.json"
+    },
+    {
+      "clock": "2026-10-20T12:00:00Z",
+      "do": "读权限的状态",
+      "file": "read-permissions.json"
+    },
+    {
+      "clock": "2026-10-20T12:00:00Z",
+      "do": "读基础页 page/overview",
+      "file": "read-page-overview.json"
+    },
+    {
+      "clock": "2026-10-20T12:00:00Z",
+      "do": "读基础页 page/mac",
+      "file": "read-page-mac.json"
+    },
+    {
+      "clock": "2026-10-20T12:00:00Z",
+      "do": "读基础页 page/cleaned",
+      "file": "read-page-cleaned.json"
+    },
+    {
+      "clock": "2026-10-20T12:05:00Z",
+      "do": "用户在扫描页上点缓存那一行的「清理」",
+      "file": "call-scan_apply-caches.json"
+    },
+    {
+      "clock": "2026-10-20T12:05:00Z",
+      "do": "点完再读扫描页",
+      "file": "read-page-overview-after-caches.json"
+    },
+    {
+      "clock": "2026-10-20T12:05:00Z",
+      "do": "点完再读 outbox",
+      "file": "read-outbox-after-caches.json"
+    }
+  ],
+  "title": "一位用户的反馈（luoke-scan#152）：清理没删完、看不懂的几行",
+  "window": [
+    "清理以后结果里写清还剩多少、为什么（锁定的文件删不掉），只读的文件夹改了权限照删。",
+    "「要你看看」里：插件说清 AI 用到它们时才运行、有什么风险；对话模板那行写多出来的话会做什么，「在访达里显示」选中模板文件；已经删掉的应用写出名字和权限，每项权限一个按钮。"
+  ]
+}

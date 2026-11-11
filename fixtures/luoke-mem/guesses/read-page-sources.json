@@ -1,0 +1,220 @@
+{
+  "reply": {
+    "id": 10,
+    "jsonrpc": "2.0",
+    "result": {
+      "contents": [
+        {
+          "mimeType": "application/json",
+          "text": [
+            {
+              "createSurface": {
+                "catalogId": "ai.luoke/a2ui/agent/1",
+                "surfaceId": "sources"
+              },
+              "version": "v0.9"
+            },
+            {
+              "updateComponents": {
+                "components": [
+                  {
+                    "children": [
+                      "h1",
+                      "t2",
+                      "k-sure",
+                      "t3",
+                      "r5",
+                      "t6",
+                      "r8",
+                      "t9",
+                      "d10",
+                      "t11",
+                      "f-clear",
+                      "r13"
+                    ],
+                    "component": "Column",
+                    "id": "root"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "h1",
+                    "text": "各应用写的",
+                    "variant": "h4"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "t2",
+                    "text": "忘掉某个应用写的：它的记录、它归纳的、只靠它的记录得出的理解都删掉；你确认过、否定过、改过的留下。删了找不回来。",
+                    "variant": "caption"
+                  },
+                  {
+                    "component": "CheckBox",
+                    "id": "k-sure",
+                    "label": "我知道删了找不回来",
+                    "value": {
+                      "path": "/checks/sure"
+                    }
+                  },
+                  {
+                    "component": "Text",
+                    "id": "t3",
+                    "text": "螺壳输入法：记录 2 条，理解 0 条"
+                  },
+                  {
+                    "action": {
+                      "event": {
+                        "context": {
+                          "sure": {
+                            "path": "/checks/sure"
+                          },
+                          "tool": "luoke-ime"
+                        },
+                        "name": "mem_forget_tool"
+                      }
+                    },
+                    "child": "b4-text",
+                    "component": "Button",
+                    "id": "b4",
+                    "variant": "borderless"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "b4-text",
+                    "text": "忘掉螺壳输入法写的"
+                  },
+                  {
+                    "children": [
+                      "b4"
+                    ],
+                    "component": "Row",
+                    "id": "r5"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "t6",
+                    "text": "邮件助手：记录 2 条，理解 0 条"
+                  },
+                  {
+                    "action": {
+                      "event": {
+                        "context": {
+                          "sure": {
+                            "path": "/checks/sure"
+                          },
+                          "tool": "luoke-mail"
+                        },
+                        "name": "mem_forget_tool"
+                      }
+                    },
+                    "child": "b7-text",
+                    "component": "Button",
+                    "id": "b7",
+                    "variant": "borderless"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "b7-text",
+                    "text": "忘掉邮件助手写的"
+                  },
+                  {
+                    "children": [
+                      "b7"
+                    ],
+                    "component": "Row",
+                    "id": "r8"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "t9",
+                    "text": "你说的和记忆归纳的：理解 4 条（在「记下的」里一条条删，或者清空整份记忆）",
+                    "variant": "caption"
+                  },
+                  {
+                    "component": "Divider",
+                    "id": "d10"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "t11",
+                    "text": "清空整份记忆：所有应用写的和记忆归纳的都删掉，找不回来。要清空，在下面输入「清空」。",
+                    "variant": "caption"
+                  },
+                  {
+                    "component": "TextField",
+                    "id": "f-clear",
+                    "label": "输入「清空」",
+                    "value": {
+                      "path": "/fields/clear"
+                    }
+                  },
+                  {
+                    "action": {
+                      "event": {
+                        "context": {
+                          "confirm": {
+                            "path": "/fields/clear"
+                          }
+                        },
+                        "name": "mem_forget_all"
+                      }
+                    },
+                    "child": "b12-text",
+                    "component": "Button",
+                    "id": "b12"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "b12-text",
+                    "text": "清空整份记忆"
+                  },
+                  {
+                    "children": [
+                      "b12"
+                    ],
+                    "component": "Row",
+                    "id": "r13"
+                  }
+                ],
+                "surfaceId": "sources"
+              },
+              "version": "v0.9"
+            },
+            {
+              "updateDataModel": {
+                "path": "/",
+                "surfaceId": "sources",
+                "value": {
+                  "checks": {
+                    "sure": false
+                  },
+                  "fields": {
+                    "clear": ""
+                  }
+                }
+              },
+              "version": "v0.9"
+            }
+          ],
+          "uri": "page/sources"
+        }
+      ],
+      "resultType": "complete"
+    }
+  },
+  "request": {
+    "id": 10,
+    "jsonrpc": "2.0",
+    "method": "resources/read",
+    "params": {
+      "_meta": {
+        "io.modelcontextprotocol/clientCapabilities": {},
+        "io.modelcontextprotocol/clientInfo": {
+          "name": "luoke-agent",
+          "version": "fixtures"
+        },
+        "io.modelcontextprotocol/protocolVersion": "2026-07-28"
+      },
+      "uri": "page/sources"
+    }
+  }
+}

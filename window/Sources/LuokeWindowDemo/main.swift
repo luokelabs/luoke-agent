@@ -43,7 +43,7 @@ struct DemoApp: App {
         MenuBarExtra {
             StatusMenuContent(model: model) { openWindow(id: "main") }
         } label: {
-            Image(systemName: model.hasUrgent ? "bubble.left.and.exclamationmark.bubble.right" : "bubble.left")
+            Image(systemName: model.hasDot ? "bubble.left.and.exclamationmark.bubble.right" : "bubble.left")
         }
         .menuBarExtraStyle(.menu)
     }

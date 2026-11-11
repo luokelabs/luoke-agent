@@ -1,0 +1,69 @@
+{
+  "reply": {
+    "id": 16,
+    "jsonrpc": "2.0",
+    "result": {
+      "content": [
+        {
+          "text": "记下了。",
+          "type": "text"
+        }
+      ],
+      "isError": false,
+      "resultType": "complete",
+      "structuredContent": {
+        "card": [
+          {
+            "updateComponents": {
+              "components": [
+                {
+                  "children": [
+                    "end-t1"
+                  ],
+                  "component": "Column",
+                  "id": "root"
+                },
+                {
+                  "component": "Text",
+                  "id": "end-t1",
+                  "text": "记下了。"
+                }
+              ],
+              "surfaceId": "ask-5"
+            },
+            "version": "v0.9"
+          }
+        ],
+        "done": true
+      }
+    }
+  },
+  "request": {
+    "id": 16,
+    "jsonrpc": "2.0",
+    "method": "tools/call",
+    "params": {
+      "_meta": {
+        "ai.luoke/user-action": {
+          "at": "2026-11-06T10:10:00+08:00",
+          "componentId": "b4",
+          "surfaceId": "ask-5"
+        },
+        "io.modelcontextprotocol/clientCapabilities": {},
+        "io.modelcontextprotocol/clientInfo": {
+          "name": "luoke-agent",
+          "version": "fixtures"
+        },
+        "io.modelcontextprotocol/protocolVersion": "2026-07-28"
+      },
+      "arguments": {
+        "ask": 5,
+        "choice": "answer",
+        "text": [
+          "系统"
+        ]
+      },
+      "name": "mem_reply"
+    }
+  }
+}

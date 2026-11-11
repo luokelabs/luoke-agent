@@ -24,25 +24,7 @@
                           "children": [
                             "h1",
                             "t2",
-                            "c-i0",
-                            "t3",
-                            "c-i1",
-                            "t4",
-                            "c-i2",
-                            "t5",
-                            "c-i3",
-                            "t6",
-                            "c-i4",
-                            "t7",
-                            "r10",
-                            "d11",
-                            "t12",
-                            "t13",
-                            "d14",
-                            "t15",
-                            "t16",
-                            "t17",
-                            "t18"
+                            "r5"
                           ],
                           "component": "Column",
                           "id": "root"
@@ -50,153 +32,13 @@
                         {
                           "component": "Text",
                           "id": "h1",
-                          "text": "能清出 62.9 MB，另外有 6 件事值得看一眼",
+                          "text": "能清出 62.9 MB",
                           "variant": "h4"
                         },
                         {
                           "component": "Text",
                           "id": "t2",
-                          "text": "会自动重建的缓存直接删掉，别的放心删的移到废纸篓，要你确认的先不动。",
-                          "variant": "caption"
-                        },
-                        {
-                          "component": "ChoicePicker",
-                          "id": "c-i0",
-                          "label": "后台任务 io.example.gone 指向已经不存在的位置",
-                          "options": [
-                            {
-                              "label": "移到废纸篓",
-                              "value": "trash"
-                            },
-                            {
-                              "label": "先不动",
-                              "value": "keep"
-                            },
-                            {
-                              "label": "以后别提",
-                              "value": "ignore"
-                            }
-                          ],
-                          "value": {
-                            "path": "/choices/i0"
-                          }
-                        },
-                        {
-                          "component": "Text",
-                          "id": "t3",
-                          "text": "~/Library/LaunchAgents/io.example.gone.plist",
-                          "variant": "caption"
-                        },
-                        {
-                          "component": "ChoicePicker",
-                          "id": "c-i1",
-                          "label": "临时目录里有 25 个 wings-* 没被删掉，共 131.1 MB",
-                          "options": [
-                            {
-                              "label": "移到废纸篓",
-                              "value": "trash"
-                            },
-                            {
-                              "label": "先不动",
-                              "value": "keep"
-                            },
-                            {
-                              "label": "以后别提",
-                              "value": "ignore"
-                            }
-                          ],
-                          "value": {
-                            "path": "/choices/i1"
-                          }
-                        },
-                        {
-                          "component": "Text",
-                          "id": "t4",
-                          "text": "$TMPDIR 里的 25 项",
-                          "variant": "caption"
-                        },
-                        {
-                          "component": "ChoicePicker",
-                          "id": "c-i2",
-                          "label": "pip 的缓存，删了会自动重建（62.9 MB）",
-                          "options": [
-                            {
-                              "label": "删掉（会自动重建）",
-                              "value": "remove"
-                            },
-                            {
-                              "label": "先不动",
-                              "value": "keep"
-                            },
-                            {
-                              "label": "以后别提",
-                              "value": "ignore"
-                            }
-                          ],
-                          "value": {
-                            "path": "/choices/i2"
-                          }
-                        },
-                        {
-                          "component": "Text",
-                          "id": "t5",
-                          "text": "~/Library/Caches/pip",
-                          "variant": "caption"
-                        },
-                        {
-                          "component": "ChoicePicker",
-                          "id": "c-i3",
-                          "label": "io.example.removed 的数据还在，但这台 Mac 上没有这个应用（2.1 MB）",
-                          "options": [
-                            {
-                              "label": "移到废纸篓",
-                              "value": "trash"
-                            },
-                            {
-                              "label": "先不动",
-                              "value": "keep"
-                            },
-                            {
-                              "label": "以后别提",
-                              "value": "ignore"
-                            }
-                          ],
-                          "value": {
-                            "path": "/choices/i3"
-                          }
-                        },
-                        {
-                          "component": "Text",
-                          "id": "t6",
-                          "text": "~/Library/Application Support 里的 2 项",
-                          "variant": "caption"
-                        },
-                        {
-                          "component": "ChoicePicker",
-                          "id": "c-i4",
-                          "label": "old-pushed 半年多没动过，都已推送，删了能从远程找回（147 KB）",
-                          "options": [
-                            {
-                              "label": "移到废纸篓",
-                              "value": "trash"
-                            },
-                            {
-                              "label": "先不动",
-                              "value": "keep"
-                            },
-                            {
-                              "label": "以后别提",
-                              "value": "ignore"
-                            }
-                          ],
-                          "value": {
-                            "path": "/choices/i4"
-                          }
-                        },
-                        {
-                          "component": "Text",
-                          "id": "t7",
-                          "text": "~/Projects/old-pushed",
+                          "text": "会重建的缓存 1 项，不用你选；另外 6 项在「螺壳扫描」里等你看。",
                           "variant": "caption"
                         },
                         {
@@ -204,22 +46,24 @@
                             "event": {
                               "context": {
                                 "choices": {
-                                  "path": "/choices"
+                                  "i2": [
+                                    "remove"
+                                  ]
                                 },
                                 "plan_id": "p-000000000002"
                               },
                               "name": "scan_apply"
                             }
                           },
-                          "child": "b8-text",
+                          "child": "b3-text",
                           "component": "Button",
-                          "id": "b8",
+                          "id": "b3",
                           "variant": "primary"
                         },
                         {
                           "component": "Text",
-                          "id": "b8-text",
-                          "text": "按这个处理"
+                          "id": "b3-text",
+                          "text": "清理 1 项缓存"
                         },
                         {
                           "action": {
@@ -230,64 +74,22 @@
                               "name": "scan_autoclean"
                             }
                           },
-                          "child": "b9-text",
+                          "child": "b4-text",
                           "component": "Button",
-                          "id": "b9"
+                          "id": "b4"
                         },
                         {
                           "component": "Text",
-                          "id": "b9-text",
-                          "text": "以后自动清"
+                          "id": "b4-text",
+                          "text": "打开自动清理"
                         },
                         {
                           "children": [
-                            "b8",
-                            "b9"
+                            "b3",
+                            "b4"
                           ],
                           "component": "Row",
-                          "id": "r10"
-                        },
-                        {
-                          "component": "Divider",
-                          "id": "d11"
-                        },
-                        {
-                          "component": "Text",
-                          "id": "t12",
-                          "text": "这几样螺壳不替你动，你可以自己看看：",
-                          "variant": "caption"
-                        },
-                        {
-                          "component": "Text",
-                          "id": "t13",
-                          "text": "进程 100（gone）的程序已经被删掉了，它还在跑"
-                        },
-                        {
-                          "component": "Divider",
-                          "id": "d14"
-                        },
-                        {
-                          "component": "Text",
-                          "id": "t15",
-                          "text": "这几条值得留意，有空看一下：",
-                          "variant": "caption"
-                        },
-                        {
-                          "component": "Text",
-                          "id": "t16",
-                          "text": "FileVault 没开：电脑丢了，硬盘上的东西能直接被读出来"
-                        },
-                        {
-                          "component": "Text",
-                          "id": "t17",
-                          "text": "怎么办：系统设置 → 隐私与安全性 → FileVault",
-                          "variant": "caption"
-                        },
-                        {
-                          "component": "Text",
-                          "id": "t18",
-                          "text": "另有 14 条仅供参考，问我就列给你。",
-                          "variant": "caption"
+                          "id": "r5"
                         }
                       ],
                       "surfaceId": "round-000000000001"
@@ -307,7 +109,7 @@
                             "keep"
                           ],
                           "i2": [
-                            "remove"
+                            "keep"
                           ],
                           "i3": [
                             "keep"
@@ -326,8 +128,8 @@
                 "expires": "2026-10-23T12:00:00Z",
                 "id": "round/2026-10-20T12:00:00Z",
                 "kind": "findings",
-                "summary": "放心删 1 条、要确认 5 条、仅供参考 15 条（其中需要留意的 1 条）。有 9 项没查成。",
-                "title": "能清出 62.9 MB，另外有 6 件事值得看一眼",
+                "summary": "会重建的缓存 1 项，不用你选；另外 6 项在「螺壳扫描」里等你看。有 9 项要打开「完全磁盘访问」才能查。",
+                "title": "能清出 62.9 MB，另外 6 项等你处理",
                 "urgency": "low",
                 "why_now": "扫描刚查完一轮"
               },

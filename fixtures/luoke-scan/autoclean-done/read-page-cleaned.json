@@ -1,6 +1,6 @@
 {
   "reply": {
-    "id": 8,
+    "id": 9,
     "jsonrpc": "2.0",
     "result": {
       "contents": [
@@ -23,7 +23,8 @@
                       "d2",
                       "t3",
                       "t4",
-                      "r6"
+                      "t5",
+                      "r7"
                     ],
                     "component": "Column",
                     "id": "root"
@@ -41,12 +42,18 @@
                   {
                     "component": "Text",
                     "id": "t3",
-                    "text": "自动清：重复的 report-2026.pdf、安装包 Fixtureapp-2.0.dmg、临时文件夹 puppeteer_dev_chrome_profile-P00020 等 24 项（181.5 MB）"
+                    "text": "自动清理的：重复的 report-2026.pdf、安装包 Fixtureapp-2.0.dmg、Puppeteer 留下的临时文件夹等 24 项（181.5 MB）"
                   },
                   {
                     "component": "Text",
                     "id": "t4",
                     "text": "10月20日 20:00",
+                    "variant": "caption"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "t5",
+                    "text": "「放回」把还在废纸篓里的 23 项放回原来的位置；删掉的缓存不用放回，用到时会重建。",
                     "variant": "caption"
                   },
                   {
@@ -58,21 +65,21 @@
                         "name": "scan_restore"
                       }
                     },
-                    "child": "b5-text",
+                    "child": "b6-text",
                     "component": "Button",
-                    "id": "b5"
+                    "id": "b6"
                   },
                   {
                     "component": "Text",
-                    "id": "b5-text",
+                    "id": "b6-text",
                     "text": "放回"
                   },
                   {
                     "children": [
-                      "b5"
+                      "b6"
                     ],
                     "component": "Row",
-                    "id": "r6"
+                    "id": "r7"
                   }
                 ],
                 "surfaceId": "cleaned"
@@ -87,7 +94,7 @@
     }
   },
   "request": {
-    "id": 8,
+    "id": 9,
     "jsonrpc": "2.0",
     "method": "resources/read",
     "params": {

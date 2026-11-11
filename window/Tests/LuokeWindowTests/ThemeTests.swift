@@ -57,7 +57,26 @@ final class ThemeTests: XCTestCase {
         XCTAssertEqual(alpha(Palette.light.tint), 0.06, accuracy: 0.001)
         XCTAssertEqual(alpha(Palette.light.selection), 0.07, accuracy: 0.001)
         XCTAssertEqual(alpha(Palette.dark.tint), 0.08, accuracy: 0.001)
-        XCTAssertEqual(alpha(Palette.dark.cardEdge), 0.06, accuracy: 0.001)
+    }
+
+    /// 字色在会出现的底色上都到 4.5:1（WCAG AA 正文）：灰字、红字、绿字、珊瑚红字，在页面底、卡片、侧栏、浅灰底、急事的粉底上
+    func testTextContrast() {
+        func lum(_ c: Color) -> Double {
+            let n = NSColor(c).usingColorSpace(.sRGB)!
+            func ch(_ v: CGFloat) -> Double { let v = Double(v); return v <= 0.03928 ? v / 12.92 : pow((v + 0.055) / 1.055, 2.4) }
+            return 0.2126 * ch(n.redComponent) + 0.7152 * ch(n.greenComponent) + 0.0722 * ch(n.blueComponent)
+        }
+        func ratio(_ a: Color, _ b: Color) -> Double {
+            let (x, y) = (lum(a), lum(b))
+            return (max(x, y) + 0.05) / (min(x, y) + 0.05)
+        }
+        for p in [Palette.light, Palette.dark] {
+            for (fn, fg) in [("mutedFg", p.mutedFg), ("danger", p.danger), ("success", p.success), ("brandText", p.brandText)] {
+                for (bn, bg) in [("bg", p.bg), ("card", p.card), ("sidebar", p.sidebar), ("muted", p.muted), ("dangerSoft", p.dangerSoft), ("brandSoft", p.brandSoft)] {
+                    XCTAssertGreaterThanOrEqual(ratio(fg, bg), 4.5, "\(p.dark ? "深色" : "浅色") \(fn) 在 \(bn) 上")
+                }
+            }
+        }
     }
 
     /// 动效的曲线和时长

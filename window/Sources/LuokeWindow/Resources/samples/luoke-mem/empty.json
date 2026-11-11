@@ -1,0 +1,269 @@
+{
+ "_about": "scripts/window_samples.py 用 fixtures/luoke-mem/empty（luoke-mem 403be74661c2）接上真核心生成的，不要手改",
+ "app": "luoke-mem",
+ "apps": {
+  "apps": [
+   {
+    "id": "luoke-mem",
+    "needs": [],
+    "pages": [
+     {
+      "id": "overview",
+      "title": "概览"
+     },
+     {
+      "id": "guesses",
+      "title": "猜测"
+     },
+     {
+      "id": "kept",
+      "title": "记下的"
+     },
+     {
+      "id": "people",
+      "title": "人"
+     },
+     {
+      "id": "sources",
+      "title": "各应用写的"
+     }
+    ],
+    "running": true,
+    "summary": {
+     "count": 0,
+     "text": "还没有记下什么。"
+    },
+    "ui": {
+     "pages": []
+    }
+   }
+  ]
+ },
+ "asked": [
+  "read-outbox.json",
+  "read-page-guesses.json",
+  "read-page-kept.json",
+  "read-page-overview.json",
+  "read-page-people.json",
+  "read-page-sources.json",
+  "read-summary.json",
+  "tools-list.json"
+ ],
+ "clock": "2026-11-06T02:00:00Z",
+ "events": [
+  [
+   "feed",
+   {
+    "brief": {
+     "next": "2026-11-06T08:00:00+08:00"
+    },
+    "cards": [],
+    "dot": false,
+    "notices": [],
+    "open": 0,
+    "order": [],
+    "paused_until": null
+   }
+  ]
+ ],
+ "host": {},
+ "pages": {
+  "guesses": {
+   "messages": [
+    {
+     "createSurface": {
+      "catalogId": "ai.luoke/a2ui/agent/1",
+      "surfaceId": "luoke-mem/page/guesses"
+     },
+     "version": "v0.9"
+    },
+    {
+     "updateComponents": {
+      "components": [
+       {
+        "children": [
+         "h1",
+         "t2"
+        ],
+        "component": "Column",
+        "id": "root"
+       },
+       {
+        "component": "Text",
+        "id": "h1",
+        "text": "猜测",
+        "variant": "h4"
+       },
+       {
+        "component": "Text",
+        "id": "t2",
+        "text": "还没有记下什么。各应用用起来以后，记忆会从你打的字、发的邮件里慢慢记下关于你的事。"
+       }
+      ],
+      "surfaceId": "luoke-mem/page/guesses"
+     },
+     "version": "v0.9"
+    }
+   ]
+  },
+  "kept": {
+   "messages": [
+    {
+     "createSurface": {
+      "catalogId": "ai.luoke/a2ui/agent/1",
+      "surfaceId": "luoke-mem/page/kept"
+     },
+     "version": "v0.9"
+    },
+    {
+     "updateComponents": {
+      "components": [
+       {
+        "children": [
+         "h1",
+         "t2"
+        ],
+        "component": "Column",
+        "id": "root"
+       },
+       {
+        "component": "Text",
+        "id": "h1",
+        "text": "记下的",
+        "variant": "h4"
+       },
+       {
+        "component": "Text",
+        "id": "t2",
+        "text": "还没有记下什么。各应用用起来以后，记忆会从你打的字、发的邮件里慢慢记下关于你的事。"
+       }
+      ],
+      "surfaceId": "luoke-mem/page/kept"
+     },
+     "version": "v0.9"
+    }
+   ]
+  },
+  "overview": {
+   "messages": [
+    {
+     "createSurface": {
+      "catalogId": "ai.luoke/a2ui/agent/1",
+      "surfaceId": "luoke-mem/page/overview"
+     },
+     "version": "v0.9"
+    },
+    {
+     "updateComponents": {
+      "components": [
+       {
+        "children": [
+         "h1",
+         "t2"
+        ],
+        "component": "Column",
+        "id": "root"
+       },
+       {
+        "component": "Text",
+        "id": "h1",
+        "text": "概览",
+        "variant": "h4"
+       },
+       {
+        "component": "Text",
+        "id": "t2",
+        "text": "还没有记下什么。各应用用起来以后，记忆会从你打的字、发的邮件里慢慢记下关于你的事。"
+       }
+      ],
+      "surfaceId": "luoke-mem/page/overview"
+     },
+     "version": "v0.9"
+    }
+   ]
+  },
+  "people": {
+   "messages": [
+    {
+     "createSurface": {
+      "catalogId": "ai.luoke/a2ui/agent/1",
+      "surfaceId": "luoke-mem/page/people"
+     },
+     "version": "v0.9"
+    },
+    {
+     "updateComponents": {
+      "components": [
+       {
+        "children": [
+         "h1",
+         "t2"
+        ],
+        "component": "Column",
+        "id": "root"
+       },
+       {
+        "component": "Text",
+        "id": "h1",
+        "text": "人",
+        "variant": "h4"
+       },
+       {
+        "component": "Text",
+        "id": "t2",
+        "text": "还没有记下什么。各应用用起来以后，记忆会从你打的字、发的邮件里慢慢记下关于你的事。"
+       }
+      ],
+      "surfaceId": "luoke-mem/page/people"
+     },
+     "version": "v0.9"
+    }
+   ]
+  },
+  "sources": {
+   "messages": [
+    {
+     "createSurface": {
+      "catalogId": "ai.luoke/a2ui/agent/1",
+      "surfaceId": "luoke-mem/page/sources"
+     },
+     "version": "v0.9"
+    },
+    {
+     "updateComponents": {
+      "components": [
+       {
+        "children": [
+         "h1",
+         "t2"
+        ],
+        "component": "Column",
+        "id": "root"
+       },
+       {
+        "component": "Text",
+        "id": "h1",
+        "text": "各应用写的",
+        "variant": "h4"
+       },
+       {
+        "component": "Text",
+        "id": "t2",
+        "text": "还没有记下什么。各应用用起来以后，记忆会从你打的字、发的邮件里慢慢记下关于你的事。"
+       }
+      ],
+      "surfaceId": "luoke-mem/page/sources"
+     },
+     "version": "v0.9"
+    }
+   ]
+  }
+ },
+ "permissions": {
+  "rows": []
+ },
+ "replies": [],
+ "scenario": "empty",
+ "title": "刚装好，记忆是空的",
+ "version": "$VERSION"
+}

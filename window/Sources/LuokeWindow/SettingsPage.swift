@@ -5,7 +5,7 @@ struct SettingsPage: View {
     @Environment(\.lk) private var p
 
     var body: some View {
-        PageScroll(padding: LKInsets.column, maxWidth: 700) {
+        PageScroll() {
             PageHeader(title: "设置").lkEnter(0)
             LKTabs(tabs: PrefsTab.allCases.map { LKTabs.Tab(id: $0.rawValue, title: $0.title, external: model.prefsTabOpensElsewhere($0)) },
                    selected: model.prefsTab.rawValue) {
@@ -18,8 +18,8 @@ struct SettingsPage: View {
                 case .display: DisplayTab(model: model)
                 case .permissions:
                     if model.agentPermissions != nil { AgentPermissionsTab(model: model) } else { permissions }
-                case .model: modelTab
-                case .privacy: privacy
+                case .model: model.host?.settingsContent(.model) ?? AnyView(modelTab)      // 接着本体：本体的模型设置
+                case .privacy: model.host?.settingsContent(.privacy) ?? AnyView(privacy)
                 }
             }
             .lkEnter(2)
@@ -32,7 +32,7 @@ struct SettingsPage: View {
         VStack(alignment: .leading, spacing: 0) {
             LKGroup {
                 HStack(spacing: 12) {
-                    Image(systemName: "bell").foregroundStyle(p.mutedFg).frame(width: 18)
+                    LKIcon("bell").foregroundStyle(p.mutedFg).frame(width: 18)
                     Text("主动提醒")
                     Spacer()
                     LKSwitch(on: Binding(get: { model.alertsOn }, set: { model.setAlerts($0) }), label: "主动提醒")
@@ -42,10 +42,10 @@ struct SettingsPage: View {
             VStack(alignment: .leading, spacing: 0) {
                 LKGroup {
                     HStack(spacing: 12) {
-                        Image(systemName: "square.stack").foregroundStyle(p.mutedFg).frame(width: 18)
+                        LKIcon("layers").foregroundStyle(p.mutedFg).frame(width: 18)
                         Text("简报")
                         Spacer()
-                        LKSelect(value: model.brief.rawValue, options: BriefMode.allCases.map(\.rawValue)) {
+                        LKSelect(value: model.brief.rawValue, options: BriefMode.allCases.map(\.rawValue), label: "简报") {
                             model.setBrief(BriefMode(rawValue: $0) ?? .morning)
                         }
                     }
@@ -54,10 +54,10 @@ struct SettingsPage: View {
                         .padding(.horizontal, LKSpace.x4)
                         .padding(.bottom, LKSpace.x3)
                     HStack(spacing: 12) {
-                        Image(systemName: "moon").foregroundStyle(p.mutedFg).frame(width: 18)
+                        LKIcon("moon").foregroundStyle(p.mutedFg).frame(width: 18)
                         Text("免打扰")
                         Spacer()
-                        LKSelect(value: model.quietHours, options: model.quietOptions) { model.setQuiet($0) }
+                        LKSelect(value: model.quietHours, options: model.quietOptions, label: "免打扰") { model.setQuiet($0) }
                     }
                     .lkRow(first: false)
                 }
@@ -69,8 +69,8 @@ struct SettingsPage: View {
                             AppIcon(tool: k.tool)
                             Text(k.title)
                             Spacer()
-                            LKSegmented(options: Level.allCases.map { .init(value: $0, title: $0.title, symbol: $0.symbol) },
-                                        value: Binding(get: { k.level }, set: { model.setLevel(k.id, $0) }))
+                            LKSegmented(options: Level.allCases.map { .init(value: $0, title: $0.title, symbol: nil) },
+                                        value: Binding(get: { k.level }, set: { model.setLevel(k.id, $0) }), radio: true, label: k.title)
                         }
                         .lkRow(first: i == 0)
                     }
@@ -142,7 +142,7 @@ struct SettingsPage: View {
                         AppIcon(tool: e.tool, size: 28)
                         Text(e.title)
                         Spacer()
-                        Image(systemName: "lock").foregroundStyle(p.mutedFg).help(e.why).accessibilityLabel(e.why)
+                        LKIcon("lock").foregroundStyle(p.mutedFg).help(e.why).accessibilityLabel(e.why)
                     }
                     .lkRow(first: i == 0)
                 }
@@ -166,7 +166,7 @@ struct SettingsPage: View {
                                 Text(t.model).font(LKFont.mono(LKType.caption)).foregroundStyle(p.mutedFg)
                             }
                             Spacer()
-                            if on { LKBadge(text: "", symbol: "checkmark") }
+                            if on { LKBadge(text: "", symbol: "check") }
                             Text(t.size).font(LKFont.ui(LKType.caption)).foregroundStyle(p.mutedFg)
                         }
                         .padding(.horizontal, LKSpace.x3).padding(.vertical, LKSpace.x3)
@@ -181,7 +181,7 @@ struct SettingsPage: View {
             .background(CardSurface())
             LKGroup {
                 HStack(spacing: 12) {
-                    Image(systemName: "cpu").foregroundStyle(p.mutedFg).frame(width: 18)
+                    LKIcon("cpu").foregroundStyle(p.mutedFg).frame(width: 18)
                     Text("引擎")
                     Spacer()
                     Text(model.engineVersion).font(LKFont.mono(LKType.caption)).foregroundStyle(p.mutedFg)
@@ -189,7 +189,7 @@ struct SettingsPage: View {
                 }
                 .lkRow(first: true)
                 HStack(spacing: 12) {
-                    Image(systemName: "slider.horizontal.3").foregroundStyle(p.mutedFg).frame(width: 18)
+                    LKIcon("sliders-horizontal").foregroundStyle(p.mutedFg).frame(width: 18)
                     Text("能耗")
                     Spacer()
                     LKSegmented(options: Energy.allCases.map { .init(value: $0, title: $0.rawValue, symbol: nil) },
@@ -197,7 +197,7 @@ struct SettingsPage: View {
                 }
                 .lkRow(first: false)
                 HStack(spacing: 12) {
-                    Image(systemName: "internaldrive").foregroundStyle(p.mutedFg).frame(width: 18)
+                    LKIcon("hard-drive").foregroundStyle(p.mutedFg).frame(width: 18)
                     Text("用电池时也在后台跑")
                     Spacer()
                     LKSwitch(on: Binding(get: { model.onBattery }, set: { model.onBattery = $0 }), label: "用电池时也在后台跑")
@@ -212,7 +212,7 @@ struct SettingsPage: View {
     private var privacy: some View {
         LKGroup {
             HStack(spacing: 12) {
-                Image(systemName: "lock").foregroundStyle(p.mutedFg).frame(width: 18)
+                LKIcon("lock").foregroundStyle(p.mutedFg).frame(width: 18)
                 Text("数据只在这台 Mac 上")
                 Spacer()
                 LKLight(state: .ok, label: "没有云端")
@@ -226,7 +226,7 @@ struct SettingsPage: View {
 
     private func privacyRow(_ symbol: String, _ title: String, _ button: String, action: @escaping () -> Void) -> some View {
         HStack(spacing: 12) {
-            Image(systemName: symbol).foregroundStyle(p.mutedFg).frame(width: 18)
+            LKIcon(symbol).foregroundStyle(p.mutedFg).frame(width: 18)
             Text(title)
             Spacer()
             Button(button, action: action).buttonStyle(LKButtonStyle())
@@ -296,7 +296,7 @@ struct AgentPermissionsTab: View {
                             AppIcon(tool: r.tool, size: 28)
                             Text(r.title)
                             Spacer()
-                            Image(systemName: "lock").foregroundStyle(p.mutedFg).help(why).accessibilityLabel(why)
+                            LKIcon("lock").foregroundStyle(p.mutedFg).help(why).accessibilityLabel(why)
                         }
                         .lkRow(first: i == 0)
                     }
@@ -371,12 +371,12 @@ struct AgentPermissionsTab: View {
         let busy = model.permissionPending[r.id] != nil
         switch op {
         case "settings":
-            Button { model.permissionAction(r, op) } label: { IconText("打开系统设置", symbol: "gearshape") }
+            Button { model.permissionAction(r, op) } label: { IconText("打开系统设置", symbol: "settings") }
                 .buttonStyle(LKButtonStyle(kind: emphasize ? .primary : .secondary)).disabled(busy)
         case "request":
             Button("允许") { model.permissionAction(r, op) }.buttonStyle(LKButtonStyle(kind: .primary)).disabled(busy)
         case "open":
-            Button { model.permissionAction(r, op) } label: { IconText("打开", symbol: "arrow.up.right.square") }
+            Button { model.permissionAction(r, op) } label: { IconText("打开", symbol: "square-arrow-out-up-right") }
                 .buttonStyle(LKButtonStyle()).disabled(busy)
         case "remove":
             Button("移除") { model.permissionAction(r, op) }.buttonStyle(LKButtonStyle(kind: .text)).disabled(busy)
@@ -446,8 +446,7 @@ struct DisplayTab: View {
                         }
                         Spacer()
                         LKSegmented(options: Density.allCases.map { .init(value: $0, title: $0.title, symbol: nil) },
-                                    value: Binding(get: { model.density }, set: { model.setDensity($0) }), segmentWidth: 56)
-                            .accessibilityLabel("密度")
+                                    value: Binding(get: { model.density }, set: { model.setDensity($0) }), segmentWidth: 56, label: "密度")
                     }
                     .frame(minHeight: 52)
                     .padding(.top, LKSpace.x2)

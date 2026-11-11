@@ -80,6 +80,44 @@ class HandleTest(unittest.TestCase):
         self.assertEqual(self.s.handle(rpc("resources/read", {"uri": "luoke://x"}))["error"]["code"],
                          mcp.RESOURCE_NOT_FOUND)
 
+    def test_read_resource_with_args(self):
+        """带参数读的页（工具协议 §4 pageArgs）：登记时写了 args=True 的把参数交给它；没写的当没带；别的照旧找不到。"""
+        got = []
+        self.s.resource("page/inbox", lambda a: got.append(a) or {"n": len(got)}, name="收件箱", args=True)
+        self.s.resource("page/rules", lambda: {"rules": 1}, name="规则")
+        r = self.s.handle(rpc("resources/read", {"uri": "page/inbox?cursor=2&q=%E5%8F%91%E7%A5%A8%20x%2By"}))["result"]
+        self.assertEqual(r["contents"][0]["uri"], "page/inbox?cursor=2&q=%E5%8F%91%E7%A5%A8%20x%2By")
+        self.assertEqual(got, [{"cursor": "2", "q": "发票 x+y"}])
+        self.s.handle(rpc("resources/read", {"uri": "page/inbox"}))
+        self.assertEqual(got[-1], {}, "没带参数：空的")
+        self.s.handle(rpc("resources/read", {"uri": "page/inbox?bad"}))
+        self.assertEqual(got[-1], {}, "认不出的参数当没带")
+        r = self.s.handle(rpc("resources/read", {"uri": "page/rules?q=1"}))["result"]
+        self.assertIn("rules", r["contents"][0]["text"], "不收参数的照旧读")
+        self.assertEqual(self.s.handle(rpc("resources/read", {"uri": "page/nope?q=1"}))["error"]["code"], mcp.RESOURCE_NOT_FOUND)
+
+    def test_read_resource_with_features(self):
+        """登记时写了 features=True 的资源函数多收这次请求的核心认的写法（§4「后加的写法」）：带参数的页、画卡片的 outbox；
+        没写的照旧不收，旧的工具不用改。"""
+        got = []
+        self.s.resource("page/inbox", lambda a, features: got.append((a, features)) or {}, name="收件箱", args=True, features=True)
+        self.s.resource("luoke://t/cards", lambda features: got.append(features) or {"items": []}, name="要报的事", features=True)
+        caps = {mcp.META_CAPABILITIES: {"experimental": {"ai.luoke/a2ui": {"features": ["pageArgs", "lucide", 3]}}}}
+        self.s.handle(rpc("resources/read", {"uri": "page/inbox?cursor=2"}, meta=caps))
+        self.assertEqual(got[-1], ({"cursor": "2"}, frozenset({"pageArgs", "lucide"})), "参数和写法都给；不是字的不算")
+        self.s.handle(rpc("resources/read", {"uri": "page/inbox"}))
+        self.assertEqual(got[-1], ({}, frozenset()), "旧的核心不写：空的")
+        self.s.handle(rpc("resources/read", {"uri": "luoke://t/cards"}, meta=caps))
+        self.assertEqual(got[-1], frozenset({"pageArgs", "lucide"}))
+        for odd in ({mcp.META_CAPABILITIES: []}, {mcp.META_CAPABILITIES: {"experimental": {"ai.luoke/a2ui": {"features": "lucide"}}}}):
+            self.s.handle(rpc("resources/read", {"uri": "luoke://t/cards"}, meta=odd))
+            self.assertEqual(got[-1], frozenset(), "形状不对：当没写")
+        r = self.s.handle(rpc("resources/read", {"uri": "luoke://t/outbox"}, meta=caps))["result"]
+        self.assertIn("一件事", r["contents"][0]["text"], "没写 features 的照旧不收")
+        # 核心发的就是这个位置（§2、§4 同一种写法）
+        self.assertEqual(mcp.features_of({mcp.META_CAPABILITIES: mcp.CLIENT_CAPABILITIES}),
+                         frozenset(mcp.CLIENT_CAPABILITIES["experimental"]["ai.luoke/a2ui"]["features"]))
+
     def test_write_needs_user_action(self):
         r = self.s.handle(rpc("tools/call", {"name": "write_it", "arguments": {"x": "1"}}))["result"]
         self.assertTrue(r["isError"])
@@ -124,6 +162,8 @@ class HandleTest(unittest.TestCase):
         self.assertIn("ValueError", log)
         # 对不上登记的名字时只写方法，不把 agent 送来的字符串写进日志
         self.assertEqual(self.s._which("tools/call", {"name": "王老师"}), "tools/call")
+        # 带参数读的页只写页，不写参数（工具协议 §1a pageArgs）
+        self.assertEqual(self.s._which("resources/read", {"uri": "luoke://t/bad?q=%E7%8E%8B"}), "resources/read luoke://t/bad")
 
 
 class SocketTest(unittest.TestCase):

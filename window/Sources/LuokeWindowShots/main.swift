@@ -1,4 +1,4 @@
-// 把每个界面截成图：luoke-window-shots <输出目录>
+// 把每个界面截成图：luoke-window-shots <输出目录> [名字的开头]（只画名字这样开头的）
 // 输出 <名字>-light.png、<名字>-dark.png 和 index.json（名字、标题、文件、sha256），给 scripts/ci/post_shots.py 用。
 import CryptoKit
 import Foundation
@@ -7,15 +7,16 @@ import LuokeWindow
 @MainActor
 func main() -> Int32 {
     let args = CommandLine.arguments
-    guard args.count == 2 else {
-        FileHandle.standardError.write(Data("用法：luoke-window-shots <输出目录>\n".utf8))
+    guard args.count == 2 || args.count == 3 else {
+        FileHandle.standardError.write(Data("用法：luoke-window-shots <输出目录> [名字的开头]\n".utf8))
         return 2
     }
+    let only = args.count == 3 ? args[2] : ""
     let out = URL(fileURLWithPath: args[1], isDirectory: true)
     try? FileManager.default.createDirectory(at: out, withIntermediateDirectories: true)
     var index: [[String: String]] = []
     var failed = 0
-    for screen in Snapshot.screens() {
+    for screen in Snapshot.screens() where screen.name.hasPrefix(only) {
         for dark in [false, true] {
             let file = "\(screen.name)-\(dark ? "dark" : "light").png"
             guard let png = Snapshot.png(screen, dark: dark) else {

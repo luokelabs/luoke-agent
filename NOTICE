@@ -1,9 +1,10 @@
 螺壳 agent（luoke-agent）
 Copyright 2026 螺壳实验室 Luoke Labs
 
-以 Apache License 2.0 发布，见 LICENSE。「螺壳」「Luoke」的名称、图标和 app/icon 里的品牌素材不随许可授予（Apache-2.0 第 6 条），用它们发布改版要另经同意。
+以 Apache License 2.0 发布，见 LICENSE。「螺壳」「Luoke」的名称、图标和 app/icon 里的品牌素材不随许可授予（Apache-2.0 第 6 条），用它们发布改版要另经同意。window/Sources/LuokeWindow/Resources 里的应用图标和寄居蟹插画（conch-peek.png，螺壳实验室绘制）也是品牌素材，同样不随许可授予。
 
 给工具拷进自己仓库的三个文件 luoke_agent/mcp.py、luoke_agent/cards.py、luoke_agent/a2ui.py 另可按 MIT 用（文件头 SPDX-License-Identifier: Apache-2.0 OR MIT），MIT 全文见 LICENSE-MIT。给这三个文件的改动，要同意两种许可都适用。
 
 仓库里带的别的项目的代码各按自己的许可，没有改动：
 - vendor/luoke_mem/：取自螺壳记忆（luoke-mem），MIT，见 vendor/luoke_mem/LICENSE。
+- window/Sources/LuokeWindow/Resources/lucide/：Lucide 图标（lucide-static 1.64.0，https://lucide.dev），ISC，见同目录的 LICENSE。

@@ -23,11 +23,16 @@ public struct A2UIDrawn {
     public var input: Color
     public var primary: Color
     public var primaryFg: Color
-    /// 输入框、下拉框画成静态的（截图时用）
+    /// 输入框画成静态的（截图时用：离屏画不出系统的输入框）。选择框不管它，真窗口和截图是同一个框（`ChoiceBox`）
     public var staticFields: Bool
+    /// 标签（`Text` 的 variant badge）的字色和底色：不写 tone 是 info（浅蓝），danger 红，warning 橙
+    public var info, infoSoft, warning, warningSoft, danger, dangerSoft: Color
 
     public init(fg: Color, mutedFg: Color, card: Color, muted: Color, border: Color, input: Color,
-                primary: Color, primaryFg: Color, staticFields: Bool = false) {
+                primary: Color, primaryFg: Color, staticFields: Bool = false,
+                info: Color = .blue, infoSoft: Color = Color.blue.opacity(0.12),
+                warning: Color = .orange, warningSoft: Color = Color.orange.opacity(0.14),
+                danger: Color = .red, dangerSoft: Color = Color.red.opacity(0.12)) {
         self.fg = fg
         self.mutedFg = mutedFg
         self.card = card
@@ -37,7 +42,86 @@ public struct A2UIDrawn {
         self.primary = primary
         self.primaryFg = primaryFg
         self.staticFields = staticFields
+        self.info = info
+        self.infoSoft = infoSoft
+        self.warning = warning
+        self.warningSoft = warningSoft
+        self.danger = danger
+        self.dangerSoft = dangerSoft
     }
+
+    /// 这个 tone 的标签用什么字色、底色
+    func badge(_ tone: String?) -> (fg: Color, bg: Color) {
+        switch tone {
+        case "danger": return (danger, dangerSoft)
+        case "warning": return (warning, warningSoft)
+        case "neutral": return (fg, muted)       // 大小这类不分好坏的（§4 neutralBadge）
+        default: return (info, infoSoft)
+        }
+    }
+}
+
+/// 键盘焦点画成一圈看得见的环；在滚动区里看不到时请滚动区滚过去（`a2uiRevealFocus`）。
+/// 录屏（11-09，打开键盘导航）：选择框、深色按钮拿到焦点时看不出来；焦点走到第一屏下面时页面不跟着滚
+public struct KeyFocusRing: ViewModifier {
+    let focused: Bool
+    var radius: CGFloat = 7
+    @Environment(\.a2uiRevealFocus) private var reveal
+    @State private var id = UUID()
+
+    public init(focused: Bool, radius: CGFloat = 7) {
+        self.focused = focused
+        self.radius = radius
+    }
+
+    /// 系统的键盘焦点色；只有 macOS 有，别的平台用强调色
+    #if os(macOS)
+    static let ringColor = Color(nsColor: .keyboardFocusIndicatorColor)
+    #else
+    static let ringColor = Color.accentColor
+    #endif
+
+    public func body(content: Content) -> some View {
+        content
+            .overlay {
+                RoundedRectangle(cornerRadius: radius + 3, style: .continuous)
+                    .strokeBorder(Self.ringColor, lineWidth: 3)
+                    .padding(-3)
+                    .opacity(focused ? 1 : 0)
+                    .allowsHitTesting(false)
+            }
+            .id(id)
+            .onChange(of: focused) { _, now in if now { reveal?(id) } }
+    }
+}
+
+/// 选择框这类自己拿焦点的控件：用 `@FocusState` 知道有没有焦点，再画 `KeyFocusRing`
+public struct KeyFocusable: ViewModifier {
+    var radius: CGFloat = 7
+    @FocusState private var focused: Bool
+
+    public init(radius: CGFloat = 7) { self.radius = radius }
+
+    public func body(content: Content) -> some View {
+        content.focused($focused).focusEffectDisabled().modifier(KeyFocusRing(focused: focused, radius: radius))
+    }
+}
+
+/// 输入框自己画光标和框：不再加环，只在拿到焦点时滚到看得见
+public struct KeyFocusRevealing: ViewModifier {
+    @FocusState private var focused: Bool
+    @Environment(\.a2uiRevealFocus) private var reveal
+    @State private var id = UUID()
+
+    public init() {}
+
+    public func body(content: Content) -> some View {
+        content.focused($focused).id(id).onChange(of: focused) { _, now in if now { reveal?(id) } }
+    }
+}
+
+private struct RevealFocusKey: EnvironmentKey {
+    static let defaultValue: ((AnyHashable) -> Void)? = nil
 }
 
 private struct ButtonStyleKey: EnvironmentKey {
@@ -56,7 +140,21 @@ private struct FontKey: EnvironmentKey {
     static let defaultValue: ((String?) -> Font?)? = nil
 }
 
+private struct IconKey: EnvironmentKey {
+    static let defaultValue: ((String) -> Image?)? = nil
+}
+
+private struct FirstLineInsetKey: EnvironmentKey {
+    static let defaultValue: CGFloat = 0
+}
+
 public extension EnvironmentValues {
+    /// 滚动区给的：把这个编号的控件滚到看得见（键盘焦点到了第一屏外面）
+    var a2uiRevealFocus: ((AnyHashable) -> Void)? {
+        get { self[RevealFocusKey.self] }
+        set { self[RevealFocusKey.self] = newValue }
+    }
+
     /// 按钮的样式，按 A2UI 的 variant（primary、borderless、destructive，或没有）给
     var a2uiButtonStyle: ((String?) -> AnyA2UIButtonStyle)? {
         get { self[ButtonStyleKey.self] }
@@ -78,6 +176,18 @@ public extension EnvironmentValues {
     var a2uiFont: ((String?) -> Font?)? {
         get { self[FontKey.self] }
         set { self[FontKey.self] = newValue }
+    }
+
+    /// 卡片第一行右边让出多少（宿主把时间画在卡片右上角时给）：只有第一行让，下面的照满宽画
+    var a2uiFirstLineInset: CGFloat {
+        get { self[FirstLineInsetKey.self] }
+        set { self[FirstLineInsetKey.self] = newValue }
+    }
+
+    /// 图标：Lucide 的名字 → 一张模板图（跟着字色）。宿主带着 Lucide 的图时给；不给或回 nil 就用最接近的系统符号
+    var a2uiIcon: ((String) -> Image?)? {
+        get { self[IconKey.self] }
+        set { self[IconKey.self] = newValue }
     }
 }
 
@@ -157,32 +267,50 @@ struct DrawnSwitch: View {
     }
 }
 
-/// 自己画的分段单选（选项少、字短时）
-struct DrawnSegments: View {
-    let options: [(value: String, label: String)]
-    @Binding var value: String
+/// 选择框的样子：1 pt 的边、白底、高 28、宽度随字；左边是现在选的那一项的图标，右边一个向下的箭头（点了弹菜单的是 `ChoiceBox`）
+struct DrawnChoice: View {
+    let text: String
+    var icon: AnyView? = nil
+    var chevron: AnyView? = nil
     let colors: A2UIDrawn
 
     var body: some View {
-        HStack(spacing: 2) {
-            ForEach(options, id: \.value) { o in
-                Button { value = o.value } label: {
-                    Text(o.label)
-                        .font(.system(size: 12))
-                        .foregroundStyle(o.value == value ? colors.fg : colors.mutedFg)
-                        .padding(.horizontal, 10)
-                        .frame(height: 26)
-                        .background(RoundedRectangle(cornerRadius: 6).fill(o.value == value ? colors.card : .clear)
-                            .shadow(color: .black.opacity(o.value == value ? 0.08 : 0), radius: 1, y: 1))
-                        .contentShape(Rectangle())
-                }
-                .buttonStyle(.plain)
-                .accessibilityAddTraits(o.value == value ? .isSelected : [])
+        HStack(spacing: 4) {
+            if let icon { icon.foregroundStyle(colors.mutedFg) }
+            Text(text).lineLimit(1)
+            Group {
+                if let chevron { chevron } else { Image(systemName: "chevron.down").font(.system(size: 10, weight: .semibold)) }
             }
+            .foregroundStyle(colors.mutedFg)
+            .padding(.leading, 2)
         }
-        .padding(2)
-        .background(RoundedRectangle(cornerRadius: 8).fill(colors.muted))
+        .font(.system(size: 13))
+        .foregroundStyle(colors.fg)
+        .padding(.leading, 8).padding(.trailing, 6)
+        .frame(height: 28)
+        .background(RoundedRectangle(cornerRadius: 8, style: .continuous).fill(colors.card))
+        .overlay(RoundedRectangle(cornerRadius: 8, style: .continuous).strokeBorder(colors.input, lineWidth: 1))
         .fixedSize()
+        .contentShape(Rectangle())
+    }
+}
+
+/// 标签（`Text` 的 variant badge）：圆角 6、12 号半粗、浅底深字，放在一行字后面（邮箱地址、截止日）
+struct DrawnBadge: View {
+    let text: String
+    let tone: String?
+    let colors: A2UIDrawn?
+
+    var body: some View {
+        let c = colors?.badge(tone) ?? (fg: Color.secondary, bg: Color.secondary.opacity(0.12))
+        Text(text)
+            .font(.system(size: 11.5, weight: .semibold))
+            .foregroundStyle(c.fg)
+            .lineLimit(1)
+            .padding(.horizontal, 7)
+            .frame(height: 20)
+            .background(RoundedRectangle(cornerRadius: 6, style: .continuous).fill(c.bg))
+            .fixedSize()
     }
 }
 

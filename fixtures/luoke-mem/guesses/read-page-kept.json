@@ -1,0 +1,243 @@
+{
+  "reply": {
+    "id": 8,
+    "jsonrpc": "2.0",
+    "result": {
+      "contents": [
+        {
+          "mimeType": "application/json",
+          "text": [
+            {
+              "createSurface": {
+                "catalogId": "ai.luoke/a2ui/agent/1",
+                "surfaceId": "kept"
+              },
+              "version": "v0.9"
+            },
+            {
+              "updateComponents": {
+                "components": [
+                  {
+                    "children": [
+                      "h1",
+                      "t2",
+                      "k-sure",
+                      "t3",
+                      "t4",
+                      "r7",
+                      "t8",
+                      "t9",
+                      "r12",
+                      "r14"
+                    ],
+                    "component": "Column",
+                    "id": "root"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "h1",
+                    "text": "记下的",
+                    "variant": "h4"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "t2",
+                    "text": "螺壳的工具会用这些。不对的点「不对」，以后不再提；「忘掉」连它的依据一起删掉，删了找不回来。",
+                    "variant": "caption"
+                  },
+                  {
+                    "component": "CheckBox",
+                    "id": "k-sure",
+                    "label": "我知道删了找不回来",
+                    "value": {
+                      "path": "/checks/sure"
+                    }
+                  },
+                  {
+                    "component": "Text",
+                    "id": "t3",
+                    "text": "在读研究生，导师是王老师"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "t4",
+                    "text": "关于你 · 依据 2 条 · 11月5日",
+                    "variant": "caption"
+                  },
+                  {
+                    "action": {
+                      "event": {
+                        "context": {
+                          "note": 3,
+                          "op": "reject"
+                        },
+                        "name": "mem_note"
+                      }
+                    },
+                    "child": "b5-text",
+                    "component": "Button",
+                    "id": "b5",
+                    "variant": "borderless"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "b5-text",
+                    "text": "不对"
+                  },
+                  {
+                    "action": {
+                      "event": {
+                        "context": {
+                          "note": 3,
+                          "op": "forget",
+                          "sure": {
+                            "path": "/checks/sure"
+                          }
+                        },
+                        "name": "mem_note"
+                      }
+                    },
+                    "child": "b6-text",
+                    "component": "Button",
+                    "id": "b6",
+                    "variant": "borderless"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "b6-text",
+                    "text": "忘掉"
+                  },
+                  {
+                    "children": [
+                      "b5",
+                      "b6"
+                    ],
+                    "component": "Row",
+                    "id": "r7"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "t8",
+                    "text": "螺壳"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "t9",
+                    "text": "常用说法 · 依据 1 条 · 11月3日",
+                    "variant": "caption"
+                  },
+                  {
+                    "action": {
+                      "event": {
+                        "context": {
+                          "note": 4,
+                          "op": "reject"
+                        },
+                        "name": "mem_note"
+                      }
+                    },
+                    "child": "b10-text",
+                    "component": "Button",
+                    "id": "b10",
+                    "variant": "borderless"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "b10-text",
+                    "text": "不对"
+                  },
+                  {
+                    "action": {
+                      "event": {
+                        "context": {
+                          "note": 4,
+                          "op": "forget",
+                          "sure": {
+                            "path": "/checks/sure"
+                          }
+                        },
+                        "name": "mem_note"
+                      }
+                    },
+                    "child": "b11-text",
+                    "component": "Button",
+                    "id": "b11",
+                    "variant": "borderless"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "b11-text",
+                    "text": "忘掉"
+                  },
+                  {
+                    "children": [
+                      "b10",
+                      "b11"
+                    ],
+                    "component": "Row",
+                    "id": "r12"
+                  },
+                  {
+                    "action": {
+                      "event": {
+                        "context": {},
+                        "name": "mem_open"
+                      }
+                    },
+                    "child": "b13-text",
+                    "component": "Button",
+                    "id": "b13"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "b13-text",
+                    "text": "打开整份记忆"
+                  },
+                  {
+                    "children": [
+                      "b13"
+                    ],
+                    "component": "Row",
+                    "id": "r14"
+                  }
+                ],
+                "surfaceId": "kept"
+              },
+              "version": "v0.9"
+            },
+            {
+              "updateDataModel": {
+                "path": "/",
+                "surfaceId": "kept",
+                "value": {
+                  "checks": {
+                    "sure": false
+                  }
+                }
+              },
+              "version": "v0.9"
+            }
+          ],
+          "uri": "page/kept"
+        }
+      ],
+      "resultType": "complete"
+    }
+  },
+  "request": {
+    "id": 8,
+    "jsonrpc": "2.0",
+    "method": "resources/read",
+    "params": {
+      "_meta": {
+        "io.modelcontextprotocol/clientCapabilities": {},
+        "io.modelcontextprotocol/clientInfo": {
+          "name": "luoke-agent",
+          "version": "fixtures"
+        },
+        "io.modelcontextprotocol/protocolVersion": "2026-07-28"
+      },
+      "uri": "page/kept"
+    }
+  }
+}

@@ -19,7 +19,8 @@ struct FocusPanel: View {
         let answered = model.focusAnswered
         let started = answered > 0 || !(session?.skipped.isEmpty ?? true)
         let style: FocusItemStyle = !started ? .enter : ((session?.viaKey ?? false) || reduce ? .key : .next)
-        let key = current?.id ?? "end"
+        // 按这一轮里的位置认：工具把正看着的卡片换掉时位置不变，原地换内容，不当成下一件
+        let key = current.flatMap { c in session?.ids.firstIndex(of: c.id) }.map { "item-\($0)" } ?? "end"
         VStack(alignment: .leading, spacing: 0) {
             top(total: session?.ids.count ?? 0, answered: answered, quick: style == .key)
                 .lkAppear(!snapshot, Motion.enter(0.2, delay: Motion.focusTopAt, reduce: reduce))
@@ -36,16 +37,16 @@ struct FocusPanel: View {
                                         removal: .modifier(active: FocusOut(model: model, active: true), identity: FocusOut(model: model, active: false))))
             }
             .animation(style == .key ? Motion.fade(Motion.key) : Motion.enter(Motion.nextOut), value: key)
+            // 占满面板剩下的高度：这一件放不下时中间滚动，按钮留在底部（FocusItem）
+            .frame(maxHeight: .infinity, alignment: .topLeading)
             .padding(EdgeInsets(top: LKSpace.x11, leading: LKSpace.x14, bottom: LKSpace.x11, trailing: LKSpace.x14))
             .frame(maxWidth: 660, alignment: .topLeading)
-            Spacer(minLength: 0)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
         .clipShape(RoundedRectangle(cornerRadius: LKRadius.focus, style: .continuous))
         .background {
             RoundedRectangle(cornerRadius: LKRadius.focus, style: .continuous)
                 .fill(p.card)
-                .overlay(RoundedRectangle(cornerRadius: LKRadius.focus, style: .continuous).strokeBorder(p.dark ? p.cardEdge : .clear, lineWidth: 1))
                 .shadow(color: p.shadow.opacity(p.dark ? 0 : 0.08), radius: 1, y: 1)
                 .shadow(color: p.dark ? .black.opacity(0.6) : p.shadow.opacity(0.35), radius: 20, y: 18)
                 .matchedGeometryEffect(id: "focus-surface", in: ns)
@@ -71,31 +72,55 @@ struct FocusPanel: View {
         .accessibilityLabel("一件件处理")
     }
 
-    /// 顶上一条：标题、每件一格的进度、还有几件、完成
+    /// 每件一格最多画几格：再多每格太窄（40 件时不到 1 pt），改成一整条加「3 / 40」
+    static let maxSegments = 12
+
+    /// 顶上一条：标题、进度（件数少每件一格，多了一整条加数字）、还有几件、完成
     private func top(total: Int, answered: Int, quick: Bool) -> some View {
-        HStack(spacing: LKSpace.x4) {
-            Text("一件件处理").font(LKFont.ui(LKType.lead, .semibold))
-            HStack(spacing: LKSpace.x1) {
-                ForEach(0..<total, id: \.self) { i in
-                    Capsule().fill(p.border).frame(height: 3)
-                        .overlay(alignment: .leading) {
-                            Capsule().fill(p.fg).scaleEffect(x: i < answered ? 1 : 0.001, y: 1, anchor: .leading)
+        let segments = total <= Self.maxSegments
+        return HStack(spacing: LKSpace.x4) {
+            // 从「按类处理」进来的：写上是哪一类
+            Text(model.focus?.categoryName.map { "一件件处理 · \($0)" } ?? "一件件处理").font(LKFont.ui(LKType.lead, .semibold))
+                .lineLimit(1)
+            HStack(spacing: LKSpace.x2) {
+                Group {
+                    if segments {
+                        HStack(spacing: LKSpace.x1) {
+                            ForEach(0..<total, id: \.self) { i in
+                                Capsule().fill(p.border).frame(height: 3)
+                                    .overlay(alignment: .leading) {
+                                        Capsule().fill(p.fg).scaleEffect(x: i < answered ? 1 : 0.001, y: 1, anchor: .leading)
+                                    }
+                                    .clipShape(Capsule())
+                            }
                         }
-                        .clipShape(Capsule())
+                    } else {
+                        Capsule().fill(p.border).frame(height: 3)
+                            .overlay(alignment: .leading) {
+                                Capsule().fill(p.fg)
+                                    .scaleEffect(x: total > 0 ? max(0.001, CGFloat(answered) / CGFloat(total)) : 0.001, y: 1, anchor: .leading)
+                            }
+                            .clipShape(Capsule())
+                    }
+                }
+                .frame(width: 180)
+                if !segments {
+                    Text("\(answered) / \(total)")
+                        .font(LKFont.ui(LKType.small)).foregroundStyle(p.mutedFg).monospacedDigit()
+                        .lineLimit(1).fixedSize()
                 }
             }
-            .frame(width: 180)
             .animation(quick ? Motion.fade(Motion.key) : Motion.move(Motion.segment, delay: 0.04, reduce: reduce), value: answered)
             .accessibilityElement()
             .accessibilityLabel("答了 \(answered) 件，共 \(total) 件")
-            Text(model.cards.isEmpty ? "都处理完了" : "还有 \(model.cards.count) 件")
+            Text(model.cards.isEmpty ? "都处理完了" : "要你决定的还有 \(model.cards.count) 件")   // 和「今天」页「要你决定 N」连得上（侧栏「今天」还算上了急事）
                 .font(LKFont.ui(LKType.small)).foregroundStyle(p.mutedFg).monospacedDigit()
                 .contentTransition(reduce ? .opacity : .numericText())
                 .animation(Motion.enter(Motion.counter, delay: 0.12, reduce: reduce), value: model.cards.count)
             Spacer(minLength: 0)
             Button { model.exitFocus() } label: {
                 HStack(spacing: LKSpace.x2) {
-                    Text("完成")
+                    Text("回到今天")   // 和下面的提示「Esc 回到今天」同一个说法
                     Kbd(text: "Esc")
                 }
             }
@@ -148,15 +173,52 @@ private struct HiddenButtonStyle: ButtonStyle {
     func makeBody(configuration: Configuration) -> some View { EmptyView() }
 }
 
-/// 正摆着的那一件：哪个应用、标题 26、正文 15、几行明细、36 pt 的按钮和「跳过」、按键提示
+/// 正摆着的那一件：哪个应用、标题 26、正文 15、几行明细、36 pt 的按钮和「跳过」、按键提示。
+/// 放得下就照原样从上往下排；放不下（例如一张 8 封邮件的卡片、最小的窗口）时中间滚动，按钮和按键提示留在底部，始终看得到
 struct FocusItem: View {
     let card: TodayCard
     @ObservedObject var model: WindowModel
     let style: FocusItemStyle
     @Environment(\.lk) private var p
+    @Environment(\.lkSnapshot) private var snapshot
 
     var body: some View {
         let digest = SurfaceDigest(card.surface.surface)
+        ViewThatFits(in: .vertical) {
+            VStack(alignment: .leading, spacing: 0) {
+                content
+                actions(digest)
+            }
+            VStack(alignment: .leading, spacing: 0) {
+                scrolling
+                actions(digest)
+                    .frame(maxWidth: .infinity, alignment: .leading)   // 上面那条线横贯整栏，不只按钮那么宽
+                    .overlay(alignment: .top) { Rectangle().fill(p.border).frame(height: 1) }
+            }
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+    }
+
+    /// 放不下时中间这块滚动；键盘焦点到了看不见的地方（选择框）就滚过去
+    @ViewBuilder private var scrolling: some View {
+        let inner = content
+            .padding(.bottom, LKSpace.x6)
+            .frame(maxWidth: .infinity, alignment: .leading)
+        if snapshot {
+            // 截图画不了滚动区：顶对齐，多出来的从下面截掉（和停在最上面一样，同 PageScroll）
+            inner.fixedSize(horizontal: false, vertical: true)
+                .frame(minWidth: 0, maxWidth: .infinity, minHeight: 0, maxHeight: .infinity, alignment: .top)
+                .clipped()
+        } else {
+            ScrollViewReader { proxy in
+                ScrollView(.vertical) { inner }
+                    .environment(\.a2uiRevealFocus) { id in withAnimation(.easeOut(duration: 0.2)) { proxy.scrollTo(id, anchor: .center) } }
+            }
+        }
+    }
+
+    /// 哪个应用、卡片本身（卡片里的按钮不画，下面另外画）
+    private var content: some View {
         VStack(alignment: .leading, spacing: 0) {
             HStack(spacing: LKSpace.x2) {
                 AppIcon(tool: card.tool, size: 24)
@@ -165,15 +227,16 @@ struct FocusItem: View {
             }
             .focusPart(0, style)
             SurfaceView(model: card.surface) { cid, _, _ in model.answerFocus(cid) }
-                .environment(\.a2uiFont, { variant in
-                    switch variant {
-                    case "h1", "h2", "h3", "h4", "h5": return LKFont.ui(LKType.title, .semibold)
-                    default: return LKFont.ui(LKType.lead)
-                    }
-                })
+                .environment(\.a2uiFont, { focusCardFont($0) })
                 .environment(\.a2uiButtonStyle, { _ in AnyA2UIButtonStyle(HiddenButtonStyle()) })
                 .padding(.top, LKSpace.x4)
                 .focusPart(1, style)
+        }
+    }
+
+    /// 按钮、「跳过」和按键提示
+    private func actions(_ digest: SurfaceDigest) -> some View {
+        VStack(alignment: .leading, spacing: 0) {
             HStack(spacing: LKSpace.x2) {
                 ForEach(digest.actions) { a in
                     DigestButton(action: a, surface: card.surface, style: LKButtonStyle(kind: LKButtonKind(a2ui: a.variant), size: .large)) {
@@ -192,7 +255,6 @@ struct FocusItem: View {
             .padding(.top, LKSpace.x4)
             .focusPart(3, style)
         }
-        .frame(maxWidth: .infinity, alignment: .leading)
     }
 
     private func hint(_ key: String, _ label: String) -> some View {
@@ -203,6 +265,15 @@ struct FocusItem: View {
     }
 }
 
+/// 一件件处理里卡片的字：比「今天」里大一号，层级不变（说明比条目标题小）
+func focusCardFont(_ variant: String?) -> Font {
+    switch variant {
+    case "h1", "h2", "h3", "h4", "h5": return LKFont.ui(LKType.title, .semibold)
+    case "caption": return LKFont.ui(LKType.small)
+    default: return LKFont.ui(LKType.lead)
+    }
+}
+
 /// 都过了一遍：都答了是吉祥物和一句话；跳过了的写还有几件留着
 struct FocusEnd: View {
     @ObservedObject var model: WindowModel
@@ -210,13 +281,17 @@ struct FocusEnd: View {
     let style: FocusItemStyle
     @Environment(\.lk) private var p
 
+    /// 只走了一类、这一类都答了，「要你决定」里还有别的：说这一类完了、还剩几件别的
+    private var categoryDone: String? { left == 0 ? model.focusCategoryDone : nil }
+
     var body: some View {
         VStack(alignment: .leading, spacing: LKSpace.x3) {
-            if left == 0 { Mascot(width: 104).focusPart(0, style) }
-            Text(left == 0 ? "今天没什么要你操心的" : "还有 \(left) 件留着")
+            if left == 0 && categoryDone == nil { Mascot(width: 104).focusPart(0, style) }
+            Text(categoryDone.map { "「\($0)」都处理完了" } ?? (left == 0 ? "今天没什么要你操心的" : "还有 \(left) 件留着"))
                 .font(LKFont.ui(LKType.title, .semibold)).tracking(-0.26)
                 .focusPart(1, style)
-            Text(left > 0 ? "跳过的事还在「今天」里，等你有空再看。"
+            Text(categoryDone != nil ? "「要你决定」里还有 \(model.cards.count) 件别的事，在「今天」里。"
+                 : left > 0 ? "跳过的事还在「今天」里，等你有空再看。"
                  : model.shows(.activity) ? "做了的都在「今天」和「活动」里，随时能撤销。" : "做了的都在「今天」里，随时能撤销。")
                 .font(LKFont.ui(LKType.lead)).foregroundStyle(p.fg.opacity(0.85))
                 .focusPart(2, style)

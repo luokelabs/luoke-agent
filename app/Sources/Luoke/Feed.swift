@@ -66,7 +66,7 @@ final class FeedModel: ObservableObject {
             let r = try? UnixHTTP.request(path, "POST", "/action", body: body)
             DispatchQueue.main.async {
                 self.surfaces[sid]?.busy = false
-                if r == nil { self.results[sid] = Said(text: "没连上螺壳的核心。", error: true) }
+                if r == nil { self.results[sid] = Said(text: "连不上螺壳，没做成。", error: true) }
             }
         }
     }

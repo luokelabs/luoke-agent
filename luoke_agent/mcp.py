@@ -7,6 +7,7 @@
 """
 from __future__ import annotations
 
+import base64
 import http.client
 import itertools
 import json
@@ -17,6 +18,7 @@ import stat
 import sys
 import threading
 import traceback
+import urllib.parse
 from http.server import BaseHTTPRequestHandler
 from typing import Any, Callable, Dict, List, Optional
 
@@ -27,6 +29,14 @@ META_VERSION = "io.modelcontextprotocol/protocolVersion"
 META_CLIENT = "io.modelcontextprotocol/clientInfo"
 META_CAPABILITIES = "io.modelcontextprotocol/clientCapabilities"
 META_SERVER = "io.modelcontextprotocol/serverInfo"
+# 告诉工具这个核心认 §4 后加的哪些卡片写法（工具协议 §4「后加的写法」）：工具看到了再用，旧的核心照原来的写法收
+# 和 a2ui.A2UI_FEATURES 一样（测试核对）；这个文件给应用单独拷，不引 a2ui
+CLIENT_CAPABILITIES = {"experimental": {"ai.luoke/a2ui": {"features": ["placement", "badge", "strong", "maxLines",
+                                                                       "optionIcons", "collapsed", "lucide", "tooltip",
+                                                                       "doneGroup", "itemIcons", "countLabel", "openPage",
+                                                                       "subtitle", "countAlso", "countWeights",
+                                                                       "pageArgs", "bigPages", "secureField", "pageRefresh",
+                                                                       "saveFile", "neutralBadge", "chips", "pageSections"]}}}
 USER_ACTION = "ai.luoke/user-action"  # 会改动东西的调用必带：用户在哪张卡片上点的（§5）
 
 PARSE_ERROR = -32700
@@ -35,6 +45,9 @@ METHOD_NOT_FOUND = -32601
 INVALID_PARAMS = -32602
 INTERNAL_ERROR = -32603
 RESOURCE_NOT_FOUND = -32002
+BAD_TOKEN = -32001          # 工具要口令，没带或不对（螺壳搜索的发布版，hostlink.py）
+
+TOKEN_META = "ai.luoke/token"
 
 MAX_BODY = 1 << 20  # 一条消息最多 1 MB
 
@@ -47,6 +60,16 @@ WRITE_CALL_TIMEOUT = 300.0
 
 def outbox_uri(accessory: str) -> str:
     return f"luoke://{accessory}/outbox"
+
+
+def features_of(meta: Any) -> frozenset:
+    """请求的 `params._meta` 里核心认的 §4 后加的写法：`clientCapabilities.experimental["ai.luoke/a2ui"].features`
+    （同 cards.host_features；这个文件给工具单独拷，不引 cards）。旧的核心不写，是空集合。"""
+    caps = meta.get(META_CAPABILITIES) if isinstance(meta, dict) else None
+    exp = caps.get("experimental") if isinstance(caps, dict) else None
+    a2 = exp.get("ai.luoke/a2ui") if isinstance(exp, dict) else None
+    feats = a2.get("features") if isinstance(a2, dict) else None
+    return frozenset(f for f in feats if isinstance(f, str)) if isinstance(feats, list) else frozenset()
 
 
 # ---------------------------------------------------------------- 服务端
@@ -70,7 +93,10 @@ class ToolServer:
 
     工具函数 `fn(arguments, meta) -> dict`：返回的 dict 必须有 `text`（给用户看的一句话），
     其余键（`card`、`done`……）原样放进 `structuredContent`。执行不了就抛 `ToolError`。
-    资源函数 `fn() -> 可以 JSON 序列化的值`。
+    资源函数 `fn() -> 可以 JSON 序列化的值`；登记时写了 `args=True` 的是 `fn(参数)`：带参数读的页
+    （`page/<id>?<键>=<值>&…`，§4 pageArgs）把解开的参数（键 → 文字）交给它，没带是 `{}`。
+    登记时写了 `features=True` 的再多收一个关键字参数 `features`：这次请求的核心认的 §4 后加的写法
+    （`features_of(_meta)`，frozenset），页、画卡片的 outbox 照它决定用不用新写法。没写的照旧，不收。
     """
 
     def __init__(self, name: str, version: str):
@@ -102,8 +128,12 @@ class ToolServer:
             },
         }
 
-    def resource(self, uri: str, fn: Callable[[], Any], *, name: str, mime_type: str = "application/json") -> None:
-        self._resources[uri] = {"fn": fn, "spec": {"uri": uri, "name": name, "mimeType": mime_type}}
+    def resource(self, uri: str, fn: Callable[..., Any], *, name: str, mime_type: str = "application/json",
+                 args: bool = False, features: bool = False) -> None:
+        """`args=True`：读的时候可以带参数（`<uri>?<键>=<值>&…`），`fn` 收一个 dict。没写的照旧不收参数，带了也当没带。
+        `features=True`：`fn` 再收关键字参数 `features`（这次请求的核心认的写法，§4「后加的写法」）。"""
+        self._resources[uri] = {"fn": fn, "args": args, "features": features,
+                                "spec": {"uri": uri, "name": name, "mimeType": mime_type}}
 
     # 处理一条 JSON-RPC 消息（不经 socket 也能直接测）
 
@@ -129,7 +159,7 @@ class ToolServer:
             if method == "resources/list":
                 return _result(rid, {"resources": [r["spec"] for r in self._resources.values()]})
             if method == "resources/read":
-                return self._read(rid, params)
+                return self._read(rid, params, meta)
             if method == "tools/list":
                 return _result(rid, {"tools": [t["spec"] for t in self._tools.values()]})
             if method == "tools/call":
@@ -140,8 +170,11 @@ class ToolServer:
         return _error(rid, METHOD_NOT_FOUND, f"没有这个方法：{method}")
 
     def _which(self, method: str, params: dict) -> str:
-        """出错的是哪个：方法，加上工具名或资源。只写这里登记过的名字，不写 agent 送来的任意字符串"""
+        """出错的是哪个：方法，加上工具名或资源。只写这里登记过的名字，不写 agent 送来的任意字符串；
+        带参数读的页只写页（`page/<id>`），不写参数（工具协议 §1a：参数里是用户填的字）"""
         key = params.get("name") if method == "tools/call" else params.get("uri") if method == "resources/read" else None
+        if method == "resources/read" and isinstance(key, str):
+            key = key.split("?", 1)[0]
         known = self._tools if method == "tools/call" else self._resources
         return f"{method} {key}" if isinstance(key, str) and key in known else method
 
@@ -157,12 +190,26 @@ class ToolServer:
             "_meta": {META_SERVER: {"name": self.name, "version": self.version}},
         }
 
-    def _read(self, rid: Any, params: dict) -> dict:
+    def _read(self, rid: Any, params: dict, meta: dict) -> dict:
         uri = params.get("uri")
         res = self._resources.get(uri) if isinstance(uri, str) else None
+        query = ""
+        if res is None and isinstance(uri, str) and "?" in uri:      # 带参数读（§4 pageArgs）
+            base, query = uri.split("?", 1)
+            res = self._resources.get(base)
         if res is None:
             return _error(rid, RESOURCE_NOT_FOUND, "没有这个资源", {"uri": uri})
-        value = res["fn"]()
+        call: List[Any] = []
+        if res["args"]:
+            try:
+                pairs = urllib.parse.parse_qsl(query, keep_blank_values=True, strict_parsing=bool(query))
+            except ValueError:
+                pairs = []
+            call.append(dict(pairs))
+        value = res["fn"](*call, features=features_of(meta)) if res["features"] else res["fn"](*call)
+        if isinstance(value, (bytes, bytearray)):     # 图（缩略图）：base64 的 blob
+            blob = base64.b64encode(bytes(value)).decode("ascii")
+            return _result(rid, {"contents": [{"uri": uri, "mimeType": res["spec"]["mimeType"], "blob": blob}]})
         text = value if isinstance(value, str) else json.dumps(value, ensure_ascii=False)
         return _result(rid, {"contents": [{"uri": uri, "mimeType": res["spec"]["mimeType"], "text": text}]})
 
@@ -431,18 +478,42 @@ class ToolClient:
     """
 
     def __init__(self, socket_path: str, *, client_name: str = "luoke-agent", client_version: str = "0",
-                 check: Optional[Callable[[str], bool]] = None, opener: Optional[Callable[[], socket.socket]] = None):
+                 check: Optional[Callable[[str], bool]] = None, opener: Optional[Callable[[], socket.socket]] = None,
+                 token: Optional[Callable[[bool], Optional[str]]] = None):
         self.socket_path = socket_path
         self._client = {"name": client_name, "version": client_version}
         self._check = check              # 每次连之前查一下 socket，不过就当没在运行
         self._opener = opener
+        self._token = token              # 工具要的口令（hostlink.HostToken.get）：每个请求带在 _meta 里；参数 True 是再要一次
         self._ids = itertools.count(1)
 
     def request(self, method: str, params: Optional[dict] = None, *, timeout: float = LIST_TIMEOUT,
                 extra_meta: Optional[dict] = None) -> dict:
-        meta = {META_VERSION: PROTOCOL_VERSION, META_CLIENT: self._client, META_CAPABILITIES: {}}
+        """工具答「口令不对」（它重起过，口令换了）：再要一次口令，换了就重发一次；还不对就当它不在。
+        它在执行之前就拒了，重发不会做两遍。"""
+        token = self._token(False) if self._token else None
+        try:
+            return self._request(method, params, timeout, extra_meta, token)
+        except RpcError as e:
+            if e.code != BAD_TOKEN or self._token is None:
+                raise
+        fresh = self._token(True)
+        if fresh is None or fresh == token:
+            raise NotRunning("口令不对")
+        try:
+            return self._request(method, params, timeout, extra_meta, fresh)
+        except RpcError as e:
+            if e.code == BAD_TOKEN:
+                raise NotRunning("口令不对") from None
+            raise
+
+    def _request(self, method: str, params: Optional[dict], timeout: float, extra_meta: Optional[dict],
+                 token: Optional[str]) -> dict:
+        meta = {META_VERSION: PROTOCOL_VERSION, META_CLIENT: self._client, META_CAPABILITIES: CLIENT_CAPABILITIES}
         if extra_meta:
             meta.update(extra_meta)
+        if token is not None:
+            meta[TOKEN_META] = token
         body = json.dumps({"jsonrpc": "2.0", "id": next(self._ids), "method": method,
                            "params": {**(params or {}), "_meta": meta}}, ensure_ascii=False).encode("utf-8")
         raw = self._over_line(method, body, timeout) if self._opener else self._over_http(method, body, timeout)
@@ -527,6 +598,18 @@ class ToolClient:
             return json.loads(contents[0]["text"])
         except ValueError:
             raise RpcError(PARSE_ERROR, "资源不是 JSON") from None
+
+    def read_blob(self, uri: str, *, timeout: float = 10.0) -> bytes:
+        """读一个答 `blob`（base64）的资源，例如搜索结果的缩略图 `thumb/<id>`（工具协议 §1b）。"""
+        result = self.request("resources/read", {"uri": uri}, timeout=timeout)
+        contents = result.get("contents") or []
+        blob = contents[0].get("blob") if contents and isinstance(contents[0], dict) else None
+        if not isinstance(blob, str):
+            raise RpcError(INVALID_REQUEST, "资源没有 blob")
+        try:
+            return base64.b64decode(blob, validate=True)
+        except ValueError:
+            raise RpcError(PARSE_ERROR, "blob 不是 base64") from None
 
     def outbox(self, accessory: str) -> List[dict]:
         data = self.read_json(outbox_uri(accessory))

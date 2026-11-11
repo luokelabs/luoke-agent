@@ -75,10 +75,37 @@ def sample(scenario_dir: str) -> dict:
         raise SystemExit(f"{tool}/{name}：核心问了样例里没有的 " + "、".join(
             "/".join(replay_tool.request_key(m)) for m in missing))
     return {
+        "replies": replies(tool, scenario_dir),
         "_about": f"scripts/window_samples.py 用 fixtures/{tool}/{name}（{tool} {commit_of(tool_dir)[:12]}）接上真核心生成的，不要手改",
         "app": tool, "scenario": name, "title": s.replay.scenario.get("title", ""), "version": manifest_version(scenario_dir),
-        "clock": clock, "host": host, "asked": asked, **snap,
+        # 核心读权限、读页面是并发的，先后每次不一样：排好序，--check 才不会时过时不过
+        "clock": clock, "host": host, "asked": sorted(asked), **snap,
     }
+
+
+def replies(tool: str, scenario_dir: str) -> list:
+    """用户在卡片上点了按钮、工具答复了一张卡片的（call-*.json）：窗口截「点完以后」的样子时，把它换到那张卡片上"""
+    out = []
+    for f in sorted(os.listdir(scenario_dir)):
+        if not (f.startswith("call-") and f.endswith(".json")):
+            continue
+        with open(os.path.join(scenario_dir, f), encoding="utf-8") as fh:
+            d = json.load(fh)
+        ua = (((d.get("request") or {}).get("params") or {}).get("_meta") or {}).get("ai.luoke/user-action") or {}
+        card = ((((d.get("reply") or {}).get("result") or {}).get("structuredContent")) or {}).get("card")
+        if ua.get("surfaceId") and card:
+            sid = f"{tool}/{ua['surfaceId']}"
+            msgs = []
+            for m in card:   # 和核心转给窗口时一样：卡片 id 前面加上应用
+                m = json.loads(json.dumps(m))
+                for body in m.values():
+                    if isinstance(body, dict) and "surfaceId" in body:
+                        body["surfaceId"] = sid
+                msgs.append(m)
+            text = "".join(c.get("text", "") for c in ((d.get("reply") or {}).get("result") or {}).get("content") or []
+                           if c.get("type") == "text")
+            out.append({"file": f, "surface": sid, "card": msgs, "text": text})
+    return out
 
 
 def render(d: dict) -> str:

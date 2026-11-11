@@ -1,0 +1,35 @@
+{
+  "reply": {
+    "id": 5,
+    "jsonrpc": "2.0",
+    "result": {
+      "contents": [
+        {
+          "mimeType": "application/json",
+          "text": {
+            "count": 1,
+            "text": "记下了 7 条，有 1 条猜测等你确认。"
+          },
+          "uri": "summary"
+        }
+      ],
+      "resultType": "complete"
+    }
+  },
+  "request": {
+    "id": 5,
+    "jsonrpc": "2.0",
+    "method": "resources/read",
+    "params": {
+      "_meta": {
+        "io.modelcontextprotocol/clientCapabilities": {},
+        "io.modelcontextprotocol/clientInfo": {
+          "name": "luoke-agent",
+          "version": "fixtures"
+        },
+        "io.modelcontextprotocol/protocolVersion": "2026-07-28"
+      },
+      "uri": "summary"
+    }
+  }
+}

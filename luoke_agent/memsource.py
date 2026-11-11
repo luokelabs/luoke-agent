@@ -23,7 +23,9 @@ CITE_CHARS = 120
 CHANGED = "这条已经变了（可能已经生效，或者在别处答过了）。"
 NOT_KEPT = "记忆不保存密码、验证码和证件号码，改一下再点。"
 SAID = {"yes": "记下了：对。", "no": "记下了：不对，以后不再提。", "past": "记下了：以前是，现在不是。", "revise": "改好了。", "later": "好，过几天再问。",
-        "answer": "记下了。", "useful": "好。", "useless": "好，这阵子不再提。", "never": "好，不再提这个。"}
+        "answer": "记下了。", "useful": "好。", "useless": "好，这阵子不再提。", "never": "好，不再提这个。",
+        "archive": "归档了：不算回答，也不会自己再问。"}
+CANT_ARCHIVE = "这一版的螺壳记忆还不能归档，先不答就行。"
 
 
 _from_hub: Optional[str] = None    # 主控带的那份 luoke_mem 所在的目录（use_hub_luoke_mem 设）
@@ -120,7 +122,9 @@ class MemorySource:
             return None            # 暂时读不到不等于记忆把这些撤了：卡片收起，状态不动
         # 只读记忆给的清单（顶层 ADR 0015）：想问的（question）和建议（suggestion），该不该问、每天几条都由记忆定
         # "以后再说"之后什么时候再问也由记忆定（它把这条收起，过 7 天作为新的一条再问）
-        return [self._ask_item(a, self._cites(mem, a.get("about_note"))) for a in mem.asks(status=["open"])]
+        # 归档（luoke_mem 0.34 起有 Memory.archive）：先收起来、不作答；更早的记忆没有，卡片上就不给这个按钮
+        archivable = hasattr(mem, "archive")
+        return [self._ask_item(a, self._cites(mem, a.get("about_note")), archivable) for a in mem.asks(status=["open"])]
 
     def _cites(self, mem: Any, note: Optional[int]) -> List[str]:
         """这条理解的依据原文，新的在前，最多几条：谁、哪天、原话（顶层 ADR 0013：本机里不再按工具藏）。"""
@@ -141,7 +145,7 @@ class MemorySource:
     def _who(self, tool: str) -> str:
         return self.names.get(tool, tool)
 
-    def _ask_item(self, a: dict, cites: List[str] = ()) -> Item:
+    def _ask_item(self, a: dict, cites: List[str] = (), archivable: bool = False) -> Item:
         aid = a["id"]
         question = a["kind"] == "question"
         answer = a.get("answer") or {"type": "text"}
@@ -158,6 +162,8 @@ class MemorySource:
         elif a.get("evidence"):
             card.text(f"依据：{a['evidence']}", caption=True)
         look = [button("在螺壳记忆里看", "mem.open", {"note": note})] if note else []
+        if archivable:   # 每种卡片最后一个，不带边框：不算回答，不是「以后再说」也不是「别再提」（luoke_mem 0.34）
+            look.append(button("归档", "mem.reply", {"ask": aid, "choice": "archive"}, variant="borderless"))
         if not question:                            # 建议（含处理习惯）：agent 不动手，执行是工具的事
             habit = ((a.get("action") or {}).get("capability") == "habit")
             if answer.get("type") == "yes_no" or habit:   # 例如"以后 X 都归档？"：好 / 不用 / 别再提
@@ -178,20 +184,20 @@ class MemorySource:
             opts = [str(o) for o in answer["options"]]
             card.choice("reply", "选一个", [(o, o) for o in opts], opts[0])
             card.buttons(button("交回", "mem.reply", {"ask": aid, "choice": "answer", "text": {"path": "/choices/reply"}},
-                                primary=True), button("以后再说", "mem.reply", {"ask": aid, "choice": "later"}))
+                                primary=True), button("以后再说", "mem.reply", {"ask": aid, "choice": "later"}), *look)
         elif answer.get("type") == "yes_no":
             card.buttons(button("是", "mem.reply", {"ask": aid, "choice": "answer", "text": "是"}, primary=True),
                          button("不是", "mem.reply", {"ask": aid, "choice": "answer", "text": "不是"}),
-                         button("以后再说", "mem.reply", {"ask": aid, "choice": "later"}))
+                         button("以后再说", "mem.reply", {"ask": aid, "choice": "later"}), *look)
         else:
             card.text_field("reply", "你的回答")
             card.buttons(button("交回", "mem.reply", {"ask": aid, "choice": "answer", "text": {"path": "/fields/reply"}},
-                                primary=True), button("以后再说", "mem.reply", {"ask": aid, "choice": "later"}))
+                                primary=True), button("以后再说", "mem.reply", {"ask": aid, "choice": "later"}), *look)
         urgency = a.get("urgency") if a.get("urgency") in ("urgent", "normal", "low") else "low"
         return Item(key=f"memory/ask/{aid}", source="memory", kind=a["kind"], urgency=urgency,
                     title=("记忆想问：" if question else "记忆建议：") + a["text"][:100], summary=a.get("why") or "",
                     why_now=a.get("why") or "不急，有空看看", card=card.messages(), created=a.get("created_at"),
-                    expires=a.get("expires_at"), extra={"ask": aid, "note": note})
+                    expires=a.get("expires_at"), extra={"ask": aid, "note": note, "archive": archivable})
 
     # 交回
 
@@ -217,8 +223,12 @@ class MemorySource:
                 text = " ".join(str(text or "").split()) or None
                 allowed = ({"useful", "useless", "never"} if item.kind == "suggestion" else
                            {"yes", "no", "past", "revise", "later"} if item.extra.get("note") else {"answer", "later"})
+                if item.extra.get("archive"):       # 只有画了「归档」的卡片才认
+                    allowed = allowed | {"archive"}
                 if choice not in allowed:
                     return {"text": "不认识这个回答。", "error": True}
+                if choice == "archive" and not hasattr(mem, "archive"):   # 画卡片以后换成了更早的记忆
+                    return {"text": CANT_ARCHIVE, "error": True}
                 if choice in ("revise", "answer") and not text:
                     return {"text": "先在上面写好。", "error": True}
                 try:
@@ -240,6 +250,9 @@ class MemorySource:
         """交回一个回答（顶层 ADR 0015）：luoke_mem 有 reply 就一个调用交回，记忆直接定档；
         自带的库还没有 reply（0.16.1 及以前）就折算成老接口。"""
         aid = item.extra["ask"]
+        if choice == "archive":     # luoke_mem 0.34：reply 认 archive；那条理解刚在别处定了的，只把问题关掉
+            mem.reply(aid, "archive", None)
+            return
         if hasattr(mem, "reply"):
             mem.reply(aid, choice, text)
             return

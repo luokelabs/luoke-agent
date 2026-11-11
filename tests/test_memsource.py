@@ -10,12 +10,141 @@ import tempfile
 import unittest
 
 from luoke_agent import a2ui
-from luoke_agent.memsource import MemorySource, load_luoke_mem
+from luoke_agent.agent import Agent
+from luoke_agent.memsource import CANT_ARCHIVE, CHANGED, SAID, MemorySource, load_luoke_mem
 from luoke_agent.devdata import make_sample_memory as make_memory
 from luoke_agent.state import State
 
 lm = load_luoke_mem()
 NOW = 1_800_000_000.0
+
+
+class _Memory:
+    """只做卡片用到的几样的假记忆，不依赖自带那份 luoke_mem 的版本：asks、note、reply。没有 archive，像 0.34 以前的。"""
+
+    ASKS = [
+        {"id": 1, "kind": "question", "text": "「行云」是你们的项目名？", "why": "打字里出现了几次", "about_note": 11},
+        {"id": 2, "kind": "question", "text": "周报一般哪天发？", "answer": {"type": "text"}},
+        {"id": 3, "kind": "question", "text": "周末也看工作邮件吗？", "answer": {"type": "yes_no"}},
+        {"id": 4, "kind": "question", "text": "例会在哪天？", "answer": {"type": "choice", "options": ["周一", "周五"]}},
+        {"id": 5, "kind": "suggestion", "text": "以后某某商城的邮件都归档？", "answer": {"type": "yes_no"}},
+        {"id": 6, "kind": "suggestion", "text": "这周的周报还没发。"},
+    ]
+
+    def __init__(self):
+        self.db = type("DB", (), {"close": lambda self: None})()
+        self.state = {a["id"]: "open" for a in self.ASKS}
+        self.replies = []
+
+    def asks(self, status=None):
+        return [dict(a) for a in self.ASKS if self.state[a["id"]] in (status or ["open"])]
+
+    def note(self, nid):
+        return None
+
+    def reply(self, aid, choice, text=None):
+        if self.state.get(aid) != "open":
+            raise ValueError("this is not open")
+        if choice == "archive" and not hasattr(self, "archive"):
+            raise ValueError("not an answer: archive")
+        self.replies.append((aid, choice, text))
+        self.state[aid] = "archived" if choice == "archive" else "answered"
+
+
+class _ArchivingMemory(_Memory):
+    """luoke_mem 0.34 起：Memory.archive，reply 也认 "archive"。"""
+
+    def archive(self, aid):
+        self.reply(aid, "archive")
+
+
+class MemoryArchiveTest(unittest.TestCase):
+    """「归档」：先收起来、不作答（luoke_mem 0.34 起）。记忆有就画在每张卡片最后，没有就不画。"""
+
+    def setUp(self):
+        self.dir = tempfile.mkdtemp(prefix="la")
+        self.state = State(os.path.join(self.dir, "agent"))
+        self.src = MemorySource(os.path.join(self.dir, "mem.db"), self.state, opener=lambda *a: None)
+
+    def tearDown(self):
+        self.src.close()
+        self.state.close()
+        shutil.rmtree(self.dir, ignore_errors=True)
+
+    def use(self, mem):
+        self.src._mem = mem
+        self.src._open = lambda: self.src._mem
+        return mem
+
+    @staticmethod
+    def buttons(card):
+        comps = {c["id"]: c for m in card if "updateComponents" in m for c in m["updateComponents"]["components"]}
+        return [(comps[c["id"] + "-text"]["text"], c) for c in comps.values() if c.get("component") == "Button"]
+
+    def test_archive_is_the_last_button_on_every_card(self):
+        mem = self.use(_ArchivingMemory())
+        items = self.src.poll(NOW)
+        self.assertEqual(len(items), len(mem.ASKS), "问题、猜测、建议各种都在")
+        for it in items:
+            self.assertEqual(a2ui.validate(it.card), [], it.key)
+            label, b = self.buttons(it.card)[-1]
+            self.assertEqual(label, "归档", it.key)
+            self.assertEqual(b.get("variant"), "borderless", "不带边框：不算回答")
+            self.assertEqual(b["action"]["event"], {"name": "mem.reply", "context": {"ask": it.extra["ask"], "choice": "archive"}})
+            self.assertEqual([x for x, _ in self.buttons(it.card)].count("归档"), 1)
+
+    def test_older_memory_draws_no_archive_and_refuses_it(self):
+        mem = self.use(_Memory())
+        items = self.src.poll(NOW)
+        for it in items:
+            self.assertNotIn("归档", [x for x, _ in self.buttons(it.card)], it.key)
+        r = self.src.handle(items[1], "mem.reply", {"ask": items[1].extra["ask"], "choice": "archive"}, NOW)
+        self.assertEqual(r, {"text": "不认识这个回答。", "error": True}, "卡片上没有的按钮不认")
+        self.assertEqual(mem.replies, [])
+
+    def test_memory_older_than_the_card_says_it_cannot(self):
+        """画卡片时的记忆能归档、点的时候换成了更早的（主控带的那份退回了）：答一句做不了，卡片留着。"""
+        self.use(_ArchivingMemory())
+        item = self.src.poll(NOW)[0]
+        mem = self.use(_Memory())
+        r = self.src.handle(item, "mem.reply", {"ask": item.extra["ask"], "choice": "archive"}, NOW)
+        self.assertEqual(r, {"text": CANT_ARCHIVE, "error": True})
+        self.assertEqual(mem.replies, [])
+
+    def test_archived_elsewhere_meanwhile(self):
+        mem = self.use(_ArchivingMemory())
+        item = self.src.poll(NOW)[0]
+        mem.state[item.extra["ask"]] = "answered"           # 在别处答过了
+        r = self.src.handle(item, "mem.reply", {"ask": item.extra["ask"], "choice": "archive"}, NOW)
+        self.assertEqual(r["text"], CHANGED)
+        self.assertTrue(r["done"])
+
+    def test_archive_from_the_window_puts_it_away(self):
+        """在窗口里点「归档」：交回记忆，这张卡片收掉，下次读清单也不再出现；别的按钮改不成归档。"""
+        mem = self.use(_ArchivingMemory())
+        agent = Agent(self.state, [self.src], clock=lambda: NOW)
+        agent.poll(["memory"])
+        self.assertIn("memory/ask-2", agent.order())
+
+        def tap(sid, label, client=None):
+            bid = next(b["id"] for x, b in self.buttons(agent.surfaces[sid][1].messages()) if x == label)
+            return agent.tap(sid, bid, client)
+
+        # 界面送来的上下文改不了按钮上写死的选择：点「以后再说」只会是以后再说
+        tap("memory/ask-3", "以后再说", {"ask": 3, "choice": "archive"})
+        self.assertEqual(mem.replies, [(3, "later", None)])
+        r = tap("memory/ask-2", "归档")
+        self.assertEqual(r["text"], SAID["archive"])
+        self.assertNotIn("找回", r["text"], "主窗口里还没有记忆的页，不说去哪儿找")
+        self.assertEqual(mem.replies[-1], (2, "archive", None))
+        self.assertEqual(mem.state[2], "archived")
+        section = lambda: {c["id"]: c["section"] for c in agent._cards()}
+        self.assertEqual(section()["memory/ask-2"], "done", "收进做完的，不在「要你决定」里")
+        self.assertNotIn("memory/ask/2", agent.items)
+        agent.poll(["memory"])
+        self.assertEqual(section()["memory/ask-2"], "done", "归档的不在清单里，不再作为要你决定的出现")
+        self.assertNotIn("memory/ask/2", agent.items)
+        self.assertEqual(section()["memory/ask-1"], "later", "别的照旧")
 
 
 class MemorySourceTest(unittest.TestCase):
@@ -121,7 +250,8 @@ class MemorySourceTest(unittest.TestCase):
         self.assertEqual(set(events), {"mem.reply"}, "建议不调工具，执行是工具的事")
         choices = [c["action"]["event"]["context"]["choice"] for m in sug.card if "updateComponents" in m
                    for c in m["updateComponents"]["components"] if c.get("component") == "Button"]
-        self.assertEqual(choices, ["useful", "useless", "never"], "是非类的建议：好 / 不用 / 别再提")
+        self.assertEqual(choices, ["useful", "useless", "never"] + (["archive"] if hasattr(lm.Memory, "archive") else []),
+                         "是非类的建议：好 / 不用 / 别再提（自带的记忆能归档时最后加「归档」）")
         self.assertTrue(self.src.handle(sug, "mem.reply", {"ask": ids["建议"], "choice": "yes"}, NOW)["error"])
         r = self.src.handle(sug, "mem.reply", {"ask": ids["建议"], "choice": "useful"}, NOW)
         self.assertEqual(r["text"], "好。")

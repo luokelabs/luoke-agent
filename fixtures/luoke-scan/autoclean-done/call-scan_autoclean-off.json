@@ -1,6 +1,6 @@
 {
   "reply": {
-    "id": 12,
+    "id": 13,
     "jsonrpc": "2.0",
     "result": {
       "content": [
@@ -28,26 +28,7 @@
                     "r98260-r10",
                     "r98260-d11",
                     "r98260-h12",
-                    "r98260-t13",
-                    "r98260-c-i0",
-                    "r98260-t14",
-                    "r98260-c-i1",
-                    "r98260-t15",
-                    "r98260-r17",
-                    "r98260-d18",
-                    "r98260-t19",
-                    "r98260-t20",
-                    "r98260-r22",
-                    "r98260-t23",
-                    "r98260-r25",
-                    "r98260-d26",
-                    "r98260-t27",
-                    "r98260-t28",
-                    "r98260-d29",
-                    "r98260-t30",
-                    "r98260-t31",
-                    "r98260-t32",
-                    "r98260-t33"
+                    "r98260-t13"
                   ],
                   "component": "Column",
                   "id": "root"
@@ -87,7 +68,7 @@
                 {
                   "component": "Text",
                   "id": "r98260-t7",
-                  "text": "测试工具留下的临时文件夹：puppeteer_dev_chrome_profile-P00000、puppeteer_dev_chrome_profile-P00001、puppeteer_dev_chrome_profile-P00002 等 21 项",
+                  "text": "测试工具留下的临时文件夹：Puppeteer 留下的临时文件夹等 21 项",
                   "variant": "caption"
                 },
                 {
@@ -124,7 +105,7 @@
                 {
                   "component": "Text",
                   "id": "r98260-b9-text",
-                  "text": "以后别自动清"
+                  "text": "关掉自动清理"
                 },
                 {
                   "children": [
@@ -141,210 +122,13 @@
                 {
                   "component": "Text",
                   "id": "r98260-h12",
-                  "text": "有 6 件事值得看一眼",
+                  "text": "6 项等你处理",
                   "variant": "h4"
                 },
                 {
                   "component": "Text",
                   "id": "r98260-t13",
-                  "text": "会自动重建的缓存直接删掉，别的放心删的移到废纸篓，要你确认的先不动。",
-                  "variant": "caption"
-                },
-                {
-                  "component": "ChoicePicker",
-                  "id": "r98260-c-i0",
-                  "label": "临时目录里有 25 个 wings-* 没被删掉，共 131.1 MB",
-                  "options": [
-                    {
-                      "label": "移到废纸篓",
-                      "value": "trash"
-                    },
-                    {
-                      "label": "先不动",
-                      "value": "keep"
-                    },
-                    {
-                      "label": "以后别提",
-                      "value": "ignore"
-                    }
-                  ],
-                  "value": {
-                    "path": "/choices/i0"
-                  }
-                },
-                {
-                  "component": "Text",
-                  "id": "r98260-t14",
-                  "text": "$TMPDIR 里的 25 项",
-                  "variant": "caption"
-                },
-                {
-                  "component": "ChoicePicker",
-                  "id": "r98260-c-i1",
-                  "label": "old-pushed 半年多没动过，都已推送，删了能从远程找回（147 KB）",
-                  "options": [
-                    {
-                      "label": "移到废纸篓",
-                      "value": "trash"
-                    },
-                    {
-                      "label": "先不动",
-                      "value": "keep"
-                    },
-                    {
-                      "label": "以后别提",
-                      "value": "ignore"
-                    }
-                  ],
-                  "value": {
-                    "path": "/choices/i1"
-                  }
-                },
-                {
-                  "component": "Text",
-                  "id": "r98260-t15",
-                  "text": "~/Projects/old-pushed",
-                  "variant": "caption"
-                },
-                {
-                  "action": {
-                    "event": {
-                      "context": {
-                        "choices": {
-                          "path": "/choices"
-                        },
-                        "plan_id": "p-000000000002"
-                      },
-                      "name": "scan_apply"
-                    }
-                  },
-                  "child": "r98260-b16-text",
-                  "component": "Button",
-                  "id": "r98260-b16",
-                  "variant": "primary"
-                },
-                {
-                  "component": "Text",
-                  "id": "r98260-b16-text",
-                  "text": "按这个处理"
-                },
-                {
-                  "children": [
-                    "r98260-b16"
-                  ],
-                  "component": "Row",
-                  "id": "r98260-r17"
-                },
-                {
-                  "component": "Divider",
-                  "id": "r98260-d18"
-                },
-                {
-                  "component": "Text",
-                  "id": "r98260-t19",
-                  "text": "这几个应用已经删了，权限还留着，可以在系统设置里移除：",
-                  "variant": "caption"
-                },
-                {
-                  "component": "Text",
-                  "id": "r98260-t20",
-                  "text": "/opt/gone/tool 已经不在这台 Mac 上，还拿着「录屏」"
-                },
-                {
-                  "action": {
-                    "event": {
-                      "context": {
-                        "grant": "录屏"
-                      },
-                      "name": "scan_open_settings"
-                    }
-                  },
-                  "child": "r98260-b21-text",
-                  "component": "Button",
-                  "id": "r98260-b21"
-                },
-                {
-                  "component": "Text",
-                  "id": "r98260-b21-text",
-                  "text": "打开「录屏」设置"
-                },
-                {
-                  "children": [
-                    "r98260-b21"
-                  ],
-                  "component": "Row",
-                  "id": "r98260-r22"
-                },
-                {
-                  "component": "Text",
-                  "id": "r98260-t23",
-                  "text": "io.example.removed 已经不在这台 Mac 上，还拿着「完全磁盘访问」"
-                },
-                {
-                  "action": {
-                    "event": {
-                      "context": {
-                        "grant": "完全磁盘访问"
-                      },
-                      "name": "scan_open_settings"
-                    }
-                  },
-                  "child": "r98260-b24-text",
-                  "component": "Button",
-                  "id": "r98260-b24"
-                },
-                {
-                  "component": "Text",
-                  "id": "r98260-b24-text",
-                  "text": "打开「完全磁盘访问」设置"
-                },
-                {
-                  "children": [
-                    "r98260-b24"
-                  ],
-                  "component": "Row",
-                  "id": "r98260-r25"
-                },
-                {
-                  "component": "Divider",
-                  "id": "r98260-d26"
-                },
-                {
-                  "component": "Text",
-                  "id": "r98260-t27",
-                  "text": "这几样螺壳不替你动，你可以自己看看：",
-                  "variant": "caption"
-                },
-                {
-                  "component": "Text",
-                  "id": "r98260-t28",
-                  "text": "进程 100（gone）的程序已经被删掉了，它还在跑"
-                },
-                {
-                  "component": "Divider",
-                  "id": "r98260-d29"
-                },
-                {
-                  "component": "Text",
-                  "id": "r98260-t30",
-                  "text": "这几条值得留意，有空看一下：",
-                  "variant": "caption"
-                },
-                {
-                  "component": "Text",
-                  "id": "r98260-t31",
-                  "text": "FileVault 没开：电脑丢了，硬盘上的东西能直接被读出来"
-                },
-                {
-                  "component": "Text",
-                  "id": "r98260-t32",
-                  "text": "怎么办：系统设置 → 隐私与安全性 → FileVault",
-                  "variant": "caption"
-                },
-                {
-                  "component": "Text",
-                  "id": "r98260-t33",
-                  "text": "另有 18 条仅供参考，问我就列给你。",
+                  "text": "另外 6 项在「螺壳扫描」里等你看。",
                   "variant": "caption"
                 }
               ],
@@ -358,14 +142,14 @@
     }
   },
   "request": {
-    "id": 12,
+    "id": 13,
     "jsonrpc": "2.0",
     "method": "tools/call",
     "params": {
       "_meta": {
         "ai.luoke/user-action": {
           "at": "2026-10-20T20:11:00+08:00",
-          "componentId": "r98200-b20",
+          "componentId": "r98200-b12",
           "surfaceId": "round-000000000001"
         },
         "io.modelcontextprotocol/clientCapabilities": {},

@@ -1,0 +1,86 @@
+{
+  "id": "people",
+  "normalised": {
+    "resources/read": "contents[0].text 解开成了 JSON 值；线上是 JSON 文字"
+  },
+  "produced": {
+    "mcp": "python3 -m luoke_mem --path <假记忆> mcp --clock <那一步的时钟>：一个请求一个进程",
+    "seed": [
+      "邮件助手从用户发出的邮件里记下三条关于别人的事：「同事：王磊（wanglei@corp.example）」「合作方：Wang Lei（同一个地址）」两条各凭两封信（10月28日、11月5日），「上级：Mira」只凭一封",
+      "记忆反刍时把同一个地址的两条并成一个人「王磊」（比较确定，他的名字成了常用说法，给语音当热词），Mira 只有一封信，是猜测",
+      "邮件助手还记了用户每月写信给谁（mail-contact）：王磊 9、10 月共 15 封，林晓 9、10 月共 5 封；林晓只出现在写信记录里，写过两个月，也算一个人；写给王磊的信的标题里两次提到用户的常用说法「主控」"
+    ],
+    "tz": "Asia/Shanghai",
+    "user_action_at": "点按时的 at 是那一步的时钟，按 Asia/Shanghai 写"
+  },
+  "situation": "用户发出的邮件里写到几个人：同一个地址写过两种叫法，记忆把它们并成一个人；另一个人只出现在一封信里；还有一个人只在每月的写信记录里。用户打开应用页的「人」，忘掉其中一个。",
+  "steps": [
+    {
+      "clock": "2026-11-06T10:00:00",
+      "do": "server/discover",
+      "file": "server-discover.json"
+    },
+    {
+      "clock": "2026-11-06T10:00:00",
+      "do": "列工具（agent 认 readOnlyHint）",
+      "file": "tools-list.json"
+    },
+    {
+      "clock": "2026-11-06T10:00:00",
+      "do": "列资源",
+      "file": "resources-list.json"
+    },
+    {
+      "clock": "2026-11-06T10:00:00",
+      "do": "读 outbox（每分钟一次）",
+      "file": "read-outbox.json"
+    },
+    {
+      "clock": "2026-11-06T10:00:00",
+      "do": "读概览（侧栏的计数和一句话）",
+      "file": "read-summary.json"
+    },
+    {
+      "clock": "2026-11-06T10:00:00",
+      "do": "打开应用页的「overview」",
+      "file": "read-page-overview.json"
+    },
+    {
+      "clock": "2026-11-06T10:00:00",
+      "do": "打开应用页的「guesses」",
+      "file": "read-page-guesses.json"
+    },
+    {
+      "clock": "2026-11-06T10:00:00",
+      "do": "打开应用页的「kept」",
+      "file": "read-page-kept.json"
+    },
+    {
+      "clock": "2026-11-06T10:00:00",
+      "do": "打开应用页的「people」",
+      "file": "read-page-people.json"
+    },
+    {
+      "clock": "2026-11-06T10:00:00",
+      "do": "打开应用页的「sources」",
+      "file": "read-page-sources.json"
+    },
+    {
+      "clock": "2026-11-06T10:05:00",
+      "do": "没勾「我知道删了找不回来」就点林晓的「忘掉」：不删",
+      "file": "call-mem_person-forget-unsure.json"
+    },
+    {
+      "clock": "2026-11-06T10:06:00",
+      "do": "勾上再点",
+      "file": "call-mem_person-forget.json"
+    },
+    {
+      "clock": "2026-11-06T10:06:00",
+      "do": "窗口重新读「人」",
+      "file": "read-page-people-after-forget.json"
+    }
+  ],
+  "title": "记忆认出的人",
+  "window": "「人」页三个人：「王磊」（同事、合作方 · 也叫 Wang Lei、wanglei@corp.example · 最近一次 2026年10月，2 个月共 15 封 · 常谈 主控）、「Mira」（上级 · 猜测）、「林晓」（最近一次 2026年10月，2 个月共 5 封）；每人一行「不是一个人」「忘掉」，上面一个「我知道删了找不回来」的勾选框。改名、并成一个、拆开在整份记忆里做。忘掉林晓以后那一行没了。"
+}

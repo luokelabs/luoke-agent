@@ -115,11 +115,15 @@
             "destructiveHint": false,
             "readOnlyHint": false
           },
-          "description": "把一条发现标成不用管，以后不再报",
+          "description": "把一条发现标成不用管，以后不再报；undo 为真时撤销，照样提醒",
           "inputSchema": {
             "properties": {
               "finding_id": {
                 "type": "string"
+              },
+              "undo": {
+                "description": "撤销刚才的「以后别提」",
+                "type": "boolean"
               }
             },
             "required": [
@@ -204,7 +208,7 @@
             "destructiveHint": false,
             "readOnlyHint": true
           },
-          "description": "打开系统设置里对应的页面（隐私与安全性的某个权限，或「登录项」）",
+          "description": "打开系统设置里对应的页面（隐私与安全性的某个权限、「登录项」或「电池」），或者打开活动监视器",
           "inputSchema": {
             "properties": {
               "grant": {

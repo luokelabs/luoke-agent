@@ -7,6 +7,8 @@ from dataclasses import asdict, dataclass, field, fields
 from typing import Any, Dict, List, Optional
 
 URGENCY = ("urgent", "normal", "low")
+# 来源的 poll 答这个：在运行，但这一轮没读到它的事（工具读 outbox 答了错误，工具协议 §2）。上一轮的事不撤、不新加
+UNREAD = object()
 RANK = {"urgent": 0, "normal": 1, "low": 2}
 
 

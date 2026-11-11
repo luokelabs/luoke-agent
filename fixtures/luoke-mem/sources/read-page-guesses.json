@@ -1,0 +1,98 @@
+{
+  "reply": {
+    "id": 7,
+    "jsonrpc": "2.0",
+    "result": {
+      "contents": [
+        {
+          "mimeType": "application/json",
+          "text": [
+            {
+              "createSurface": {
+                "catalogId": "ai.luoke/a2ui/agent/1",
+                "surfaceId": "guesses"
+              },
+              "version": "v0.9"
+            },
+            {
+              "updateComponents": {
+                "components": [
+                  {
+                    "children": [
+                      "h1",
+                      "t2",
+                      "t3",
+                      "r5"
+                    ],
+                    "component": "Column",
+                    "id": "root"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "h1",
+                    "text": "猜测",
+                    "variant": "h4"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "t2",
+                    "text": "猜测不拿来用；你点「对」，螺壳的工具才会用它。点「不对」，以后不再提。",
+                    "variant": "caption"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "t3",
+                    "text": "没有等你确认的猜测。"
+                  },
+                  {
+                    "action": {
+                      "event": {
+                        "context": {},
+                        "name": "mem_open"
+                      }
+                    },
+                    "child": "b4-text",
+                    "component": "Button",
+                    "id": "b4"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "b4-text",
+                    "text": "在整份记忆里看依据"
+                  },
+                  {
+                    "children": [
+                      "b4"
+                    ],
+                    "component": "Row",
+                    "id": "r5"
+                  }
+                ],
+                "surfaceId": "guesses"
+              },
+              "version": "v0.9"
+            }
+          ],
+          "uri": "page/guesses"
+        }
+      ],
+      "resultType": "complete"
+    }
+  },
+  "request": {
+    "id": 7,
+    "jsonrpc": "2.0",
+    "method": "resources/read",
+    "params": {
+      "_meta": {
+        "io.modelcontextprotocol/clientCapabilities": {},
+        "io.modelcontextprotocol/clientInfo": {
+          "name": "luoke-agent",
+          "version": "fixtures"
+        },
+        "io.modelcontextprotocol/protocolVersion": "2026-07-28"
+      },
+      "uri": "page/guesses"
+    }
+  }
+}

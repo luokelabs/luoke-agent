@@ -52,11 +52,14 @@ def _action(v: Any) -> Optional[str]:
 
 
 def _pages(v: Any) -> List[dict]:
+    """`hidden: true`（协议 §1a，2026-11-10 加）：不画成标签、只由 `agent.open_page` 去的页，照样登记、照样能读；
+    `hidden` 写成布尔以外的，这一页不认。"""
     out: List[dict] = []
     for p in v if isinstance(v, list) else []:
         if isinstance(p, dict) and isinstance(p.get("id"), str) and ID.match(p["id"]) \
-                and isinstance(p.get("title"), str) and p["id"] not in {x["id"] for x in out}:
-            out.append({"id": p["id"], "title": p["title"]})
+                and isinstance(p.get("title"), str) and p["id"] not in {x["id"] for x in out} \
+                and isinstance(p.get("hidden", False), bool):
+            out.append({"id": p["id"], "title": p["title"], **({"hidden": True} if p.get("hidden") else {})})
     return out
 
 

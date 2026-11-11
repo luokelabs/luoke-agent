@@ -1,0 +1,37 @@
+{
+  "reply": {
+    "id": 7,
+    "jsonrpc": "2.0",
+    "result": {
+      "_meta": {
+        "io.modelcontextprotocol/serverInfo": {
+          "name": "luoke-scan",
+          "version": "0.3.26"
+        }
+      },
+      "capabilities": {
+        "resources": {},
+        "tools": {}
+      },
+      "resultType": "complete",
+      "supportedVersions": [
+        "2026-07-28"
+      ]
+    }
+  },
+  "request": {
+    "id": 7,
+    "jsonrpc": "2.0",
+    "method": "server/discover",
+    "params": {
+      "_meta": {
+        "io.modelcontextprotocol/clientCapabilities": {},
+        "io.modelcontextprotocol/clientInfo": {
+          "name": "luoke-agent",
+          "version": "fixtures"
+        },
+        "io.modelcontextprotocol/protocolVersion": "2026-07-28"
+      }
+    }
+  }
+}

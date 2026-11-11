@@ -13,7 +13,7 @@
       "~/Library/Application Support/com.apple.TCC/TCC.db 改成读不了（chmod 000）：没有完全磁盘访问时 macOS 也不让读它"
     ],
     "fixture": [
-      "blackbox/fx.py 造的假目录：blackbox/cases/base.py 的 `build`（照单元测试的 Fixture.build 摆），fakes.json 是 `fx.standard_fakes`（和单元测试的 Fixture.Fakes.standard 一样）",
+      "blackbox/fx.py 造的假目录：blackbox/cases/base.py 的 `build`（照单元测试的 Fixture.build 摆），fakes.json 是 `fx.standard_fakes`（和单元测试的 Fixture.Fakes.standard 一样），另加一块 494 GB、还剩 182 GB 的硬盘",
       "luoke-scan update --data $FIXTURE/data --tool-dir $FIXTURE/tools --force（假的 freshclam，daily 27000，库文件的时间 2026-10-20T01:00:00Z）"
     ],
     "mcp": "luoke-scan mcp --fixture $FIXTURE --clock <那一步的时钟> --no-full-disk-access：一个请求一个进程，标准输入一条 JSON-RPC，标准输出是答复",
@@ -60,6 +60,11 @@
       "clock": "2026-10-20T12:00:00Z",
       "do": "读基础页 page/overview",
       "file": "read-page-overview.json"
+    },
+    {
+      "clock": "2026-10-20T12:00:00Z",
+      "do": "读基础页 page/mac",
+      "file": "read-page-mac.json"
     },
     {
       "clock": "2026-10-20T12:00:00Z",

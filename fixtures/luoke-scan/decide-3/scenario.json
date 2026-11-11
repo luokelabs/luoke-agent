@@ -19,7 +19,7 @@
       "删掉了 ~/Library/Containers/ABCDE12345.io.example.removed"
     ],
     "fixture": [
-      "blackbox/fx.py 造的假目录：blackbox/cases/base.py 的 `build`（照单元测试的 Fixture.build 摆），fakes.json 是 `fx.standard_fakes`（和单元测试的 Fixture.Fakes.standard 一样）",
+      "blackbox/fx.py 造的假目录：blackbox/cases/base.py 的 `build`（照单元测试的 Fixture.build 摆），fakes.json 是 `fx.standard_fakes`（和单元测试的 Fixture.Fakes.standard 一样），另加一块 494 GB、还剩 182 GB 的硬盘",
       "luoke-scan update --data $FIXTURE/data --tool-dir $FIXTURE/tools --force（假的 freshclam，daily 27000，库文件的时间 2026-10-20T01:00:00Z）",
       "luoke-scan scan --fixture $FIXTURE --clock 2026-10-17T12:00:00Z（3 天前查过一轮：pip 的缓存还是空的）"
     ],
@@ -27,7 +27,7 @@
     "tz": "Asia/Shanghai",
     "user_action_at": "点按时的 at 是那一步的时钟，按 Asia/Shanghai 写"
   },
-  "situation": "查完一轮，没有急事。一轮的卡片上有一份三项的清理方案：pip 的缓存（放心删，默认删掉：会自己重建，删了马上腾出空间）、测试留下的 25 个临时文件夹和一个推送过的老项目（要确认，默认先不动）；下面另列要去系统设置里收回的权限、进不了方案的一条和一条高风险提醒。",
+  "situation": "查完一轮，没有急事。清理方案三项：pip 的缓存（放心删：会自己重建，删了马上腾出空间）、测试留下的 25 个临时文件夹和一个推送过的老项目（要确认，默认先不动）；下面另列要去系统设置里收回的权限、进不了方案的一条和一条高风险提醒。",
   "steps": [
     {
       "clock": "2026-10-20T12:00:00Z",
@@ -70,6 +70,11 @@
     },
     {
       "clock": "2026-10-20T12:00:00Z",
+      "do": "读基础页 page/mac",
+      "file": "read-page-mac.json"
+    },
+    {
+      "clock": "2026-10-20T12:00:00Z",
       "do": "读基础页 page/cleaned",
       "file": "read-page-cleaned.json"
     },
@@ -80,7 +85,7 @@
     },
     {
       "clock": "2026-10-20T12:05:00Z",
-      "do": "用户在一轮的卡片上照默认的选项点「按这个处理」",
+      "do": "用户在一轮的卡片上点「清理 1 项缓存」（只删会重建的缓存）",
       "file": "call-scan_apply.json"
     },
     {
@@ -97,7 +102,8 @@
   "title": "要你决定 3 项的清理方案",
   "window": [
     "一轮的那件是 `findings`、`low`：照 agent 现在的分段规则在「顺便看看」，不在「要你决定」（见下面「要对齐的」）。",
-    "卡片上每项一个 `ChoicePicker`（移到废纸篓 / 先不动 / 以后别提；会重建的缓存第一个是「删掉（会自动重建）」，值 `remove`），按钮「按这个处理」把 `/choices` 换成当时的选项转给 `scan_apply`。",
-    "点完答复带 `done: true`：卡片换成结果（移了什么、[放回]），这一件从 outbox 撤下。"
+    "卡片（luoke-scan#129）：标题「能清出 X」，一行「会重建的缓存 N 项，不用你选；另外 M 项在「螺壳扫描」里等你看」，按钮「清理 N 项缓存」（`scan_apply`，`choices` 直接写着只删缓存的那几项）。",
+    "扫描页（`page/overview`）：「可以清掉」在「要你看看」前面；缓存合成一行带自己的「清理」，别的每项一个 `ChoicePicker`（移到废纸篓 / 先不动 / 以后别提），下面一行小字写是什么；按钮「按上面的选择清理」把 `/choices` 换成当时的选项转给 `scan_apply`。",
+    "点完答复带 `done: false`：卡片还在，换成「已删掉会重建的缓存 N 项（腾出 X）；另外 M 项在「螺壳扫描」里等你看」（核心认 `openPage` 时那一句换成按钮「去扫描页看 M 项」），这一件留在 outbox 里；没有别的要看了才撤下。"
   ]
 }

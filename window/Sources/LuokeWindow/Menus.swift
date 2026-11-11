@@ -35,6 +35,15 @@ public struct MenuItemSpec: Identifiable, Equatable, Sendable {
     public var kind: Kind = .item
     public var bold = false
 
+    /// 菜单项标题最多几个字：NSMenu 被最长的标题撑开，截不截由窗口定（设计评审 11-07）；完整的放进悬停提示
+    public static let titleCap = 20
+    /// 菜单上写的：超过 titleCap 个字的截掉尾巴，加「…」
+    public var shortTitle: String {
+        title.count > Self.titleCap ? String(title.prefix(Self.titleCap - 1)) + "…" : title
+    }
+    /// 截掉了尾巴时的悬停提示（完整标题）；没截就没有
+    public var fullTitleTip: String? { shortTitle == title ? nil : title }
+
     static func sep(_ id: String) -> MenuItemSpec { MenuItemSpec(id: id, kind: .separator) }
     static func header(_ id: String, _ title: String) -> MenuItemSpec { MenuItemSpec(id: id, title: title, kind: .header) }
     /// 系统自带的一项（隐藏、拷贝……）：照样列出，演示里不做事
@@ -79,8 +88,8 @@ extension WindowModel {
 
     var goItems: [MenuItemSpec] {
         var items: [MenuItemSpec] = [
-            MenuItemSpec(id: "today", title: "今天", icon: .symbol("tray"), shortcut: Shortcut(key: "1", modifiers: .command, label: "⌘1"), action: .go(.today, nil)),
-            MenuItemSpec(id: "activity", title: "活动", icon: .symbol("clock.arrow.circlepath"), shortcut: Shortcut(key: "2", modifiers: .command, label: "⌘2"), action: .go(.activity, nil)),
+            MenuItemSpec(id: "today", title: "今天", icon: .symbol("inbox"), shortcut: Shortcut(key: "1", modifiers: .command, label: "⌘1"), action: .go(.today, nil)),
+            MenuItemSpec(id: "activity", title: "活动", icon: .symbol("history"), shortcut: Shortcut(key: "2", modifiers: .command, label: "⌘2"), action: .go(.activity, nil)),
             MenuItemSpec(id: "ask", title: features.contains(.ask) ? "搜索或问螺壳" : "搜索", icon: .symbol("sparkle"), shortcut: Shortcut(key: "k", modifiers: .command, label: "⌘K"), action: .ask),
             .sep("s1"), .header("h-apps", "应用"),
         ].filter { item in
@@ -105,32 +114,69 @@ extension WindowModel {
     /// 菜单栏图标的菜单：只放必要的。不列应用、活动、设置。
     public var statusMenu: MenuSpec {
         var items: [MenuItemSpec] = [
-            MenuItemSpec(id: "state", title: pausedUntil.map { "就绪 · 提醒暂停到 \($0)" } ?? (engineReady ? "就绪" : "在准备模型"), kind: .plain),
+            MenuItemSpec(id: "state", title: pausedUntil.map { "螺壳在运行 · 提醒暂停到 \($0)" } ?? (engineReady ? "螺壳在运行" : "螺壳在准备"), kind: .plain),
             .sep("s1"),
         ]
         if !urgent.isEmpty {
             items.append(.header("h-urgent", "急事"))
-            for u in urgent { items.append(MenuItemSpec(id: "urgent-\(u.id)", title: u.title, icon: .tool(u.tool), action: .urgent(u.id))) }
+            items += Self.urgentRows(urgent)
             items.append(.sep("s2"))
         }
         items += [
-            MenuItemSpec(id: "open", title: "打开螺壳", action: .openWindow, bold: true),
-            MenuItemSpec(id: "pause", title: pausedUntil == nil ? "暂停提醒一小时" : "恢复提醒", icon: .symbol("bell.slash"), action: .pause),
+            MenuItemSpec(id: "open", title: "打开螺壳", action: .openWindow),
+            MenuItemSpec(id: "pause", title: pausedUntil == nil ? "暂停提醒一小时" : "恢复提醒", icon: .symbol("bell-off"), action: .pause),
             .sep("s3"),
             .plain("quit", "退出螺壳", "⌘Q"),
         ]
         return MenuSpec(id: "status", title: "螺壳", items: items)
     }
 
+    /// 菜单里急事最多几行（#51）：一个工具一下报几十件时，「打开螺壳」「暂停提醒」还在菜单里
+    static let urgentMenuRows = 5
+
+    /// 急事的行：同一个应用同一类的合成一行（「8 封可疑邮件」，见 `TodayStack`），超过上限的合成「还有 N 件急事」
+    static func urgentRows(_ urgent: [UrgentItem]) -> [MenuItemSpec] {
+        let stacks = TodayStack.urgent(urgent)
+        let room = stacks.count > urgentMenuRows ? urgentMenuRows - 1 : urgentMenuRows
+        var rows = stacks.prefix(room).map { g in
+            MenuItemSpec(id: "urgent-\(g[0].id)", title: TodayStack.countTitle(g[0].title, g.count, unit: TodayStack.unit(g[0].tool)), icon: .tool(g[0].tool), action: .urgent(g[0].id))
+        }
+        let rest = stacks.dropFirst(room).reduce(0) { $0 + $1.count }
+        if rest > 0, let next = stacks.dropFirst(room).first?.first {
+            // 点了：「今天」把急事全展开，滚到菜单里没列出的第一叠
+            rows.append(MenuItemSpec(id: "urgent-more", title: "还有 \(rest) 件急事…", action: .urgent(next.id)))
+        }
+        return rows
+    }
+
+    /// 菜单栏里点了一行急事（#51）：回「今天」，那一叠收在「还有 N 件急事」后面就先把急事全展开，叠了好几件的把这一叠展开，
+    /// 再滚过去（页面看 `urgentJump`）
+    public func revealUrgent(_ id: String) {
+        let stacks = TodayStack.spread(TodayStack.urgent(urgent))
+        guard let n = stacks.firstIndex(where: { $0.contains { $0.id == id } }) else { return }
+        let stack = stacks[n]
+        if n >= TodayPage.urgentLimit { urgentAll = true }
+        if stack.count > 1 { urgentOpenStacks.insert(TodayStack.key(stack[0].tool, stack[0].kind, stack[0].title)) }
+        urgentJumpCount += 1
+        urgentJump = UrgentJump(id: stack[0].id, token: urgentJumpCount)
+    }
+
     /// 菜单里点了一项
+    /// 本体的界面占着整个窗口（首次设置、升级）时只有「暂停提醒」照做；内容区是本体的一页时先离开它（本体不放就不动）
     public func perform(_ action: MenuAction) {
+        if hostTakeover != nil && action != .pause { return }
         switch action {
         case .go(let p, let tab): go(p, tab: tab)
-        case .ask: if features.contains(.ask) { go(.today); openAsk() } else { focusSearch() }
+        case .ask:
+            guard mayNavigate() else { return }
+            if features.contains(.ask) { go(.today); openAsk() } else { focusSearch() }
         case .toggleSidebar: toggleSidebar()
         case .openWindow: break
         case .pause: togglePause()
-        case .urgent: go(.today)
+        case .urgent(let id):
+            guard mayNavigate() else { return }
+            go(.today)
+            revealUrgent(id)
         case .none: break
         }
     }
@@ -151,6 +197,7 @@ public struct LuokeCommands: Commands {
         CommandGroup(replacing: .sidebar) {
             Button(model.sidebarMini ? "展开侧栏" : "收起侧栏") { model.toggleSidebar() }
                 .keyboardShortcut("s", modifiers: [.control, .command])
+                .disabled(model.hostTakeover != nil)      // 本体的界面占着整个窗口：没有侧栏
         }
         CommandMenu("前往") {
             ForEach(model.goItems) { item in
@@ -159,6 +206,7 @@ public struct LuokeCommands: Commands {
                 case .header: Text(item.title)
                 default:
                     let b = Button(item.title) { openWindow(); model.perform(item.action) }
+                        .disabled(model.hostTakeover != nil)      // 首次设置、升级占着整个窗口：哪儿都不去
                     if let s = item.shortcut {
                         b.keyboardShortcut(KeyEquivalent(s.key), modifiers: s.modifiers)
                     } else {
@@ -215,12 +263,14 @@ struct MenuReplica: View {
                 case .item, .plain:
                     HStack(spacing: 8) {
                         switch item.icon {
-                        case .symbol(let s)?: Image(systemName: s).font(.system(size: 12)).frame(width: 16)
+                        case .symbol(let s)?: LKIcon(s, size: 14).frame(width: 16)
                         case .tool(let t)?: AppIcon(tool: t, size: 16)
-                        case nil: EmptyView()
+                        case nil:   // 菜单里有带图标的行时，没图标的字也从同一处起（和系统菜单一样）
+                            if spec.items.contains(where: { $0.icon != nil }) && item.id != "state" { Color.clear.frame(width: 16, height: 1) }
                         }
-                        Text(item.title).font(LKFont.ui(LKType.small, item.bold ? .semibold : .regular))
+                        Text(item.shortTitle).font(LKFont.ui(LKType.small, item.bold ? .semibold : .regular))
                             .foregroundStyle(item.id == "state" ? p.mutedFg : p.fg)
+                            .help(item.fullTitleTip ?? "")
                         Spacer(minLength: 12)
                         if let s = item.shortcut { Text(s.label).font(LKFont.ui(LKType.caption)).foregroundStyle(p.mutedFg) }
                     }
@@ -269,7 +319,7 @@ struct MenuBarScene: View {
                                 .accessibilityLabel("有急事")
                         }
                     }
-                    Image(systemName: "magnifyingglass").font(.system(size: 12)).padding(.horizontal, 10)
+                    LKIcon("search", size: 14).padding(.horizontal, 10)
                     Text("周一 10:02").font(LKFont.ui(LKType.small)).monospacedDigit()
                 }
                 .padding(.horizontal, 14)
@@ -283,7 +333,7 @@ struct MenuBarScene: View {
             if open == nil {
                 HStack(alignment: .top, spacing: 18) {
                     Spacer()
-                    MenuReplica(spec: model.statusMenu, width: 250)
+                    MenuReplica(spec: model.statusMenu, width: 290)   // 放得下「可疑邮件：某银行：账户已冻结」这样的一行
                     if model.hasUrgent, let u = model.urgent.first {
                         HStack(spacing: 10) {
                             AppIcon(tool: .core, size: 34)

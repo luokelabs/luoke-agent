@@ -1,0 +1,134 @@
+{
+  "reply": {
+    "id": 6,
+    "jsonrpc": "2.0",
+    "result": {
+      "contents": [
+        {
+          "mimeType": "application/json",
+          "text": [
+            {
+              "createSurface": {
+                "catalogId": "ai.luoke/a2ui/agent/1",
+                "surfaceId": "overview"
+              },
+              "version": "v0.9"
+            },
+            {
+              "updateComponents": {
+                "components": [
+                  {
+                    "children": [
+                      "h1",
+                      "t2",
+                      "t3",
+                      "d4",
+                      "t5",
+                      "t6",
+                      "t7",
+                      "t8",
+                      "t9",
+                      "r11"
+                    ],
+                    "component": "Column",
+                    "id": "root"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "h1",
+                    "text": "概览",
+                    "variant": "h4"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "t2",
+                    "text": "记下了 1 条。"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "t3",
+                    "text": "关于你 1",
+                    "variant": "caption"
+                  },
+                  {
+                    "component": "Divider",
+                    "id": "d4"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "t5",
+                    "text": "最近 14 天各应用记下的",
+                    "variant": "caption"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "t6",
+                    "text": "邮件助手：3 条"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "t7",
+                    "text": "螺壳输入法：2 条"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "t8",
+                    "text": "螺壳记忆：1 条"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "t9",
+                    "text": "螺壳扫描：1 条"
+                  },
+                  {
+                    "action": {
+                      "event": {
+                        "context": {},
+                        "name": "mem_open"
+                      }
+                    },
+                    "child": "b10-text",
+                    "component": "Button",
+                    "id": "b10"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "b10-text",
+                    "text": "打开整份记忆"
+                  },
+                  {
+                    "children": [
+                      "b10"
+                    ],
+                    "component": "Row",
+                    "id": "r11"
+                  }
+                ],
+                "surfaceId": "overview"
+              },
+              "version": "v0.9"
+            }
+          ],
+          "uri": "page/overview"
+        }
+      ],
+      "resultType": "complete"
+    }
+  },
+  "request": {
+    "id": 6,
+    "jsonrpc": "2.0",
+    "method": "resources/read",
+    "params": {
+      "_meta": {
+        "io.modelcontextprotocol/clientCapabilities": {},
+        "io.modelcontextprotocol/clientInfo": {
+          "name": "luoke-agent",
+          "version": "fixtures"
+        },
+        "io.modelcontextprotocol/protocolVersion": "2026-07-28"
+      },
+      "uri": "page/overview"
+    }
+  }
+}

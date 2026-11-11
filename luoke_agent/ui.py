@@ -5,12 +5,16 @@
   `notify`（壳去发系统通知）、`busy`（卡片在处理）、`result`（点按的结果一句话）、`settings`（设置改了）、
   `apps`（{app}：这个应用的运行状态、概览、页列表、权限状态变了）。
 - `GET /settings`、`POST /settings`：提醒的设置（docs/界面接口.md §9）；POST 只带要改的，答改完的全部。
-- `GET /apps`、`GET /apps/<id>/pages/<页>`、`POST /open` {"app", "page"}：应用的页（docs/界面接口.md §6）。
+- `GET /apps`、`GET /apps/<id>/pages/<页>`：应用的页（docs/界面接口.md §6）；`POST /open` {"app", "page"} 打开工具自己的界面，
+  窗口从 11-09 起不再调，接口留着。
 - `GET /permissions`、`POST /permissions` {"app", "id", "op"}、`POST /host` {"permissions"}：权限（§10）。
-- `POST /search`：{"query", "limit"}，问写了 `service.ask.search` 的工具；答 {"results": [{"app", "name", "messages"}], "failed", "text"}（§7）。
+- `POST /search`：{"query", "limit"}，问写了 `service.ask.search` 的工具；答 {"search", "results": [{"app", "name", "messages", "hits"}],
+  "failed", "text"}（§7）。`POST /hit` {"search", "app", "hit", "action"}：点了窗口画的一条结果上的按钮；
+  `GET /thumb?app=<应用>&ref=thumb/<id>`：这次搜索里给过的缩略图，答图本身。
 - `POST /action`：{"surfaceId", "sourceComponentId", "context"}，A2UI 的 action（卡片和基础页）；答复 {"text", "error"}。
 - `POST /presence`：{"idle", "locked", "asleep"}，壳报告用户在不在。
-- `POST /window`：{"open", "front"}，对话窗口开了、关了；`front` 是窗口在最前面（用户正看着它），不报就按 `open`。
+- `POST /window`：{"open", "front", "page"}，主窗口开了、关了；`front` 是窗口在最前面（用户正看着它），不报就按 `open`；
+  `page` 是开在哪一页（`today`、`app:<id>`……），不报当「今天」。
 - `POST /notifications`：{"status", "alerts"}，壳报告系统通知的授权（authorized / denied / not_determined / provisional，和 luoke-core 启动器的 `--notify-status` 同名）
   和横幅开没开；被关掉时窗口里说一句。
 - `GET /status`：只有元数据。
@@ -35,7 +39,7 @@ import urllib.parse
 from http.server import BaseHTTPRequestHandler
 from typing import Any, Callable, Optional
 
-from . import apps
+from . import a2ui, apps
 from .agent import SEARCH_LIMIT, Agent
 from .mcp import _prepare_socket
 
@@ -44,11 +48,29 @@ MAX_BODY = 1 << 20
 MAX_QUERY = 200                  # 搜索框一次最多几个字
 MAX_SEARCH_LIMIT = 50
 PAGE_PATH = re.compile(r"^/apps/([^/?#]+)/pages/([^/?#]+)$")
+WINDOW_PAGE_MAX = 100                # POST /window 的 page 最长几个字
 SOL_LOCAL, LOCAL_PEERPID = 0, 2      # macOS <sys/un.h>
 NOT_LAUNCHER = "agent.sock 只认起核心的那个进程"
 REFUSED_TIMEOUT = 5.0                # 不认的连接：读请求最多等这么久
 
 Allow = Callable[[Optional[int]], bool]
+
+
+def page_args(query: str) -> Any:
+    """`GET /apps/<id>/pages/<页>?<键>=<值>&…` 的参数（界面接口 §6、工具协议 §4 pageArgs）：没带是 None，
+    对的是 dict，不对是一句为什么（答 400）。"""
+    if not query:
+        return None
+    try:
+        pairs = urllib.parse.parse_qsl(query, keep_blank_values=True, strict_parsing=True,
+                                       max_num_fields=a2ui.MAX_PAGE_ARGS)
+    except ValueError:
+        return f"页的参数最多 {a2ui.MAX_PAGE_ARGS} 个，写成 <键>=<值>"
+    args = dict(pairs)
+    if len(args) != len(pairs):
+        return "页的参数里同一个键写了两次"
+    problem = a2ui.page_args_problem(args)
+    return f"页的参数不对：{problem}" if problem else args
 
 
 def peer_pid(conn: socket.socket) -> Optional[int]:
@@ -169,9 +191,20 @@ class _Handler(BaseHTTPRequestHandler):
             return self._json(200, self.ui.agent.apps())
         if self.path == "/permissions":
             return self._json(200, self.ui.agent.permissions())
-        m = PAGE_PATH.match(self.path)
+        path, _, query = self.path.partition("?")
+        if path == "/thumb":
+            q = dict(urllib.parse.parse_qsl(query))
+            app, ref = q.get("app"), q.get("ref")
+            got = self.ui.agent.search_thumb(app, ref) if app and ref else None
+            if got is None:
+                return self._json(404, {"error": "没有这张图"})
+            return self._bytes(200, got[0], got[1])
+        m = PAGE_PATH.match(path)
         if m:
-            status, data = self.ui.agent.page(urllib.parse.unquote(m.group(1)), urllib.parse.unquote(m.group(2)))
+            args = page_args(query)
+            if isinstance(args, str):
+                return self._json(400, {"error": args})
+            status, data = self.ui.agent.page(urllib.parse.unquote(m.group(1)), urllib.parse.unquote(m.group(2)), args)
             return self._json(status, data)
         self._json(404, {"error": "没有这个地址"})
 
@@ -188,7 +221,12 @@ class _Handler(BaseHTTPRequestHandler):
                 return self._json(400, {"error": "要有 surfaceId 和 sourceComponentId"})
             ctx = body.get("context") if isinstance(body.get("context"), dict) else {}
             r = agent.tap(sid, cid, ctx)
-            return self._json(200, {"text": r.get("text", ""), "error": bool(r.get("error"))})
+            out = {"text": r.get("text", ""), "error": bool(r.get("error"))}
+            if isinstance(r.get("page"), dict):
+                out["page"] = r["page"]          # agent.open_page：窗口换到这个应用的这一页（§4），可能带 args
+            if isinstance(r.get("file"), dict):
+                out["file"] = r["file"]          # 存文件（工具协议 §4 saveFile）：窗口弹出存文件的框
+            return self._json(200, out)
         if self.path == "/presence":
             try:
                 agent.set_presence(float(body.get("idle", 0)), bool(body.get("locked")), bool(body.get("asleep")))
@@ -197,9 +235,13 @@ class _Handler(BaseHTTPRequestHandler):
             return self._json(200, {})
         if self.path == "/window":
             is_open = bool(body.get("open"))
-            agent.set_window(is_open, body.get("front"))
-            if self.ui.on_window:
-                self.ui.on_window(is_open)
+            page = body.get("page")
+            if page is not None and not (isinstance(page, str) and 0 < len(page) <= WINDOW_PAGE_MAX):
+                return self._json(400, {"error": f"page 要是不超过 {WINDOW_PAGE_MAX} 字的页名"})
+            was = (agent.window_open, agent.window_front)
+            agent.set_window(is_open, body.get("front"), page)
+            if self.ui.on_window and (agent.window_open, agent.window_front) != was:
+                self.ui.on_window(is_open)       # 只换了页不算：不为翻页全读一遍
             return self._json(200, {})
         if self.path == "/notifications":
             status = body.get("status")
@@ -212,7 +254,7 @@ class _Handler(BaseHTTPRequestHandler):
                 return self._json(200, agent.update_settings(body))
             except ValueError as e:
                 return self._json(400, {"error": str(e)})
-        if self.path == "/open":       # 只在用户点了「打开完整界面」、深页以后调
+        if self.path == "/open":       # 窗口从 11-09 起不再调（应用的事都在窗口的页里做）；邮件、记忆的页做好以后再看删不删
             app, page = body.get("app"), body.get("page")
             if not isinstance(app, str) or not (page is None or isinstance(page, str)):
                 return self._json(400, {"error": "要有 app，page 可以不带"})
@@ -234,6 +276,8 @@ class _Handler(BaseHTTPRequestHandler):
                     or not isinstance(limit, int) or isinstance(limit, bool) or not 1 <= limit <= MAX_SEARCH_LIMIT:
                 return self._json(400, {"error": f"要有 query（不超过 {MAX_QUERY} 字），limit 是 1 到 {MAX_SEARCH_LIMIT}"})
             return self._json(200, agent.search(query.strip(), limit))
+        if self.path == "/hit":       # 只在用户点了、按了回车以后调
+            return self._json(200, agent.search_hit(body.get("search"), body.get("app"), body.get("hit"), body.get("action")))
         if self.path == "/say":
             return self._json(501, {"text": "还不能打字问螺壳。"})
         self._json(404, {"error": "没有这个地址"})
@@ -258,9 +302,11 @@ class _Handler(BaseHTTPRequestHandler):
         return data
 
     def _json(self, status: int, data: Any) -> None:
-        body = json.dumps(data, ensure_ascii=False).encode("utf-8")
+        self._bytes(status, json.dumps(data, ensure_ascii=False).encode("utf-8"), "application/json")
+
+    def _bytes(self, status: int, body: bytes, content_type: str) -> None:
         self.send_response(status)
-        self.send_header("Content-Type", "application/json")
+        self.send_header("Content-Type", content_type)
         self.send_header("Content-Length", str(len(body)))
         self.send_header("Connection", "close")
         self.end_headers()

@@ -1,0 +1,134 @@
+{
+  "accessory": "luoke-mem",
+  "bundle_id": "ai.luoke.memory",
+  "capabilities": {
+    "actions": [
+      {
+        "name": "mem_reply",
+        "title": "交回你对记忆的问题、建议的回答",
+        "writes": true
+      },
+      {
+        "name": "mem_note",
+        "title": "确认、否定或忘掉记忆里的一条",
+        "writes": true
+      },
+      {
+        "name": "mem_forget_tool",
+        "title": "忘掉某个应用写进记忆的",
+        "writes": true
+      },
+      {
+        "name": "mem_forget_all",
+        "title": "清空整份记忆",
+        "writes": true
+      },
+      {
+        "name": "mem_person",
+        "title": "说某个人不是一个人，或者从记忆里忘掉这个人",
+        "writes": true
+      }
+    ],
+    "protocol": 1,
+    "reports": [
+      {
+        "kind": "question",
+        "title": "记忆想问的事",
+        "urgency": "normal"
+      },
+      {
+        "kind": "suggestion",
+        "title": "记忆的建议",
+        "urgency": "normal"
+      }
+    ],
+    "service": {
+      "pages": [
+        {
+          "id": "overview",
+          "title": "概览"
+        },
+        {
+          "id": "guesses",
+          "title": "猜测"
+        },
+        {
+          "id": "kept",
+          "title": "记下的"
+        },
+        {
+          "id": "people",
+          "title": "人"
+        },
+        {
+          "id": "sources",
+          "title": "各应用写的"
+        }
+      ],
+      "summary": true,
+      "ui": {
+        "open": "mem_open"
+      }
+    },
+    "transport": "stdio"
+  },
+  "commands": {
+    "forget-tool": [
+      "-m",
+      "luoke_mem",
+      "--path",
+      "{memory}",
+      "forget-tool",
+      "{tool}"
+    ],
+    "mcp": [
+      "-m",
+      "luoke_mem",
+      "--path",
+      "{memory}",
+      "mcp"
+    ]
+  },
+  "contract": 1,
+  "data": [],
+  "entry": [
+    "-m",
+    "luoke_mem",
+    "app"
+  ],
+  "jobs": [
+    {
+      "allow_battery": false,
+      "command": [
+        "-m",
+        "luoke_mem",
+        "--path",
+        "{memory}",
+        "learn"
+      ],
+      "memory_mb": 100,
+      "min_interval_minutes": 120,
+      "name": "learn",
+      "timeout_minutes": 30,
+      "uses_model": true
+    }
+  ],
+  "memory": false,
+  "name": "螺壳记忆",
+  "resident": false,
+  "tasks": [
+    {
+      "kind": "generate",
+      "main": false,
+      "name": "luoke-mem.typing"
+    },
+    {
+      "kind": "generate",
+      "main": false,
+      "name": "luoke-mem.topics"
+    }
+  ],
+  "type": "component",
+  "ui_element": true,
+  "version": "$VERSION"
+}

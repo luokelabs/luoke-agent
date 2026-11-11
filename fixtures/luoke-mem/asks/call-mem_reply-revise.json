@@ -1,0 +1,67 @@
+{
+  "reply": {
+    "id": 13,
+    "jsonrpc": "2.0",
+    "result": {
+      "content": [
+        {
+          "text": "改好了。",
+          "type": "text"
+        }
+      ],
+      "isError": false,
+      "resultType": "complete",
+      "structuredContent": {
+        "card": [
+          {
+            "updateComponents": {
+              "components": [
+                {
+                  "children": [
+                    "end-t1"
+                  ],
+                  "component": "Column",
+                  "id": "root"
+                },
+                {
+                  "component": "Text",
+                  "id": "end-t1",
+                  "text": "改好了。"
+                }
+              ],
+              "surfaceId": "ask-2"
+            },
+            "version": "v0.9"
+          }
+        ],
+        "done": true
+      }
+    }
+  },
+  "request": {
+    "id": 13,
+    "jsonrpc": "2.0",
+    "method": "tools/call",
+    "params": {
+      "_meta": {
+        "ai.luoke/user-action": {
+          "at": "2026-11-06T10:07:00+08:00",
+          "componentId": "b9",
+          "surfaceId": "ask-2"
+        },
+        "io.modelcontextprotocol/clientCapabilities": {},
+        "io.modelcontextprotocol/clientInfo": {
+          "name": "luoke-agent",
+          "version": "fixtures"
+        },
+        "io.modelcontextprotocol/protocolVersion": "2026-07-28"
+      },
+      "arguments": {
+        "ask": 2,
+        "choice": "revise",
+        "text": "在读硕士，明年毕业"
+      },
+      "name": "mem_reply"
+    }
+  }
+}

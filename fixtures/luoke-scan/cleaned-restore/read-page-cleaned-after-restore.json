@@ -1,6 +1,6 @@
 {
   "reply": {
-    "id": 12,
+    "id": 18,
     "jsonrpc": "2.0",
     "result": {
       "contents": [
@@ -40,7 +40,7 @@
                   {
                     "component": "Text",
                     "id": "t3",
-                    "text": "你清的：pip 的缓存，删了会自动重建、临时目录里有 25 个 wings-* 没被删掉，共 131.1 MB、临时目录里有 25 个 wings-* 没被删掉，共 131.1 MB 等 26 项（62.9 MB）"
+                    "text": "你清的：临时目录里有 25 个 wings-* 没被删掉，共 131.1 MB 等 25 项"
                   },
                   {
                     "component": "Text",
@@ -61,7 +61,7 @@
     }
   },
   "request": {
-    "id": 12,
+    "id": 18,
     "jsonrpc": "2.0",
     "method": "resources/read",
     "params": {

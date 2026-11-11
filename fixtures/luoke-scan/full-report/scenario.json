@@ -10,10 +10,12 @@
   "produced": {
     "changes": [
       "pip 的缓存长到 60 MB",
+      "Spotlight 报出三个一年多没打开过的大文件（一个名字很长）",
+      "装着微信和 Microsoft Teams（各有一些数据、缓存）",
       "加了五样会重建的缓存（go-build、uv、npm、Xcode 的 DerivedData、Bun，各 52–58 MB）、25 天前下载的 Hugging Face 模型、8 年多没打开过的视频、Gemini 的 MCP 设置里明文写的密钥（别人也能读）、一个从网上下载代码直接运行的 skill、一个临时签名的程序在看所有应用的按键"
     ],
     "fixture": [
-      "blackbox/fx.py 造的假目录：blackbox/cases/base.py 的 `build`（照单元测试的 Fixture.build 摆），fakes.json 是 `fx.standard_fakes`（和单元测试的 Fixture.Fakes.standard 一样）",
+      "blackbox/fx.py 造的假目录：blackbox/cases/base.py 的 `build`（照单元测试的 Fixture.build 摆），fakes.json 是 `fx.standard_fakes`（和单元测试的 Fixture.Fakes.standard 一样），另加一块 494 GB、还剩 182 GB 的硬盘",
       "luoke-scan update --data $FIXTURE/data --tool-dir $FIXTURE/tools --force（假的 freshclam，daily 27000，库文件的时间 2026-10-20T01:00:00Z）",
       "luoke-scan scan --fixture $FIXTURE --clock 2026-10-17T12:00:00Z（3 天前查过一轮：pip 的缓存还是空的）",
       "luoke-scan update --data $FIXTURE/data --tool-dir $FIXTURE/tools --force（假的 freshclam，daily 27000，库文件的时间 2026-10-20T01:00:00Z）"
@@ -65,13 +67,18 @@
     },
     {
       "clock": "2026-10-20T12:00:00Z",
+      "do": "读基础页 page/mac",
+      "file": "read-page-mac.json"
+    },
+    {
+      "clock": "2026-10-20T12:00:00Z",
       "do": "读基础页 page/cleaned",
       "file": "read-page-cleaned.json"
     }
   ],
   "title": "用了一阵的开发机：一轮查出一长串",
   "window": [
-    "急事卡片几张（报毒的文件、看按键的程序……），一轮的那件是一张很长的卡片：「能清出 X，另外有 N 件事值得看一眼」，每项一个选择（会重建的缓存是「删掉（会自动重建）」），后面是「这几样螺壳不替你动」「这几条值得留意」，各带「怎么办」和按钮。",
+    "急事卡片几张（报毒的文件、看按键的程序……），一轮的那件：「能清出 X，另外 N 项等你处理」，按钮只删会重建的缓存；扫描页上缓存合成一行，别的每项一个选择、一行小字写是什么，后面是「要你看看」的各类，各带一句能做的事和按钮。",
     "窗口要画得下这么长的卡片：截图和真机上看到的一样长。"
   ]
 }

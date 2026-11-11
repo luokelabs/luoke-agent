@@ -22,6 +22,9 @@ def render(surface: a2ui.Surface) -> List[str]:
         c = comps.get(cid) or {}
         if c.get("component") == "Button":
             label = comps.get(c.get("child"), {})
+            if label.get("component") == "Row":   # 图标加字（工具协议 §4）：取那段字
+                label = next((comps[k] for k in label.get("children") or []
+                              if (comps.get(k) or {}).get("component") == "Text"), {})
             site = f" → {c['site']}" if isinstance(c.get("site"), str) else ""   # agent 写的去哪个网站（工具协议 §5）
             return f"[{val(label.get('text')) or '?'}]（{cid}）{site}"
         if c.get("component") == "Text":

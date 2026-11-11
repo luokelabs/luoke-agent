@@ -72,10 +72,17 @@ final class AgentFeedTests: XCTestCase {
         XCTAssertEqual(m.cards.first { $0.id == "memory/ask-7" }?.time, "08:15", "今天的写时刻")
         XCTAssertEqual(m.done.map(\.id), scanIDs("done"))
         XCTAssertEqual(m.quiet.map(\.id), ["agent/less-1"] + scanIDs("later"))
-        XCTAssertEqual(m.notices, ["螺壳搜索现在没在运行。"])
-        XCTAssertEqual(m.todayCount, 1 + 2 + scanDecide.count, "急事加要你决定")
+        XCTAssertEqual(m.notices, [], "示例里不再带应用没在运行的提示（另拍 stress-today-app-stopped）")
+        XCTAssertEqual(m.todayCount, 2 + scanDecide.count, "只算要你决定的；急事另外是红点")
         XCTAssertTrue(m.hasUrgent)
         XCTAssertTrue(m.statusMenu.items.contains { $0.title == "可疑邮件：冒充招商银行" }, "菜单栏图标列出急事")
+    }
+
+    func testOlderYearsShowTheYear() throws {
+        let lastYear = try XCTUnwrap(Calendar.current.date(byAdding: .year, value: -1, to: Date()))
+        let y = Calendar.current.component(.year, from: lastYear)
+        XCTAssertTrue(AgentFeed.display(lastYear).hasPrefix("\(y)年"), "工具给的时间可能是往年的：带上年份")
+        XCTAssertFalse(AgentFeed.display(Date()).contains("年"), "今天的只写几点")
     }
 
     func testDoneRowsFromTheCore() throws {
@@ -149,7 +156,9 @@ final class AgentFeedTests: XCTestCase {
         f.handle("result", Data(#"{"surfaceId":"memory/ask-7","text":"记下了：对。","error":false,"replaced":false}"#.utf8))
         XCTAssertEqual(m.toast?.text, "记下了：对。")
         f.handle("a2ui", Data(#"{"version":"v0.9","deleteSurface":{"surfaceId":"memory/ask-7"}}"#.utf8))
-        XCTAssertEqual(m.cards.map(\.id), ["luoke-mail/new-1"] + scanIDs("decide"), "卡片删了就收走")
+        XCTAssertEqual(m.cards.map(\.id), ["luoke-mail/new-1", "memory/ask-7"] + scanIDs("decide"), "核心删了卡片：下一份 feed 到之前照旧画着")
+        f.handle("feed", FocusReplaceTests.lastFeed(Sample.agentEvents()) { FocusReplaceTests.removing($0, "memory/ask-7") })
+        XCTAssertEqual(m.cards.map(\.id), ["luoke-mail/new-1"] + scanIDs("decide"), "feed 里没有了：收走")
         var got: [AgentNotification] = []
         f.onNotify = { got.append($0) }
         f.handle("notify", Data(#"{"id":"brief","title":"2 件事","body":"标题","urgent":false,"silent":true}"#.utf8))

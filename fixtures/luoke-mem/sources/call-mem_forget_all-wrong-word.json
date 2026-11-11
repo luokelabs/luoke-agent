@@ -1,0 +1,43 @@
+{
+  "reply": {
+    "id": 15,
+    "jsonrpc": "2.0",
+    "result": {
+      "content": [
+        {
+          "text": "要清空整份记忆，请输入「清空」。",
+          "type": "text"
+        }
+      ],
+      "isError": true,
+      "resultType": "complete",
+      "structuredContent": {
+        "code": "invalid"
+      }
+    }
+  },
+  "request": {
+    "id": 15,
+    "jsonrpc": "2.0",
+    "method": "tools/call",
+    "params": {
+      "_meta": {
+        "ai.luoke/user-action": {
+          "at": "2026-11-06T10:07:00+08:00",
+          "componentId": "b12",
+          "surfaceId": "sources"
+        },
+        "io.modelcontextprotocol/clientCapabilities": {},
+        "io.modelcontextprotocol/clientInfo": {
+          "name": "luoke-agent",
+          "version": "fixtures"
+        },
+        "io.modelcontextprotocol/protocolVersion": "2026-07-28"
+      },
+      "arguments": {
+        "confirm": "清除"
+      },
+      "name": "mem_forget_all"
+    }
+  }
+}

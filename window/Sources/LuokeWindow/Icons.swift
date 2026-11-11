@@ -1,17 +1,17 @@
 import AppKit
 import SwiftUI
 
-/// 装好的应用和螺壳自己。图标是 Resources 里各应用的图，128 px（图标、吉祥物取自 luoke-brand media-kit e297db2）。
+/// 装好的应用和螺壳自己。图标是 Resources 里各应用的图，128 px（图标、吉祥物取自螺壳的品牌素材）。
 public enum ToolIcon: String, CaseIterable, Sendable {
     case mail, scan, mem, search, ime, core
 
     public var name: String {
         switch self {
-        case .mail: return "邮件助手"
+        case .mail: return "螺壳邮件助手"   // 和应用自己的名字、核心说的一样（录屏里侧栏写「邮件助手」，搜索写「螺壳邮件助手」）
         case .scan: return "螺壳扫描"
         case .mem: return "记忆"
         case .search: return "螺壳搜索"
-        case .ime: return "输入法"
+        case .ime: return "螺壳输入法"
         case .core: return "螺壳"
         }
     }
@@ -56,7 +56,8 @@ struct AppIcon: View {
     }
 }
 
-/// 螺壳的标志：粉底方块，加约 22% 的连续圆角。
+/// 螺壳的标志：螺壳.app 的图标（beta 2）。badge.png 是那张图标去掉四周透明边、只留超椭圆的方块
+/// （1024 画布里的 824），缩到 128 px：方块撑满 `size`，按图自己的形状画，不另裁圆角。没图时退回粉色的圆角方块
 struct BrandBadge: View {
     var size: CGFloat = 32
 
@@ -65,11 +66,10 @@ struct BrandBadge: View {
             if let image = Resources.image("badge") {
                 Image(nsImage: image).resizable().interpolation(.high)
             } else {
-                Color.hex(0xE8556B)
+                RoundedRectangle(cornerRadius: size * 0.22, style: .continuous).fill(Color.hex(0xE8556B))
             }
         }
         .frame(width: size, height: size)
-        .clipShape(RoundedRectangle(cornerRadius: size * 0.22, style: .continuous))
         .accessibilityHidden(true)
     }
 }

@@ -1,11 +1,11 @@
 {
   "reply": {
-    "id": 2,
+    "id": 10,
     "jsonrpc": "2.0",
     "result": {
       "content": [
         {
-          "text": "移到废纸篓 1 项（131.1 MB），删掉会重建的缓存 1 项（腾出 62.9 MB）。",
+          "text": "移到废纸篓 1 项（131.1 MB）。",
           "type": "text"
         }
       ],
@@ -29,7 +29,7 @@
                 {
                   "component": "Text",
                   "id": "r97900-t1",
-                  "text": "移到废纸篓 1 项（131.1 MB），删掉会重建的缓存 1 项（腾出 62.9 MB）。"
+                  "text": "移到废纸篓 1 项（131.1 MB）。"
                 },
                 {
                   "component": "Text",
@@ -69,7 +69,7 @@
                   "id": "r97900-r5"
                 }
               ],
-              "surfaceId": "round-000000000001"
+              "surfaceId": "overview"
             },
             "version": "v0.9"
           }
@@ -79,15 +79,15 @@
     }
   },
   "request": {
-    "id": 2,
+    "id": 10,
     "jsonrpc": "2.0",
     "method": "tools/call",
     "params": {
       "_meta": {
         "ai.luoke/user-action": {
           "at": "2026-10-20T20:05:00+08:00",
-          "componentId": "b7",
-          "surfaceId": "round-000000000001"
+          "componentId": "b22",
+          "surfaceId": "overview"
         },
         "io.modelcontextprotocol/clientCapabilities": {},
         "io.modelcontextprotocol/clientInfo": {
@@ -102,7 +102,7 @@
             "trash"
           ],
           "i1": [
-            "remove"
+            "keep"
           ],
           "i2": [
             "keep"

@@ -1,0 +1,116 @@
+{
+  "id": "fda-granted",
+  "normalised": {
+    "$TMPDIR": "假目录的临时目录（$FIXTURE/tmp）",
+    "000000000001…": "由路径、随机数算出的 12 位编号，按在本场景里出现的先后编号",
+    "resources/read": "contents[0].text 解开成了 JSON 值；线上是 JSON 文字",
+    "~": "假用户目录（$FIXTURE/home）",
+    "~/.Trash": "假目录的废纸篓（$FIXTURE/Trash）"
+  },
+  "produced": {
+    "changes": [
+      "pip 的缓存 60 MB（~/Library/Caches/pip/http/blob，半天前写的），之前没查过：没有它 3 天前的大小",
+      "~/Library/Application Support/com.apple.TCC/TCC.db 改成读不了（chmod 000）：没有完全磁盘访问时 macOS 也不让读它",
+      "下载里放了一个 40 MB、一年多没打开过的视频（Spotlight 也报它），第一轮没权限看不到",
+      "用户打开了完全磁盘访问：去掉 --no-full-disk-access，TCC 的数据库改回能读"
+    ],
+    "fixture": [
+      "blackbox/fx.py 造的假目录：blackbox/cases/base.py 的 `build`（照单元测试的 Fixture.build 摆），fakes.json 是 `fx.standard_fakes`（和单元测试的 Fixture.Fakes.standard 一样），另加一块 494 GB、还剩 182 GB 的硬盘",
+      "luoke-scan update --data $FIXTURE/data --tool-dir $FIXTURE/tools --force（假的 freshclam，daily 27000，库文件的时间 2026-10-20T01:00:00Z）",
+      "luoke-scan update --data $FIXTURE/data --tool-dir $FIXTURE/tools --force（假的 freshclam，daily 27000，库文件的时间 2026-10-20T01:00:00Z）"
+    ],
+    "mcp": "luoke-scan mcp --fixture $FIXTURE --clock <那一步的时钟>：一个请求一个进程，标准输入一条 JSON-RPC，标准输出是答复",
+    "tz": "Asia/Shanghai",
+    "user_action_at": "点按时的 at 是那一步的时钟，按 Asia/Shanghai 写"
+  },
+  "situation": "刚装好、没给完全磁盘访问时查过一轮（下载里那个大视频看不到）。用户照「状态」页的提示在系统设置里打开了完全磁盘访问，两小时后回来点「现在查一下」。两轮之间不清任何记录，第二轮走增量的路：下载、文稿、桌面这一轮第一次量。",
+  "steps": [
+    {
+      "clock": "2026-10-20T12:00:00Z",
+      "do": "查一轮（agent 叫的那种，只读、不自动清）：luoke-scan scan --fixture $FIXTURE --clock 2026-10-20T12:00:00Z --for-agent --no-full-disk-access"
+    },
+    {
+      "clock": "2026-10-20T12:00:00Z",
+      "do": "读 outbox（每分钟一次）",
+      "file": "read-outbox-before-fda.json"
+    },
+    {
+      "clock": "2026-10-20T12:00:00Z",
+      "do": "读概览（侧栏的计数和一句话）",
+      "file": "read-summary-before-fda.json"
+    },
+    {
+      "clock": "2026-10-20T12:00:00Z",
+      "do": "读权限的状态",
+      "file": "read-permissions-before-fda.json"
+    },
+    {
+      "clock": "2026-10-20T12:00:00Z",
+      "do": "读基础页 page/overview",
+      "file": "read-page-overview-before-fda.json"
+    },
+    {
+      "clock": "2026-10-20T12:00:00Z",
+      "do": "读基础页 page/mac",
+      "file": "read-page-mac-before-fda.json"
+    },
+    {
+      "clock": "2026-10-20T12:00:00Z",
+      "do": "读基础页 page/cleaned",
+      "file": "read-page-cleaned-before-fda.json"
+    },
+    {
+      "clock": "2026-10-20T14:00:00Z",
+      "do": "查一轮（agent 叫的那种，只读、不自动清）：luoke-scan scan --fixture $FIXTURE --clock 2026-10-20T14:00:00Z --for-agent"
+    },
+    {
+      "clock": "2026-10-20T14:00:00Z",
+      "do": "server/discover",
+      "file": "server-discover.json"
+    },
+    {
+      "clock": "2026-10-20T14:00:00Z",
+      "do": "列工具（agent 认 readOnlyHint）",
+      "file": "tools-list.json"
+    },
+    {
+      "clock": "2026-10-20T14:00:00Z",
+      "do": "列资源",
+      "file": "resources-list.json"
+    },
+    {
+      "clock": "2026-10-20T14:00:00Z",
+      "do": "读 outbox（每分钟一次）",
+      "file": "read-outbox.json"
+    },
+    {
+      "clock": "2026-10-20T14:00:00Z",
+      "do": "读概览（侧栏的计数和一句话）",
+      "file": "read-summary.json"
+    },
+    {
+      "clock": "2026-10-20T14:00:00Z",
+      "do": "读权限的状态",
+      "file": "read-permissions.json"
+    },
+    {
+      "clock": "2026-10-20T14:00:00Z",
+      "do": "读基础页 page/overview",
+      "file": "read-page-overview.json"
+    },
+    {
+      "clock": "2026-10-20T14:00:00Z",
+      "do": "读基础页 page/mac",
+      "file": "read-page-mac.json"
+    },
+    {
+      "clock": "2026-10-20T14:00:00Z",
+      "do": "读基础页 page/cleaned",
+      "file": "read-page-cleaned.json"
+    }
+  ],
+  "title": "允许了完全磁盘访问以后再查一轮",
+  "window": [
+    "「状态」页（`page/mac`）：第一轮是没允许的样子（`read-page-mac-before-fda.json`）；第二轮下载进了「占地方最多的文件夹」，大视频进了「一年多没打开过的大文件」，标题和合计句换成允许以后的说法。"
+  ]
+}

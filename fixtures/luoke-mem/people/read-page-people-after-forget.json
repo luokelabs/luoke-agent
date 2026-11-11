@@ -1,0 +1,245 @@
+{
+  "reply": {
+    "id": 13,
+    "jsonrpc": "2.0",
+    "result": {
+      "contents": [
+        {
+          "mimeType": "application/json",
+          "text": [
+            {
+              "createSurface": {
+                "catalogId": "ai.luoke/a2ui/agent/1",
+                "surfaceId": "people"
+              },
+              "version": "v0.9"
+            },
+            {
+              "updateComponents": {
+                "components": [
+                  {
+                    "children": [
+                      "h1",
+                      "t2",
+                      "k-sure",
+                      "t3",
+                      "t4",
+                      "r7",
+                      "t8",
+                      "t9",
+                      "r12",
+                      "r14"
+                    ],
+                    "component": "Column",
+                    "id": "root"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "h1",
+                    "text": "人",
+                    "variant": "h4"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "t2",
+                    "text": "你写信给的人，和你在发出的邮件里写到的人：同一个人的几种叫法、邮箱地址和关于这个人的事放在一起。人名会给语音输入当热词。改名、两个并成一个、拆开，在整份记忆里做。",
+                    "variant": "caption"
+                  },
+                  {
+                    "component": "CheckBox",
+                    "id": "k-sure",
+                    "label": "我知道删了找不回来",
+                    "value": {
+                      "path": "/checks/sure"
+                    }
+                  },
+                  {
+                    "component": "Text",
+                    "id": "t3",
+                    "text": "王磊"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "t4",
+                    "text": "同事、合作方 · 也叫 wanglei@corp.example、Wang Lei、Lei Wang · 最近一次 2026年10月，2 个月共 15 封 · 常谈 主控 · 关于这个人的 5 条",
+                    "variant": "caption"
+                  },
+                  {
+                    "action": {
+                      "event": {
+                        "context": {
+                          "op": "reject",
+                          "person": 1
+                        },
+                        "name": "mem_person"
+                      }
+                    },
+                    "child": "b5-text",
+                    "component": "Button",
+                    "id": "b5",
+                    "variant": "borderless"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "b5-text",
+                    "text": "不是一个人"
+                  },
+                  {
+                    "action": {
+                      "event": {
+                        "context": {
+                          "op": "forget",
+                          "person": 1,
+                          "sure": {
+                            "path": "/checks/sure"
+                          }
+                        },
+                        "name": "mem_person"
+                      }
+                    },
+                    "child": "b6-text",
+                    "component": "Button",
+                    "id": "b6",
+                    "variant": "borderless"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "b6-text",
+                    "text": "忘掉"
+                  },
+                  {
+                    "children": [
+                      "b5",
+                      "b6"
+                    ],
+                    "component": "Row",
+                    "id": "r7"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "t8",
+                    "text": "Mira"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "t9",
+                    "text": "上级 · 猜测 · 关于这个人的 1 条",
+                    "variant": "caption"
+                  },
+                  {
+                    "action": {
+                      "event": {
+                        "context": {
+                          "op": "reject",
+                          "person": 2
+                        },
+                        "name": "mem_person"
+                      }
+                    },
+                    "child": "b10-text",
+                    "component": "Button",
+                    "id": "b10",
+                    "variant": "borderless"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "b10-text",
+                    "text": "不是一个人"
+                  },
+                  {
+                    "action": {
+                      "event": {
+                        "context": {
+                          "op": "forget",
+                          "person": 2,
+                          "sure": {
+                            "path": "/checks/sure"
+                          }
+                        },
+                        "name": "mem_person"
+                      }
+                    },
+                    "child": "b11-text",
+                    "component": "Button",
+                    "id": "b11",
+                    "variant": "borderless"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "b11-text",
+                    "text": "忘掉"
+                  },
+                  {
+                    "children": [
+                      "b10",
+                      "b11"
+                    ],
+                    "component": "Row",
+                    "id": "r12"
+                  },
+                  {
+                    "action": {
+                      "event": {
+                        "context": {
+                          "page": "people"
+                        },
+                        "name": "mem_open"
+                      }
+                    },
+                    "child": "b13-text",
+                    "component": "Button",
+                    "id": "b13"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "b13-text",
+                    "text": "在整份记忆里看"
+                  },
+                  {
+                    "children": [
+                      "b13"
+                    ],
+                    "component": "Row",
+                    "id": "r14"
+                  }
+                ],
+                "surfaceId": "people"
+              },
+              "version": "v0.9"
+            },
+            {
+              "updateDataModel": {
+                "path": "/",
+                "surfaceId": "people",
+                "value": {
+                  "checks": {
+                    "sure": false
+                  }
+                }
+              },
+              "version": "v0.9"
+            }
+          ],
+          "uri": "page/people"
+        }
+      ],
+      "resultType": "complete"
+    }
+  },
+  "request": {
+    "id": 13,
+    "jsonrpc": "2.0",
+    "method": "resources/read",
+    "params": {
+      "_meta": {
+        "io.modelcontextprotocol/clientCapabilities": {},
+        "io.modelcontextprotocol/clientInfo": {
+          "name": "luoke-agent",
+          "version": "fixtures"
+        },
+        "io.modelcontextprotocol/protocolVersion": "2026-07-28"
+      },
+      "uri": "page/people"
+    }
+  }
+}

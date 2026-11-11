@@ -1,4 +1,5 @@
 import AppKit
+import SwiftUI
 import LuokeA2UICore
 import XCTest
 @testable import LuokeWindow
@@ -61,6 +62,61 @@ final class HostTests: XCTestCase {
         XCTAssertEqual(h.calls.last, "model", "「前往 → 模型」和侧栏底部的模型名走同一条")
     }
 
+    /// 本体给了模型、隐私的界面（11-09 负责人定）：画在窗口的设置里，不再另弹窗口；添加应用、升级照旧交给本体
+    final class EmbeddingHost: WindowHost {
+        var calls: [String] = []
+        func settingsContent(_ tab: PrefsTab) -> AnyView? {
+            tab == .model || tab == .privacy ? AnyView(Text("本体的\(tab.title)")) : nil
+        }
+        func openModelSettings() { calls.append("model") }
+        func openPrivacySettings() { calls.append("privacy") }
+        func openAddApps() { calls.append("apps") }
+        func upgrade(app: String) { calls.append("upgrade \(app)") }
+    }
+
+    func testHostSettingsAreDrawnInTheWindow() {
+        let m = Sample.model()
+        let h = EmbeddingHost()
+        m.host = h
+        m.go(.prefs, tab: "model")
+        XCTAssertEqual(m.page, .prefs, "模型画在设置里")
+        XCTAssertEqual(m.prefsTab, .model)
+        m.selectPrefsTab(.privacy)
+        XCTAssertEqual(m.prefsTab, .privacy)
+        m.perform(.go(.prefs, "model"))
+        XCTAssertEqual(m.prefsTab, .model, "「前往 → 模型」、侧栏底部的模型名也停在设置里")
+        XCTAssertFalse(m.prefsTabOpensElsewhere(.model), "标签上不画「在别处打开」")
+        XCTAssertFalse(m.prefsTabOpensElsewhere(.privacy))
+        m.go(.apps)
+        XCTAssertEqual(h.calls, ["apps"], "只有添加应用交出去")
+        XCTAssertNil(OldHost().settingsContent(.model), "老本体没给界面：照旧打开它的窗口")
+    }
+
+    /// 本体也给了应用目录：「添加应用」画在主窗口里；升级先翻到这一页，再交本体在那一行里升
+    final class AppsHost: WindowHost {
+        var calls: [String] = []
+        func appsContent() -> AnyView? { AnyView(Text("本体的应用目录")) }
+        func openModelSettings() { calls.append("model") }
+        func openPrivacySettings() { calls.append("privacy") }
+        func openAddApps() { calls.append("apps") }
+        func upgrade(app: String) { calls.append("upgrade \(app)") }
+    }
+
+    func testHostAppsAreDrawnInTheWindow() {
+        let m = Sample.model()
+        let h = AppsHost()
+        m.host = h
+        m.go(.apps)
+        XCTAssertEqual(m.page, .apps, "添加应用画在主窗口里")
+        m.perform(.go(.apps, nil))
+        XCTAssertEqual(m.page, .apps, "菜单的「添加应用…」也停在窗口里")
+        m.go(.today)
+        m.upgrade(.mail)
+        XCTAssertEqual(m.page, .apps, "升级翻到「添加应用」页")
+        XCTAssertEqual(h.calls, ["upgrade luoke-mail"], "不打开本体的窗口")
+        XCTAssertNil(OldHost().appsContent(), "老本体没给界面：照旧打开它的窗口")
+    }
+
     func testNoHostMeansTheWindowDrawsThePages() {
         let m = Sample.model()
         XCTAssertFalse(m.prefsTabOpensElsewhere(.model))
@@ -92,6 +148,27 @@ final class HostTests: XCTestCase {
         m.urgent = []
         XCTAssertEqual(StatusMenuItems.items(model: m) {}.map(\.title), ["打开螺壳", "恢复提醒"])
         XCTAssertFalse(StatusMenuItems.hasDot(m))
+    }
+
+    /// 小点照核心的 `dot`：急事放进简报、只放在窗口里，或关了主动提醒时，菜单里照样列急事，图标不点
+    func testDotFollowsTheCore() throws {
+        let m = WindowModel()
+        let f = AgentFeed(model: m)
+        for (e, d) in Sample.agentEvents() { f.handle(e, d) }
+        XCTAssertTrue(m.hasUrgent)
+        let feed = try XCTUnwrap(Sample.agentEvents().last { $0.0 == "feed" })
+        guard case .object(var o) = try JSONValue.parse(feed.1) else { return XCTFail("feed 是对象") }
+        o["dot"] = .bool(false)
+        f.handle("feed", JSONValue.object(o).serialized())
+        XCTAssertTrue(m.hasUrgent, "横幅、菜单里照样有")
+        XCTAssertTrue(StatusMenuItems.items(model: m) {}.contains { $0.title == "可疑邮件：冒充招商银行" })
+        XCTAssertFalse(StatusMenuItems.hasDot(m), "核心说不点")
+        o["dot"] = .bool(true)
+        f.handle("feed", JSONValue.object(o).serialized())
+        XCTAssertTrue(StatusMenuItems.hasDot(m))
+        o["dot"] = nil
+        f.handle("feed", JSONValue.object(o).serialized())
+        XCTAssertTrue(StatusMenuItems.hasDot(m), "老的核心不给：照有没有急事")
     }
 
     func testSystemSettingsOpenFromTheWindow() {

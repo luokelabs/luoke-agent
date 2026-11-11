@@ -42,6 +42,28 @@ public enum Sample {
         return TodayCard(id: id, tool: tool, time: time, surface: SurfaceModel(surface: s))
     }
 
+    /// 手写的示意：一张 n 封的方案卡片，排法照邮件助手的 plan_card（标题；每封一个选择框、一行说明；按钮）。
+    /// 截「一件件处理」在小窗口里放不下、中间滚动的样子用
+    static func longPlanCard(_ n: Int = 8) -> TodayCard {
+        let who = ["王老师 · 答辩时间确认", "房东 · 续租合同", "物业 · 停水通知", "银行 · 本月账单", "快递 · 已签收",
+                   "同学 · 周六聚餐", "期刊 · 审稿意见", "学校 · 选课提醒", "医院 · 体检报告", "航空 · 行程变更"]
+        let options: JSONValue = .array([("archive", "归档"), ("reply", "写草稿"), ("keep", "先不动")].map {
+            .object(["value": .string($0.0), "label": .string($0.1)])
+        })
+        var kids = ["h"]
+        var comps: [JSONValue] = [text("h", "这 \(n) 封要你处理", "h4")]
+        for i in 0..<n {
+            kids += ["c\(i)", "t\(i)"]
+            comps.append(.object(["id": .string("c\(i)"), "component": .string("ChoicePicker"), "label": .string(who[i % who.count]),
+                                  "options": options, "value": .array([.string(i == 0 ? "reply" : "archive")])]))
+            comps.append(text("t\(i)", i == 0 ? "王老师问答辩时间，周五前回" : "没什么要你做的，建议归档", "caption"))
+        }
+        kids.append("acts")
+        comps.append(node("acts", "Row", ["b1"]))
+        comps.insert(node("root", "Column", kids), at: 0)
+        return card("x-long-plan", .mail, "09:30", comps + button("b1", "按这个处理", "mail_apply_plan", [:], variant: "primary"))
+    }
+
     static func cards() -> [TodayCard] {
         [
             card("plan", .mail, "09:02", [
@@ -84,9 +106,10 @@ public enum Sample {
     /// 给了 `mail`（邮件助手录的场景，截图用 `ToolSample.defaultMail`）就用它的，手写的邮件卡片不要；没给照旧手写；记忆、agent 自己的还是手写的
     /// （今天的时刻，截图每天一样）：急事、要你决定、不急的。
     /// `openURL`：多一张带「加入日程」（打开网页）按钮的邮件卡片，按钮上带核心写的 `site`（工具协议 §5）；只在手写邮件时有。
-    /// `memory`：带不带记忆那张手写的卡片（beta 2 不带记忆）
+    /// `memory`：带不带记忆那张手写的卡片（beta 2 不带记忆）；`extras`：带不带 agent 自己那张手写的卡片和提示
+    /// （画本机录的一轮时不带：那些不是这台 Mac 上的）
     public static func agentEvents(scan: String = ToolSample.defaultScan, mail: String? = nil,
-                                   openURL: Bool = false, memory: Bool = true) -> [(String, Data)] {
+                                   openURL: Bool = false, memory: Bool = true, extras: Bool = true) -> [(String, Data)] {
         func at(_ h: Int, _ m: Int) -> JSONValue {
             let d = Calendar.current.date(bySettingHour: h, minute: m, second: 0, of: Date()) ?? Date()
             return .string(AgentFeed.iso(d))
@@ -155,6 +178,13 @@ public enum Sample {
             order.removeAll { $0.hasPrefix("memory/") }
             cards.removeAll { $0["app"]?.string == "memory" }
         }
+        if !extras {
+            out.removeAll { e in (try? JSONValue.parse(e.1)).map { m in
+                ["createSurface", "updateComponents", "updateDataModel"].contains { m[$0]?["surfaceId"]?.string?.hasPrefix("agent/") == true }
+            } ?? false }
+            order.removeAll { $0.hasPrefix("agent/") }
+            cards.removeAll { $0["app"]?.string == "agent" }
+        }
         let mailSample = mail.flatMap { ToolSample.load("luoke-mail", $0) }
         if mailSample != nil {   // 邮件助手的从它的样例来：手写的那几张拿掉
             func handwrittenMail(_ e: (String, Data)) -> Bool {
@@ -168,8 +198,8 @@ public enum Sample {
         }
         var feed: JSONValue = .object([
             "order": .array(order.map { .string($0) }),
-            "open": .number(Double(order.count - 1)),
-            "notices": .array([.string("螺壳搜索现在没在运行。")]),
+            "open": .number(Double(cards.filter { ["urgent", "decide"].contains($0["section"]?.string ?? "") }.count)),
+            "notices": .array([]),   // 应用没在运行的提示另拍一张（stress-today-app-stopped），不在平常的截图里
             "cards": .array(cards),
             "brief": .object(["next": at(8, 0)]),
             "paused_until": .null,
@@ -339,7 +369,7 @@ public enum Sample {
         ]
         m.appPages = [
             .mail: AppPageData(
-                tabs: [("overview", "概览", false), ("log", "操作记录", false), ("inbox", "收件箱", true), ("rules", "规则", true)],
+                tabs: [("overview", "概览", false), ("log", "操作记录", false)],   // 应用自己界面的页不画成标签（agent#62）
                 stats: [.init(key: "今天处理", value: "12"), .init(key: "要你回", value: "2"), .init(key: "自动归档", value: "7")],
                 listTitle: "要你回",
                 lines: [.init(id: "m1", title: "王老师 · 答辩时间", badge: "周五", action: "起草"),

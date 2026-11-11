@@ -27,7 +27,8 @@ final class BehaviourTests: XCTestCase {
     func testSidebarHasFourRowsAndAppsCollapsed() {
         XCTAssertFalse(m.appsExpanded)
         XCTAssertEqual(m.apps.map(\.tool), [.mail, .scan, .mem, .search])
-        XCTAssertEqual(m.todayCount, 5, "急事 1 + 要你决定 4")
+        XCTAssertEqual(m.todayCount, 4, "只算要你决定的 4 件，和「一件件处理」一样；急事 1 件另外是红点")
+        XCTAssertTrue(m.hasUrgent)
     }
 
     func testAppsRowLightsUpOnAppPageWhenCollapsed() {
@@ -74,7 +75,7 @@ final class BehaviourTests: XCTestCase {
         m.tap(card: plan, name: name, context: ctx)
         XCTAssertFalse(m.cards.contains { $0.id == "plan" })
         XCTAssertEqual(m.done.first?.text, "照方案处理 5 封")
-        XCTAssertEqual(m.todayCount, 4)
+        XCTAssertEqual(m.todayCount, 3)
         XCTAssertEqual(m.toast?.canUndo, true)
         m.undoLast()
         XCTAssertTrue(m.cards.contains { $0.id == "plan" })
@@ -118,6 +119,15 @@ final class BehaviourTests: XCTestCase {
         XCTAssertEqual(all.rows.count, 5)
         XCTAssertEqual(all.more, 0)
         XCTAssertEqual(TodayPage.visibleDone(Array(rows.prefix(3)), all: false).more, 0, "三件以内不写「还有」")
+    }
+
+    func testDoneShowsTwoRowsWhenSomethingWaitsForTheUser() {
+        let rows = (1...5).map { DoneRow(id: "d\($0)", tool: .mail, text: "第 \($0) 件", time: "09:0\($0)", undoLabel: "撤销") }
+        let few = TodayPage.visibleDone(rows, all: false, deciding: true)
+        XCTAssertEqual(few.rows.map(\.id), ["d1", "d2"], "下面有「要你决定」：只露 2 行")
+        XCTAssertEqual(few.more, 3)
+        XCTAssertEqual(TodayPage.visibleDone(Array(rows.prefix(3)), all: false, deciding: true).more, 0, "只多 1 件就列出来，不写「还有 1 件」")
+        XCTAssertEqual(TodayPage.visibleDone(rows, all: true, deciding: true).rows.count, 5)
     }
 
     func testEveryAppHasItsIcon() {
@@ -170,12 +180,53 @@ final class BehaviourTests: XCTestCase {
         XCTAssertEqual(m.page, .today)
     }
 
-    func testFocusEndsWithNothingLeftWhenAllAnswered() {
+    func testFocusEndsWithNothingLeftWhenAllAnswered() throws {
+        m.enterFocus()
+        for id in try XCTUnwrap(m.focus?.ids) {   // 有按钮的都点一下；工具还没答完的先跳过
+            guard let c = m.focusCurrent, c.id == id, let a = SurfaceDigest(c.surface.surface).actions.first else { continue }
+            m.answerFocus(a.id)
+            if m.focusCurrent?.id == id { m.skipFocus() }
+        }
+        XCTAssertEqual(m.focus?.tapped, ["plan", "ask-mem", "perm-calendar"], "「ai」那张没有按钮，点不了")
+        m.cards = []   // 工具都答完了，收走
+        XCTAssertNil(m.focusCurrent)
+        XCTAssertEqual(m.focusLeft, 0)
+        XCTAssertEqual(m.focusAnswered, 3, "点过的三件算答了；没点过的「ai」被收走不算")
+    }
+
+    func testFocusDoesNotCountCardsTheToolsTookBack() {
         m.enterFocus()
         m.cards = []
         XCTAssertNil(m.focusCurrent)
         XCTAssertEqual(m.focusLeft, 0)
-        XCTAssertEqual(m.focusAnswered, 4)
+        XCTAssertEqual(m.focusAnswered, 0, "用户没点：工具收走的不算答了")
+        XCTAssertEqual(m.focus?.ids, [], "收走的从这一轮里去掉")
+    }
+
+    func testFocusStaysPutWhenAToolReplacesTheCard() throws {
+        m.enterFocus()
+        m.skipFocus()
+        let c = try XCTUnwrap(m.focusCurrent)
+        XCTAssertEqual(c.id, "ask-mem")
+        // 工具把正看着的这张换成新编号（邮件的方案重算时就会这样）
+        var cards = m.cards
+        let i = try XCTUnwrap(cards.firstIndex { $0.id == c.id })
+        cards[i] = TodayCard(id: "ask-mem-2", tool: c.tool, time: c.time, surface: c.surface)
+        m.cards = cards
+        XCTAssertEqual(m.focusAnswered, 0, "用户没点，不算答了")
+        XCTAssertEqual(m.focusCurrent?.id, "ask-mem-2", "还在这一件，摆换上来的那张")
+        XCTAssertEqual(m.focus?.ids, ["plan", "ask-mem-2", "perm-calendar", "ai"], "新的顶在原来的位置")
+        // 跳过了的被换掉，换上来的照旧算跳过
+        cards = m.cards
+        let j = try XCTUnwrap(cards.firstIndex { $0.id == "plan" })
+        cards[j] = TodayCard(id: "plan-2", tool: cards[j].tool, time: cards[j].time, surface: cards[j].surface)
+        m.cards = cards
+        XCTAssertEqual(m.focus?.skipped.contains("plan-2"), true)
+        XCTAssertEqual(m.focusCurrent?.id, "ask-mem-2")
+        // 点了以后不见了，才算答了
+        m.answerFocusPrimary()
+        XCTAssertEqual(m.focusAnswered, 1)
+        XCTAssertEqual(m.focusCurrent?.id, "perm-calendar")
     }
 
     func testFocusNeedsSomethingToDecideAndLeavesOnNavigation() {
@@ -359,7 +410,7 @@ final class BehaviourTests: XCTestCase {
     func testGoMenuIsTheFullSetOfEntries() {
         let go = m.topMenus.first { $0.id == "go" }!
         let titles = go.items.filter { $0.kind == .item }.map(\.title)
-        XCTAssertEqual(titles, ["今天", "活动", "搜索或问螺壳", "邮件助手", "螺壳扫描", "记忆", "螺壳搜索", "添加应用…", "权限", "模型"])
+        XCTAssertEqual(titles, ["今天", "活动", "搜索或问螺壳", "螺壳邮件助手", "螺壳扫描", "记忆", "螺壳搜索", "添加应用…", "权限", "模型"])
         XCTAssertEqual(m.topMenus.map(\.title), ["螺壳", "编辑", "显示", "前往", "窗口", "帮助"])
     }
 
@@ -403,7 +454,7 @@ final class BehaviourTests: XCTestCase {
 
     func testPauseShowsUntilWhen() {
         m.perform(.pause)
-        XCTAssertEqual(m.statusMenu.items.first?.title, "就绪 · 提醒暂停到 11:02")
+        XCTAssertEqual(m.statusMenu.items.first?.title, "螺壳在运行 · 提醒暂停到 11:02")
         XCTAssertEqual(m.statusMenu.items.first { $0.id == "pause" }?.title, "恢复提醒")
         m.perform(.pause)
         XCTAssertNil(m.pausedUntil)
@@ -411,6 +462,6 @@ final class BehaviourTests: XCTestCase {
 
     func testInstalledAppsShowUpInGoMenu() {
         m.apps.append(AppEntry(id: .apps, tool: .ime, version: "0.1.20"))
-        XCTAssertTrue(m.topMenus.first { $0.id == "go" }!.items.contains { $0.title == "输入法" })
+        XCTAssertTrue(m.topMenus.first { $0.id == "go" }!.items.contains { $0.title == "螺壳输入法" })
     }
 }

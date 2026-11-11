@@ -1,0 +1,66 @@
+{
+  "reply": {
+    "id": 14,
+    "jsonrpc": "2.0",
+    "result": {
+      "content": [
+        {
+          "text": "好，过几天再问。",
+          "type": "text"
+        }
+      ],
+      "isError": false,
+      "resultType": "complete",
+      "structuredContent": {
+        "card": [
+          {
+            "updateComponents": {
+              "components": [
+                {
+                  "children": [
+                    "end-t1"
+                  ],
+                  "component": "Column",
+                  "id": "root"
+                },
+                {
+                  "component": "Text",
+                  "id": "end-t1",
+                  "text": "好，过几天再问。"
+                }
+              ],
+              "surfaceId": "ask-3"
+            },
+            "version": "v0.9"
+          }
+        ],
+        "done": true
+      }
+    }
+  },
+  "request": {
+    "id": 14,
+    "jsonrpc": "2.0",
+    "method": "tools/call",
+    "params": {
+      "_meta": {
+        "ai.luoke/user-action": {
+          "at": "2026-11-06T10:08:00+08:00",
+          "componentId": "b10",
+          "surfaceId": "ask-3"
+        },
+        "io.modelcontextprotocol/clientCapabilities": {},
+        "io.modelcontextprotocol/clientInfo": {
+          "name": "luoke-agent",
+          "version": "fixtures"
+        },
+        "io.modelcontextprotocol/protocolVersion": "2026-07-28"
+      },
+      "arguments": {
+        "ask": 3,
+        "choice": "later"
+      },
+      "name": "mem_reply"
+    }
+  }
+}

@@ -20,10 +20,8 @@
        "component": "Column",
        "children": [
         "h1",
-        "c-m1",
-        "t2",
-        "c-rest",
-        "r5"
+        "l2",
+        "r13"
        ]
       },
       {
@@ -31,6 +29,41 @@
        "component": "Text",
        "text": "这 2 封我打算这样处理",
        "variant": "h4"
+      },
+      {
+       "id": "t3",
+       "component": "Text",
+       "text": "王老师",
+       "variant": "strong"
+      },
+      {
+       "id": "t4",
+       "component": "Text",
+       "text": "答辩时间",
+       "maxLines": 1
+      },
+      {
+       "id": "r5",
+       "component": "Row",
+       "children": [
+        "t3",
+        "t4"
+       ]
+      },
+      {
+       "id": "t6",
+       "component": "Text",
+       "text": "周五前回",
+       "variant": "caption",
+       "maxLines": 1
+      },
+      {
+       "id": "c7",
+       "component": "Column",
+       "children": [
+        "r5",
+        "t6"
+       ]
       },
       {
        "id": "c-m1",
@@ -51,10 +84,33 @@
        }
       },
       {
-       "id": "t2",
+       "id": "r8",
+       "component": "Row",
+       "justify": "spaceBetween",
+       "children": [
+        "c7",
+        "c-m1"
+       ]
+      },
+      {
+       "id": "t9",
        "component": "Text",
-       "text": "周五前回",
-       "variant": "caption"
+       "text": "另外 4 封",
+       "maxLines": 1
+      },
+      {
+       "id": "r10",
+       "component": "Row",
+       "children": [
+        "t9"
+       ]
+      },
+      {
+       "id": "c11",
+       "component": "Column",
+       "children": [
+        "r10"
+       ]
       },
       {
        "id": "c-rest",
@@ -75,9 +131,26 @@
        }
       },
       {
-       "id": "b3",
+       "id": "r12",
+       "component": "Row",
+       "justify": "spaceBetween",
+       "children": [
+        "c11",
+        "c-rest"
+       ]
+      },
+      {
+       "id": "l2",
+       "component": "List",
+       "children": [
+        "r8",
+        "r12"
+       ]
+      },
+      {
+       "id": "b14",
        "component": "Button",
-       "child": "b3-text",
+       "child": "b14-row",
        "action": {
         "event": {
          "name": "mail_apply_plan",
@@ -92,14 +165,27 @@
        "variant": "primary"
       },
       {
-       "id": "b3-text",
-       "component": "Text",
-       "text": "按这个处理"
+       "id": "b14-icon",
+       "component": "Icon",
+       "name": "check"
       },
       {
-       "id": "b4",
+       "id": "b14-text",
+       "component": "Text",
+       "text": "写草稿 1 · 归档 4"
+      },
+      {
+       "id": "b14-row",
+       "component": "Row",
+       "children": [
+        "b14-icon",
+        "b14-text"
+       ]
+      },
+      {
+       "id": "b15",
        "component": "Button",
-       "child": "b4-text",
+       "child": "b15-text",
        "action": {
         "event": {
          "name": "agent.open_url",
@@ -110,16 +196,16 @@
        }
       },
       {
-       "id": "b4-text",
+       "id": "b15-text",
        "component": "Text",
        "text": "加入日程"
       },
       {
-       "id": "r5",
+       "id": "r13",
        "component": "Row",
        "children": [
-        "b3",
-        "b4"
+        "b14",
+        "b15"
        ]
       }
      ]
@@ -166,7 +252,7 @@
        "component": "Column",
        "children": [
         "f-reply",
-        "r2"
+        "r1"
        ]
       },
       {
@@ -178,9 +264,9 @@
        }
       },
       {
-       "id": "b1",
+       "id": "b2",
        "component": "Button",
-       "child": "b1-text",
+       "child": "b2-text",
        "action": {
         "event": {
          "name": "mem.answer",
@@ -195,15 +281,15 @@
        "variant": "primary"
       },
       {
-       "id": "b1-text",
+       "id": "b2-text",
        "component": "Text",
        "text": "交回"
       },
       {
-       "id": "r2",
+       "id": "r1",
        "component": "Row",
        "children": [
-        "b1"
+        "b2"
        ]
       }
      ]
@@ -4028,6 +4114,11013 @@
        "text": "x"
       }
      ]
+    }
+   }
+  ],
+  "ok": false
+ },
+ {
+  "name": "placement_aside",
+  "catalog": "ai.luoke/a2ui/agent/1",
+  "messages": [
+   {
+    "version": "v0.9",
+    "createSurface": {
+     "surfaceId": "s",
+     "catalogId": "ai.luoke/a2ui/agent/1"
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateComponents": {
+     "surfaceId": "s",
+     "components": [
+      {
+       "id": "root",
+       "component": "Column",
+       "children": [
+        "m",
+        "a"
+       ]
+      },
+      {
+       "id": "m",
+       "component": "Text",
+       "text": "要你看看的"
+      },
+      {
+       "id": "a",
+       "component": "Column",
+       "placement": "aside",
+       "children": [
+        "d",
+        "t"
+       ]
+      },
+      {
+       "id": "d",
+       "component": "Divider"
+      },
+      {
+       "id": "t",
+       "component": "Text",
+       "text": "病毒库更新于 11月9日",
+       "variant": "caption"
+      }
+     ]
+    }
+   }
+  ],
+  "ok": true
+ },
+ {
+  "name": "placement_bad_value",
+  "catalog": "ai.luoke/a2ui/agent/1",
+  "messages": [
+   {
+    "version": "v0.9",
+    "createSurface": {
+     "surfaceId": "s",
+     "catalogId": "ai.luoke/a2ui/agent/1"
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateComponents": {
+     "surfaceId": "s",
+     "components": [
+      {
+       "id": "root",
+       "component": "Column",
+       "children": [
+        "a"
+       ]
+      },
+      {
+       "id": "a",
+       "component": "Column",
+       "placement": "side",
+       "children": [
+        "t"
+       ]
+      },
+      {
+       "id": "t",
+       "component": "Text",
+       "text": "x"
+      }
+     ]
+    }
+   }
+  ],
+  "ok": false
+ },
+ {
+  "name": "placement_not_text",
+  "catalog": "ai.luoke/a2ui/agent/1",
+  "messages": [
+   {
+    "version": "v0.9",
+    "createSurface": {
+     "surfaceId": "s",
+     "catalogId": "ai.luoke/a2ui/agent/1"
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateComponents": {
+     "surfaceId": "s",
+     "components": [
+      {
+       "id": "root",
+       "component": "Column",
+       "children": [
+        "a"
+       ]
+      },
+      {
+       "id": "a",
+       "component": "Column",
+       "placement": true,
+       "children": [
+        "t"
+       ]
+      },
+      {
+       "id": "t",
+       "component": "Text",
+       "text": "x"
+      }
+     ]
+    }
+   }
+  ],
+  "ok": false
+ },
+ {
+  "name": "placement_on_text",
+  "catalog": "ai.luoke/a2ui/agent/1",
+  "messages": [
+   {
+    "version": "v0.9",
+    "createSurface": {
+     "surfaceId": "s",
+     "catalogId": "ai.luoke/a2ui/agent/1"
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateComponents": {
+     "surfaceId": "s",
+     "components": [
+      {
+       "id": "root",
+       "component": "Column",
+       "children": [
+        "t"
+       ]
+      },
+      {
+       "id": "t",
+       "component": "Text",
+       "text": "x",
+       "placement": "aside"
+      }
+     ]
+    }
+   }
+  ],
+  "ok": false
+ },
+ {
+  "name": "placement_nested",
+  "catalog": "ai.luoke/a2ui/agent/1",
+  "messages": [
+   {
+    "version": "v0.9",
+    "createSurface": {
+     "surfaceId": "s",
+     "catalogId": "ai.luoke/a2ui/agent/1"
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateComponents": {
+     "surfaceId": "s",
+     "components": [
+      {
+       "id": "root",
+       "component": "Column",
+       "children": [
+        "c"
+       ]
+      },
+      {
+       "id": "c",
+       "component": "Column",
+       "children": [
+        "a"
+       ]
+      },
+      {
+       "id": "a",
+       "component": "Column",
+       "placement": "aside",
+       "children": [
+        "t"
+       ]
+      },
+      {
+       "id": "t",
+       "component": "Text",
+       "text": "x"
+      }
+     ]
+    }
+   }
+  ],
+  "ok": false
+ },
+ {
+  "name": "placement_under_row",
+  "catalog": "ai.luoke/a2ui/agent/1",
+  "messages": [
+   {
+    "version": "v0.9",
+    "createSurface": {
+     "surfaceId": "s",
+     "catalogId": "ai.luoke/a2ui/agent/1"
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateComponents": {
+     "surfaceId": "s",
+     "components": [
+      {
+       "id": "root",
+       "component": "Row",
+       "children": [
+        "a"
+       ]
+      },
+      {
+       "id": "a",
+       "component": "Column",
+       "placement": "aside",
+       "children": [
+        "t"
+       ]
+      },
+      {
+       "id": "t",
+       "component": "Text",
+       "text": "x"
+      }
+     ]
+    }
+   }
+  ],
+  "ok": false
+ },
+ {
+  "name": "placement_on_root",
+  "catalog": "ai.luoke/a2ui/agent/1",
+  "messages": [
+   {
+    "version": "v0.9",
+    "createSurface": {
+     "surfaceId": "s",
+     "catalogId": "ai.luoke/a2ui/agent/1"
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateComponents": {
+     "surfaceId": "s",
+     "components": [
+      {
+       "id": "root",
+       "component": "Column",
+       "placement": "aside",
+       "children": [
+        "t"
+       ]
+      },
+      {
+       "id": "t",
+       "component": "Text",
+       "text": "x"
+      }
+     ]
+    }
+   }
+  ],
+  "ok": false
+ },
+ {
+  "name": "badge_ok",
+  "catalog": "ai.luoke/a2ui/agent/1",
+  "messages": [
+   {
+    "version": "v0.9",
+    "createSurface": {
+     "surfaceId": "s",
+     "catalogId": "ai.luoke/a2ui/agent/1"
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateComponents": {
+     "surfaceId": "s",
+     "components": [
+      {
+       "id": "root",
+       "component": "Text",
+       "text": "ming@harbor-tech.example",
+       "variant": "badge"
+      }
+     ]
+    }
+   }
+  ],
+  "ok": true
+ },
+ {
+  "name": "badge_tone_ok",
+  "catalog": "ai.luoke/a2ui/agent/1",
+  "messages": [
+   {
+    "version": "v0.9",
+    "createSurface": {
+     "surfaceId": "s",
+     "catalogId": "ai.luoke/a2ui/agent/1"
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateComponents": {
+     "surfaceId": "s",
+     "components": [
+      {
+       "id": "root",
+       "component": "Text",
+       "text": "09-20 已过",
+       "variant": "badge",
+       "tone": "danger"
+      }
+     ]
+    }
+   }
+  ],
+  "ok": true
+ },
+ {
+  "name": "badge_tone_bad",
+  "catalog": "ai.luoke/a2ui/agent/1",
+  "messages": [
+   {
+    "version": "v0.9",
+    "createSurface": {
+     "surfaceId": "s",
+     "catalogId": "ai.luoke/a2ui/agent/1"
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateComponents": {
+     "surfaceId": "s",
+     "components": [
+      {
+       "id": "root",
+       "component": "Text",
+       "text": "x",
+       "variant": "badge",
+       "tone": "blue"
+      }
+     ]
+    }
+   }
+  ],
+  "ok": false
+ },
+ {
+  "name": "tone_without_badge",
+  "catalog": "ai.luoke/a2ui/agent/1",
+  "messages": [
+   {
+    "version": "v0.9",
+    "createSurface": {
+     "surfaceId": "s",
+     "catalogId": "ai.luoke/a2ui/agent/1"
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateComponents": {
+     "surfaceId": "s",
+     "components": [
+      {
+       "id": "root",
+       "component": "Text",
+       "text": "x",
+       "tone": "warning"
+      }
+     ]
+    }
+   }
+  ],
+  "ok": false
+ },
+ {
+  "name": "strong_ok",
+  "catalog": "ai.luoke/a2ui/agent/1",
+  "messages": [
+   {
+    "version": "v0.9",
+    "createSurface": {
+     "surfaceId": "s",
+     "catalogId": "ai.luoke/a2ui/agent/1"
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateComponents": {
+     "surfaceId": "s",
+     "components": [
+      {
+       "id": "root",
+       "component": "Text",
+       "text": "CareerLink 事務局",
+       "variant": "strong"
+      }
+     ]
+    }
+   }
+  ],
+  "ok": true
+ },
+ {
+  "name": "max_lines_ok",
+  "catalog": "ai.luoke/a2ui/agent/1",
+  "messages": [
+   {
+    "version": "v0.9",
+    "createSurface": {
+     "surfaceId": "s",
+     "catalogId": "ai.luoke/a2ui/agent/1"
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateComponents": {
+     "surfaceId": "s",
+     "components": [
+      {
+       "id": "root",
+       "component": "Text",
+       "text": "很长的主题",
+       "maxLines": 1
+      }
+     ]
+    }
+   }
+  ],
+  "ok": true
+ },
+ {
+  "name": "max_lines_zero",
+  "catalog": "ai.luoke/a2ui/agent/1",
+  "messages": [
+   {
+    "version": "v0.9",
+    "createSurface": {
+     "surfaceId": "s",
+     "catalogId": "ai.luoke/a2ui/agent/1"
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateComponents": {
+     "surfaceId": "s",
+     "components": [
+      {
+       "id": "root",
+       "component": "Text",
+       "text": "x",
+       "maxLines": 0
+      }
+     ]
+    }
+   }
+  ],
+  "ok": false
+ },
+ {
+  "name": "max_lines_text",
+  "catalog": "ai.luoke/a2ui/agent/1",
+  "messages": [
+   {
+    "version": "v0.9",
+    "createSurface": {
+     "surfaceId": "s",
+     "catalogId": "ai.luoke/a2ui/agent/1"
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateComponents": {
+     "surfaceId": "s",
+     "components": [
+      {
+       "id": "root",
+       "component": "Text",
+       "text": "x",
+       "maxLines": "1"
+      }
+     ]
+    }
+   }
+  ],
+  "ok": false
+ },
+ {
+  "name": "max_lines_bool",
+  "catalog": "ai.luoke/a2ui/agent/1",
+  "messages": [
+   {
+    "version": "v0.9",
+    "createSurface": {
+     "surfaceId": "s",
+     "catalogId": "ai.luoke/a2ui/agent/1"
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateComponents": {
+     "surfaceId": "s",
+     "components": [
+      {
+       "id": "root",
+       "component": "Text",
+       "text": "x",
+       "maxLines": true
+      }
+     ]
+    }
+   }
+  ],
+  "ok": false
+ },
+ {
+  "name": "option_icon_ok",
+  "catalog": "ai.luoke/a2ui/agent/1",
+  "messages": [
+   {
+    "version": "v0.9",
+    "createSurface": {
+     "surfaceId": "s",
+     "catalogId": "ai.luoke/a2ui/agent/1"
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateComponents": {
+     "surfaceId": "s",
+     "components": [
+      {
+       "id": "root",
+       "component": "ChoicePicker",
+       "value": {
+        "path": "/c"
+       },
+       "options": [
+        {
+         "value": "flag",
+         "label": "加星标",
+         "icon": "star"
+        },
+        {
+         "value": "keep",
+         "label": "先不动",
+         "icon": "circle-minus"
+        }
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateDataModel": {
+     "surfaceId": "s",
+     "path": "/",
+     "value": {
+      "c": [
+       "flag"
+      ]
+     }
+    }
+   }
+  ],
+  "ok": true
+ },
+ {
+  "name": "option_icon_bad",
+  "catalog": "ai.luoke/a2ui/agent/1",
+  "messages": [
+   {
+    "version": "v0.9",
+    "createSurface": {
+     "surfaceId": "s",
+     "catalogId": "ai.luoke/a2ui/agent/1"
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateComponents": {
+     "surfaceId": "s",
+     "components": [
+      {
+       "id": "root",
+       "component": "ChoicePicker",
+       "value": [
+        "a"
+       ],
+       "options": [
+        {
+         "value": "a",
+         "label": "A",
+         "icon": "rocket"
+        }
+       ]
+      }
+     ]
+    }
+   }
+  ],
+  "ok": false
+ },
+ {
+  "name": "collapsed_ok",
+  "catalog": "ai.luoke/a2ui/agent/1",
+  "messages": [
+   {
+    "version": "v0.9",
+    "createSurface": {
+     "surfaceId": "s",
+     "catalogId": "ai.luoke/a2ui/agent/1"
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateComponents": {
+     "surfaceId": "s",
+     "components": [
+      {
+       "id": "root",
+       "component": "Column",
+       "collapsed": "206 封，都先不动",
+       "children": [
+        "t"
+       ]
+      },
+      {
+       "id": "t",
+       "component": "Text",
+       "text": "x"
+      }
+     ]
+    }
+   }
+  ],
+  "ok": true
+ },
+ {
+  "name": "collapsed_empty",
+  "catalog": "ai.luoke/a2ui/agent/1",
+  "messages": [
+   {
+    "version": "v0.9",
+    "createSurface": {
+     "surfaceId": "s",
+     "catalogId": "ai.luoke/a2ui/agent/1"
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateComponents": {
+     "surfaceId": "s",
+     "components": [
+      {
+       "id": "root",
+       "component": "Column",
+       "collapsed": " ",
+       "children": [
+        "t"
+       ]
+      },
+      {
+       "id": "t",
+       "component": "Text",
+       "text": "x"
+      }
+     ]
+    }
+   }
+  ],
+  "ok": false
+ },
+ {
+  "name": "collapsed_not_text",
+  "catalog": "ai.luoke/a2ui/agent/1",
+  "messages": [
+   {
+    "version": "v0.9",
+    "createSurface": {
+     "surfaceId": "s",
+     "catalogId": "ai.luoke/a2ui/agent/1"
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateComponents": {
+     "surfaceId": "s",
+     "components": [
+      {
+       "id": "root",
+       "component": "Column",
+       "collapsed": true,
+       "children": [
+        "t"
+       ]
+      },
+      {
+       "id": "t",
+       "component": "Text",
+       "text": "x"
+      }
+     ]
+    }
+   }
+  ],
+  "ok": false
+ },
+ {
+  "name": "lucide_icon_ok",
+  "catalog": "ai.luoke/a2ui/agent/1",
+  "messages": [
+   {
+    "version": "v0.9",
+    "createSurface": {
+     "surfaceId": "s",
+     "catalogId": "ai.luoke/a2ui/agent/1"
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateComponents": {
+     "surfaceId": "s",
+     "components": [
+      {
+       "id": "root",
+       "component": "Icon",
+       "name": "calendar-plus"
+      }
+     ]
+    }
+   }
+  ],
+  "ok": true
+ },
+ {
+  "name": "done_group_ok",
+  "catalog": "ai.luoke/a2ui/agent/1",
+  "messages": [
+   {
+    "version": "v0.9",
+    "createSurface": {
+     "surfaceId": "s",
+     "catalogId": "ai.luoke/a2ui/agent/1"
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateComponents": {
+     "surfaceId": "s",
+     "components": [
+      {
+       "id": "root",
+       "component": "Column",
+       "children": [
+        "t"
+       ],
+       "group": {
+        "key": "ming@harbor/spam",
+        "label": "可疑邮件",
+        "text": "已移到垃圾邮件 {n} 封",
+        "n": 2,
+        "badge": "ming@harbor-tech.example"
+       }
+      },
+      {
+       "id": "t",
+       "component": "Text",
+       "text": "已移到垃圾邮件 2 封"
+      }
+     ]
+    }
+   }
+  ],
+  "ok": true
+ },
+ {
+  "name": "done_group_no_n",
+  "catalog": "ai.luoke/a2ui/agent/1",
+  "messages": [
+   {
+    "version": "v0.9",
+    "createSurface": {
+     "surfaceId": "s",
+     "catalogId": "ai.luoke/a2ui/agent/1"
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateComponents": {
+     "surfaceId": "s",
+     "components": [
+      {
+       "id": "root",
+       "component": "Column",
+       "children": [
+        "t"
+       ],
+       "group": {
+        "key": "k",
+        "text": "已归档 {n} 封"
+       }
+      },
+      {
+       "id": "t",
+       "component": "Text",
+       "text": "x"
+      }
+     ]
+    }
+   }
+  ],
+  "ok": false
+ },
+ {
+  "name": "done_group_not_root",
+  "catalog": "ai.luoke/a2ui/agent/1",
+  "messages": [
+   {
+    "version": "v0.9",
+    "createSurface": {
+     "surfaceId": "s",
+     "catalogId": "ai.luoke/a2ui/agent/1"
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateComponents": {
+     "surfaceId": "s",
+     "components": [
+      {
+       "id": "root",
+       "component": "Column",
+       "children": [
+        "t"
+       ]
+      },
+      {
+       "id": "t",
+       "component": "Text",
+       "text": "x",
+       "group": {
+        "key": "k",
+        "text": "x",
+        "n": 1
+       }
+      }
+     ]
+    }
+   }
+  ],
+  "ok": false
+ },
+ {
+  "name": "subtitle_ok",
+  "catalog": "ai.luoke/a2ui/agent/1",
+  "messages": [
+   {
+    "version": "v0.9",
+    "createSurface": {
+     "surfaceId": "s",
+     "catalogId": "ai.luoke/a2ui/agent/1"
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateComponents": {
+     "surfaceId": "s",
+     "components": [
+      {
+       "id": "root",
+       "component": "Column",
+       "children": [
+        "t"
+       ],
+       "subtitle": "王老师 · 答辩时间"
+      },
+      {
+       "id": "t",
+       "component": "Text",
+       "text": "x"
+      }
+     ]
+    }
+   }
+  ],
+  "ok": true
+ },
+ {
+  "name": "subtitle_empty",
+  "catalog": "ai.luoke/a2ui/agent/1",
+  "messages": [
+   {
+    "version": "v0.9",
+    "createSurface": {
+     "surfaceId": "s",
+     "catalogId": "ai.luoke/a2ui/agent/1"
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateComponents": {
+     "surfaceId": "s",
+     "components": [
+      {
+       "id": "root",
+       "component": "Column",
+       "children": [
+        "t"
+       ],
+       "subtitle": " "
+      },
+      {
+       "id": "t",
+       "component": "Text",
+       "text": "x"
+      }
+     ]
+    }
+   }
+  ],
+  "ok": false
+ },
+ {
+  "name": "subtitle_bound",
+  "catalog": "ai.luoke/a2ui/agent/1",
+  "messages": [
+   {
+    "version": "v0.9",
+    "createSurface": {
+     "surfaceId": "s",
+     "catalogId": "ai.luoke/a2ui/agent/1"
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateComponents": {
+     "surfaceId": "s",
+     "components": [
+      {
+       "id": "root",
+       "component": "Column",
+       "children": [
+        "t"
+       ],
+       "subtitle": {
+        "path": "/s"
+       }
+      },
+      {
+       "id": "t",
+       "component": "Text",
+       "text": "x"
+      }
+     ]
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateDataModel": {
+     "surfaceId": "s",
+     "path": "/",
+     "value": {
+      "s": "王老师"
+     }
+    }
+   }
+  ],
+  "ok": false
+ },
+ {
+  "name": "subtitle_not_root",
+  "catalog": "ai.luoke/a2ui/agent/1",
+  "messages": [
+   {
+    "version": "v0.9",
+    "createSurface": {
+     "surfaceId": "s",
+     "catalogId": "ai.luoke/a2ui/agent/1"
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateComponents": {
+     "surfaceId": "s",
+     "components": [
+      {
+       "id": "root",
+       "component": "Column",
+       "children": [
+        "t"
+       ]
+      },
+      {
+       "id": "t",
+       "component": "Text",
+       "text": "x",
+       "subtitle": "王老师"
+      }
+     ]
+    }
+   }
+  ],
+  "ok": false
+ },
+ {
+  "name": "open_url_icon_row_ok",
+  "catalog": "ai.luoke/a2ui/agent/1",
+  "messages": [
+   {
+    "version": "v0.9",
+    "createSurface": {
+     "surfaceId": "s",
+     "catalogId": "ai.luoke/a2ui/agent/1"
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateComponents": {
+     "surfaceId": "s",
+     "components": [
+      {
+       "id": "root",
+       "component": "Button",
+       "child": "r",
+       "tooltip": "加入日程",
+       "action": {
+        "event": {
+         "name": "agent.open_url",
+         "context": {
+          "url": "https://calendar.google.com/x"
+         }
+        }
+       }
+      },
+      {
+       "id": "r",
+       "component": "Row",
+       "children": [
+        "i",
+        "t"
+       ]
+      },
+      {
+       "id": "i",
+       "component": "Icon",
+       "name": "calendar-plus"
+      },
+      {
+       "id": "t",
+       "component": "Text",
+       "text": "11-12 16:00"
+      }
+     ]
+    }
+   }
+  ],
+  "ok": true
+ },
+ {
+  "name": "open_url_icon_row_bound",
+  "catalog": "ai.luoke/a2ui/agent/1",
+  "messages": [
+   {
+    "version": "v0.9",
+    "createSurface": {
+     "surfaceId": "s",
+     "catalogId": "ai.luoke/a2ui/agent/1"
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateComponents": {
+     "surfaceId": "s",
+     "components": [
+      {
+       "id": "root",
+       "component": "Button",
+       "child": "r",
+       "action": {
+        "event": {
+         "name": "agent.open_url",
+         "context": {
+          "url": "https://calendar.google.com/x"
+         }
+        }
+       }
+      },
+      {
+       "id": "r",
+       "component": "Row",
+       "children": [
+        "i",
+        "t"
+       ]
+      },
+      {
+       "id": "i",
+       "component": "Icon",
+       "name": "calendar-plus"
+      },
+      {
+       "id": "t",
+       "component": "Text",
+       "text": {
+        "path": "/when"
+       }
+      }
+     ]
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateDataModel": {
+     "surfaceId": "s",
+     "path": "/",
+     "value": {
+      "when": "11-12"
+     }
+    }
+   }
+  ],
+  "ok": false
+ },
+ {
+  "name": "old_icon_name_ok",
+  "catalog": "ai.luoke/a2ui/agent/1",
+  "messages": [
+   {
+    "version": "v0.9",
+    "createSurface": {
+     "surfaceId": "s",
+     "catalogId": "ai.luoke/a2ui/agent/1"
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateComponents": {
+     "surfaceId": "s",
+     "components": [
+      {
+       "id": "root",
+       "component": "Icon",
+       "name": "trash"
+      }
+     ]
+    }
+   }
+  ],
+  "ok": true
+ },
+ {
+  "name": "open_page_ok",
+  "catalog": "ai.luoke/a2ui/agent/1",
+  "messages": [
+   {
+    "version": "v0.9",
+    "createSurface": {
+     "surfaceId": "s",
+     "catalogId": "ai.luoke/a2ui/agent/1"
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateComponents": {
+     "surfaceId": "s",
+     "components": [
+      {
+       "id": "root",
+       "component": "Button",
+       "child": "t",
+       "action": {
+        "event": {
+         "name": "agent.open_page",
+         "context": {
+          "page": "overview"
+         }
+        }
+       }
+      },
+      {
+       "id": "t",
+       "component": "Text",
+       "text": "点"
+      }
+     ]
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateDataModel": {
+     "surfaceId": "s",
+     "path": "/",
+     "value": {
+      "x": 1
+     }
+    }
+   }
+  ],
+  "ok": true
+ },
+ {
+  "name": "open_page_other_app",
+  "catalog": "ai.luoke/a2ui/agent/1",
+  "messages": [
+   {
+    "version": "v0.9",
+    "createSurface": {
+     "surfaceId": "s",
+     "catalogId": "ai.luoke/a2ui/agent/1"
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateComponents": {
+     "surfaceId": "s",
+     "components": [
+      {
+       "id": "root",
+       "component": "Button",
+       "child": "t",
+       "action": {
+        "event": {
+         "name": "agent.open_page",
+         "context": {
+          "page": "luoke-mail/accounts"
+         }
+        }
+       }
+      },
+      {
+       "id": "t",
+       "component": "Text",
+       "text": "点"
+      }
+     ]
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateDataModel": {
+     "surfaceId": "s",
+     "path": "/",
+     "value": {
+      "x": 1
+     }
+    }
+   }
+  ],
+  "ok": false
+ },
+ {
+  "name": "open_page_app_key",
+  "catalog": "ai.luoke/a2ui/agent/1",
+  "messages": [
+   {
+    "version": "v0.9",
+    "createSurface": {
+     "surfaceId": "s",
+     "catalogId": "ai.luoke/a2ui/agent/1"
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateComponents": {
+     "surfaceId": "s",
+     "components": [
+      {
+       "id": "root",
+       "component": "Button",
+       "child": "t",
+       "action": {
+        "event": {
+         "name": "agent.open_page",
+         "context": {
+          "app": "luoke-mail",
+          "page": "accounts"
+         }
+        }
+       }
+      },
+      {
+       "id": "t",
+       "component": "Text",
+       "text": "点"
+      }
+     ]
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateDataModel": {
+     "surfaceId": "s",
+     "path": "/",
+     "value": {
+      "x": 1
+     }
+    }
+   }
+  ],
+  "ok": false
+ },
+ {
+  "name": "open_page_bad_id",
+  "catalog": "ai.luoke/a2ui/agent/1",
+  "messages": [
+   {
+    "version": "v0.9",
+    "createSurface": {
+     "surfaceId": "s",
+     "catalogId": "ai.luoke/a2ui/agent/1"
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateComponents": {
+     "surfaceId": "s",
+     "components": [
+      {
+       "id": "root",
+       "component": "Button",
+       "child": "t",
+       "action": {
+        "event": {
+         "name": "agent.open_page",
+         "context": {
+          "page": "../x"
+         }
+        }
+       }
+      },
+      {
+       "id": "t",
+       "component": "Text",
+       "text": "点"
+      }
+     ]
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateDataModel": {
+     "surfaceId": "s",
+     "path": "/",
+     "value": {
+      "x": 1
+     }
+    }
+   }
+  ],
+  "ok": false
+ },
+ {
+  "name": "open_page_no_page",
+  "catalog": "ai.luoke/a2ui/agent/1",
+  "messages": [
+   {
+    "version": "v0.9",
+    "createSurface": {
+     "surfaceId": "s",
+     "catalogId": "ai.luoke/a2ui/agent/1"
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateComponents": {
+     "surfaceId": "s",
+     "components": [
+      {
+       "id": "root",
+       "component": "Button",
+       "child": "t",
+       "action": {
+        "event": {
+         "name": "agent.open_page",
+         "context": {}
+        }
+       }
+      },
+      {
+       "id": "t",
+       "component": "Text",
+       "text": "点"
+      }
+     ]
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateDataModel": {
+     "surfaceId": "s",
+     "path": "/",
+     "value": {
+      "x": 1
+     }
+    }
+   }
+  ],
+  "ok": false
+ },
+ {
+  "name": "open_page_switch",
+  "catalog": "ai.luoke/a2ui/agent/1",
+  "messages": [
+   {
+    "version": "v0.9",
+    "createSurface": {
+     "surfaceId": "s",
+     "catalogId": "ai.luoke/a2ui/agent/1"
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateComponents": {
+     "surfaceId": "s",
+     "components": [
+      {
+       "id": "root",
+       "component": "Button",
+       "child": "t",
+       "variant": "switch",
+       "on": false,
+       "action": {
+        "event": {
+         "name": "agent.open_page",
+         "context": {
+          "page": "overview"
+         }
+        }
+       }
+      },
+      {
+       "id": "t",
+       "component": "Text",
+       "text": "去看看"
+      }
+     ]
+    }
+   }
+  ],
+  "ok": false
+ },
+ {
+  "name": "count_ok",
+  "catalog": "ai.luoke/a2ui/agent/1",
+  "messages": [
+   {
+    "version": "v0.9",
+    "createSurface": {
+     "surfaceId": "s",
+     "catalogId": "ai.luoke/a2ui/agent/1"
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateComponents": {
+     "surfaceId": "s",
+     "components": [
+      {
+       "id": "root",
+       "component": "Button",
+       "child": "t",
+       "count": {
+        "path": "/choices",
+        "value": "trash"
+       },
+       "action": {
+        "event": {
+         "name": "scan_apply",
+         "context": {
+          "choices": {
+           "path": "/choices"
+          }
+         }
+        }
+       }
+      },
+      {
+       "id": "t",
+       "component": "Text",
+       "text": "移到废纸篓 {n} 项"
+      }
+     ]
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateDataModel": {
+     "surfaceId": "s",
+     "path": "/",
+     "value": {
+      "choices": {
+       "i0": [
+        "trash"
+       ],
+       "i1": [
+        "keep"
+       ]
+      },
+      "n": 1
+     }
+    }
+   }
+  ],
+  "ok": true
+ },
+ {
+  "name": "count_bad_shape",
+  "catalog": "ai.luoke/a2ui/agent/1",
+  "messages": [
+   {
+    "version": "v0.9",
+    "createSurface": {
+     "surfaceId": "s",
+     "catalogId": "ai.luoke/a2ui/agent/1"
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateComponents": {
+     "surfaceId": "s",
+     "components": [
+      {
+       "id": "root",
+       "component": "Button",
+       "child": "t",
+       "count": {
+        "path": "/choices"
+       },
+       "action": {
+        "event": {
+         "name": "scan_apply",
+         "context": {
+          "choices": {
+           "path": "/choices"
+          }
+         }
+        }
+       }
+      },
+      {
+       "id": "t",
+       "component": "Text",
+       "text": "移到废纸篓 {n} 项"
+      }
+     ]
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateDataModel": {
+     "surfaceId": "s",
+     "path": "/",
+     "value": {
+      "choices": {
+       "i0": [
+        "trash"
+       ],
+       "i1": [
+        "keep"
+       ]
+      },
+      "n": 1
+     }
+    }
+   }
+  ],
+  "ok": false
+ },
+ {
+  "name": "count_empty_value",
+  "catalog": "ai.luoke/a2ui/agent/1",
+  "messages": [
+   {
+    "version": "v0.9",
+    "createSurface": {
+     "surfaceId": "s",
+     "catalogId": "ai.luoke/a2ui/agent/1"
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateComponents": {
+     "surfaceId": "s",
+     "components": [
+      {
+       "id": "root",
+       "component": "Button",
+       "child": "t",
+       "count": {
+        "path": "/choices",
+        "value": ""
+       },
+       "action": {
+        "event": {
+         "name": "scan_apply",
+         "context": {
+          "choices": {
+           "path": "/choices"
+          }
+         }
+        }
+       }
+      },
+      {
+       "id": "t",
+       "component": "Text",
+       "text": "移到废纸篓 {n} 项"
+      }
+     ]
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateDataModel": {
+     "surfaceId": "s",
+     "path": "/",
+     "value": {
+      "choices": {
+       "i0": [
+        "trash"
+       ],
+       "i1": [
+        "keep"
+       ]
+      },
+      "n": 1
+     }
+    }
+   }
+  ],
+  "ok": false
+ },
+ {
+  "name": "count_missing_path",
+  "catalog": "ai.luoke/a2ui/agent/1",
+  "messages": [
+   {
+    "version": "v0.9",
+    "createSurface": {
+     "surfaceId": "s",
+     "catalogId": "ai.luoke/a2ui/agent/1"
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateComponents": {
+     "surfaceId": "s",
+     "components": [
+      {
+       "id": "root",
+       "component": "Button",
+       "child": "t",
+       "count": {
+        "path": "/nope",
+        "value": "trash"
+       },
+       "action": {
+        "event": {
+         "name": "scan_apply",
+         "context": {
+          "choices": {
+           "path": "/choices"
+          }
+         }
+        }
+       }
+      },
+      {
+       "id": "t",
+       "component": "Text",
+       "text": "移到废纸篓 {n} 项"
+      }
+     ]
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateDataModel": {
+     "surfaceId": "s",
+     "path": "/",
+     "value": {
+      "choices": {
+       "i0": [
+        "trash"
+       ],
+       "i1": [
+        "keep"
+       ]
+      },
+      "n": 1
+     }
+    }
+   }
+  ],
+  "ok": false
+ },
+ {
+  "name": "count_not_choices",
+  "catalog": "ai.luoke/a2ui/agent/1",
+  "messages": [
+   {
+    "version": "v0.9",
+    "createSurface": {
+     "surfaceId": "s",
+     "catalogId": "ai.luoke/a2ui/agent/1"
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateComponents": {
+     "surfaceId": "s",
+     "components": [
+      {
+       "id": "root",
+       "component": "Button",
+       "child": "t",
+       "count": {
+        "path": "/n",
+        "value": "trash"
+       },
+       "action": {
+        "event": {
+         "name": "scan_apply",
+         "context": {
+          "choices": {
+           "path": "/choices"
+          }
+         }
+        }
+       }
+      },
+      {
+       "id": "t",
+       "component": "Text",
+       "text": "移到废纸篓 {n} 项"
+      }
+     ]
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateDataModel": {
+     "surfaceId": "s",
+     "path": "/",
+     "value": {
+      "choices": {
+       "i0": [
+        "trash"
+       ],
+       "i1": [
+        "keep"
+       ]
+      },
+      "n": 1
+     }
+    }
+   }
+  ],
+  "ok": false
+ },
+ {
+  "name": "open_page_args_ok",
+  "catalog": "ai.luoke/a2ui/agent/1",
+  "messages": [
+   {
+    "version": "v0.9",
+    "createSurface": {
+     "surfaceId": "s",
+     "catalogId": "ai.luoke/a2ui/agent/1"
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateComponents": {
+     "surfaceId": "s",
+     "components": [
+      {
+       "id": "root",
+       "component": "Button",
+       "child": "t",
+       "action": {
+        "event": {
+         "name": "agent.open_page",
+         "context": {
+          "page": "notes",
+          "args": {
+           "item": "n-42",
+           "q": {
+            "path": "/q"
+           }
+          }
+         }
+        }
+       }
+      },
+      {
+       "id": "t",
+       "component": "Text",
+       "text": "点"
+      }
+     ]
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateDataModel": {
+     "surfaceId": "s",
+     "path": "/",
+     "value": {
+      "q": "发票"
+     }
+    }
+   }
+  ],
+  "ok": true
+ },
+ {
+  "name": "open_page_args_too_many",
+  "catalog": "ai.luoke/a2ui/agent/1",
+  "messages": [
+   {
+    "version": "v0.9",
+    "createSurface": {
+     "surfaceId": "s",
+     "catalogId": "ai.luoke/a2ui/agent/1"
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateComponents": {
+     "surfaceId": "s",
+     "components": [
+      {
+       "id": "root",
+       "component": "Button",
+       "child": "t",
+       "action": {
+        "event": {
+         "name": "agent.open_page",
+         "context": {
+          "page": "notes",
+          "args": {
+           "a": "1",
+           "b": "1",
+           "c": "1",
+           "d": "1",
+           "e": "1"
+          }
+         }
+        }
+       }
+      },
+      {
+       "id": "t",
+       "component": "Text",
+       "text": "点"
+      }
+     ]
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateDataModel": {
+     "surfaceId": "s",
+     "path": "/",
+     "value": {
+      "x": 1
+     }
+    }
+   }
+  ],
+  "ok": false
+ },
+ {
+  "name": "open_page_args_bad_key",
+  "catalog": "ai.luoke/a2ui/agent/1",
+  "messages": [
+   {
+    "version": "v0.9",
+    "createSurface": {
+     "surfaceId": "s",
+     "catalogId": "ai.luoke/a2ui/agent/1"
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateComponents": {
+     "surfaceId": "s",
+     "components": [
+      {
+       "id": "root",
+       "component": "Button",
+       "child": "t",
+       "action": {
+        "event": {
+         "name": "agent.open_page",
+         "context": {
+          "page": "notes",
+          "args": {
+           "Item": "1"
+          }
+         }
+        }
+       }
+      },
+      {
+       "id": "t",
+       "component": "Text",
+       "text": "点"
+      }
+     ]
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateDataModel": {
+     "surfaceId": "s",
+     "path": "/",
+     "value": {
+      "x": 1
+     }
+    }
+   }
+  ],
+  "ok": false
+ },
+ {
+  "name": "open_page_args_newline_key",
+  "catalog": "ai.luoke/a2ui/agent/1",
+  "messages": [
+   {
+    "version": "v0.9",
+    "createSurface": {
+     "surfaceId": "s",
+     "catalogId": "ai.luoke/a2ui/agent/1"
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateComponents": {
+     "surfaceId": "s",
+     "components": [
+      {
+       "id": "root",
+       "component": "Button",
+       "child": "t",
+       "action": {
+        "event": {
+         "name": "agent.open_page",
+         "context": {
+          "page": "notes",
+          "args": {
+           "item\n": "1"
+          }
+         }
+        }
+       }
+      },
+      {
+       "id": "t",
+       "component": "Text",
+       "text": "点"
+      }
+     ]
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateDataModel": {
+     "surfaceId": "s",
+     "path": "/",
+     "value": {
+      "x": 1
+     }
+    }
+   }
+  ],
+  "ok": false
+ },
+ {
+  "name": "open_page_args_long",
+  "catalog": "ai.luoke/a2ui/agent/1",
+  "messages": [
+   {
+    "version": "v0.9",
+    "createSurface": {
+     "surfaceId": "s",
+     "catalogId": "ai.luoke/a2ui/agent/1"
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateComponents": {
+     "surfaceId": "s",
+     "components": [
+      {
+       "id": "root",
+       "component": "Button",
+       "child": "t",
+       "action": {
+        "event": {
+         "name": "agent.open_page",
+         "context": {
+          "page": "notes",
+          "args": {
+           "q": "长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长"
+          }
+         }
+        }
+       }
+      },
+      {
+       "id": "t",
+       "component": "Text",
+       "text": "点"
+      }
+     ]
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateDataModel": {
+     "surfaceId": "s",
+     "path": "/",
+     "value": {
+      "x": 1
+     }
+    }
+   }
+  ],
+  "ok": false
+ },
+ {
+  "name": "open_page_args_200",
+  "catalog": "ai.luoke/a2ui/agent/1",
+  "messages": [
+   {
+    "version": "v0.9",
+    "createSurface": {
+     "surfaceId": "s",
+     "catalogId": "ai.luoke/a2ui/agent/1"
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateComponents": {
+     "surfaceId": "s",
+     "components": [
+      {
+       "id": "root",
+       "component": "Button",
+       "child": "t",
+       "action": {
+        "event": {
+         "name": "agent.open_page",
+         "context": {
+          "page": "notes",
+          "args": {
+           "q": "长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长"
+          }
+         }
+        }
+       }
+      },
+      {
+       "id": "t",
+       "component": "Text",
+       "text": "点"
+      }
+     ]
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateDataModel": {
+     "surfaceId": "s",
+     "path": "/",
+     "value": {
+      "x": 1
+     }
+    }
+   }
+  ],
+  "ok": true
+ },
+ {
+  "name": "open_page_args_number",
+  "catalog": "ai.luoke/a2ui/agent/1",
+  "messages": [
+   {
+    "version": "v0.9",
+    "createSurface": {
+     "surfaceId": "s",
+     "catalogId": "ai.luoke/a2ui/agent/1"
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateComponents": {
+     "surfaceId": "s",
+     "components": [
+      {
+       "id": "root",
+       "component": "Button",
+       "child": "t",
+       "action": {
+        "event": {
+         "name": "agent.open_page",
+         "context": {
+          "page": "notes",
+          "args": {
+           "n": 2
+          }
+         }
+        }
+       }
+      },
+      {
+       "id": "t",
+       "component": "Text",
+       "text": "点"
+      }
+     ]
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateDataModel": {
+     "surfaceId": "s",
+     "path": "/",
+     "value": {
+      "x": 1
+     }
+    }
+   }
+  ],
+  "ok": false
+ },
+ {
+  "name": "open_page_args_not_object",
+  "catalog": "ai.luoke/a2ui/agent/1",
+  "messages": [
+   {
+    "version": "v0.9",
+    "createSurface": {
+     "surfaceId": "s",
+     "catalogId": "ai.luoke/a2ui/agent/1"
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateComponents": {
+     "surfaceId": "s",
+     "components": [
+      {
+       "id": "root",
+       "component": "Button",
+       "child": "t",
+       "action": {
+        "event": {
+         "name": "agent.open_page",
+         "context": {
+          "page": "notes",
+          "args": [
+           "x"
+          ]
+         }
+        }
+       }
+      },
+      {
+       "id": "t",
+       "component": "Text",
+       "text": "点"
+      }
+     ]
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateDataModel": {
+     "surfaceId": "s",
+     "path": "/",
+     "value": {
+      "x": 1
+     }
+    }
+   }
+  ],
+  "ok": false
+ },
+ {
+  "name": "open_page_args_unbound",
+  "catalog": "ai.luoke/a2ui/agent/1",
+  "messages": [
+   {
+    "version": "v0.9",
+    "createSurface": {
+     "surfaceId": "s",
+     "catalogId": "ai.luoke/a2ui/agent/1"
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateComponents": {
+     "surfaceId": "s",
+     "components": [
+      {
+       "id": "root",
+       "component": "Button",
+       "child": "t",
+       "action": {
+        "event": {
+         "name": "agent.open_page",
+         "context": {
+          "page": "notes",
+          "args": {
+           "q": {
+            "path": "/nope"
+           }
+          }
+         }
+        }
+       }
+      },
+      {
+       "id": "t",
+       "component": "Text",
+       "text": "点"
+      }
+     ]
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateDataModel": {
+     "surfaceId": "s",
+     "path": "/",
+     "value": {
+      "x": 1
+     }
+    }
+   }
+  ],
+  "ok": false
+ },
+ {
+  "name": "page_400",
+  "catalog": "ai.luoke/a2ui/agent/1",
+  "messages": [
+   {
+    "version": "v0.9",
+    "createSurface": {
+     "surfaceId": "s",
+     "catalogId": "ai.luoke/a2ui/agent/1"
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateComponents": {
+     "surfaceId": "s",
+     "components": [
+      {
+       "id": "root",
+       "component": "Column",
+       "children": [
+        "t0",
+        "t1",
+        "t2",
+        "t3",
+        "t4",
+        "t5",
+        "t6",
+        "t7",
+        "t8",
+        "t9",
+        "t10",
+        "t11",
+        "t12",
+        "t13",
+        "t14",
+        "t15",
+        "t16",
+        "t17",
+        "t18",
+        "t19",
+        "t20",
+        "t21",
+        "t22",
+        "t23",
+        "t24",
+        "t25",
+        "t26",
+        "t27",
+        "t28",
+        "t29",
+        "t30",
+        "t31",
+        "t32",
+        "t33",
+        "t34",
+        "t35",
+        "t36",
+        "t37",
+        "t38",
+        "t39",
+        "t40",
+        "t41",
+        "t42",
+        "t43",
+        "t44",
+        "t45",
+        "t46",
+        "t47",
+        "t48",
+        "t49",
+        "t50",
+        "t51",
+        "t52",
+        "t53",
+        "t54",
+        "t55",
+        "t56",
+        "t57",
+        "t58",
+        "t59",
+        "t60",
+        "t61",
+        "t62",
+        "t63",
+        "t64",
+        "t65",
+        "t66",
+        "t67",
+        "t68",
+        "t69",
+        "t70",
+        "t71",
+        "t72",
+        "t73",
+        "t74",
+        "t75",
+        "t76",
+        "t77",
+        "t78",
+        "t79",
+        "t80",
+        "t81",
+        "t82",
+        "t83",
+        "t84",
+        "t85",
+        "t86",
+        "t87",
+        "t88",
+        "t89",
+        "t90",
+        "t91",
+        "t92",
+        "t93",
+        "t94",
+        "t95",
+        "t96",
+        "t97",
+        "t98",
+        "t99",
+        "t100",
+        "t101",
+        "t102",
+        "t103",
+        "t104",
+        "t105",
+        "t106",
+        "t107",
+        "t108",
+        "t109",
+        "t110",
+        "t111",
+        "t112",
+        "t113",
+        "t114",
+        "t115",
+        "t116",
+        "t117",
+        "t118",
+        "t119",
+        "t120",
+        "t121",
+        "t122",
+        "t123",
+        "t124",
+        "t125",
+        "t126",
+        "t127",
+        "t128",
+        "t129",
+        "t130",
+        "t131",
+        "t132",
+        "t133",
+        "t134",
+        "t135",
+        "t136",
+        "t137",
+        "t138",
+        "t139",
+        "t140",
+        "t141",
+        "t142",
+        "t143",
+        "t144",
+        "t145",
+        "t146",
+        "t147",
+        "t148",
+        "t149",
+        "t150",
+        "t151",
+        "t152",
+        "t153",
+        "t154",
+        "t155",
+        "t156",
+        "t157",
+        "t158",
+        "t159",
+        "t160",
+        "t161",
+        "t162",
+        "t163",
+        "t164",
+        "t165",
+        "t166",
+        "t167",
+        "t168",
+        "t169",
+        "t170",
+        "t171",
+        "t172",
+        "t173",
+        "t174",
+        "t175",
+        "t176",
+        "t177",
+        "t178",
+        "t179",
+        "t180",
+        "t181",
+        "t182",
+        "t183",
+        "t184",
+        "t185",
+        "t186",
+        "t187",
+        "t188",
+        "t189",
+        "t190",
+        "t191",
+        "t192",
+        "t193",
+        "t194",
+        "t195",
+        "t196",
+        "t197",
+        "t198",
+        "t199",
+        "t200",
+        "t201",
+        "t202",
+        "t203",
+        "t204",
+        "t205",
+        "t206",
+        "t207",
+        "t208",
+        "t209",
+        "t210",
+        "t211",
+        "t212",
+        "t213",
+        "t214",
+        "t215",
+        "t216",
+        "t217",
+        "t218",
+        "t219",
+        "t220",
+        "t221",
+        "t222",
+        "t223",
+        "t224",
+        "t225",
+        "t226",
+        "t227",
+        "t228",
+        "t229",
+        "t230",
+        "t231",
+        "t232",
+        "t233",
+        "t234",
+        "t235",
+        "t236",
+        "t237",
+        "t238",
+        "t239",
+        "t240",
+        "t241",
+        "t242",
+        "t243",
+        "t244",
+        "t245",
+        "t246",
+        "t247",
+        "t248",
+        "t249",
+        "t250",
+        "t251",
+        "t252",
+        "t253",
+        "t254",
+        "t255",
+        "t256",
+        "t257",
+        "t258",
+        "t259",
+        "t260",
+        "t261",
+        "t262",
+        "t263",
+        "t264",
+        "t265",
+        "t266",
+        "t267",
+        "t268",
+        "t269",
+        "t270",
+        "t271",
+        "t272",
+        "t273",
+        "t274",
+        "t275",
+        "t276",
+        "t277",
+        "t278",
+        "t279",
+        "t280",
+        "t281",
+        "t282",
+        "t283",
+        "t284",
+        "t285",
+        "t286",
+        "t287",
+        "t288",
+        "t289",
+        "t290",
+        "t291",
+        "t292",
+        "t293",
+        "t294",
+        "t295",
+        "t296",
+        "t297",
+        "t298",
+        "t299",
+        "t300",
+        "t301",
+        "t302",
+        "t303",
+        "t304",
+        "t305",
+        "t306",
+        "t307",
+        "t308",
+        "t309",
+        "t310",
+        "t311",
+        "t312",
+        "t313",
+        "t314",
+        "t315",
+        "t316",
+        "t317",
+        "t318",
+        "t319",
+        "t320",
+        "t321",
+        "t322",
+        "t323",
+        "t324",
+        "t325",
+        "t326",
+        "t327",
+        "t328",
+        "t329",
+        "t330",
+        "t331",
+        "t332",
+        "t333",
+        "t334",
+        "t335",
+        "t336",
+        "t337",
+        "t338",
+        "t339",
+        "t340",
+        "t341",
+        "t342",
+        "t343",
+        "t344",
+        "t345",
+        "t346",
+        "t347",
+        "t348",
+        "t349",
+        "t350",
+        "t351",
+        "t352",
+        "t353",
+        "t354",
+        "t355",
+        "t356",
+        "t357",
+        "t358",
+        "t359",
+        "t360",
+        "t361",
+        "t362",
+        "t363",
+        "t364",
+        "t365",
+        "t366",
+        "t367",
+        "t368",
+        "t369",
+        "t370",
+        "t371",
+        "t372",
+        "t373",
+        "t374",
+        "t375",
+        "t376",
+        "t377",
+        "t378",
+        "t379",
+        "t380",
+        "t381",
+        "t382",
+        "t383",
+        "t384",
+        "t385",
+        "t386",
+        "t387",
+        "t388",
+        "t389",
+        "t390",
+        "t391",
+        "t392",
+        "t393",
+        "t394",
+        "t395",
+        "t396",
+        "t397",
+        "t398"
+       ]
+      },
+      {
+       "id": "t0",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t1",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t2",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t3",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t4",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t5",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t6",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t7",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t8",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t9",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t10",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t11",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t12",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t13",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t14",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t15",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t16",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t17",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t18",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t19",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t20",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t21",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t22",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t23",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t24",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t25",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t26",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t27",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t28",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t29",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t30",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t31",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t32",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t33",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t34",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t35",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t36",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t37",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t38",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t39",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t40",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t41",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t42",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t43",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t44",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t45",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t46",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t47",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t48",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t49",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t50",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t51",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t52",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t53",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t54",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t55",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t56",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t57",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t58",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t59",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t60",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t61",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t62",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t63",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t64",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t65",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t66",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t67",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t68",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t69",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t70",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t71",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t72",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t73",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t74",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t75",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t76",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t77",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t78",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t79",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t80",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t81",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t82",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t83",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t84",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t85",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t86",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t87",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t88",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t89",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t90",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t91",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t92",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t93",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t94",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t95",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t96",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t97",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t98",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t99",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t100",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t101",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t102",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t103",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t104",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t105",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t106",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t107",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t108",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t109",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t110",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t111",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t112",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t113",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t114",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t115",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t116",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t117",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t118",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t119",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t120",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t121",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t122",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t123",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t124",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t125",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t126",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t127",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t128",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t129",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t130",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t131",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t132",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t133",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t134",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t135",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t136",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t137",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t138",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t139",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t140",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t141",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t142",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t143",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t144",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t145",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t146",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t147",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t148",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t149",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t150",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t151",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t152",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t153",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t154",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t155",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t156",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t157",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t158",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t159",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t160",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t161",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t162",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t163",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t164",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t165",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t166",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t167",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t168",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t169",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t170",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t171",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t172",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t173",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t174",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t175",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t176",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t177",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t178",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t179",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t180",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t181",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t182",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t183",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t184",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t185",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t186",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t187",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t188",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t189",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t190",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t191",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t192",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t193",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t194",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t195",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t196",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t197",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t198",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t199",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t200",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t201",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t202",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t203",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t204",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t205",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t206",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t207",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t208",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t209",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t210",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t211",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t212",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t213",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t214",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t215",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t216",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t217",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t218",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t219",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t220",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t221",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t222",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t223",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t224",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t225",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t226",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t227",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t228",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t229",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t230",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t231",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t232",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t233",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t234",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t235",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t236",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t237",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t238",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t239",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t240",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t241",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t242",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t243",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t244",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t245",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t246",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t247",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t248",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t249",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t250",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t251",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t252",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t253",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t254",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t255",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t256",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t257",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t258",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t259",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t260",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t261",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t262",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t263",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t264",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t265",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t266",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t267",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t268",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t269",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t270",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t271",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t272",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t273",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t274",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t275",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t276",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t277",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t278",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t279",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t280",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t281",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t282",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t283",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t284",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t285",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t286",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t287",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t288",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t289",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t290",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t291",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t292",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t293",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t294",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t295",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t296",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t297",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t298",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t299",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t300",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t301",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t302",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t303",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t304",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t305",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t306",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t307",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t308",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t309",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t310",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t311",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t312",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t313",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t314",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t315",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t316",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t317",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t318",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t319",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t320",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t321",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t322",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t323",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t324",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t325",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t326",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t327",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t328",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t329",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t330",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t331",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t332",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t333",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t334",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t335",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t336",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t337",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t338",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t339",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t340",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t341",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t342",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t343",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t344",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t345",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t346",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t347",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t348",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t349",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t350",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t351",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t352",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t353",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t354",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t355",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t356",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t357",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t358",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t359",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t360",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t361",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t362",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t363",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t364",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t365",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t366",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t367",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t368",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t369",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t370",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t371",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t372",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t373",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t374",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t375",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t376",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t377",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t378",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t379",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t380",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t381",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t382",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t383",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t384",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t385",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t386",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t387",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t388",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t389",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t390",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t391",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t392",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t393",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t394",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t395",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t396",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t397",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t398",
+       "component": "Text",
+       "text": "x"
+      }
+     ]
+    }
+   }
+  ],
+  "ok": true,
+  "page": true
+ },
+ {
+  "name": "page_401",
+  "catalog": "ai.luoke/a2ui/agent/1",
+  "messages": [
+   {
+    "version": "v0.9",
+    "createSurface": {
+     "surfaceId": "s",
+     "catalogId": "ai.luoke/a2ui/agent/1"
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateComponents": {
+     "surfaceId": "s",
+     "components": [
+      {
+       "id": "root",
+       "component": "Column",
+       "children": [
+        "t0",
+        "t1",
+        "t2",
+        "t3",
+        "t4",
+        "t5",
+        "t6",
+        "t7",
+        "t8",
+        "t9",
+        "t10",
+        "t11",
+        "t12",
+        "t13",
+        "t14",
+        "t15",
+        "t16",
+        "t17",
+        "t18",
+        "t19",
+        "t20",
+        "t21",
+        "t22",
+        "t23",
+        "t24",
+        "t25",
+        "t26",
+        "t27",
+        "t28",
+        "t29",
+        "t30",
+        "t31",
+        "t32",
+        "t33",
+        "t34",
+        "t35",
+        "t36",
+        "t37",
+        "t38",
+        "t39",
+        "t40",
+        "t41",
+        "t42",
+        "t43",
+        "t44",
+        "t45",
+        "t46",
+        "t47",
+        "t48",
+        "t49",
+        "t50",
+        "t51",
+        "t52",
+        "t53",
+        "t54",
+        "t55",
+        "t56",
+        "t57",
+        "t58",
+        "t59",
+        "t60",
+        "t61",
+        "t62",
+        "t63",
+        "t64",
+        "t65",
+        "t66",
+        "t67",
+        "t68",
+        "t69",
+        "t70",
+        "t71",
+        "t72",
+        "t73",
+        "t74",
+        "t75",
+        "t76",
+        "t77",
+        "t78",
+        "t79",
+        "t80",
+        "t81",
+        "t82",
+        "t83",
+        "t84",
+        "t85",
+        "t86",
+        "t87",
+        "t88",
+        "t89",
+        "t90",
+        "t91",
+        "t92",
+        "t93",
+        "t94",
+        "t95",
+        "t96",
+        "t97",
+        "t98",
+        "t99",
+        "t100",
+        "t101",
+        "t102",
+        "t103",
+        "t104",
+        "t105",
+        "t106",
+        "t107",
+        "t108",
+        "t109",
+        "t110",
+        "t111",
+        "t112",
+        "t113",
+        "t114",
+        "t115",
+        "t116",
+        "t117",
+        "t118",
+        "t119",
+        "t120",
+        "t121",
+        "t122",
+        "t123",
+        "t124",
+        "t125",
+        "t126",
+        "t127",
+        "t128",
+        "t129",
+        "t130",
+        "t131",
+        "t132",
+        "t133",
+        "t134",
+        "t135",
+        "t136",
+        "t137",
+        "t138",
+        "t139",
+        "t140",
+        "t141",
+        "t142",
+        "t143",
+        "t144",
+        "t145",
+        "t146",
+        "t147",
+        "t148",
+        "t149",
+        "t150",
+        "t151",
+        "t152",
+        "t153",
+        "t154",
+        "t155",
+        "t156",
+        "t157",
+        "t158",
+        "t159",
+        "t160",
+        "t161",
+        "t162",
+        "t163",
+        "t164",
+        "t165",
+        "t166",
+        "t167",
+        "t168",
+        "t169",
+        "t170",
+        "t171",
+        "t172",
+        "t173",
+        "t174",
+        "t175",
+        "t176",
+        "t177",
+        "t178",
+        "t179",
+        "t180",
+        "t181",
+        "t182",
+        "t183",
+        "t184",
+        "t185",
+        "t186",
+        "t187",
+        "t188",
+        "t189",
+        "t190",
+        "t191",
+        "t192",
+        "t193",
+        "t194",
+        "t195",
+        "t196",
+        "t197",
+        "t198",
+        "t199",
+        "t200",
+        "t201",
+        "t202",
+        "t203",
+        "t204",
+        "t205",
+        "t206",
+        "t207",
+        "t208",
+        "t209",
+        "t210",
+        "t211",
+        "t212",
+        "t213",
+        "t214",
+        "t215",
+        "t216",
+        "t217",
+        "t218",
+        "t219",
+        "t220",
+        "t221",
+        "t222",
+        "t223",
+        "t224",
+        "t225",
+        "t226",
+        "t227",
+        "t228",
+        "t229",
+        "t230",
+        "t231",
+        "t232",
+        "t233",
+        "t234",
+        "t235",
+        "t236",
+        "t237",
+        "t238",
+        "t239",
+        "t240",
+        "t241",
+        "t242",
+        "t243",
+        "t244",
+        "t245",
+        "t246",
+        "t247",
+        "t248",
+        "t249",
+        "t250",
+        "t251",
+        "t252",
+        "t253",
+        "t254",
+        "t255",
+        "t256",
+        "t257",
+        "t258",
+        "t259",
+        "t260",
+        "t261",
+        "t262",
+        "t263",
+        "t264",
+        "t265",
+        "t266",
+        "t267",
+        "t268",
+        "t269",
+        "t270",
+        "t271",
+        "t272",
+        "t273",
+        "t274",
+        "t275",
+        "t276",
+        "t277",
+        "t278",
+        "t279",
+        "t280",
+        "t281",
+        "t282",
+        "t283",
+        "t284",
+        "t285",
+        "t286",
+        "t287",
+        "t288",
+        "t289",
+        "t290",
+        "t291",
+        "t292",
+        "t293",
+        "t294",
+        "t295",
+        "t296",
+        "t297",
+        "t298",
+        "t299",
+        "t300",
+        "t301",
+        "t302",
+        "t303",
+        "t304",
+        "t305",
+        "t306",
+        "t307",
+        "t308",
+        "t309",
+        "t310",
+        "t311",
+        "t312",
+        "t313",
+        "t314",
+        "t315",
+        "t316",
+        "t317",
+        "t318",
+        "t319",
+        "t320",
+        "t321",
+        "t322",
+        "t323",
+        "t324",
+        "t325",
+        "t326",
+        "t327",
+        "t328",
+        "t329",
+        "t330",
+        "t331",
+        "t332",
+        "t333",
+        "t334",
+        "t335",
+        "t336",
+        "t337",
+        "t338",
+        "t339",
+        "t340",
+        "t341",
+        "t342",
+        "t343",
+        "t344",
+        "t345",
+        "t346",
+        "t347",
+        "t348",
+        "t349",
+        "t350",
+        "t351",
+        "t352",
+        "t353",
+        "t354",
+        "t355",
+        "t356",
+        "t357",
+        "t358",
+        "t359",
+        "t360",
+        "t361",
+        "t362",
+        "t363",
+        "t364",
+        "t365",
+        "t366",
+        "t367",
+        "t368",
+        "t369",
+        "t370",
+        "t371",
+        "t372",
+        "t373",
+        "t374",
+        "t375",
+        "t376",
+        "t377",
+        "t378",
+        "t379",
+        "t380",
+        "t381",
+        "t382",
+        "t383",
+        "t384",
+        "t385",
+        "t386",
+        "t387",
+        "t388",
+        "t389",
+        "t390",
+        "t391",
+        "t392",
+        "t393",
+        "t394",
+        "t395",
+        "t396",
+        "t397",
+        "t398",
+        "t399"
+       ]
+      },
+      {
+       "id": "t0",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t1",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t2",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t3",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t4",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t5",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t6",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t7",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t8",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t9",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t10",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t11",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t12",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t13",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t14",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t15",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t16",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t17",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t18",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t19",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t20",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t21",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t22",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t23",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t24",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t25",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t26",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t27",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t28",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t29",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t30",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t31",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t32",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t33",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t34",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t35",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t36",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t37",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t38",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t39",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t40",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t41",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t42",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t43",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t44",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t45",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t46",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t47",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t48",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t49",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t50",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t51",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t52",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t53",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t54",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t55",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t56",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t57",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t58",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t59",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t60",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t61",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t62",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t63",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t64",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t65",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t66",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t67",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t68",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t69",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t70",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t71",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t72",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t73",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t74",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t75",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t76",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t77",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t78",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t79",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t80",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t81",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t82",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t83",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t84",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t85",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t86",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t87",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t88",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t89",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t90",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t91",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t92",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t93",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t94",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t95",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t96",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t97",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t98",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t99",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t100",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t101",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t102",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t103",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t104",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t105",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t106",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t107",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t108",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t109",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t110",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t111",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t112",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t113",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t114",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t115",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t116",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t117",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t118",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t119",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t120",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t121",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t122",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t123",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t124",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t125",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t126",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t127",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t128",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t129",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t130",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t131",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t132",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t133",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t134",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t135",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t136",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t137",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t138",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t139",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t140",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t141",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t142",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t143",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t144",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t145",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t146",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t147",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t148",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t149",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t150",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t151",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t152",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t153",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t154",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t155",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t156",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t157",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t158",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t159",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t160",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t161",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t162",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t163",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t164",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t165",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t166",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t167",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t168",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t169",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t170",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t171",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t172",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t173",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t174",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t175",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t176",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t177",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t178",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t179",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t180",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t181",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t182",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t183",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t184",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t185",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t186",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t187",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t188",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t189",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t190",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t191",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t192",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t193",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t194",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t195",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t196",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t197",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t198",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t199",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t200",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t201",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t202",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t203",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t204",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t205",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t206",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t207",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t208",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t209",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t210",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t211",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t212",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t213",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t214",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t215",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t216",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t217",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t218",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t219",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t220",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t221",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t222",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t223",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t224",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t225",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t226",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t227",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t228",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t229",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t230",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t231",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t232",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t233",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t234",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t235",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t236",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t237",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t238",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t239",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t240",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t241",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t242",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t243",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t244",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t245",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t246",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t247",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t248",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t249",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t250",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t251",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t252",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t253",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t254",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t255",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t256",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t257",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t258",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t259",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t260",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t261",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t262",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t263",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t264",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t265",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t266",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t267",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t268",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t269",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t270",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t271",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t272",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t273",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t274",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t275",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t276",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t277",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t278",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t279",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t280",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t281",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t282",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t283",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t284",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t285",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t286",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t287",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t288",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t289",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t290",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t291",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t292",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t293",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t294",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t295",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t296",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t297",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t298",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t299",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t300",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t301",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t302",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t303",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t304",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t305",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t306",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t307",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t308",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t309",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t310",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t311",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t312",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t313",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t314",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t315",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t316",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t317",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t318",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t319",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t320",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t321",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t322",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t323",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t324",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t325",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t326",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t327",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t328",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t329",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t330",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t331",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t332",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t333",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t334",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t335",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t336",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t337",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t338",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t339",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t340",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t341",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t342",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t343",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t344",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t345",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t346",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t347",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t348",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t349",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t350",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t351",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t352",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t353",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t354",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t355",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t356",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t357",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t358",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t359",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t360",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t361",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t362",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t363",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t364",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t365",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t366",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t367",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t368",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t369",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t370",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t371",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t372",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t373",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t374",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t375",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t376",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t377",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t378",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t379",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t380",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t381",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t382",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t383",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t384",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t385",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t386",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t387",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t388",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t389",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t390",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t391",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t392",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t393",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t394",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t395",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t396",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t397",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t398",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "t399",
+       "component": "Text",
+       "text": "x"
+      }
+     ]
+    }
+   }
+  ],
+  "ok": false,
+  "page": true
+ },
+ {
+  "name": "page_refresh_ok",
+  "catalog": "ai.luoke/a2ui/agent/1",
+  "messages": [
+   {
+    "version": "v0.9",
+    "createSurface": {
+     "surfaceId": "s",
+     "catalogId": "ai.luoke/a2ui/agent/1"
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateComponents": {
+     "surfaceId": "s",
+     "components": [
+      {
+       "id": "root",
+       "component": "Text",
+       "text": "hi",
+       "refresh": 5
+      }
+     ]
+    }
+   }
+  ],
+  "ok": true,
+  "page": true
+ },
+ {
+  "name": "page_refresh_too_fast",
+  "catalog": "ai.luoke/a2ui/agent/1",
+  "messages": [
+   {
+    "version": "v0.9",
+    "createSurface": {
+     "surfaceId": "s",
+     "catalogId": "ai.luoke/a2ui/agent/1"
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateComponents": {
+     "surfaceId": "s",
+     "components": [
+      {
+       "id": "root",
+       "component": "Text",
+       "text": "hi",
+       "refresh": 1
+      }
+     ]
+    }
+   }
+  ],
+  "ok": false,
+  "page": true
+ },
+ {
+  "name": "page_refresh_too_slow",
+  "catalog": "ai.luoke/a2ui/agent/1",
+  "messages": [
+   {
+    "version": "v0.9",
+    "createSurface": {
+     "surfaceId": "s",
+     "catalogId": "ai.luoke/a2ui/agent/1"
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateComponents": {
+     "surfaceId": "s",
+     "components": [
+      {
+       "id": "root",
+       "component": "Text",
+       "text": "hi",
+       "refresh": 61
+      }
+     ]
+    }
+   }
+  ],
+  "ok": false,
+  "page": true
+ },
+ {
+  "name": "page_refresh_string",
+  "catalog": "ai.luoke/a2ui/agent/1",
+  "messages": [
+   {
+    "version": "v0.9",
+    "createSurface": {
+     "surfaceId": "s",
+     "catalogId": "ai.luoke/a2ui/agent/1"
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateComponents": {
+     "surfaceId": "s",
+     "components": [
+      {
+       "id": "root",
+       "component": "Text",
+       "text": "hi",
+       "refresh": "5"
+      }
+     ]
+    }
+   }
+  ],
+  "ok": false,
+  "page": true
+ },
+ {
+  "name": "page_refresh_bool",
+  "catalog": "ai.luoke/a2ui/agent/1",
+  "messages": [
+   {
+    "version": "v0.9",
+    "createSurface": {
+     "surfaceId": "s",
+     "catalogId": "ai.luoke/a2ui/agent/1"
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateComponents": {
+     "surfaceId": "s",
+     "components": [
+      {
+       "id": "root",
+       "component": "Text",
+       "text": "hi",
+       "refresh": true
+      }
+     ]
+    }
+   }
+  ],
+  "ok": false,
+  "page": true
+ },
+ {
+  "name": "page_refresh_not_root",
+  "catalog": "ai.luoke/a2ui/agent/1",
+  "messages": [
+   {
+    "version": "v0.9",
+    "createSurface": {
+     "surfaceId": "s",
+     "catalogId": "ai.luoke/a2ui/agent/1"
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateComponents": {
+     "surfaceId": "s",
+     "components": [
+      {
+       "id": "root",
+       "component": "Column",
+       "children": [
+        "t"
+       ]
+      },
+      {
+       "id": "t",
+       "component": "Text",
+       "text": "x",
+       "refresh": 5
+      }
+     ]
+    }
+   }
+  ],
+  "ok": false,
+  "page": true
+ },
+ {
+  "name": "card_refresh",
+  "catalog": "ai.luoke/a2ui/agent/1",
+  "messages": [
+   {
+    "version": "v0.9",
+    "createSurface": {
+     "surfaceId": "s",
+     "catalogId": "ai.luoke/a2ui/agent/1"
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateComponents": {
+     "surfaceId": "s",
+     "components": [
+      {
+       "id": "root",
+       "component": "Text",
+       "text": "hi",
+       "refresh": 5
+      }
+     ]
+    }
+   }
+  ],
+  "ok": false
+ },
+ {
+  "name": "page_sections_ok",
+  "catalog": "ai.luoke/a2ui/agent/1",
+  "messages": [
+   {
+    "version": "v0.9",
+    "createSurface": {
+     "surfaceId": "s",
+     "catalogId": "ai.luoke/a2ui/agent/1"
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateComponents": {
+     "surfaceId": "s",
+     "components": [
+      {
+       "id": "root",
+       "component": "Column",
+       "children": [
+        "h",
+        "sec"
+       ],
+       "layout": "sections"
+      },
+      {
+       "id": "h",
+       "component": "Text",
+       "text": "扫描",
+       "variant": "h3"
+      },
+      {
+       "id": "sec",
+       "component": "Column",
+       "children": [
+        "st",
+        "t"
+       ]
+      },
+      {
+       "id": "st",
+       "component": "Row",
+       "children": [
+        "si",
+        "sx",
+        "sn"
+       ]
+      },
+      {
+       "id": "si",
+       "component": "Icon",
+       "name": "eye"
+      },
+      {
+       "id": "sx",
+       "component": "Text",
+       "text": "要你看看"
+      },
+      {
+       "id": "sn",
+       "component": "Text",
+       "text": "4",
+       "variant": "caption"
+      },
+      {
+       "id": "t",
+       "component": "Text",
+       "text": "x"
+      }
+     ]
+    }
+   }
+  ],
+  "ok": true,
+  "page": true
+ },
+ {
+  "name": "page_sections_bad_value",
+  "catalog": "ai.luoke/a2ui/agent/1",
+  "messages": [
+   {
+    "version": "v0.9",
+    "createSurface": {
+     "surfaceId": "s",
+     "catalogId": "ai.luoke/a2ui/agent/1"
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateComponents": {
+     "surfaceId": "s",
+     "components": [
+      {
+       "id": "root",
+       "component": "Column",
+       "children": [
+        "t"
+       ],
+       "layout": "cards"
+      },
+      {
+       "id": "t",
+       "component": "Text",
+       "text": "x"
+      }
+     ]
+    }
+   }
+  ],
+  "ok": false,
+  "page": true
+ },
+ {
+  "name": "page_sections_not_root",
+  "catalog": "ai.luoke/a2ui/agent/1",
+  "messages": [
+   {
+    "version": "v0.9",
+    "createSurface": {
+     "surfaceId": "s",
+     "catalogId": "ai.luoke/a2ui/agent/1"
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateComponents": {
+     "surfaceId": "s",
+     "components": [
+      {
+       "id": "root",
+       "component": "Column",
+       "children": [
+        "c"
+       ]
+      },
+      {
+       "id": "c",
+       "component": "Column",
+       "children": [
+        "t"
+       ],
+       "layout": "sections"
+      },
+      {
+       "id": "t",
+       "component": "Text",
+       "text": "x"
+      }
+     ]
+    }
+   }
+  ],
+  "ok": false,
+  "page": true
+ },
+ {
+  "name": "page_sections_root_text",
+  "catalog": "ai.luoke/a2ui/agent/1",
+  "messages": [
+   {
+    "version": "v0.9",
+    "createSurface": {
+     "surfaceId": "s",
+     "catalogId": "ai.luoke/a2ui/agent/1"
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateComponents": {
+     "surfaceId": "s",
+     "components": [
+      {
+       "id": "root",
+       "component": "Text",
+       "text": "hi",
+       "layout": "sections"
+      }
+     ]
+    }
+   }
+  ],
+  "ok": false,
+  "page": true
+ },
+ {
+  "name": "card_sections",
+  "catalog": "ai.luoke/a2ui/agent/1",
+  "messages": [
+   {
+    "version": "v0.9",
+    "createSurface": {
+     "surfaceId": "s",
+     "catalogId": "ai.luoke/a2ui/agent/1"
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateComponents": {
+     "surfaceId": "s",
+     "components": [
+      {
+       "id": "root",
+       "component": "Column",
+       "children": [
+        "t"
+       ],
+       "layout": "sections"
+      },
+      {
+       "id": "t",
+       "component": "Text",
+       "text": "x"
+      }
+     ]
+    }
+   }
+  ],
+  "ok": false
+ },
+ {
+  "name": "badge_neutral",
+  "catalog": "ai.luoke/a2ui/agent/1",
+  "messages": [
+   {
+    "version": "v0.9",
+    "createSurface": {
+     "surfaceId": "s",
+     "catalogId": "ai.luoke/a2ui/agent/1"
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateComponents": {
+     "surfaceId": "s",
+     "components": [
+      {
+       "id": "root",
+       "component": "Row",
+       "children": [
+        "a",
+        "b",
+        "m"
+       ]
+      },
+      {
+       "id": "a",
+       "component": "Text",
+       "text": "Alpha",
+       "variant": "badge",
+       "tone": "neutral"
+      },
+      {
+       "id": "b",
+       "component": "Text",
+       "text": "Beta",
+       "variant": "badge",
+       "tone": "neutral"
+      },
+      {
+       "id": "m",
+       "component": "Text",
+       "text": "等 12 个",
+       "variant": "caption"
+      }
+     ]
+    }
+   }
+  ],
+  "ok": true
+ },
+ {
+  "name": "badge_beige",
+  "catalog": "ai.luoke/a2ui/agent/1",
+  "messages": [
+   {
+    "version": "v0.9",
+    "createSurface": {
+     "surfaceId": "s",
+     "catalogId": "ai.luoke/a2ui/agent/1"
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateComponents": {
+     "surfaceId": "s",
+     "components": [
+      {
+       "id": "root",
+       "component": "Text",
+       "text": "2 GB",
+       "variant": "badge",
+       "tone": "beige"
+      }
+     ]
+    }
+   }
+  ],
+  "ok": false
+ },
+ {
+  "name": "page_secure_ok",
+  "catalog": "ai.luoke/a2ui/agent/1",
+  "messages": [
+   {
+    "version": "v0.9",
+    "createSurface": {
+     "surfaceId": "s",
+     "catalogId": "ai.luoke/a2ui/agent/1"
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateComponents": {
+     "surfaceId": "s",
+     "components": [
+      {
+       "id": "root",
+       "component": "Column",
+       "children": [
+        "f",
+        "b"
+       ]
+      },
+      {
+       "id": "f",
+       "component": "TextField",
+       "label": "授权码",
+       "variant": "obscured",
+       "value": {
+        "path": "/fields/code"
+       }
+      },
+      {
+       "id": "b",
+       "component": "Button",
+       "child": "bt",
+       "action": {
+        "event": {
+         "name": "mail_connect",
+         "context": {
+          "code": {
+           "path": "/fields/code"
+          }
+         }
+        }
+       }
+      },
+      {
+       "id": "bt",
+       "component": "Text",
+       "text": "加上"
+      }
+     ]
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateDataModel": {
+     "surfaceId": "s",
+     "path": "/",
+     "value": {
+      "fields": {
+       "code": ""
+      }
+     }
+    }
+   }
+  ],
+  "ok": true,
+  "page": true
+ },
+ {
+  "name": "card_secure",
+  "catalog": "ai.luoke/a2ui/agent/1",
+  "messages": [
+   {
+    "version": "v0.9",
+    "createSurface": {
+     "surfaceId": "s",
+     "catalogId": "ai.luoke/a2ui/agent/1"
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateComponents": {
+     "surfaceId": "s",
+     "components": [
+      {
+       "id": "root",
+       "component": "Column",
+       "children": [
+        "f",
+        "b"
+       ]
+      },
+      {
+       "id": "f",
+       "component": "TextField",
+       "label": "授权码",
+       "variant": "obscured",
+       "value": {
+        "path": "/fields/code"
+       }
+      },
+      {
+       "id": "b",
+       "component": "Button",
+       "child": "bt",
+       "action": {
+        "event": {
+         "name": "mail_connect",
+         "context": {
+          "code": {
+           "path": "/fields/code"
+          }
+         }
+        }
+       }
+      },
+      {
+       "id": "bt",
+       "component": "Text",
+       "text": "加上"
+      }
+     ]
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateDataModel": {
+     "surfaceId": "s",
+     "path": "/",
+     "value": {
+      "fields": {
+       "code": ""
+      }
+     }
+    }
+   }
+  ],
+  "ok": false
+ },
+ {
+  "name": "page_secure_prefilled",
+  "catalog": "ai.luoke/a2ui/agent/1",
+  "messages": [
+   {
+    "version": "v0.9",
+    "createSurface": {
+     "surfaceId": "s",
+     "catalogId": "ai.luoke/a2ui/agent/1"
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateComponents": {
+     "surfaceId": "s",
+     "components": [
+      {
+       "id": "root",
+       "component": "Column",
+       "children": [
+        "f",
+        "b"
+       ]
+      },
+      {
+       "id": "f",
+       "component": "TextField",
+       "label": "授权码",
+       "variant": "obscured",
+       "value": {
+        "path": "/fields/code"
+       }
+      },
+      {
+       "id": "b",
+       "component": "Button",
+       "child": "bt",
+       "action": {
+        "event": {
+         "name": "mail_connect",
+         "context": {
+          "code": {
+           "path": "/fields/code"
+          }
+         }
+        }
+       }
+      },
+      {
+       "id": "bt",
+       "component": "Text",
+       "text": "加上"
+      }
+     ]
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateDataModel": {
+     "surfaceId": "s",
+     "path": "/",
+     "value": {
+      "fields": {
+       "code": "abc"
+      }
+     }
+    }
+   }
+  ],
+  "ok": false,
+  "page": true
+ },
+ {
+  "name": "page_secure_literal",
+  "catalog": "ai.luoke/a2ui/agent/1",
+  "messages": [
+   {
+    "version": "v0.9",
+    "createSurface": {
+     "surfaceId": "s",
+     "catalogId": "ai.luoke/a2ui/agent/1"
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateComponents": {
+     "surfaceId": "s",
+     "components": [
+      {
+       "id": "root",
+       "component": "TextField",
+       "label": "授权码",
+       "variant": "obscured",
+       "value": ""
+      }
+     ]
+    }
+   }
+  ],
+  "ok": false,
+  "page": true
+ },
+ {
+  "name": "page_secure_unbound",
+  "catalog": "ai.luoke/a2ui/agent/1",
+  "messages": [
+   {
+    "version": "v0.9",
+    "createSurface": {
+     "surfaceId": "s",
+     "catalogId": "ai.luoke/a2ui/agent/1"
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateComponents": {
+     "surfaceId": "s",
+     "components": [
+      {
+       "id": "root",
+       "component": "Column",
+       "children": [
+        "f",
+        "b"
+       ]
+      },
+      {
+       "id": "f",
+       "component": "TextField",
+       "label": "授权码",
+       "variant": "obscured",
+       "value": {
+        "path": "/fields/code"
+       }
+      },
+      {
+       "id": "b",
+       "component": "Button",
+       "child": "bt",
+       "action": {
+        "event": {
+         "name": "mail_connect",
+         "context": {
+          "code": {
+           "path": "/fields/code"
+          }
+         }
+        }
+       }
+      },
+      {
+       "id": "bt",
+       "component": "Text",
+       "text": "加上"
+      }
+     ]
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateDataModel": {
+     "surfaceId": "s",
+     "path": "/",
+     "value": {}
+    }
+   }
+  ],
+  "ok": false,
+  "page": true
+ },
+ {
+  "name": "page_secure_open_page_arg",
+  "catalog": "ai.luoke/a2ui/agent/1",
+  "messages": [
+   {
+    "version": "v0.9",
+    "createSurface": {
+     "surfaceId": "s",
+     "catalogId": "ai.luoke/a2ui/agent/1"
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateComponents": {
+     "surfaceId": "s",
+     "components": [
+      {
+       "id": "root",
+       "component": "Column",
+       "children": [
+        "f",
+        "b"
+       ]
+      },
+      {
+       "id": "f",
+       "component": "TextField",
+       "label": "授权码",
+       "variant": "obscured",
+       "value": {
+        "path": "/fields/code"
+       }
+      },
+      {
+       "id": "b",
+       "component": "Button",
+       "child": "bt",
+       "action": {
+        "event": {
+         "name": "agent.open_page",
+         "context": {
+          "page": "notes",
+          "args": {
+           "q": {
+            "path": "/fields/code"
+           }
+          }
+         }
+        }
+       }
+      },
+      {
+       "id": "bt",
+       "component": "Text",
+       "text": "加上"
+      }
+     ]
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateDataModel": {
+     "surfaceId": "s",
+     "path": "/",
+     "value": {
+      "fields": {
+       "code": ""
+      }
+     }
+    }
+   }
+  ],
+  "ok": false,
+  "page": true
+ },
+ {
+  "name": "page_secure_open_page_parent",
+  "catalog": "ai.luoke/a2ui/agent/1",
+  "messages": [
+   {
+    "version": "v0.9",
+    "createSurface": {
+     "surfaceId": "s",
+     "catalogId": "ai.luoke/a2ui/agent/1"
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateComponents": {
+     "surfaceId": "s",
+     "components": [
+      {
+       "id": "root",
+       "component": "Column",
+       "children": [
+        "f",
+        "b"
+       ]
+      },
+      {
+       "id": "f",
+       "component": "TextField",
+       "label": "授权码",
+       "variant": "obscured",
+       "value": {
+        "path": "/fields/code"
+       }
+      },
+      {
+       "id": "b",
+       "component": "Button",
+       "child": "bt",
+       "action": {
+        "event": {
+         "name": "agent.open_page",
+         "context": {
+          "page": "notes",
+          "args": {
+           "q": {
+            "path": "/fields"
+           }
+          }
+         }
+        }
+       }
+      },
+      {
+       "id": "bt",
+       "component": "Text",
+       "text": "加上"
+      }
+     ]
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateDataModel": {
+     "surfaceId": "s",
+     "path": "/",
+     "value": {
+      "fields": {
+       "code": ""
+      }
+     }
+    }
+   }
+  ],
+  "ok": false,
+  "page": true
+ },
+ {
+  "name": "page_secure_open_page_other",
+  "catalog": "ai.luoke/a2ui/agent/1",
+  "messages": [
+   {
+    "version": "v0.9",
+    "createSurface": {
+     "surfaceId": "s",
+     "catalogId": "ai.luoke/a2ui/agent/1"
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateComponents": {
+     "surfaceId": "s",
+     "components": [
+      {
+       "id": "root",
+       "component": "Column",
+       "children": [
+        "f",
+        "b"
+       ]
+      },
+      {
+       "id": "f",
+       "component": "TextField",
+       "label": "授权码",
+       "variant": "obscured",
+       "value": {
+        "path": "/fields/code"
+       }
+      },
+      {
+       "id": "b",
+       "component": "Button",
+       "child": "bt",
+       "action": {
+        "event": {
+         "name": "agent.open_page",
+         "context": {
+          "page": "notes",
+          "args": {
+           "q": {
+            "path": "/q"
+           }
+          }
+         }
+        }
+       }
+      },
+      {
+       "id": "bt",
+       "component": "Text",
+       "text": "加上"
+      }
+     ]
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateDataModel": {
+     "surfaceId": "s",
+     "path": "/",
+     "value": {
+      "fields": {
+       "code": ""
+      },
+      "q": ""
+     }
+    }
+   }
+  ],
+  "ok": true,
+  "page": true
+ },
+ {
+  "name": "page_secure_parent_to_tool",
+  "catalog": "ai.luoke/a2ui/agent/1",
+  "messages": [
+   {
+    "version": "v0.9",
+    "createSurface": {
+     "surfaceId": "s",
+     "catalogId": "ai.luoke/a2ui/agent/1"
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateComponents": {
+     "surfaceId": "s",
+     "components": [
+      {
+       "id": "root",
+       "component": "Column",
+       "children": [
+        "f",
+        "b"
+       ]
+      },
+      {
+       "id": "f",
+       "component": "TextField",
+       "label": "授权码",
+       "variant": "obscured",
+       "value": {
+        "path": "/fields/code"
+       }
+      },
+      {
+       "id": "b",
+       "component": "Button",
+       "child": "bt",
+       "action": {
+        "event": {
+         "name": "mail_connect",
+         "context": {
+          "all": {
+           "path": "/fields"
+          }
+         }
+        }
+       }
+      },
+      {
+       "id": "bt",
+       "component": "Text",
+       "text": "加上"
+      }
+     ]
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateDataModel": {
+     "surfaceId": "s",
+     "path": "/",
+     "value": {
+      "fields": {
+       "code": ""
+      }
+     }
+    }
+   }
+  ],
+  "ok": false,
+  "page": true
+ },
+ {
+  "name": "page_secure_root_to_tool",
+  "catalog": "ai.luoke/a2ui/agent/1",
+  "messages": [
+   {
+    "version": "v0.9",
+    "createSurface": {
+     "surfaceId": "s",
+     "catalogId": "ai.luoke/a2ui/agent/1"
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateComponents": {
+     "surfaceId": "s",
+     "components": [
+      {
+       "id": "root",
+       "component": "Column",
+       "children": [
+        "f",
+        "b"
+       ]
+      },
+      {
+       "id": "f",
+       "component": "TextField",
+       "label": "授权码",
+       "variant": "obscured",
+       "value": {
+        "path": "/fields/code"
+       }
+      },
+      {
+       "id": "b",
+       "component": "Button",
+       "child": "bt",
+       "action": {
+        "event": {
+         "name": "mail_connect",
+         "context": {
+          "all": {
+           "path": "/"
+          }
+         }
+        }
+       }
+      },
+      {
+       "id": "bt",
+       "component": "Text",
+       "text": "加上"
+      }
+     ]
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateDataModel": {
+     "surfaceId": "s",
+     "path": "/",
+     "value": {
+      "fields": {
+       "code": ""
+      }
+     }
+    }
+   }
+  ],
+  "ok": false,
+  "page": true
+ },
+ {
+  "name": "page_secure_exact_and_beside",
+  "catalog": "ai.luoke/a2ui/agent/1",
+  "messages": [
+   {
+    "version": "v0.9",
+    "createSurface": {
+     "surfaceId": "s",
+     "catalogId": "ai.luoke/a2ui/agent/1"
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateComponents": {
+     "surfaceId": "s",
+     "components": [
+      {
+       "id": "root",
+       "component": "Column",
+       "children": [
+        "f",
+        "b"
+       ]
+      },
+      {
+       "id": "f",
+       "component": "TextField",
+       "label": "授权码",
+       "variant": "obscured",
+       "value": {
+        "path": "/fields/code"
+       }
+      },
+      {
+       "id": "b",
+       "component": "Button",
+       "child": "bt",
+       "action": {
+        "event": {
+         "name": "mail_connect",
+         "context": {
+          "code": {
+           "path": "/fields/code"
+          },
+          "name": {
+           "path": "/fields/name"
+          }
+         }
+        }
+       }
+      },
+      {
+       "id": "bt",
+       "component": "Text",
+       "text": "加上"
+      }
+     ]
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateDataModel": {
+     "surfaceId": "s",
+     "path": "/",
+     "value": {
+      "fields": {
+       "code": "",
+       "name": ""
+      }
+     }
+    }
+   }
+  ],
+  "ok": true,
+  "page": true
+ },
+ {
+  "name": "page_secure_open_page_child",
+  "catalog": "ai.luoke/a2ui/agent/1",
+  "messages": [
+   {
+    "version": "v0.9",
+    "createSurface": {
+     "surfaceId": "s",
+     "catalogId": "ai.luoke/a2ui/agent/1"
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateComponents": {
+     "surfaceId": "s",
+     "components": [
+      {
+       "id": "root",
+       "component": "Column",
+       "children": [
+        "f",
+        "b"
+       ]
+      },
+      {
+       "id": "f",
+       "component": "TextField",
+       "label": "授权码",
+       "variant": "obscured",
+       "value": {
+        "path": "/fields/code"
+       }
+      },
+      {
+       "id": "b",
+       "component": "Button",
+       "child": "bt",
+       "action": {
+        "event": {
+         "name": "agent.open_page",
+         "context": {
+          "page": "notes",
+          "args": {
+           "q": {
+            "path": "/fields/code/x"
+           }
+          }
+         }
+        }
+       }
+      },
+      {
+       "id": "bt",
+       "component": "Text",
+       "text": "加上"
+      }
+     ]
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateDataModel": {
+     "surfaceId": "s",
+     "path": "/",
+     "value": {
+      "fields": {
+       "code": ""
+      }
+     }
+    }
+   }
+  ],
+  "ok": false,
+  "page": true
+ },
+ {
+  "name": "page_secure_shown_by_text",
+  "catalog": "ai.luoke/a2ui/agent/1",
+  "messages": [
+   {
+    "version": "v0.9",
+    "createSurface": {
+     "surfaceId": "s",
+     "catalogId": "ai.luoke/a2ui/agent/1"
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateComponents": {
+     "surfaceId": "s",
+     "components": [
+      {
+       "id": "root",
+       "component": "Column",
+       "children": [
+        "f",
+        "b",
+        "t"
+       ]
+      },
+      {
+       "id": "f",
+       "component": "TextField",
+       "label": "授权码",
+       "variant": "obscured",
+       "value": {
+        "path": "/fields/code"
+       }
+      },
+      {
+       "id": "b",
+       "component": "Button",
+       "child": "bt",
+       "action": {
+        "event": {
+         "name": "mail_connect",
+         "context": {
+          "code": {
+           "path": "/fields/code"
+          }
+         }
+        }
+       }
+      },
+      {
+       "id": "bt",
+       "component": "Text",
+       "text": "加上"
+      },
+      {
+       "id": "t",
+       "component": "Text",
+       "text": {
+        "path": "/fields/code"
+       }
+      }
+     ]
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateDataModel": {
+     "surfaceId": "s",
+     "path": "/",
+     "value": {
+      "fields": {
+       "code": ""
+      }
+     }
+    }
+   }
+  ],
+  "ok": false,
+  "page": true
+ },
+ {
+  "name": "page_secure_shown_by_parent",
+  "catalog": "ai.luoke/a2ui/agent/1",
+  "messages": [
+   {
+    "version": "v0.9",
+    "createSurface": {
+     "surfaceId": "s",
+     "catalogId": "ai.luoke/a2ui/agent/1"
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateComponents": {
+     "surfaceId": "s",
+     "components": [
+      {
+       "id": "root",
+       "component": "Column",
+       "children": [
+        "f",
+        "b",
+        "t"
+       ]
+      },
+      {
+       "id": "f",
+       "component": "TextField",
+       "label": "授权码",
+       "variant": "obscured",
+       "value": {
+        "path": "/fields/code"
+       }
+      },
+      {
+       "id": "b",
+       "component": "Button",
+       "child": "bt",
+       "action": {
+        "event": {
+         "name": "mail_connect",
+         "context": {
+          "code": {
+           "path": "/fields/code"
+          }
+         }
+        }
+       }
+      },
+      {
+       "id": "bt",
+       "component": "Text",
+       "text": "加上"
+      },
+      {
+       "id": "t",
+       "component": "Text",
+       "text": {
+        "path": "/fields"
+       }
+      }
+     ]
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateDataModel": {
+     "surfaceId": "s",
+     "path": "/",
+     "value": {
+      "fields": {
+       "code": ""
+      }
+     }
+    }
+   }
+  ],
+  "ok": false,
+  "page": true
+ },
+ {
+  "name": "page_secure_shown_by_field",
+  "catalog": "ai.luoke/a2ui/agent/1",
+  "messages": [
+   {
+    "version": "v0.9",
+    "createSurface": {
+     "surfaceId": "s",
+     "catalogId": "ai.luoke/a2ui/agent/1"
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateComponents": {
+     "surfaceId": "s",
+     "components": [
+      {
+       "id": "root",
+       "component": "Column",
+       "children": [
+        "f",
+        "b",
+        "t"
+       ]
+      },
+      {
+       "id": "f",
+       "component": "TextField",
+       "label": "授权码",
+       "variant": "obscured",
+       "value": {
+        "path": "/fields/code"
+       }
+      },
+      {
+       "id": "b",
+       "component": "Button",
+       "child": "bt",
+       "action": {
+        "event": {
+         "name": "mail_connect",
+         "context": {
+          "code": {
+           "path": "/fields/code"
+          }
+         }
+        }
+       }
+      },
+      {
+       "id": "bt",
+       "component": "Text",
+       "text": "加上"
+      },
+      {
+       "id": "t",
+       "component": "TextField",
+       "label": "看一眼",
+       "value": {
+        "path": "/fields/code"
+       }
+      }
+     ]
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateDataModel": {
+     "surfaceId": "s",
+     "path": "/",
+     "value": {
+      "fields": {
+       "code": ""
+      }
+     }
+    }
+   }
+  ],
+  "ok": false,
+  "page": true
+ },
+ {
+  "name": "page_secure_shown_by_label",
+  "catalog": "ai.luoke/a2ui/agent/1",
+  "messages": [
+   {
+    "version": "v0.9",
+    "createSurface": {
+     "surfaceId": "s",
+     "catalogId": "ai.luoke/a2ui/agent/1"
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateComponents": {
+     "surfaceId": "s",
+     "components": [
+      {
+       "id": "root",
+       "component": "Column",
+       "children": [
+        "f",
+        "b",
+        "t"
+       ]
+      },
+      {
+       "id": "f",
+       "component": "TextField",
+       "label": "授权码",
+       "variant": "obscured",
+       "value": {
+        "path": "/fields/code"
+       }
+      },
+      {
+       "id": "b",
+       "component": "Button",
+       "child": "bt",
+       "action": {
+        "event": {
+         "name": "mail_connect",
+         "context": {
+          "code": {
+           "path": "/fields/code"
+          }
+         }
+        }
+       }
+      },
+      {
+       "id": "bt",
+       "component": "Text",
+       "text": "加上"
+      },
+      {
+       "id": "t",
+       "component": "TextField",
+       "label": {
+        "path": "/fields/code"
+       },
+       "value": {
+        "path": "/fields/name"
+       }
+      }
+     ]
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateDataModel": {
+     "surfaceId": "s",
+     "path": "/",
+     "value": {
+      "fields": {
+       "code": "",
+       "name": ""
+      }
+     }
+    }
+   }
+  ],
+  "ok": false,
+  "page": true
+ },
+ {
+  "name": "page_secure_shown_by_count",
+  "catalog": "ai.luoke/a2ui/agent/1",
+  "messages": [
+   {
+    "version": "v0.9",
+    "createSurface": {
+     "surfaceId": "s",
+     "catalogId": "ai.luoke/a2ui/agent/1"
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateComponents": {
+     "surfaceId": "s",
+     "components": [
+      {
+       "id": "root",
+       "component": "Column",
+       "children": [
+        "f",
+        "b",
+        "c"
+       ]
+      },
+      {
+       "id": "f",
+       "component": "TextField",
+       "label": "授权码",
+       "variant": "obscured",
+       "value": {
+        "path": "/fields/code"
+       }
+      },
+      {
+       "id": "b",
+       "component": "Button",
+       "child": "bt",
+       "action": {
+        "event": {
+         "name": "mail_connect",
+         "context": {
+          "code": {
+           "path": "/fields/code"
+          }
+         }
+        }
+       }
+      },
+      {
+       "id": "bt",
+       "component": "Text",
+       "text": "加上"
+      },
+      {
+       "id": "c",
+       "component": "Button",
+       "child": "ct",
+       "count": {
+        "path": "/fields",
+        "value": "x"
+       },
+       "action": {
+        "event": {
+         "name": "mail_go",
+         "context": {}
+        }
+       }
+      },
+      {
+       "id": "ct",
+       "component": "Text",
+       "text": "去 {n} 个"
+      }
+     ]
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateDataModel": {
+     "surfaceId": "s",
+     "path": "/",
+     "value": {
+      "fields": {
+       "code": ""
+      }
+     }
+    }
+   }
+  ],
+  "ok": false,
+  "page": true
+ },
+ {
+  "name": "page_secure_twin",
+  "catalog": "ai.luoke/a2ui/agent/1",
+  "messages": [
+   {
+    "version": "v0.9",
+    "createSurface": {
+     "surfaceId": "s",
+     "catalogId": "ai.luoke/a2ui/agent/1"
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateComponents": {
+     "surfaceId": "s",
+     "components": [
+      {
+       "id": "root",
+       "component": "Column",
+       "children": [
+        "f",
+        "b",
+        "t"
+       ]
+      },
+      {
+       "id": "f",
+       "component": "TextField",
+       "label": "授权码",
+       "variant": "obscured",
+       "value": {
+        "path": "/fields/code"
+       }
+      },
+      {
+       "id": "b",
+       "component": "Button",
+       "child": "bt",
+       "action": {
+        "event": {
+         "name": "mail_connect",
+         "context": {
+          "code": {
+           "path": "/fields/code"
+          }
+         }
+        }
+       }
+      },
+      {
+       "id": "bt",
+       "component": "Text",
+       "text": "加上"
+      },
+      {
+       "id": "t",
+       "component": "TextField",
+       "label": "再填一次",
+       "variant": "obscured",
+       "value": {
+        "path": "/fields/code"
+       }
+      }
+     ]
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateDataModel": {
+     "surfaceId": "s",
+     "path": "/",
+     "value": {
+      "fields": {
+       "code": ""
+      }
+     }
+    }
+   }
+  ],
+  "ok": true,
+  "page": true
+ },
+ {
+  "name": "page_secure_beside_shown",
+  "catalog": "ai.luoke/a2ui/agent/1",
+  "messages": [
+   {
+    "version": "v0.9",
+    "createSurface": {
+     "surfaceId": "s",
+     "catalogId": "ai.luoke/a2ui/agent/1"
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateComponents": {
+     "surfaceId": "s",
+     "components": [
+      {
+       "id": "root",
+       "component": "Column",
+       "children": [
+        "f",
+        "b",
+        "t"
+       ]
+      },
+      {
+       "id": "f",
+       "component": "TextField",
+       "label": "授权码",
+       "variant": "obscured",
+       "value": {
+        "path": "/fields/code"
+       }
+      },
+      {
+       "id": "b",
+       "component": "Button",
+       "child": "bt",
+       "action": {
+        "event": {
+         "name": "mail_connect",
+         "context": {
+          "code": {
+           "path": "/fields/code"
+          }
+         }
+        }
+       }
+      },
+      {
+       "id": "bt",
+       "component": "Text",
+       "text": "加上"
+      },
+      {
+       "id": "t",
+       "component": "Text",
+       "text": {
+        "path": "/fields/name"
+       }
+      }
+     ]
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateDataModel": {
+     "surfaceId": "s",
+     "path": "/",
+     "value": {
+      "fields": {
+       "code": "",
+       "name": "王"
+      }
+     }
+    }
+   }
+  ],
+  "ok": true,
+  "page": true
+ },
+ {
+  "name": "page_secure_list_exact",
+  "catalog": "ai.luoke/a2ui/agent/1",
+  "messages": [
+   {
+    "version": "v0.9",
+    "createSurface": {
+     "surfaceId": "s",
+     "catalogId": "ai.luoke/a2ui/agent/1"
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateComponents": {
+     "surfaceId": "s",
+     "components": [
+      {
+       "id": "root",
+       "component": "Column",
+       "children": [
+        "f",
+        "b"
+       ]
+      },
+      {
+       "id": "f",
+       "component": "TextField",
+       "label": "授权码",
+       "variant": "obscured",
+       "value": {
+        "path": "/l/0"
+       }
+      },
+      {
+       "id": "b",
+       "component": "Button",
+       "child": "bt",
+       "action": {
+        "event": {
+         "name": "mail_connect",
+         "context": {
+          "code": {
+           "path": "/l/0"
+          }
+         }
+        }
+       }
+      },
+      {
+       "id": "bt",
+       "component": "Text",
+       "text": "加上"
+      }
+     ]
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateDataModel": {
+     "surfaceId": "s",
+     "path": "/",
+     "value": {
+      "l": [
+       "",
+       "x1",
+       "x2",
+       "x3",
+       "x4",
+       "x5",
+       "x6",
+       "x7",
+       "x8",
+       "x9",
+       "x10"
+      ]
+     }
+    }
+   }
+  ],
+  "ok": true,
+  "page": true
+ },
+ {
+  "name": "page_secure_list_open_page_00",
+  "catalog": "ai.luoke/a2ui/agent/1",
+  "messages": [
+   {
+    "version": "v0.9",
+    "createSurface": {
+     "surfaceId": "s",
+     "catalogId": "ai.luoke/a2ui/agent/1"
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateComponents": {
+     "surfaceId": "s",
+     "components": [
+      {
+       "id": "root",
+       "component": "Column",
+       "children": [
+        "f",
+        "b"
+       ]
+      },
+      {
+       "id": "f",
+       "component": "TextField",
+       "label": "授权码",
+       "variant": "obscured",
+       "value": {
+        "path": "/l/0"
+       }
+      },
+      {
+       "id": "b",
+       "component": "Button",
+       "child": "bt",
+       "action": {
+        "event": {
+         "name": "agent.open_page",
+         "context": {
+          "page": "notes",
+          "args": {
+           "q": {
+            "path": "/l/00"
+           }
+          }
+         }
+        }
+       }
+      },
+      {
+       "id": "bt",
+       "component": "Text",
+       "text": "加上"
+      }
+     ]
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateDataModel": {
+     "surfaceId": "s",
+     "path": "/",
+     "value": {
+      "l": [
+       "",
+       "x1",
+       "x2",
+       "x3",
+       "x4",
+       "x5",
+       "x6",
+       "x7",
+       "x8",
+       "x9",
+       "x10"
+      ]
+     }
+    }
+   }
+  ],
+  "ok": false,
+  "page": true
+ },
+ {
+  "name": "page_secure_list_open_page_plus0",
+  "catalog": "ai.luoke/a2ui/agent/1",
+  "messages": [
+   {
+    "version": "v0.9",
+    "createSurface": {
+     "surfaceId": "s",
+     "catalogId": "ai.luoke/a2ui/agent/1"
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateComponents": {
+     "surfaceId": "s",
+     "components": [
+      {
+       "id": "root",
+       "component": "Column",
+       "children": [
+        "f",
+        "b"
+       ]
+      },
+      {
+       "id": "f",
+       "component": "TextField",
+       "label": "授权码",
+       "variant": "obscured",
+       "value": {
+        "path": "/l/0"
+       }
+      },
+      {
+       "id": "b",
+       "component": "Button",
+       "child": "bt",
+       "action": {
+        "event": {
+         "name": "agent.open_page",
+         "context": {
+          "page": "notes",
+          "args": {
+           "q": {
+            "path": "/l/+0"
+           }
+          }
+         }
+        }
+       }
+      },
+      {
+       "id": "bt",
+       "component": "Text",
+       "text": "加上"
+      }
+     ]
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateDataModel": {
+     "surfaceId": "s",
+     "path": "/",
+     "value": {
+      "l": [
+       "",
+       "x1",
+       "x2",
+       "x3",
+       "x4",
+       "x5",
+       "x6",
+       "x7",
+       "x8",
+       "x9",
+       "x10"
+      ]
+     }
+    }
+   }
+  ],
+  "ok": false,
+  "page": true
+ },
+ {
+  "name": "page_secure_list_text_00",
+  "catalog": "ai.luoke/a2ui/agent/1",
+  "messages": [
+   {
+    "version": "v0.9",
+    "createSurface": {
+     "surfaceId": "s",
+     "catalogId": "ai.luoke/a2ui/agent/1"
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateComponents": {
+     "surfaceId": "s",
+     "components": [
+      {
+       "id": "root",
+       "component": "Column",
+       "children": [
+        "f",
+        "b",
+        "t"
+       ]
+      },
+      {
+       "id": "f",
+       "component": "TextField",
+       "label": "授权码",
+       "variant": "obscured",
+       "value": {
+        "path": "/l/0"
+       }
+      },
+      {
+       "id": "b",
+       "component": "Button",
+       "child": "bt",
+       "action": {
+        "event": {
+         "name": "mail_connect",
+         "context": {
+          "code": {
+           "path": "/l/0"
+          }
+         }
+        }
+       }
+      },
+      {
+       "id": "bt",
+       "component": "Text",
+       "text": "加上"
+      },
+      {
+       "id": "t",
+       "component": "Text",
+       "text": {
+        "path": "/l/00"
+       }
+      }
+     ]
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateDataModel": {
+     "surfaceId": "s",
+     "path": "/",
+     "value": {
+      "l": [
+       "",
+       "x1",
+       "x2",
+       "x3",
+       "x4",
+       "x5",
+       "x6",
+       "x7",
+       "x8",
+       "x9",
+       "x10"
+      ]
+     }
+    }
+   }
+  ],
+  "ok": false,
+  "page": true
+ },
+ {
+  "name": "page_secure_list_text_minus0",
+  "catalog": "ai.luoke/a2ui/agent/1",
+  "messages": [
+   {
+    "version": "v0.9",
+    "createSurface": {
+     "surfaceId": "s",
+     "catalogId": "ai.luoke/a2ui/agent/1"
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateComponents": {
+     "surfaceId": "s",
+     "components": [
+      {
+       "id": "root",
+       "component": "Column",
+       "children": [
+        "f",
+        "b",
+        "t"
+       ]
+      },
+      {
+       "id": "f",
+       "component": "TextField",
+       "label": "授权码",
+       "variant": "obscured",
+       "value": {
+        "path": "/l/0"
+       }
+      },
+      {
+       "id": "b",
+       "component": "Button",
+       "child": "bt",
+       "action": {
+        "event": {
+         "name": "mail_connect",
+         "context": {
+          "code": {
+           "path": "/l/0"
+          }
+         }
+        }
+       }
+      },
+      {
+       "id": "bt",
+       "component": "Text",
+       "text": "加上"
+      },
+      {
+       "id": "t",
+       "component": "Text",
+       "text": {
+        "path": "/l/-0"
+       }
+      }
+     ]
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateDataModel": {
+     "surfaceId": "s",
+     "path": "/",
+     "value": {
+      "l": [
+       "",
+       "x1",
+       "x2",
+       "x3",
+       "x4",
+       "x5",
+       "x6",
+       "x7",
+       "x8",
+       "x9",
+       "x10"
+      ]
+     }
+    }
+   }
+  ],
+  "ok": false,
+  "page": true
+ },
+ {
+  "name": "page_secure_list_tool_00",
+  "catalog": "ai.luoke/a2ui/agent/1",
+  "messages": [
+   {
+    "version": "v0.9",
+    "createSurface": {
+     "surfaceId": "s",
+     "catalogId": "ai.luoke/a2ui/agent/1"
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateComponents": {
+     "surfaceId": "s",
+     "components": [
+      {
+       "id": "root",
+       "component": "Column",
+       "children": [
+        "f",
+        "b"
+       ]
+      },
+      {
+       "id": "f",
+       "component": "TextField",
+       "label": "授权码",
+       "variant": "obscured",
+       "value": {
+        "path": "/l/0"
+       }
+      },
+      {
+       "id": "b",
+       "component": "Button",
+       "child": "bt",
+       "action": {
+        "event": {
+         "name": "mail_connect",
+         "context": {
+          "code": {
+           "path": "/l/00"
+          }
+         }
+        }
+       }
+      },
+      {
+       "id": "bt",
+       "component": "Text",
+       "text": "加上"
+      }
+     ]
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateDataModel": {
+     "surfaceId": "s",
+     "path": "/",
+     "value": {
+      "l": [
+       "",
+       "x1",
+       "x2",
+       "x3",
+       "x4",
+       "x5",
+       "x6",
+       "x7",
+       "x8",
+       "x9",
+       "x10"
+      ]
+     }
+    }
+   }
+  ],
+  "ok": false,
+  "page": true
+ },
+ {
+  "name": "page_secure_list_tool_plus0",
+  "catalog": "ai.luoke/a2ui/agent/1",
+  "messages": [
+   {
+    "version": "v0.9",
+    "createSurface": {
+     "surfaceId": "s",
+     "catalogId": "ai.luoke/a2ui/agent/1"
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateComponents": {
+     "surfaceId": "s",
+     "components": [
+      {
+       "id": "root",
+       "component": "Column",
+       "children": [
+        "f",
+        "b"
+       ]
+      },
+      {
+       "id": "f",
+       "component": "TextField",
+       "label": "授权码",
+       "variant": "obscured",
+       "value": {
+        "path": "/l/0"
+       }
+      },
+      {
+       "id": "b",
+       "component": "Button",
+       "child": "bt",
+       "action": {
+        "event": {
+         "name": "mail_connect",
+         "context": {
+          "code": {
+           "path": "/l/+0"
+          }
+         }
+        }
+       }
+      },
+      {
+       "id": "bt",
+       "component": "Text",
+       "text": "加上"
+      }
+     ]
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateDataModel": {
+     "surfaceId": "s",
+     "path": "/",
+     "value": {
+      "l": [
+       "",
+       "x1",
+       "x2",
+       "x3",
+       "x4",
+       "x5",
+       "x6",
+       "x7",
+       "x8",
+       "x9",
+       "x10"
+      ]
+     }
+    }
+   }
+  ],
+  "ok": false,
+  "page": true
+ },
+ {
+  "name": "page_secure_list_option_label_00",
+  "catalog": "ai.luoke/a2ui/agent/1",
+  "messages": [
+   {
+    "version": "v0.9",
+    "createSurface": {
+     "surfaceId": "s",
+     "catalogId": "ai.luoke/a2ui/agent/1"
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateComponents": {
+     "surfaceId": "s",
+     "components": [
+      {
+       "id": "root",
+       "component": "Column",
+       "children": [
+        "f",
+        "b",
+        "t"
+       ]
+      },
+      {
+       "id": "f",
+       "component": "TextField",
+       "label": "授权码",
+       "variant": "obscured",
+       "value": {
+        "path": "/l/0"
+       }
+      },
+      {
+       "id": "b",
+       "component": "Button",
+       "child": "bt",
+       "action": {
+        "event": {
+         "name": "mail_connect",
+         "context": {
+          "code": {
+           "path": "/l/0"
+          }
+         }
+        }
+       }
+      },
+      {
+       "id": "bt",
+       "component": "Text",
+       "text": "加上"
+      },
+      {
+       "id": "t",
+       "component": "ChoicePicker",
+       "options": [
+        {
+         "label": {
+          "path": "/l/00"
+         },
+         "value": "a"
+        }
+       ],
+       "value": [
+        "a"
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateDataModel": {
+     "surfaceId": "s",
+     "path": "/",
+     "value": {
+      "l": [
+       "",
+       "x1",
+       "x2",
+       "x3",
+       "x4",
+       "x5",
+       "x6",
+       "x7",
+       "x8",
+       "x9",
+       "x10"
+      ]
+     }
+    }
+   }
+  ],
+  "ok": false,
+  "page": true
+ },
+ {
+  "name": "page_secure_list_text_10_ok",
+  "catalog": "ai.luoke/a2ui/agent/1",
+  "messages": [
+   {
+    "version": "v0.9",
+    "createSurface": {
+     "surfaceId": "s",
+     "catalogId": "ai.luoke/a2ui/agent/1"
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateComponents": {
+     "surfaceId": "s",
+     "components": [
+      {
+       "id": "root",
+       "component": "Column",
+       "children": [
+        "f",
+        "b",
+        "t"
+       ]
+      },
+      {
+       "id": "f",
+       "component": "TextField",
+       "label": "授权码",
+       "variant": "obscured",
+       "value": {
+        "path": "/l/0"
+       }
+      },
+      {
+       "id": "b",
+       "component": "Button",
+       "child": "bt",
+       "action": {
+        "event": {
+         "name": "mail_connect",
+         "context": {
+          "code": {
+           "path": "/l/0"
+          }
+         }
+        }
+       }
+      },
+      {
+       "id": "bt",
+       "component": "Text",
+       "text": "加上"
+      },
+      {
+       "id": "t",
+       "component": "Text",
+       "text": {
+        "path": "/l/10"
+       }
+      }
+     ]
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateDataModel": {
+     "surfaceId": "s",
+     "path": "/",
+     "value": {
+      "l": [
+       "",
+       "x1",
+       "x2",
+       "x3",
+       "x4",
+       "x5",
+       "x6",
+       "x7",
+       "x8",
+       "x9",
+       "x10"
+      ]
+     }
+    }
+   }
+  ],
+  "ok": true,
+  "page": true
+ },
+ {
+  "name": "page_option_label_unbound",
+  "catalog": "ai.luoke/a2ui/agent/1",
+  "messages": [
+   {
+    "version": "v0.9",
+    "createSurface": {
+     "surfaceId": "s",
+     "catalogId": "ai.luoke/a2ui/agent/1"
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateComponents": {
+     "surfaceId": "s",
+     "components": [
+      {
+       "id": "root",
+       "component": "ChoicePicker",
+       "options": [
+        {
+         "label": {
+          "path": "/nope"
+         },
+         "value": "a"
+        }
+       ],
+       "value": [
+        "a"
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateDataModel": {
+     "surfaceId": "s",
+     "path": "/",
+     "value": {}
+    }
+   }
+  ],
+  "ok": false,
+  "page": true
+ },
+ {
+  "name": "page_plain_text_field_prefilled",
+  "catalog": "ai.luoke/a2ui/agent/1",
+  "messages": [
+   {
+    "version": "v0.9",
+    "createSurface": {
+     "surfaceId": "s",
+     "catalogId": "ai.luoke/a2ui/agent/1"
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateComponents": {
+     "surfaceId": "s",
+     "components": [
+      {
+       "id": "root",
+       "component": "TextField",
+       "label": "改成",
+       "value": {
+        "path": "/v"
+       }
+      }
+     ]
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateDataModel": {
+     "surfaceId": "s",
+     "path": "/",
+     "value": {
+      "v": "原来的话"
+     }
+    }
+   }
+  ],
+  "ok": true,
+  "page": true
+ },
+ {
+  "name": "count_also_ok",
+  "catalog": "ai.luoke/a2ui/agent/1",
+  "messages": [
+   {
+    "version": "v0.9",
+    "createSurface": {
+     "surfaceId": "s",
+     "catalogId": "ai.luoke/a2ui/agent/1"
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateComponents": {
+     "surfaceId": "s",
+     "components": [
+      {
+       "id": "root",
+       "component": "Button",
+       "child": "t",
+       "count": {
+        "path": "/choices",
+        "value": "trash",
+        "also": [
+         "ignore",
+         "clone"
+        ],
+        "alsoLabel": "按上面的选择清理（移到废纸篓 {n} 项）"
+       },
+       "action": {
+        "event": {
+         "name": "scan_apply",
+         "context": {
+          "choices": {
+           "path": "/choices"
+          }
+         }
+        }
+       }
+      },
+      {
+       "id": "t",
+       "component": "Text",
+       "text": "移到废纸篓 {n} 项"
+      }
+     ]
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateDataModel": {
+     "surfaceId": "s",
+     "path": "/",
+     "value": {
+      "choices": {
+       "i0": [
+        "trash"
+       ],
+       "i1": [
+        "keep"
+       ]
+      },
+      "n": 1
+     }
+    }
+   }
+  ],
+  "ok": true
+ },
+ {
+  "name": "count_also_without_label",
+  "catalog": "ai.luoke/a2ui/agent/1",
+  "messages": [
+   {
+    "version": "v0.9",
+    "createSurface": {
+     "surfaceId": "s",
+     "catalogId": "ai.luoke/a2ui/agent/1"
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateComponents": {
+     "surfaceId": "s",
+     "components": [
+      {
+       "id": "root",
+       "component": "Button",
+       "child": "t",
+       "count": {
+        "path": "/choices",
+        "value": "trash",
+        "also": [
+         "ignore"
+        ]
+       },
+       "action": {
+        "event": {
+         "name": "scan_apply",
+         "context": {
+          "choices": {
+           "path": "/choices"
+          }
+         }
+        }
+       }
+      },
+      {
+       "id": "t",
+       "component": "Text",
+       "text": "移到废纸篓 {n} 项"
+      }
+     ]
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateDataModel": {
+     "surfaceId": "s",
+     "path": "/",
+     "value": {
+      "choices": {
+       "i0": [
+        "trash"
+       ],
+       "i1": [
+        "keep"
+       ]
+      },
+      "n": 1
+     }
+    }
+   }
+  ],
+  "ok": false
+ },
+ {
+  "name": "count_also_label_only",
+  "catalog": "ai.luoke/a2ui/agent/1",
+  "messages": [
+   {
+    "version": "v0.9",
+    "createSurface": {
+     "surfaceId": "s",
+     "catalogId": "ai.luoke/a2ui/agent/1"
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateComponents": {
+     "surfaceId": "s",
+     "components": [
+      {
+       "id": "root",
+       "component": "Button",
+       "child": "t",
+       "count": {
+        "path": "/choices",
+        "value": "trash",
+        "alsoLabel": "按上面的选择清理"
+       },
+       "action": {
+        "event": {
+         "name": "scan_apply",
+         "context": {
+          "choices": {
+           "path": "/choices"
+          }
+         }
+        }
+       }
+      },
+      {
+       "id": "t",
+       "component": "Text",
+       "text": "移到废纸篓 {n} 项"
+      }
+     ]
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateDataModel": {
+     "surfaceId": "s",
+     "path": "/",
+     "value": {
+      "choices": {
+       "i0": [
+        "trash"
+       ],
+       "i1": [
+        "keep"
+       ]
+      },
+      "n": 1
+     }
+    }
+   }
+  ],
+  "ok": false
+ },
+ {
+  "name": "count_also_empty",
+  "catalog": "ai.luoke/a2ui/agent/1",
+  "messages": [
+   {
+    "version": "v0.9",
+    "createSurface": {
+     "surfaceId": "s",
+     "catalogId": "ai.luoke/a2ui/agent/1"
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateComponents": {
+     "surfaceId": "s",
+     "components": [
+      {
+       "id": "root",
+       "component": "Button",
+       "child": "t",
+       "count": {
+        "path": "/choices",
+        "value": "trash",
+        "also": [],
+        "alsoLabel": "x"
+       },
+       "action": {
+        "event": {
+         "name": "scan_apply",
+         "context": {
+          "choices": {
+           "path": "/choices"
+          }
+         }
+        }
+       }
+      },
+      {
+       "id": "t",
+       "component": "Text",
+       "text": "移到废纸篓 {n} 项"
+      }
+     ]
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateDataModel": {
+     "surfaceId": "s",
+     "path": "/",
+     "value": {
+      "choices": {
+       "i0": [
+        "trash"
+       ],
+       "i1": [
+        "keep"
+       ]
+      },
+      "n": 1
+     }
+    }
+   }
+  ],
+  "ok": false
+ },
+ {
+  "name": "count_also_not_texts",
+  "catalog": "ai.luoke/a2ui/agent/1",
+  "messages": [
+   {
+    "version": "v0.9",
+    "createSurface": {
+     "surfaceId": "s",
+     "catalogId": "ai.luoke/a2ui/agent/1"
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateComponents": {
+     "surfaceId": "s",
+     "components": [
+      {
+       "id": "root",
+       "component": "Button",
+       "child": "t",
+       "count": {
+        "path": "/choices",
+        "value": "trash",
+        "also": [
+         "ignore",
+         3
+        ],
+        "alsoLabel": "x"
+       },
+       "action": {
+        "event": {
+         "name": "scan_apply",
+         "context": {
+          "choices": {
+           "path": "/choices"
+          }
+         }
+        }
+       }
+      },
+      {
+       "id": "t",
+       "component": "Text",
+       "text": "移到废纸篓 {n} 项"
+      }
+     ]
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateDataModel": {
+     "surfaceId": "s",
+     "path": "/",
+     "value": {
+      "choices": {
+       "i0": [
+        "trash"
+       ],
+       "i1": [
+        "keep"
+       ]
+      },
+      "n": 1
+     }
+    }
+   }
+  ],
+  "ok": false
+ },
+ {
+  "name": "count_also_blank_label",
+  "catalog": "ai.luoke/a2ui/agent/1",
+  "messages": [
+   {
+    "version": "v0.9",
+    "createSurface": {
+     "surfaceId": "s",
+     "catalogId": "ai.luoke/a2ui/agent/1"
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateComponents": {
+     "surfaceId": "s",
+     "components": [
+      {
+       "id": "root",
+       "component": "Button",
+       "child": "t",
+       "count": {
+        "path": "/choices",
+        "value": "trash",
+        "also": [
+         "ignore"
+        ],
+        "alsoLabel": " "
+       },
+       "action": {
+        "event": {
+         "name": "scan_apply",
+         "context": {
+          "choices": {
+           "path": "/choices"
+          }
+         }
+        }
+       }
+      },
+      {
+       "id": "t",
+       "component": "Text",
+       "text": "移到废纸篓 {n} 项"
+      }
+     ]
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateDataModel": {
+     "surfaceId": "s",
+     "path": "/",
+     "value": {
+      "choices": {
+       "i0": [
+        "trash"
+       ],
+       "i1": [
+        "keep"
+       ]
+      },
+      "n": 1
+     }
+    }
+   }
+  ],
+  "ok": false
+ },
+ {
+  "name": "count_extra_key",
+  "catalog": "ai.luoke/a2ui/agent/1",
+  "messages": [
+   {
+    "version": "v0.9",
+    "createSurface": {
+     "surfaceId": "s",
+     "catalogId": "ai.luoke/a2ui/agent/1"
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateComponents": {
+     "surfaceId": "s",
+     "components": [
+      {
+       "id": "root",
+       "component": "Button",
+       "child": "t",
+       "count": {
+        "path": "/choices",
+        "value": "trash",
+        "extra": 1
+       },
+       "action": {
+        "event": {
+         "name": "scan_apply",
+         "context": {
+          "choices": {
+           "path": "/choices"
+          }
+         }
+        }
+       }
+      },
+      {
+       "id": "t",
+       "component": "Text",
+       "text": "移到废纸篓 {n} 项"
+      }
+     ]
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateDataModel": {
+     "surfaceId": "s",
+     "path": "/",
+     "value": {
+      "choices": {
+       "i0": [
+        "trash"
+       ],
+       "i1": [
+        "keep"
+       ]
+      },
+      "n": 1
+     }
+    }
+   }
+  ],
+  "ok": false
+ },
+ {
+  "name": "count_weights_ok",
+  "catalog": "ai.luoke/a2ui/agent/1",
+  "messages": [
+   {
+    "version": "v0.9",
+    "createSurface": {
+     "surfaceId": "s",
+     "catalogId": "ai.luoke/a2ui/agent/1"
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateComponents": {
+     "surfaceId": "s",
+     "components": [
+      {
+       "id": "root",
+       "component": "Button",
+       "child": "t",
+       "count": {
+        "path": "/choices",
+        "value": "trash",
+        "weights": {
+         "i0": 41,
+         "absent": 3
+        }
+       },
+       "action": {
+        "event": {
+         "name": "scan_apply",
+         "context": {
+          "choices": {
+           "path": "/choices"
+          }
+         }
+        }
+       }
+      },
+      {
+       "id": "t",
+       "component": "Text",
+       "text": "移到废纸篓 {n} 项"
+      }
+     ]
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateDataModel": {
+     "surfaceId": "s",
+     "path": "/",
+     "value": {
+      "choices": {
+       "i0": [
+        "trash"
+       ],
+       "i1": [
+        "keep"
+       ]
+      },
+      "n": 1
+     }
+    }
+   }
+  ],
+  "ok": true
+ },
+ {
+  "name": "count_weights_empty_ok",
+  "catalog": "ai.luoke/a2ui/agent/1",
+  "messages": [
+   {
+    "version": "v0.9",
+    "createSurface": {
+     "surfaceId": "s",
+     "catalogId": "ai.luoke/a2ui/agent/1"
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateComponents": {
+     "surfaceId": "s",
+     "components": [
+      {
+       "id": "root",
+       "component": "Button",
+       "child": "t",
+       "count": {
+        "path": "/choices",
+        "value": "trash",
+        "weights": {}
+       },
+       "action": {
+        "event": {
+         "name": "scan_apply",
+         "context": {
+          "choices": {
+           "path": "/choices"
+          }
+         }
+        }
+       }
+      },
+      {
+       "id": "t",
+       "component": "Text",
+       "text": "移到废纸篓 {n} 项"
+      }
+     ]
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateDataModel": {
+     "surfaceId": "s",
+     "path": "/",
+     "value": {
+      "choices": {
+       "i0": [
+        "trash"
+       ],
+       "i1": [
+        "keep"
+       ]
+      },
+      "n": 1
+     }
+    }
+   }
+  ],
+  "ok": true
+ },
+ {
+  "name": "count_weights_with_also_ok",
+  "catalog": "ai.luoke/a2ui/agent/1",
+  "messages": [
+   {
+    "version": "v0.9",
+    "createSurface": {
+     "surfaceId": "s",
+     "catalogId": "ai.luoke/a2ui/agent/1"
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateComponents": {
+     "surfaceId": "s",
+     "components": [
+      {
+       "id": "root",
+       "component": "Button",
+       "child": "t",
+       "count": {
+        "path": "/choices",
+        "value": "trash",
+        "weights": {
+         "i0": 41
+        },
+        "also": [
+         "ignore"
+        ],
+        "alsoLabel": "按上面的选择清理"
+       },
+       "action": {
+        "event": {
+         "name": "scan_apply",
+         "context": {
+          "choices": {
+           "path": "/choices"
+          }
+         }
+        }
+       }
+      },
+      {
+       "id": "t",
+       "component": "Text",
+       "text": "移到废纸篓 {n} 项"
+      }
+     ]
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateDataModel": {
+     "surfaceId": "s",
+     "path": "/",
+     "value": {
+      "choices": {
+       "i0": [
+        "trash"
+       ],
+       "i1": [
+        "keep"
+       ]
+      },
+      "n": 1
+     }
+    }
+   }
+  ],
+  "ok": true
+ },
+ {
+  "name": "count_weights_zero",
+  "catalog": "ai.luoke/a2ui/agent/1",
+  "messages": [
+   {
+    "version": "v0.9",
+    "createSurface": {
+     "surfaceId": "s",
+     "catalogId": "ai.luoke/a2ui/agent/1"
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateComponents": {
+     "surfaceId": "s",
+     "components": [
+      {
+       "id": "root",
+       "component": "Button",
+       "child": "t",
+       "count": {
+        "path": "/choices",
+        "value": "trash",
+        "weights": {
+         "i0": 0
+        }
+       },
+       "action": {
+        "event": {
+         "name": "scan_apply",
+         "context": {
+          "choices": {
+           "path": "/choices"
+          }
+         }
+        }
+       }
+      },
+      {
+       "id": "t",
+       "component": "Text",
+       "text": "移到废纸篓 {n} 项"
+      }
+     ]
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateDataModel": {
+     "surfaceId": "s",
+     "path": "/",
+     "value": {
+      "choices": {
+       "i0": [
+        "trash"
+       ],
+       "i1": [
+        "keep"
+       ]
+      },
+      "n": 1
+     }
+    }
+   }
+  ],
+  "ok": false
+ },
+ {
+  "name": "count_weights_negative",
+  "catalog": "ai.luoke/a2ui/agent/1",
+  "messages": [
+   {
+    "version": "v0.9",
+    "createSurface": {
+     "surfaceId": "s",
+     "catalogId": "ai.luoke/a2ui/agent/1"
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateComponents": {
+     "surfaceId": "s",
+     "components": [
+      {
+       "id": "root",
+       "component": "Button",
+       "child": "t",
+       "count": {
+        "path": "/choices",
+        "value": "trash",
+        "weights": {
+         "i0": -2
+        }
+       },
+       "action": {
+        "event": {
+         "name": "scan_apply",
+         "context": {
+          "choices": {
+           "path": "/choices"
+          }
+         }
+        }
+       }
+      },
+      {
+       "id": "t",
+       "component": "Text",
+       "text": "移到废纸篓 {n} 项"
+      }
+     ]
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateDataModel": {
+     "surfaceId": "s",
+     "path": "/",
+     "value": {
+      "choices": {
+       "i0": [
+        "trash"
+       ],
+       "i1": [
+        "keep"
+       ]
+      },
+      "n": 1
+     }
+    }
+   }
+  ],
+  "ok": false
+ },
+ {
+  "name": "count_weights_fraction",
+  "catalog": "ai.luoke/a2ui/agent/1",
+  "messages": [
+   {
+    "version": "v0.9",
+    "createSurface": {
+     "surfaceId": "s",
+     "catalogId": "ai.luoke/a2ui/agent/1"
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateComponents": {
+     "surfaceId": "s",
+     "components": [
+      {
+       "id": "root",
+       "component": "Button",
+       "child": "t",
+       "count": {
+        "path": "/choices",
+        "value": "trash",
+        "weights": {
+         "i0": 1.5
+        }
+       },
+       "action": {
+        "event": {
+         "name": "scan_apply",
+         "context": {
+          "choices": {
+           "path": "/choices"
+          }
+         }
+        }
+       }
+      },
+      {
+       "id": "t",
+       "component": "Text",
+       "text": "移到废纸篓 {n} 项"
+      }
+     ]
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateDataModel": {
+     "surfaceId": "s",
+     "path": "/",
+     "value": {
+      "choices": {
+       "i0": [
+        "trash"
+       ],
+       "i1": [
+        "keep"
+       ]
+      },
+      "n": 1
+     }
+    }
+   }
+  ],
+  "ok": false
+ },
+ {
+  "name": "count_weights_text",
+  "catalog": "ai.luoke/a2ui/agent/1",
+  "messages": [
+   {
+    "version": "v0.9",
+    "createSurface": {
+     "surfaceId": "s",
+     "catalogId": "ai.luoke/a2ui/agent/1"
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateComponents": {
+     "surfaceId": "s",
+     "components": [
+      {
+       "id": "root",
+       "component": "Button",
+       "child": "t",
+       "count": {
+        "path": "/choices",
+        "value": "trash",
+        "weights": {
+         "i0": "41"
+        }
+       },
+       "action": {
+        "event": {
+         "name": "scan_apply",
+         "context": {
+          "choices": {
+           "path": "/choices"
+          }
+         }
+        }
+       }
+      },
+      {
+       "id": "t",
+       "component": "Text",
+       "text": "移到废纸篓 {n} 项"
+      }
+     ]
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateDataModel": {
+     "surfaceId": "s",
+     "path": "/",
+     "value": {
+      "choices": {
+       "i0": [
+        "trash"
+       ],
+       "i1": [
+        "keep"
+       ]
+      },
+      "n": 1
+     }
+    }
+   }
+  ],
+  "ok": false
+ },
+ {
+  "name": "count_weights_bool",
+  "catalog": "ai.luoke/a2ui/agent/1",
+  "messages": [
+   {
+    "version": "v0.9",
+    "createSurface": {
+     "surfaceId": "s",
+     "catalogId": "ai.luoke/a2ui/agent/1"
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateComponents": {
+     "surfaceId": "s",
+     "components": [
+      {
+       "id": "root",
+       "component": "Button",
+       "child": "t",
+       "count": {
+        "path": "/choices",
+        "value": "trash",
+        "weights": {
+         "i0": true
+        }
+       },
+       "action": {
+        "event": {
+         "name": "scan_apply",
+         "context": {
+          "choices": {
+           "path": "/choices"
+          }
+         }
+        }
+       }
+      },
+      {
+       "id": "t",
+       "component": "Text",
+       "text": "移到废纸篓 {n} 项"
+      }
+     ]
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateDataModel": {
+     "surfaceId": "s",
+     "path": "/",
+     "value": {
+      "choices": {
+       "i0": [
+        "trash"
+       ],
+       "i1": [
+        "keep"
+       ]
+      },
+      "n": 1
+     }
+    }
+   }
+  ],
+  "ok": false
+ },
+ {
+  "name": "count_weights_not_object",
+  "catalog": "ai.luoke/a2ui/agent/1",
+  "messages": [
+   {
+    "version": "v0.9",
+    "createSurface": {
+     "surfaceId": "s",
+     "catalogId": "ai.luoke/a2ui/agent/1"
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateComponents": {
+     "surfaceId": "s",
+     "components": [
+      {
+       "id": "root",
+       "component": "Button",
+       "child": "t",
+       "count": {
+        "path": "/choices",
+        "value": "trash",
+        "weights": [
+         41
+        ]
+       },
+       "action": {
+        "event": {
+         "name": "scan_apply",
+         "context": {
+          "choices": {
+           "path": "/choices"
+          }
+         }
+        }
+       }
+      },
+      {
+       "id": "t",
+       "component": "Text",
+       "text": "移到废纸篓 {n} 项"
+      }
+     ]
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateDataModel": {
+     "surfaceId": "s",
+     "path": "/",
+     "value": {
+      "choices": {
+       "i0": [
+        "trash"
+       ],
+       "i1": [
+        "keep"
+       ]
+      },
+      "n": 1
+     }
     }
    }
   ],

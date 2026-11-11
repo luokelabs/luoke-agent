@@ -1,13 +1,88 @@
 {
   "reply": {
-    "id": 11,
+    "id": 12,
     "jsonrpc": "2.0",
     "result": {
       "contents": [
         {
           "mimeType": "application/json",
           "text": {
-            "items": []
+            "items": [
+              {
+                "card": [
+                  {
+                    "createSurface": {
+                      "catalogId": "ai.luoke/a2ui/agent/1",
+                      "surfaceId": "round-000000000001"
+                    },
+                    "version": "v0.9"
+                  },
+                  {
+                    "updateComponents": {
+                      "components": [
+                        {
+                          "children": [
+                            "h1",
+                            "t2",
+                            "r4"
+                          ],
+                          "component": "Column",
+                          "id": "root"
+                        },
+                        {
+                          "component": "Text",
+                          "id": "h1",
+                          "text": "7 项等你处理",
+                          "variant": "h4"
+                        },
+                        {
+                          "component": "Text",
+                          "id": "t2",
+                          "text": "已删掉会重建的缓存 1 项（腾出 62.9 MB）；另外 7 项在「螺壳扫描」里等你看。",
+                          "variant": "caption"
+                        },
+                        {
+                          "action": {
+                            "event": {
+                              "context": {
+                                "on": true
+                              },
+                              "name": "scan_autoclean"
+                            }
+                          },
+                          "child": "b3-text",
+                          "component": "Button",
+                          "id": "b3"
+                        },
+                        {
+                          "component": "Text",
+                          "id": "b3-text",
+                          "text": "打开自动清理"
+                        },
+                        {
+                          "children": [
+                            "b3"
+                          ],
+                          "component": "Row",
+                          "id": "r4"
+                        }
+                      ],
+                      "surfaceId": "round-000000000001"
+                    },
+                    "version": "v0.9"
+                  }
+                ],
+                "created": "2026-10-20T12:00:00Z",
+                "deadline": null,
+                "expires": "2026-10-23T12:00:00Z",
+                "id": "round/2026-10-20T12:00:00Z",
+                "kind": "findings",
+                "summary": "已删掉会重建的缓存 1 项（腾出 62.9 MB）；另外 7 项在「螺壳扫描」里等你看。",
+                "title": "7 项等你处理",
+                "urgency": "low",
+                "why_now": "扫描刚查完一轮"
+              }
+            ]
           },
           "uri": "luoke://luoke-scan/outbox"
         }
@@ -16,7 +91,7 @@
     }
   },
   "request": {
-    "id": 11,
+    "id": 12,
     "jsonrpc": "2.0",
     "method": "resources/read",
     "params": {

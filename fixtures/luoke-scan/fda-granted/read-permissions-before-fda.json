@@ -1,0 +1,36 @@
+{
+  "reply": {
+    "id": 3,
+    "jsonrpc": "2.0",
+    "result": {
+      "contents": [
+        {
+          "mimeType": "application/json",
+          "text": {
+            "admin": "ask",
+            "auto": "off",
+            "fda": "denied"
+          },
+          "uri": "permissions"
+        }
+      ],
+      "resultType": "complete"
+    }
+  },
+  "request": {
+    "id": 3,
+    "jsonrpc": "2.0",
+    "method": "resources/read",
+    "params": {
+      "_meta": {
+        "io.modelcontextprotocol/clientCapabilities": {},
+        "io.modelcontextprotocol/clientInfo": {
+          "name": "luoke-agent",
+          "version": "fixtures"
+        },
+        "io.modelcontextprotocol/protocolVersion": "2026-07-28"
+      },
+      "uri": "permissions"
+    }
+  }
+}

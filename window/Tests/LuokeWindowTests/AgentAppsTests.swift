@@ -54,7 +54,7 @@ final class AgentAppsTests: XCTestCase {
         XCTAssertTrue(scan.running)
         XCTAssertEqual(scan.summary?.text, try scanSample().apps.first?["summary"]?["text"]?.string, "照核心答的写")
         XCTAssertNotNil(scan.summary?.text)
-        XCTAssertEqual(scan.pages.map(\.title), ["概览", "清理记录"], "窗口里画的页")
+        XCTAssertEqual(scan.pages.map(\.title), ["概览", "状态", "清理记录"], "窗口里画的页（「状态」：luoke-scan#124）")
         XCTAssertNil(scan.uiPages, "扫描没有自己的界面")
         XCTAssertFalse(scan.hasUI)
         XCTAssertEqual(m.agentApp(for: .mail)?.uiPages?.map(\.title), ["账号"], "带外链箭头、由工具自己打开的页")
@@ -146,27 +146,6 @@ final class AgentAppsTests: XCTestCase {
         b.calls = []
         f.handle("apps", Data(#"{"app":"luoke-mail"}"#.utf8))
         XCTAssertEqual(b.calls, ["apps", "permissions"], "正看着权限：权限也重新取")
-    }
-
-    func testOpenFullUIOnlyWhenTheToolHasOne() throws {
-        let b = Recorder()
-        let (m, f) = fed(backend: b)
-        m.go(.mail)
-        b.calls = []
-        m.openAppUI()
-        m.openAppUI(page: "accounts")
-        XCTAssertEqual(b.calls, ["open luoke-mail -", "open luoke-mail accounts"])
-        m.go(.scan)
-        b.calls = []
-        m.openAppUI()
-        XCTAssertEqual(b.calls, [], "工具没有自己的界面：没有「打开完整界面」")
-        f.applyApps(try JSONValue.parse(#"{"apps":[{"id":"luoke-mail","running":true,"summary":null,"pages":[],"ui":null,"needs":[]}]}"#))
-        XCTAssertFalse(try XCTUnwrap(m.agentApp(for: .mail)).hasUI)
-        XCTAssertNil(m.agentApp(for: .mail)?.summary)
-        m.go(.mail)
-        b.calls = []
-        m.openAppUI()
-        XCTAssertEqual(b.calls, [], "工具不再报自己的界面：也没有了")
     }
 
     func testPageButtonsGoThroughTheActionPath() {
@@ -457,7 +436,7 @@ final class AgentAppsTests: XCTestCase {
         XCTAssertEqual(m.toast?.text, "这一项现在不能这样改。")
         m.permissionAnswered(app: "luoke-mail", id: "auto", op: "on", text: "", error: true)
         XCTAssertEqual(m.toast?.text, "没改成。")
-        XCTAssertEqual(AgentConnection.answer(0, Data()).0, "没连上螺壳的核心。")
+        XCTAssertEqual(AgentConnection.answer(0, Data()).0, "螺壳暂时没响应，这会儿做不成。")
         XCTAssertTrue(AgentConnection.answer(400, Data(#"{"error":"要有 app、id 和 op"}"#.utf8)).1)
         XCTAssertEqual(AgentConnection.answer(400, Data(#"{"error":"要有 app、id 和 op"}"#.utf8)).0, "要有 app、id 和 op")
         XCTAssertFalse(AgentConnection.answer(200, Data(#"{"text":"好","error":false}"#.utf8)).1)
@@ -480,7 +459,6 @@ final class AgentAppsTests: XCTestCase {
         m.go(.scan)
         XCTAssertNil(m.agentApp(for: .scan))
         XCTAssertNotNil(m.appPages[.scan], "螺壳扫描画示例")
-        m.openAppUI()
         m.reportHostPermissions(["fda": .granted])
         XCTAssertEqual(m.permissions.map(\.state), [.waiting, .granted, .notYet], "示例的权限不动")
         m.requestPermission("calendar")
@@ -523,15 +501,8 @@ final class AgentAppsTests: XCTestCase {
         XCTAssertEqual(try JSONValue.parse(core.posted("/action")!)["surfaceId"], .string("luoke-scan/page/overview"))
         XCTAssertTrue(wait { core.gets("/apps/luoke-scan/pages/overview") > before }, "页上点完重新取这一页")
 
-        m.openAppUI()
-        XCTAssertTrue(core.posts("/open").isEmpty, "扫描没有自己的界面：不发 /open")
         m.go(.mail)
-        m.openAppUI()
-        XCTAssertTrue(wait { m.toast?.text == "邮件助手打开了自己的窗口。" })
-        XCTAssertEqual(try JSONValue.parse(core.posted("/open")!), .object(["app": .string("luoke-mail")]))
-        m.openAppUI(page: "accounts")
-        XCTAssertTrue(wait { core.posts("/open").count == 2 })
-        XCTAssertEqual(try JSONValue.parse(core.posts("/open")[1]), .object(["app": .string("luoke-mail"), "page": .string("accounts")]))
+        XCTAssertTrue(core.posts("/open").isEmpty, "窗口不打开工具自己的界面：不发 /open")
 
         m.go(.prefs, tab: PrefsTab.permissions.rawValue)
         XCTAssertTrue(core.posts("/permissions").isEmpty, "只看不点：不改")
@@ -581,5 +552,32 @@ final class AgentAppsTests: XCTestCase {
             RunLoop.main.run(until: Date().addingTimeInterval(0.025))
         }
         return ok()
+    }
+
+    func testTabsAreTheWindowPagesOnly() {
+        let app = AgentApp(id: "luoke-mail", running: true, summary: nil,
+                           pages: [.init(id: "mailboxes", title: "邮箱"), .init(id: "activity", title: "处理记录"), .init(id: "rules", title: "自动处理"),
+                                   .init(id: "rules", title: "自动处理")],
+                           uiPages: [.init(id: "accounts", title: "邮箱"), .init(id: "rules", title: "规则")], needs: [])
+        let tabs = AgentAppBody.tabs(app)
+        XCTAssertEqual(tabs.map(\.title), ["邮箱", "处理记录", "自动处理"], "ui.pages 不画成外链标签（负责人 11-08，agent#62）；同一个编号只画一次")
+        XCTAssertFalse(tabs.contains(where: \.external))
+        XCTAssertTrue(app.hasUI, "hasUI 照旧看 ui 在不在（窗口不再拿它出按钮）")
+    }
+
+    /// agent.open_page（工具协议 §5）：`/action` 答了 page，窗口换到那个应用的应用页的那一页；不认识的应用不动
+    func testOpenPageFromTheActionAnswer() throws {
+        let (m, _) = fed()
+        XCTAssertNil(AgentConnection.openedPage(Data(#"{"text": "好", "error": false}"#.utf8)))
+        let got = try XCTUnwrap(AgentConnection.openedPage(Data(#"{"text": "", "error": false, "page": {"app": "luoke-scan", "page": "overview"}}"#.utf8)))
+        XCTAssertEqual(got.0, "luoke-scan")
+        XCTAssertEqual(got.1, "overview")
+        m.go(.today)
+        m.openAgentPage(app: "luoke-scan", page: "cleaned")
+        XCTAssertEqual(m.page, .scan)
+        XCTAssertEqual(m.appTab, "cleaned")
+        m.go(.today)
+        m.openAgentPage(app: "no-such-app", page: "overview")
+        XCTAssertEqual(m.page, .today, "侧栏里没有这个应用：不动")
     }
 }
