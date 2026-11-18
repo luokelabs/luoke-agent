@@ -1,0 +1,78 @@
+{
+  "reply": {
+    "id": 26,
+    "jsonrpc": "2.0",
+    "result": {
+      "contents": [
+        {
+          "mimeType": "application/json",
+          "text": {
+            "affects": [],
+            "answer": {
+              "options": [
+                "机器学习",
+                "系统",
+                "别的"
+              ],
+              "type": "choice"
+            },
+            "cites": [],
+            "cites_total": 0,
+            "created_at": "2026-11-05 20:45:00",
+            "expires_at": "2026-11-20 10:00:00",
+            "facts": {},
+            "found": true,
+            "id": 5,
+            "kind": "question",
+            "rank": 1,
+            "ready": true,
+            "replies": [
+              {
+                "choice": "answer",
+                "text": "机器学习"
+              },
+              {
+                "choice": "answer",
+                "text": "系统"
+              },
+              {
+                "choice": "answer",
+                "text": "别的"
+              },
+              {
+                "choice": "later"
+              },
+              {
+                "choice": "archive"
+              }
+            ],
+            "status": "open",
+            "text": "你的论文主要是哪个方向？",
+            "type": "own",
+            "v": 1,
+            "why": "邮件里常提到论文，知道方向以后挑精选更准。",
+            "write": []
+          },
+          "uri": "data/ask?id=5"
+        }
+      ],
+      "resultType": "complete"
+    }
+  },
+  "request": {
+    "id": 26,
+    "jsonrpc": "2.0",
+    "method": "resources/read",
+    "params": {
+      "_meta": {
+        "io.modelcontextprotocol/clientCapabilities": {},
+        "io.modelcontextprotocol/clientInfo": {
+          "name": "luoke-agent",
+          "version": "fixtures"
+        },
+        "io.modelcontextprotocol/protocolVersion": "2026-07-28"
+      },
+      "uri": "data/ask?id=5"
+    }
+  }
+}

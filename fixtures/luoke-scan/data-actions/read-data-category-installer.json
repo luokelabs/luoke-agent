@@ -1,0 +1,100 @@
+{
+  "reply": {
+    "id": 1005,
+    "jsonrpc": "2.0",
+    "result": {
+      "contents": [
+        {
+          "mimeType": "application/json",
+          "text": {
+            "auto": "installer",
+            "bytes": 6291456,
+            "count": 1,
+            "facts": {
+              "apps": [
+                "Fixtureapp"
+              ],
+              "appsInstalled": 1,
+              "appsMissing": 0,
+              "groups": {
+                "installer": 1
+              },
+              "password": 0,
+              "rebuilds": 0,
+              "tools": [],
+              "userFiles": "none"
+            },
+            "files": 1,
+            "id": "installer",
+            "items": [
+              {
+                "app": "Fixtureapp",
+                "appInstalled": true,
+                "bytes": 6291456,
+                "facts": {
+                  "added": "2026-09-30",
+                  "app": "Fixtureapp",
+                  "appVersion": "2.0",
+                  "days": 20,
+                  "fromInternet": true,
+                  "installerVersion": "2.0",
+                  "sameApp": true,
+                  "signed": true
+                },
+                "finding": "leftover.installer/000000000007",
+                "group": "installer",
+                "key": "i3",
+                "options": [
+                  "trash",
+                  "keep",
+                  "ignore"
+                ],
+                "password": false,
+                "path": "~/Downloads/Fixtureapp-2.0.dmg",
+                "paths": [
+                  "~/Downloads/Fixtureapp-2.0.dmg"
+                ],
+                "pathsMore": 0,
+                "plan": "p-000000000002",
+                "reason": "installed",
+                "rebuilds": false,
+                "restorable": true,
+                "reveal": "~/Downloads/Fixtureapp-2.0.dmg",
+                "rule": "leftover.installer",
+                "suggested": "trash",
+                "userFiles": "none"
+              }
+            ],
+            "known": true,
+            "more": 0,
+            "scanned": {
+              "finished": "2026-10-20T12:00:00Z",
+              "started": "2026-10-20T12:00:00Z"
+            },
+            "schema": 1,
+            "suggested": 1,
+            "suggestedBytes": 6291456
+          },
+          "uri": "data/category?id=installer"
+        }
+      ],
+      "resultType": "complete"
+    }
+  },
+  "request": {
+    "id": 1005,
+    "jsonrpc": "2.0",
+    "method": "resources/read",
+    "params": {
+      "_meta": {
+        "io.modelcontextprotocol/clientCapabilities": {},
+        "io.modelcontextprotocol/clientInfo": {
+          "name": "luoke-agent",
+          "version": "fixtures"
+        },
+        "io.modelcontextprotocol/protocolVersion": "2026-07-28"
+      },
+      "uri": "data/category?id=installer"
+    }
+  }
+}

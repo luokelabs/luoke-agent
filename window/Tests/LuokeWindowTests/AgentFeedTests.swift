@@ -95,8 +95,8 @@ final class AgentFeedTests: XCTestCase {
         XCTAssertEqual(m.done.first?.time, AgentFeed.display(at), "不是今天的写几月几日")
         // 收起成一行时，卡片上的「放回」照样能点：点的是卡片里那个按钮，带它自己的上下文
         let s = try XCTUnwrap(m.done.first?.surface).surface
-        let undo = try XCTUnwrap(TodayPage.undoButton(in: s), "自动清的卡片上有「放回」")
-        XCTAssertEqual(undo.label, "放回")
+        let undo = try XCTUnwrap(TodayPage.undoButton(in: s), "自动清理的卡片上有「恢复」")
+        XCTAssertEqual(undo.label, "恢复")
         XCTAssertEqual(try s.action(undo.id).name, "scan_restore")
         XCTAssertNotNil(undo.context["id"]?.string, "放回哪一批")
     }

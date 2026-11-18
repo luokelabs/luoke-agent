@@ -8,7 +8,16 @@
           "mimeType": "application/json",
           "text": {
             "count": 1,
-            "text": "记下了 7 条，有 1 条猜测等你确认。"
+            "kept": 7,
+            "pending": 0,
+            "recent": {
+              "formed_at": "2026-11-05 20:45:00",
+              "id": 2,
+              "kind": "fact",
+              "text": "合作方：Wang Lei（wanglei@corp.example）"
+            },
+            "state": "recent",
+            "text": "最近了解到：合作方：Wang Lei（wanglei@corp.example）"
           },
           "uri": "summary"
         }
@@ -22,7 +31,19 @@
     "method": "resources/read",
     "params": {
       "_meta": {
-        "io.modelcontextprotocol/clientCapabilities": {},
+        "io.modelcontextprotocol/clientCapabilities": {
+          "experimental": {
+            "ai.luoke/a2ui": {
+              "features": [
+                "openPage",
+                "pageArgs",
+                "confirm",
+                "rowOpen",
+                "fieldSubmit"
+              ]
+            }
+          }
+        },
         "io.modelcontextprotocol/clientInfo": {
           "name": "luoke-agent",
           "version": "fixtures"

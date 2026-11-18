@@ -1,0 +1,60 @@
+{
+  "reply": {
+    "id": 51,
+    "jsonrpc": "2.0",
+    "result": {
+      "content": [
+        {
+          "text": "先选一个人。",
+          "type": "text"
+        }
+      ],
+      "isError": true,
+      "resultType": "complete",
+      "structuredContent": {
+        "code": "invalid",
+        "reason": "no_choice"
+      }
+    }
+  },
+  "request": {
+    "id": 51,
+    "jsonrpc": "2.0",
+    "method": "tools/call",
+    "params": {
+      "_meta": {
+        "ai.luoke/user-action": {
+          "at": "2026-11-06T10:21:00+08:00",
+          "componentId": "b20",
+          "surfaceId": "people"
+        },
+        "io.modelcontextprotocol/clientCapabilities": {
+          "experimental": {
+            "ai.luoke/a2ui": {
+              "features": [
+                "openPage",
+                "pageArgs",
+                "confirm",
+                "rowOpen",
+                "fieldSubmit"
+              ]
+            }
+          }
+        },
+        "io.modelcontextprotocol/clientInfo": {
+          "name": "luoke-agent",
+          "version": "fixtures"
+        },
+        "io.modelcontextprotocol/protocolVersion": "2026-07-28"
+      },
+      "arguments": {
+        "op": "merge",
+        "other": [
+          ""
+        ],
+        "person": 1
+      },
+      "name": "mem_person"
+    }
+  }
+}

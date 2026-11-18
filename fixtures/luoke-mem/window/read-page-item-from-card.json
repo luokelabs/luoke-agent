@@ -1,0 +1,298 @@
+{
+  "reply": {
+    "id": 26,
+    "jsonrpc": "2.0",
+    "result": {
+      "contents": [
+        {
+          "mimeType": "application/json",
+          "text": [
+            {
+              "createSurface": {
+                "catalogId": "ai.luoke/a2ui/agent/1",
+                "surfaceId": "item"
+              },
+              "version": "v0.9"
+            },
+            {
+              "updateComponents": {
+                "components": [
+                  {
+                    "children": [
+                      "t1",
+                      "t2",
+                      "t3",
+                      "r6",
+                      "f-revise",
+                      "r8",
+                      "r10",
+                      "d11",
+                      "t12",
+                      "t13",
+                      "t14",
+                      "t15",
+                      "t16",
+                      "r18"
+                    ],
+                    "component": "Column",
+                    "id": "root"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "t1",
+                    "text": "本地大模型"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "t2",
+                    "text": "关注的话题 · 猜测 · 10月30日 · 依据 2 条",
+                    "variant": "caption"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "t3",
+                    "text": "理由：打字里谈到",
+                    "variant": "caption"
+                  },
+                  {
+                    "action": {
+                      "event": {
+                        "context": {
+                          "note": 1,
+                          "op": "confirm"
+                        },
+                        "name": "mem_note"
+                      }
+                    },
+                    "child": "b4-text",
+                    "component": "Button",
+                    "id": "b4",
+                    "variant": "borderless"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "b4-text",
+                    "text": "对"
+                  },
+                  {
+                    "action": {
+                      "event": {
+                        "context": {
+                          "note": 1,
+                          "op": "reject"
+                        },
+                        "name": "mem_note"
+                      }
+                    },
+                    "child": "b5-text",
+                    "component": "Button",
+                    "id": "b5",
+                    "variant": "borderless"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "b5-text",
+                    "text": "不对"
+                  },
+                  {
+                    "children": [
+                      "b4",
+                      "b5"
+                    ],
+                    "component": "Row",
+                    "id": "r6"
+                  },
+                  {
+                    "component": "TextField",
+                    "id": "f-revise",
+                    "label": "改写成（旧的说法留着，标为已被取代）",
+                    "value": {
+                      "path": "/fields/revise"
+                    }
+                  },
+                  {
+                    "action": {
+                      "event": {
+                        "context": {
+                          "note": 1,
+                          "op": "revise",
+                          "text": {
+                            "path": "/fields/revise"
+                          }
+                        },
+                        "name": "mem_note"
+                      }
+                    },
+                    "child": "b7-text",
+                    "component": "Button",
+                    "id": "b7",
+                    "variant": "borderless"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "b7-text",
+                    "text": "按我改的"
+                  },
+                  {
+                    "children": [
+                      "b7"
+                    ],
+                    "component": "Row",
+                    "id": "r8"
+                  },
+                  {
+                    "action": {
+                      "event": {
+                        "context": {
+                          "note": 1,
+                          "op": "forget",
+                          "sure": true
+                        },
+                        "name": "mem_note"
+                      }
+                    },
+                    "child": "b9-label",
+                    "component": "Button",
+                    "confirm": {
+                      "label": "忘掉",
+                      "text": "连它的依据一起删掉，找不回来。",
+                      "title": "忘掉这一条？"
+                    },
+                    "id": "b9",
+                    "variant": "borderless"
+                  },
+                  {
+                    "children": [
+                      "b9-icon",
+                      "b9-text"
+                    ],
+                    "component": "Row",
+                    "id": "b9-label"
+                  },
+                  {
+                    "component": "Icon",
+                    "id": "b9-icon",
+                    "name": "trash-2"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "b9-text",
+                    "text": "忘掉"
+                  },
+                  {
+                    "children": [
+                      "b9"
+                    ],
+                    "component": "Row",
+                    "id": "r10"
+                  },
+                  {
+                    "component": "Divider",
+                    "id": "d11"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "t12",
+                    "text": "依据 2 条",
+                    "variant": "caption"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "t13",
+                    "text": "看了一篇讲大模型蒸馏的文章"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "t14",
+                    "text": "你说的 · 螺壳输入法 · 10月30日 09:30",
+                    "variant": "caption"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "t15",
+                    "text": "本地大模型的量化到底掉多少点"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "t16",
+                    "text": "你说的 · 螺壳输入法 · 10月27日 21:10",
+                    "variant": "caption"
+                  },
+                  {
+                    "action": {
+                      "event": {
+                        "context": {
+                          "page": "all"
+                        },
+                        "name": "agent.open_page"
+                      }
+                    },
+                    "child": "b17-text",
+                    "component": "Button",
+                    "id": "b17"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "b17-text",
+                    "text": "回到「全部记忆」"
+                  },
+                  {
+                    "children": [
+                      "b17"
+                    ],
+                    "component": "Row",
+                    "id": "r18"
+                  }
+                ],
+                "surfaceId": "item"
+              },
+              "version": "v0.9"
+            },
+            {
+              "updateDataModel": {
+                "path": "/",
+                "surfaceId": "item",
+                "value": {
+                  "fields": {
+                    "revise": "本地大模型"
+                  }
+                }
+              },
+              "version": "v0.9"
+            }
+          ],
+          "uri": "page/item?id=1"
+        }
+      ],
+      "resultType": "complete"
+    }
+  },
+  "request": {
+    "id": 26,
+    "jsonrpc": "2.0",
+    "method": "resources/read",
+    "params": {
+      "_meta": {
+        "io.modelcontextprotocol/clientCapabilities": {
+          "experimental": {
+            "ai.luoke/a2ui": {
+              "features": [
+                "openPage",
+                "pageArgs",
+                "confirm",
+                "rowOpen",
+                "fieldSubmit"
+              ]
+            }
+          }
+        },
+        "io.modelcontextprotocol/clientInfo": {
+          "name": "luoke-agent",
+          "version": "fixtures"
+        },
+        "io.modelcontextprotocol/protocolVersion": "2026-07-28"
+      },
+      "uri": "page/item?id=1"
+    }
+  }
+}

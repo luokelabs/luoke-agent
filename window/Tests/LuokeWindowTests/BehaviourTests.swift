@@ -27,7 +27,7 @@ final class BehaviourTests: XCTestCase {
     func testSidebarHasFourRowsAndAppsCollapsed() {
         XCTAssertFalse(m.appsExpanded)
         XCTAssertEqual(m.apps.map(\.tool), [.mail, .scan, .mem, .search])
-        XCTAssertEqual(m.todayCount, 4, "只算要你决定的 4 件，和「一件件处理」一样；急事 1 件另外是红点")
+        XCTAssertEqual(m.todayCount, 4, "只算要你决定的 4 件，和「逐件处理」一样；急事 1 件另外是红点")
         XCTAssertTrue(m.hasUrgent)
     }
 
@@ -97,17 +97,36 @@ final class BehaviourTests: XCTestCase {
     func testUndoDoneRow() {
         m.undoDone("d1")
         XCTAssertTrue(m.done.first { $0.id == "d1" }!.undone)
-        XCTAssertEqual(m.toast?.text, "放回了")
+        XCTAssertEqual(m.toast?.text, "已恢复")
         m.undoLast()
         XCTAssertFalse(m.done.first { $0.id == "d1" }!.undone)
     }
 
     // MARK: 今天的顺序
 
-    func testDoneComesBeforeDecide() {
-        XCTAssertEqual(m.todaySections, [.urgent, .done, .decide, .later], "急事、替你做了、要你决定、顺便看看")
+    func testUrgentOnTopThenDoneThenDecide() {
+        XCTAssertEqual(m.todaySections, [.urgent, .done, .decide], "急事在最上面，再是已自动处理、待确认；没有「顺便看看」（负责人 11-13）")
         m.done = []
-        XCTAssertEqual(m.todaySections, [.urgent, .decide, .later], "没替你做过事，这一段不出现")
+        XCTAssertEqual(m.todaySections, [.urgent, .decide], "没替你做过事，这一段不出现")
+    }
+
+    func testSameAppAsksStackFromTwoWhateverTheKind() {
+        let s = Sample.model().cards[0].surface
+        let cards = [TodayCard(id: "a", tool: .mem, time: nil, surface: s, title: "记忆想问：A", kind: "question"),
+                     TodayCard(id: "b", tool: .mem, time: nil, surface: s, title: "记忆建议：B", kind: "suggestion"),
+                     TodayCard(id: "c", tool: .mail, time: nil, surface: s, title: "1 封要处理", kind: "mailbox")]
+        let stacks = TodayStack.spread(TodayStack.byApp(cards), min: TodayStack.appMin)
+        XCTAssertEqual(stacks.map { $0.map(\.id) }, [["a", "b"], ["c"]], "记忆的「想问」「建议」两件叠成一叠")
+        XCTAssertEqual(TodayStack.appWhat(stacks[0]), "1 件\(ToolIcon.mem.name)的事")
+    }
+
+    func testDoneRowsOneMailboxEachMergeIntoOne() {
+        let rows = [DoneRow(id: "d1", tool: .mail, text: "已自动处理 1 封（a@x.com）", time: "12:00", undoLabel: nil),
+                    DoneRow(id: "d2", tool: .mail, text: "已自动处理 2 封（b@y.com）", time: "12:01", undoLabel: nil),
+                    DoneRow(id: "d3", tool: .scan, text: "已自动处理 1 封（c@z.com）", time: "12:02", undoLabel: nil)]
+        let merged = DoneRow.merged(rows)
+        XCTAssertEqual(merged.map(\.text), ["已自动处理 3 封", "已自动处理 1 封（c@z.com）"], "同一个应用的合成一行、数加起来；只有一个的照旧")
+        XCTAssertEqual(merged[0].group?.badge, "2 个邮箱")
     }
 
     func testDoneShowsThreeRowsThenMore() {
@@ -153,10 +172,10 @@ final class BehaviourTests: XCTestCase {
 
     func testEmptyDecideStillShowsItsSection() {
         m.cards = []
-        XCTAssertEqual(m.todaySections, [.urgent, .done, .decide, .later], "要你决定空了画一句「今天没什么要你操心的」")
+        XCTAssertEqual(m.todaySections, [.urgent, .done, .decide], "要你决定空了画一句「今天没什么要你操心的」")
     }
 
-    // MARK: 一件件处理
+    // MARK: 逐件处理
 
     func testFocusShowsOneCardAtATime() {
         XCTAssertNil(m.focus)
@@ -304,6 +323,13 @@ final class BehaviourTests: XCTestCase {
         XCTAssertEqual(note.sentence, "还有 4 件等你：5 封新邮件、在准备硕士答辩、让螺壳读写日历等；急事：可疑邮件：冒充招商银行；替你做了 2 件。")
         m.closeBrief()
         XCTAssertNil(m.briefNote)
+        // 简报是它在「今天」说的那一句（不单列一项，没有「收起」）：离开「今天」就说完了
+        m.openBrief(time: "08:00")
+        XCTAssertNotNil(TodayHello(model: m).brief, "气泡里说的是简报")
+        m.go(.prefs)
+        XCTAssertNil(m.briefNote, "离开「今天」，简报收起")
+        m.go(.today)
+        XCTAssertNil(TodayHello(model: m).brief, "回来不再说一遍")
     }
 
     func testBriefTextStrikesWhatWasAnswered() {
@@ -318,7 +344,10 @@ final class BehaviourTests: XCTestCase {
         XCTAssertNil(runs.first?.link, "答了的不能点了")
         XCTAssertNotNil(text.runs.first { String(text[$0.range].characters) == "在准备硕士答辩" }?.link, "还没答的能点")
         XCTAssertFalse(String(text.characters).contains("？、"), "列在一起的标题不带问号")
-        XCTAssertTrue(String(text.characters).hasPrefix("替你做了 2 件：清掉 6.4 GB、归档 7 · 加标签 2。可疑邮件：冒充招商银行，先看这件。还有 4 件等你："))
+        // 最细的写法；气泡里放不下两行时由细到粗换（`details`），做了什么先收成件数
+        let full = BriefNoteView.text(note, open: Set(m.cards.map(\.id)), p: .light, detail: .init())
+        XCTAssertTrue(String(full.characters).hasPrefix("替你做了 2 件：清掉 6.4 GB、归档 7 · 加标签 2。可疑邮件：冒充招商银行，先看这件。还有 4 件等你："))
+        XCTAssertTrue(String(text.characters).contains("可疑邮件：冒充招商银行，先看这件。还有 4 件等你："))
     }
 
     func testBriefNotificationOpensTheBrief() {
@@ -336,13 +365,13 @@ final class BehaviourTests: XCTestCase {
 
     // MARK: 设置 · 显示
 
-    func testDensityIsRememberedForThisWindow() {
-        XCTAssertEqual(m.density, .standard)
+    func testTodayHasOneDensity() {
+        // 「今天」只有一种密度（2026-11-13 负责人定）：以前记下的「紧凑」不再拿出来
+        defaults.set("compact", forKey: WindowModel.densityKey)
+        XCTAssertEqual(Sample.model(defaults: defaults).density, .standard)
         m.setDensity(.compact)
-        XCTAssertEqual(defaults.string(forKey: WindowModel.densityKey), "compact")
-        XCTAssertEqual(Sample.model(defaults: defaults).density, .compact, "下次打开还是紧凑")
-        XCTAssertEqual(Sample.model().density, .standard, "别的窗口照旧")
-        XCTAssertEqual(PrefsTab.allCases.map(\.title), ["提醒", "显示", "权限", "模型", "隐私"])
+        XCTAssertNil(Sample.model(defaults: defaults).density == .compact ? "remembered" : nil, "不记")
+        XCTAssertEqual(PrefsTab.shown.map(\.title), ["通用", "模型", "隐私与权限"], "设计规范 §18.7")
     }
 
     // MARK: 活动
@@ -410,7 +439,7 @@ final class BehaviourTests: XCTestCase {
     func testGoMenuIsTheFullSetOfEntries() {
         let go = m.topMenus.first { $0.id == "go" }!
         let titles = go.items.filter { $0.kind == .item }.map(\.title)
-        XCTAssertEqual(titles, ["今天", "活动", "搜索或问螺壳", "螺壳邮件助手", "螺壳扫描", "记忆", "螺壳搜索", "添加应用…", "权限", "模型"])
+        XCTAssertEqual(titles, ["今天", "活动", "搜索或问螺壳", "螺壳邮件助手", "螺壳扫描", "螺壳搜索", "应用管理", "记忆", "隐私与权限", "模型", "设置"])
         XCTAssertEqual(m.topMenus.map(\.title), ["螺壳", "编辑", "显示", "前往", "窗口", "帮助"])
     }
 
@@ -423,9 +452,9 @@ final class BehaviourTests: XCTestCase {
         let go = m.topMenus.first { $0.id == "go" }!
         m.perform(go.items.first { $0.title == "螺壳扫描" }!.action)
         XCTAssertEqual(m.page, .scan)
-        m.perform(go.items.first { $0.title == "权限" }!.action)
+        m.perform(go.items.first { $0.title == "隐私与权限" }!.action)
         XCTAssertEqual(m.page, .prefs)
-        XCTAssertEqual(m.prefsTab, .permissions)
+        XCTAssertEqual(m.prefsTab, .privacy)
         m.perform(go.items.first { $0.title == "模型" }!.action)
         XCTAssertEqual(m.prefsTab, .model)
         m.perform(go.items.first { $0.title == "搜索或问螺壳" }!.action)
@@ -454,7 +483,7 @@ final class BehaviourTests: XCTestCase {
 
     func testPauseShowsUntilWhen() {
         m.perform(.pause)
-        XCTAssertEqual(m.statusMenu.items.first?.title, "螺壳在运行 · 提醒暂停到 11:02")
+        XCTAssertEqual(m.statusMenu.items.first?.title, "螺壳运行中 · 提醒已暂停至 11:02")
         XCTAssertEqual(m.statusMenu.items.first { $0.id == "pause" }?.title, "恢复提醒")
         m.perform(.pause)
         XCTAssertNil(m.pausedUntil)

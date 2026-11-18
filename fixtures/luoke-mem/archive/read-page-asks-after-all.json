@@ -1,0 +1,208 @@
+{
+  "reply": {
+    "id": 29,
+    "jsonrpc": "2.0",
+    "result": {
+      "contents": [
+        {
+          "mimeType": "application/json",
+          "text": [
+            {
+              "createSurface": {
+                "catalogId": "ai.luoke/a2ui/agent/1",
+                "surfaceId": "asks"
+              },
+              "version": "v0.9"
+            },
+            {
+              "updateComponents": {
+                "components": [
+                  {
+                    "children": [
+                      "t1",
+                      "t2",
+                      "d3",
+                      "t4",
+                      "t5",
+                      "t6",
+                      "r8",
+                      "t9",
+                      "t10",
+                      "r12",
+                      "t13",
+                      "t14",
+                      "r16"
+                    ],
+                    "component": "Column",
+                    "id": "root"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "t1",
+                    "text": "记忆想问你的事和给你的建议，会在「今天」里一件件问你。不想现在答的点「归档」：不算回答，记忆也不会自己再问；想答了，在下面「已归档」里点「放回」，它回到「今天」。",
+                    "variant": "caption"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "t2",
+                    "text": "现在没有想问你的。"
+                  },
+                  {
+                    "component": "Divider",
+                    "id": "d3"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "t4",
+                    "text": "已归档 3 件",
+                    "variant": "caption"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "t5",
+                    "text": "以后某商城的促销邮件都归档？"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "t6",
+                    "text": "建议 · 11月6日归档",
+                    "variant": "caption"
+                  },
+                  {
+                    "action": {
+                      "event": {
+                        "context": {
+                          "asks": [
+                            3
+                          ],
+                          "op": "back"
+                        },
+                        "name": "mem_archive"
+                      }
+                    },
+                    "child": "b7-text",
+                    "component": "Button",
+                    "id": "b7",
+                    "variant": "borderless"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "b7-text",
+                    "text": "放回"
+                  },
+                  {
+                    "children": [
+                      "b7"
+                    ],
+                    "component": "Row",
+                    "id": "r8"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "t9",
+                    "text": "「本地大模型」，对吗？"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "t10",
+                    "text": "想问你 · 11月6日归档",
+                    "variant": "caption"
+                  },
+                  {
+                    "action": {
+                      "event": {
+                        "context": {
+                          "asks": [
+                            1
+                          ],
+                          "op": "back"
+                        },
+                        "name": "mem_archive"
+                      }
+                    },
+                    "child": "b11-text",
+                    "component": "Button",
+                    "id": "b11",
+                    "variant": "borderless"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "b11-text",
+                    "text": "放回"
+                  },
+                  {
+                    "children": [
+                      "b11"
+                    ],
+                    "component": "Row",
+                    "id": "r12"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "t13",
+                    "text": "「爬山」，对吗？"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "t14",
+                    "text": "想问你 · 11月6日归档",
+                    "variant": "caption"
+                  },
+                  {
+                    "action": {
+                      "event": {
+                        "context": {
+                          "asks": [
+                            2
+                          ],
+                          "op": "back"
+                        },
+                        "name": "mem_archive"
+                      }
+                    },
+                    "child": "b15-text",
+                    "component": "Button",
+                    "id": "b15",
+                    "variant": "borderless"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "b15-text",
+                    "text": "放回"
+                  },
+                  {
+                    "children": [
+                      "b15"
+                    ],
+                    "component": "Row",
+                    "id": "r16"
+                  }
+                ],
+                "surfaceId": "asks"
+              },
+              "version": "v0.9"
+            }
+          ],
+          "uri": "page/asks"
+        }
+      ],
+      "resultType": "complete"
+    }
+  },
+  "request": {
+    "id": 29,
+    "jsonrpc": "2.0",
+    "method": "resources/read",
+    "params": {
+      "_meta": {
+        "io.modelcontextprotocol/clientCapabilities": {},
+        "io.modelcontextprotocol/clientInfo": {
+          "name": "luoke-agent",
+          "version": "fixtures"
+        },
+        "io.modelcontextprotocol/protocolVersion": "2026-07-28"
+      },
+      "uri": "page/asks"
+    }
+  }
+}

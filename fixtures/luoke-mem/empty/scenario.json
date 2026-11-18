@@ -4,6 +4,7 @@
     "resources/read": "contents[0].text 解开成了 JSON 值；线上是 JSON 文字"
   },
   "produced": {
+    "features": [],
     "mcp": "python3 -m luoke_mem --path <假记忆> mcp --clock <那一步的时钟>：一个请求一个进程",
     "seed": [
       "没有记忆文件：还没有应用往记忆里写过东西（mcp 不替它建一个）"
@@ -45,6 +46,31 @@
     },
     {
       "clock": "2026-11-06T10:00:00",
+      "do": "打开应用页的「all」",
+      "file": "read-page-all.json"
+    },
+    {
+      "clock": "2026-11-06T10:00:00",
+      "do": "打开应用页的「people」",
+      "file": "read-page-people.json"
+    },
+    {
+      "clock": "2026-11-06T10:00:00",
+      "do": "打开应用页的「settings」",
+      "file": "read-page-settings.json"
+    },
+    {
+      "clock": "2026-11-06T10:00:00",
+      "do": "打开应用页的「item」",
+      "file": "read-page-item.json"
+    },
+    {
+      "clock": "2026-11-06T10:00:00",
+      "do": "打开应用页的「asks」",
+      "file": "read-page-asks.json"
+    },
+    {
+      "clock": "2026-11-06T10:00:00",
       "do": "打开应用页的「guesses」",
       "file": "read-page-guesses.json"
     },
@@ -55,15 +81,45 @@
     },
     {
       "clock": "2026-11-06T10:00:00",
-      "do": "打开应用页的「people」",
-      "file": "read-page-people.json"
+      "do": "打开应用页的「sources」",
+      "file": "read-page-sources.json"
     },
     {
       "clock": "2026-11-06T10:00:00",
-      "do": "打开应用页的「sources」",
-      "file": "read-page-sources.json"
+      "do": "读原始数据 data/recent",
+      "file": "read-data-recent.json"
+    },
+    {
+      "clock": "2026-11-06T10:00:00",
+      "do": "读原始数据 data/helped",
+      "file": "read-data-helped.json"
+    },
+    {
+      "clock": "2026-11-06T10:00:00",
+      "do": "读原始数据 data/asks",
+      "file": "read-data-asks.json"
+    },
+    {
+      "clock": "2026-11-06T10:00:00",
+      "do": "读原始数据 data/notes",
+      "file": "read-data-notes.json"
+    },
+    {
+      "clock": "2026-11-06T10:00:00",
+      "do": "读原始数据 data/people",
+      "file": "read-data-people.json"
+    },
+    {
+      "clock": "2026-11-06T10:00:00",
+      "do": "读原始数据 data/sources",
+      "file": "read-data-sources.json"
+    },
+    {
+      "clock": "2026-11-06T10:00:00",
+      "do": "读原始数据 data/data",
+      "file": "read-data-data.json"
     }
   ],
   "title": "刚装好，记忆是空的",
-  "window": "侧栏「螺壳记忆」不带计数；五页都只有标题和一句「还没有……」；「今天」里没有记忆的卡片。"
+  "window": "侧栏「螺壳记忆」不带计数；每页都只有标题和一句「还没有……」；「今天」里没有记忆的卡片。"
 }

@@ -1,0 +1,86 @@
+{
+  "reply": {
+    "id": 8,
+    "jsonrpc": "2.0",
+    "result": {
+      "contents": [
+        {
+          "mimeType": "application/json",
+          "text": [
+            {
+              "createSurface": {
+                "catalogId": "ai.luoke/a2ui/agent/1",
+                "surfaceId": "people"
+              },
+              "version": "v0.9"
+            },
+            {
+              "updateComponents": {
+                "components": [
+                  {
+                    "children": [
+                      "t1",
+                      "r3"
+                    ],
+                    "component": "Column",
+                    "id": "root"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "t1",
+                    "text": "还没有。各应用用起来以后，记忆会从你发出的邮件里认出你常写信给的人。"
+                  },
+                  {
+                    "action": {
+                      "event": {
+                        "context": {
+                          "page": "people"
+                        },
+                        "name": "mem_open"
+                      }
+                    },
+                    "child": "b2-text",
+                    "component": "Button",
+                    "id": "b2"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "b2-text",
+                    "text": "在整份记忆里看"
+                  },
+                  {
+                    "children": [
+                      "b2"
+                    ],
+                    "component": "Row",
+                    "id": "r3"
+                  }
+                ],
+                "surfaceId": "people"
+              },
+              "version": "v0.9"
+            }
+          ],
+          "uri": "page/people"
+        }
+      ],
+      "resultType": "complete"
+    }
+  },
+  "request": {
+    "id": 8,
+    "jsonrpc": "2.0",
+    "method": "resources/read",
+    "params": {
+      "_meta": {
+        "io.modelcontextprotocol/clientCapabilities": {},
+        "io.modelcontextprotocol/clientInfo": {
+          "name": "luoke-agent",
+          "version": "fixtures"
+        },
+        "io.modelcontextprotocol/protocolVersion": "2026-07-28"
+      },
+      "uri": "page/people"
+    }
+  }
+}

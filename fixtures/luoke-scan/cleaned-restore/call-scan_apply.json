@@ -74,6 +74,35 @@
             "version": "v0.9"
           }
         ],
+        "data": {
+          "cloned": {
+            "bytes": 0,
+            "count": 0
+          },
+          "gone": 0,
+          "ignored": 0,
+          "left": [],
+          "links": 0,
+          "moved": {
+            "bytes": 131072000,
+            "count": 1
+          },
+          "partly": 0,
+          "password": false,
+          "removed": {
+            "bytes": 0,
+            "count": 0
+          },
+          "restore": "p-000000000002",
+          "retry": null,
+          "round": null,
+          "scriptsOff": 0,
+          "skipped": 0,
+          "trashed": true,
+          "type": "applied",
+          "unchanged": 0,
+          "unrecorded": []
+        },
         "done": true
       }
     }

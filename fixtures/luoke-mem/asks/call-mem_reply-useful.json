@@ -1,6 +1,6 @@
 {
   "reply": {
-    "id": 15,
+    "id": 35,
     "jsonrpc": "2.0",
     "result": {
       "content": [
@@ -34,12 +34,14 @@
             "version": "v0.9"
           }
         ],
-        "done": true
+        "done": true,
+        "result": "useful",
+        "stale": false
       }
     }
   },
   "request": {
-    "id": 15,
+    "id": 35,
     "jsonrpc": "2.0",
     "method": "tools/call",
     "params": {

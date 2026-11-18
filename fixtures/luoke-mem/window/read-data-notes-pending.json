@@ -1,0 +1,124 @@
+{
+  "reply": {
+    "id": 25,
+    "jsonrpc": "2.0",
+    "result": {
+      "contents": [
+        {
+          "mimeType": "application/json",
+          "text": {
+            "counts": {
+              "all": 22,
+              "dislike": 0,
+              "fact": 5,
+              "interest": 17,
+              "past": 1,
+              "pending": 3,
+              "preference": 0,
+              "rejected": 0,
+              "taste": 1,
+              "term": 4
+            },
+            "filter": "pending",
+            "items": [
+              {
+                "cites": 2,
+                "confidence": "guess",
+                "decided_at": null,
+                "entity": null,
+                "formed_at": "2026-10-30 09:30:00",
+                "fresh": "2026-10-30 09:30:00",
+                "id": 1,
+                "kind": "interest",
+                "origin": "inferred",
+                "pending": true,
+                "sources": [
+                  "luoke-ime"
+                ],
+                "status": "proposed",
+                "text": "本地大模型",
+                "topic": null,
+                "why_data": null
+              },
+              {
+                "cites": 2,
+                "confidence": "guess",
+                "decided_at": null,
+                "entity": 1,
+                "formed_at": "2026-10-28 18:00:00",
+                "fresh": "2026-11-03 18:00:00",
+                "id": 27,
+                "kind": "fact",
+                "origin": "inferred",
+                "pending": true,
+                "sources": [
+                  "luoke-mail"
+                ],
+                "status": "proposed",
+                "text": "合作方：Wang Lei（wanglei@corp.example）",
+                "topic": "合作方:Wang Lei",
+                "why_data": null
+              },
+              {
+                "cites": 2,
+                "confidence": "guess",
+                "decided_at": null,
+                "entity": 1,
+                "formed_at": "2026-10-28 18:00:00",
+                "fresh": "2026-11-03 18:00:00",
+                "id": 26,
+                "kind": "fact",
+                "origin": "inferred",
+                "pending": true,
+                "sources": [
+                  "luoke-mail"
+                ],
+                "status": "proposed",
+                "text": "同事：王磊（wanglei@corp.example）",
+                "topic": "同事:王磊",
+                "why_data": null
+              }
+            ],
+            "page": 1,
+            "pages": 1,
+            "q": "",
+            "ready": true,
+            "total": 3,
+            "v": 1,
+            "waiting": 3
+          },
+          "uri": "data/notes?filter=pending"
+        }
+      ],
+      "resultType": "complete"
+    }
+  },
+  "request": {
+    "id": 25,
+    "jsonrpc": "2.0",
+    "method": "resources/read",
+    "params": {
+      "_meta": {
+        "io.modelcontextprotocol/clientCapabilities": {
+          "experimental": {
+            "ai.luoke/a2ui": {
+              "features": [
+                "openPage",
+                "pageArgs",
+                "confirm",
+                "rowOpen",
+                "fieldSubmit"
+              ]
+            }
+          }
+        },
+        "io.modelcontextprotocol/clientInfo": {
+          "name": "luoke-agent",
+          "version": "fixtures"
+        },
+        "io.modelcontextprotocol/protocolVersion": "2026-07-28"
+      },
+      "uri": "data/notes?filter=pending"
+    }
+  }
+}

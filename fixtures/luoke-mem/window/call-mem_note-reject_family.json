@@ -1,0 +1,63 @@
+{
+  "reply": {
+    "id": 41,
+    "jsonrpc": "2.0",
+    "result": {
+      "content": [
+        {
+          "text": "否定了 2 条，以后这一类少提。",
+          "type": "text"
+        }
+      ],
+      "isError": false,
+      "resultType": "complete",
+      "structuredContent": {
+        "n": 2,
+        "note": 4,
+        "of": 2,
+        "result": "reject_family"
+      }
+    }
+  },
+  "request": {
+    "id": 41,
+    "jsonrpc": "2.0",
+    "method": "tools/call",
+    "params": {
+      "_meta": {
+        "ai.luoke/user-action": {
+          "at": "2026-11-06T10:14:00+08:00",
+          "componentId": "b10",
+          "surfaceId": "item"
+        },
+        "io.modelcontextprotocol/clientCapabilities": {
+          "experimental": {
+            "ai.luoke/a2ui": {
+              "features": [
+                "openPage",
+                "pageArgs",
+                "confirm",
+                "rowOpen",
+                "fieldSubmit"
+              ]
+            }
+          }
+        },
+        "io.modelcontextprotocol/clientInfo": {
+          "name": "luoke-agent",
+          "version": "fixtures"
+        },
+        "io.modelcontextprotocol/protocolVersion": "2026-07-28"
+      },
+      "arguments": {
+        "family": [
+          4,
+          5
+        ],
+        "note": 4,
+        "op": "reject_family"
+      },
+      "name": "mem_note"
+    }
+  }
+}

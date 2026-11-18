@@ -30,7 +30,7 @@ The core uses only the Python standard library and runs on Python 3.9 or later:
 python3 -B -m unittest discover -s tests -t .
 ```
 
-The Swift packages that draw cards and the main window (Swift 6, macOS 14 or later):
+The Swift packages that draw cards and the main window (Swift 6, macOS 26.2 or later):
 
 ```bash
 swift test --package-path a2ui

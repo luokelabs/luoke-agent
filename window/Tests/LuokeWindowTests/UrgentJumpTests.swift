@@ -49,7 +49,7 @@ final class UrgentJumpTests: XCTestCase {
     func testSidebarTodayCountsOnlyDecisions() {
         let m = CompactUrgentTests.replay(decide: 40)
         XCTAssertEqual(m.urgent.count, StressSample.urgentReplay)
-        XCTAssertEqual(m.todayCount, m.cards.count, "侧栏「今天」和「一件件处理」是同一个数")
+        XCTAssertEqual(m.todayCount, m.cards.count, "侧栏「今天」和「逐件处理」是同一个数")
         XCTAssertTrue(m.hasUrgent, "急事另外是红点")
     }
 
@@ -64,6 +64,12 @@ final class UrgentJumpTests: XCTestCase {
 
     func testBriefListsThreeThenEtcInTwoLines() throws {
         let m = CompactUrgentTests.replay(decide: 40)
+        XCTAssertEqual(m.cards.count, TodayPage.askLimit, "一天最多问 3 件，工具报再多也只画 3 件")
+        XCTAssertEqual(m.heldAsks, 40 - TodayPage.askLimit)
+        // 简报的写法另外测：直接摆 40 件（旧的核心、示例里会有）
+        let one = try XCTUnwrap(m.cards.first)
+        m.cards = (1...40).map { TodayCard(id: "luoke-mail/x\($0)", tool: one.tool, time: one.time, surface: one.surface,
+                                           title: "\($0) 封邮件要你处理", kind: one.kind) }
         m.openBrief(time: "08:00")
         let note = try XCTUnwrap(m.briefNote)
         XCTAssertEqual(note.pending.count, 40)

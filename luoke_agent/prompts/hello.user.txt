@@ -1,0 +1,7 @@
+今天：{{today}}
+
+今天的事：
+{{notes}}{{#recent}}
+
+最近说过（这几条不再说）：
+{{recent}}{{/recent}}

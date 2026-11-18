@@ -4,16 +4,17 @@
     "resources/read": "contents[0].text 解开成了 JSON 值；线上是 JSON 文字"
   },
   "produced": {
+    "features": [],
     "mcp": "python3 -m luoke_mem --path <假记忆> mcp --clock <那一步的时钟>：一个请求一个进程",
     "seed": [
-      "螺壳输入法记了两段打字（10月28日、11月3日），邮件助手记了两封发出的邮件（10月28日、11月5日）",
-      "两条猜测：关注的话题「本地大模型」「爬山」，各凭一段打字（记忆还没把握，等用户定）",
+      "螺壳输入法记了四段打字（10月28日、11月3日、11月5日），邮件助手记了两封发出的邮件（10月28日、11月5日）",
+      "两条猜测：关注的话题「本地大模型」「爬山」，各凭两段打字（记忆还没把握，等用户定）",
       "记下的：从两封发出的邮件归纳的「在读研究生，导师是王老师」（没问就记下了），用户自己写的常用说法「螺壳」"
     ],
     "tz": "Asia/Shanghai",
     "user_action_at": "点按时的 at 是那一步的时钟，按 Asia/Shanghai 写"
   },
-  "situation": "用了一个多星期，记忆从打字里猜了两个关注的话题，还没问；从发出的邮件里没问就记下了一条关于用户的事。用户打开应用页，在「猜测」页上一条点「对」、一条点「不对」。",
+  "situation": "用了一个多星期，记忆从打字里猜了两个关注的话题，还没问；从发出的邮件里没问就记下了一条关于用户的事。用户打开应用页，在「全部记忆」上一条点「对」、一条点「不对」。",
   "steps": [
     {
       "clock": "2026-11-06T10:00:00",
@@ -47,6 +48,31 @@
     },
     {
       "clock": "2026-11-06T10:00:00",
+      "do": "打开应用页的「all」",
+      "file": "read-page-all.json"
+    },
+    {
+      "clock": "2026-11-06T10:00:00",
+      "do": "打开应用页的「people」",
+      "file": "read-page-people.json"
+    },
+    {
+      "clock": "2026-11-06T10:00:00",
+      "do": "打开应用页的「settings」",
+      "file": "read-page-settings.json"
+    },
+    {
+      "clock": "2026-11-06T10:00:00",
+      "do": "打开应用页的「item」",
+      "file": "read-page-item.json"
+    },
+    {
+      "clock": "2026-11-06T10:00:00",
+      "do": "打开应用页的「asks」",
+      "file": "read-page-asks.json"
+    },
+    {
+      "clock": "2026-11-06T10:00:00",
       "do": "打开应用页的「guesses」",
       "file": "read-page-guesses.json"
     },
@@ -57,23 +83,53 @@
     },
     {
       "clock": "2026-11-06T10:00:00",
-      "do": "打开应用页的「people」",
-      "file": "read-page-people.json"
-    },
-    {
-      "clock": "2026-11-06T10:00:00",
       "do": "打开应用页的「sources」",
       "file": "read-page-sources.json"
     },
     {
+      "clock": "2026-11-06T10:00:00",
+      "do": "读原始数据 data/recent",
+      "file": "read-data-recent.json"
+    },
+    {
+      "clock": "2026-11-06T10:00:00",
+      "do": "读原始数据 data/helped",
+      "file": "read-data-helped.json"
+    },
+    {
+      "clock": "2026-11-06T10:00:00",
+      "do": "读原始数据 data/asks",
+      "file": "read-data-asks.json"
+    },
+    {
+      "clock": "2026-11-06T10:00:00",
+      "do": "读原始数据 data/notes",
+      "file": "read-data-notes.json"
+    },
+    {
+      "clock": "2026-11-06T10:00:00",
+      "do": "读原始数据 data/people",
+      "file": "read-data-people.json"
+    },
+    {
+      "clock": "2026-11-06T10:00:00",
+      "do": "读原始数据 data/sources",
+      "file": "read-data-sources.json"
+    },
+    {
+      "clock": "2026-11-06T10:00:00",
+      "do": "读原始数据 data/data",
+      "file": "read-data-data.json"
+    },
+    {
       "clock": "2026-11-06T10:05:00",
-      "do": "在「猜测」页上点「本地大模型」的「对」",
+      "do": "在「全部记忆」上点「本地大模型」（待确认）的「对」",
       "file": "call-mem_note-confirm.json"
     },
     {
       "clock": "2026-11-06T10:05:00",
-      "do": "窗口重新读「猜测」",
-      "file": "read-page-guesses-after-confirm.json"
+      "do": "窗口重新读「全部记忆」：「本地大模型」不再待确认",
+      "file": "read-page-all-after-confirm.json"
     },
     {
       "clock": "2026-11-06T10:06:00",
@@ -82,20 +138,15 @@
     },
     {
       "clock": "2026-11-06T10:06:00",
-      "do": "窗口重新读「猜测」",
-      "file": "read-page-guesses-after-reject.json"
+      "do": "窗口重新读「全部记忆」：「爬山」没了",
+      "file": "read-page-all-after-reject.json"
     },
     {
       "clock": "2026-11-06T10:06:00",
-      "do": "概览：没有等确认的了",
+      "do": "概览",
       "file": "read-summary-after-reject.json"
-    },
-    {
-      "clock": "2026-11-06T10:06:00",
-      "do": "「记下的」里多了「本地大模型」",
-      "file": "read-page-kept-after-reject.json"
     }
   ],
   "title": "有几条等确认的猜测",
-  "window": "侧栏计数 2；「猜测」页两条，各有「对」「不对」；点完以后「猜测」空了，「本地大模型」到了「记下的」，计数没了。"
+  "window": "概览最上面「最近了解到的」是没问就记下的那条（「不对」）；「全部记忆」里两条带「待确认」，各有「对」「不对」；点完以后「本地大模型」不再待确认，「爬山」没了。页上没有总条数。"
 }

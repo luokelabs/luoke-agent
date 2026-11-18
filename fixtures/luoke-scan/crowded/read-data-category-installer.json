@@ -1,0 +1,1620 @@
+{
+  "reply": {
+    "id": 1005,
+    "jsonrpc": "2.0",
+    "result": {
+      "contents": [
+        {
+          "mimeType": "application/json",
+          "text": {
+            "auto": "installer",
+            "bytes": 215121920,
+            "count": 41,
+            "facts": {
+              "apps": [
+                "AsterChat",
+                "AsterCode",
+                "AsterDraw",
+                "AsterMail",
+                "AsterNote",
+                "AsterSync",
+                "BirchChat",
+                "BirchCode",
+                "BirchDraw",
+                "BirchMail",
+                "BirchNote",
+                "BirchSync",
+                "CedarChat",
+                "CedarCode",
+                "CedarDraw",
+                "CedarMail",
+                "CedarNote",
+                "CedarSync",
+                "DeltaChat",
+                "DeltaCode",
+                "DeltaDraw",
+                "DeltaMail",
+                "DeltaNote",
+                "DeltaSync",
+                "EmberChat",
+                "EmberCode",
+                "EmberDraw",
+                "EmberMail",
+                "EmberNote",
+                "EmberSync",
+                "FableChat",
+                "FableCode",
+                "FableDraw",
+                "FableMail",
+                "FableNote",
+                "FableSync",
+                "GroveChat",
+                "GroveDraw",
+                "GroveMail",
+                "GroveNote",
+                "GroveSync"
+              ],
+              "appsInstalled": 41,
+              "appsMissing": 0,
+              "groups": {
+                "installer": 41
+              },
+              "password": 0,
+              "rebuilds": 0,
+              "tools": [],
+              "userFiles": "none"
+            },
+            "files": 41,
+            "id": "installer",
+            "items": [
+              {
+                "app": "AsterChat",
+                "appInstalled": true,
+                "bytes": 5246976,
+                "facts": {
+                  "added": "2026-09-20",
+                  "app": "AsterChat",
+                  "appVersion": "1.4.2",
+                  "days": 30,
+                  "fromInternet": true,
+                  "installerVersion": "1.4.2",
+                  "sameApp": true,
+                  "signed": true
+                },
+                "finding": "leftover.installer/000000000028",
+                "group": "installer",
+                "key": "i16",
+                "options": [
+                  "trash",
+                  "keep",
+                  "ignore"
+                ],
+                "password": false,
+                "path": "~/Downloads/AsterChat-1.4.2-arm64.dmg",
+                "paths": [
+                  "~/Downloads/AsterChat-1.4.2-arm64.dmg"
+                ],
+                "pathsMore": 0,
+                "plan": "p-000000000008",
+                "reason": "installed",
+                "rebuilds": false,
+                "restorable": true,
+                "reveal": "~/Downloads/AsterChat-1.4.2-arm64.dmg",
+                "rule": "leftover.installer",
+                "suggested": "trash",
+                "userFiles": "none"
+              },
+              {
+                "app": "AsterCode",
+                "appInstalled": true,
+                "bytes": 5246976,
+                "facts": {
+                  "added": "2026-09-20",
+                  "app": "AsterCode",
+                  "appVersion": "1.5.2",
+                  "days": 30,
+                  "fromInternet": true,
+                  "installerVersion": "1.5.2",
+                  "sameApp": true,
+                  "signed": true
+                },
+                "finding": "leftover.installer/000000000029",
+                "group": "installer",
+                "key": "i17",
+                "options": [
+                  "trash",
+                  "keep",
+                  "ignore"
+                ],
+                "password": false,
+                "path": "~/Downloads/AsterCode-1.5.2-arm64.dmg",
+                "paths": [
+                  "~/Downloads/AsterCode-1.5.2-arm64.dmg"
+                ],
+                "pathsMore": 0,
+                "plan": "p-000000000008",
+                "reason": "installed",
+                "rebuilds": false,
+                "restorable": true,
+                "reveal": "~/Downloads/AsterCode-1.5.2-arm64.dmg",
+                "rule": "leftover.installer",
+                "suggested": "trash",
+                "userFiles": "none"
+              },
+              {
+                "app": "AsterDraw",
+                "appInstalled": true,
+                "bytes": 5246976,
+                "facts": {
+                  "added": "2026-09-20",
+                  "app": "AsterDraw",
+                  "appVersion": "1.2.2",
+                  "days": 30,
+                  "fromInternet": true,
+                  "installerVersion": "1.2.2",
+                  "sameApp": true,
+                  "signed": true
+                },
+                "finding": "leftover.installer/000000000030",
+                "group": "installer",
+                "key": "i18",
+                "options": [
+                  "trash",
+                  "keep",
+                  "ignore"
+                ],
+                "password": false,
+                "path": "~/Downloads/AsterDraw-1.2.2-arm64.dmg",
+                "paths": [
+                  "~/Downloads/AsterDraw-1.2.2-arm64.dmg"
+                ],
+                "pathsMore": 0,
+                "plan": "p-000000000008",
+                "reason": "installed",
+                "rebuilds": false,
+                "restorable": true,
+                "reveal": "~/Downloads/AsterDraw-1.2.2-arm64.dmg",
+                "rule": "leftover.installer",
+                "suggested": "trash",
+                "userFiles": "none"
+              },
+              {
+                "app": "AsterMail",
+                "appInstalled": true,
+                "bytes": 5246976,
+                "facts": {
+                  "added": "2026-09-20",
+                  "app": "AsterMail",
+                  "appVersion": "1.3.2",
+                  "days": 30,
+                  "fromInternet": true,
+                  "installerVersion": "1.3.2",
+                  "sameApp": true,
+                  "signed": true
+                },
+                "finding": "leftover.installer/000000000031",
+                "group": "installer",
+                "key": "i19",
+                "options": [
+                  "trash",
+                  "keep",
+                  "ignore"
+                ],
+                "password": false,
+                "path": "~/Downloads/AsterMail-1.3.2-arm64.dmg",
+                "paths": [
+                  "~/Downloads/AsterMail-1.3.2-arm64.dmg"
+                ],
+                "pathsMore": 0,
+                "plan": "p-000000000008",
+                "reason": "installed",
+                "rebuilds": false,
+                "restorable": true,
+                "reveal": "~/Downloads/AsterMail-1.3.2-arm64.dmg",
+                "rule": "leftover.installer",
+                "suggested": "trash",
+                "userFiles": "none"
+              },
+              {
+                "app": "AsterSync",
+                "appInstalled": true,
+                "bytes": 5246976,
+                "facts": {
+                  "added": "2026-09-20",
+                  "app": "AsterSync",
+                  "appVersion": "1.1.2",
+                  "days": 30,
+                  "fromInternet": true,
+                  "installerVersion": "1.1.2",
+                  "sameApp": true,
+                  "signed": true
+                },
+                "finding": "leftover.installer/000000000032",
+                "group": "installer",
+                "key": "i20",
+                "options": [
+                  "trash",
+                  "keep",
+                  "ignore"
+                ],
+                "password": false,
+                "path": "~/Downloads/AsterSync-1.1.2-arm64.dmg",
+                "paths": [
+                  "~/Downloads/AsterSync-1.1.2-arm64.dmg"
+                ],
+                "pathsMore": 0,
+                "plan": "p-000000000008",
+                "reason": "installed",
+                "rebuilds": false,
+                "restorable": true,
+                "reveal": "~/Downloads/AsterSync-1.1.2-arm64.dmg",
+                "rule": "leftover.installer",
+                "suggested": "trash",
+                "userFiles": "none"
+              },
+              {
+                "app": "BirchChat",
+                "appInstalled": true,
+                "bytes": 5246976,
+                "facts": {
+                  "added": "2026-09-20",
+                  "app": "BirchChat",
+                  "appVersion": "1.10.2",
+                  "days": 30,
+                  "fromInternet": true,
+                  "installerVersion": "1.10.2",
+                  "sameApp": true,
+                  "signed": true
+                },
+                "finding": "leftover.installer/000000000033",
+                "group": "installer",
+                "key": "i21",
+                "options": [
+                  "trash",
+                  "keep",
+                  "ignore"
+                ],
+                "password": false,
+                "path": "~/Downloads/BirchChat-1.10.2-arm64.dmg",
+                "paths": [
+                  "~/Downloads/BirchChat-1.10.2-arm64.dmg"
+                ],
+                "pathsMore": 0,
+                "plan": "p-000000000008",
+                "reason": "installed",
+                "rebuilds": false,
+                "restorable": true,
+                "reveal": "~/Downloads/BirchChat-1.10.2-arm64.dmg",
+                "rule": "leftover.installer",
+                "suggested": "trash",
+                "userFiles": "none"
+              },
+              {
+                "app": "BirchCode",
+                "appInstalled": true,
+                "bytes": 5246976,
+                "facts": {
+                  "added": "2026-09-20",
+                  "app": "BirchCode",
+                  "appVersion": "1.11.2",
+                  "days": 30,
+                  "fromInternet": true,
+                  "installerVersion": "1.11.2",
+                  "sameApp": true,
+                  "signed": true
+                },
+                "finding": "leftover.installer/000000000034",
+                "group": "installer",
+                "key": "i22",
+                "options": [
+                  "trash",
+                  "keep",
+                  "ignore"
+                ],
+                "password": false,
+                "path": "~/Downloads/BirchCode-1.11.2-arm64.dmg",
+                "paths": [
+                  "~/Downloads/BirchCode-1.11.2-arm64.dmg"
+                ],
+                "pathsMore": 0,
+                "plan": "p-000000000008",
+                "reason": "installed",
+                "rebuilds": false,
+                "restorable": true,
+                "reveal": "~/Downloads/BirchCode-1.11.2-arm64.dmg",
+                "rule": "leftover.installer",
+                "suggested": "trash",
+                "userFiles": "none"
+              },
+              {
+                "app": "BirchDraw",
+                "appInstalled": true,
+                "bytes": 5246976,
+                "facts": {
+                  "added": "2026-09-20",
+                  "app": "BirchDraw",
+                  "appVersion": "1.8.2",
+                  "days": 30,
+                  "fromInternet": true,
+                  "installerVersion": "1.8.2",
+                  "sameApp": true,
+                  "signed": true
+                },
+                "finding": "leftover.installer/000000000035",
+                "group": "installer",
+                "key": "i23",
+                "options": [
+                  "trash",
+                  "keep",
+                  "ignore"
+                ],
+                "password": false,
+                "path": "~/Downloads/BirchDraw-1.8.2-arm64.dmg",
+                "paths": [
+                  "~/Downloads/BirchDraw-1.8.2-arm64.dmg"
+                ],
+                "pathsMore": 0,
+                "plan": "p-000000000008",
+                "reason": "installed",
+                "rebuilds": false,
+                "restorable": true,
+                "reveal": "~/Downloads/BirchDraw-1.8.2-arm64.dmg",
+                "rule": "leftover.installer",
+                "suggested": "trash",
+                "userFiles": "none"
+              },
+              {
+                "app": "BirchMail",
+                "appInstalled": true,
+                "bytes": 5246976,
+                "facts": {
+                  "added": "2026-09-20",
+                  "app": "BirchMail",
+                  "appVersion": "1.9.2",
+                  "days": 30,
+                  "fromInternet": true,
+                  "installerVersion": "1.9.2",
+                  "sameApp": true,
+                  "signed": true
+                },
+                "finding": "leftover.installer/000000000036",
+                "group": "installer",
+                "key": "i24",
+                "options": [
+                  "trash",
+                  "keep",
+                  "ignore"
+                ],
+                "password": false,
+                "path": "~/Downloads/BirchMail-1.9.2-arm64.dmg",
+                "paths": [
+                  "~/Downloads/BirchMail-1.9.2-arm64.dmg"
+                ],
+                "pathsMore": 0,
+                "plan": "p-000000000008",
+                "reason": "installed",
+                "rebuilds": false,
+                "restorable": true,
+                "reveal": "~/Downloads/BirchMail-1.9.2-arm64.dmg",
+                "rule": "leftover.installer",
+                "suggested": "trash",
+                "userFiles": "none"
+              },
+              {
+                "app": "BirchNote",
+                "appInstalled": true,
+                "bytes": 5246976,
+                "facts": {
+                  "added": "2026-09-20",
+                  "app": "BirchNote",
+                  "appVersion": "1.6.2",
+                  "days": 30,
+                  "fromInternet": true,
+                  "installerVersion": "1.6.2",
+                  "sameApp": true,
+                  "signed": true
+                },
+                "finding": "leftover.installer/000000000037",
+                "group": "installer",
+                "key": "i25",
+                "options": [
+                  "trash",
+                  "keep",
+                  "ignore"
+                ],
+                "password": false,
+                "path": "~/Downloads/BirchNote-1.6.2-arm64.dmg",
+                "paths": [
+                  "~/Downloads/BirchNote-1.6.2-arm64.dmg"
+                ],
+                "pathsMore": 0,
+                "plan": "p-000000000008",
+                "reason": "installed",
+                "rebuilds": false,
+                "restorable": true,
+                "reveal": "~/Downloads/BirchNote-1.6.2-arm64.dmg",
+                "rule": "leftover.installer",
+                "suggested": "trash",
+                "userFiles": "none"
+              },
+              {
+                "app": "BirchSync",
+                "appInstalled": true,
+                "bytes": 5246976,
+                "facts": {
+                  "added": "2026-09-20",
+                  "app": "BirchSync",
+                  "appVersion": "1.7.2",
+                  "days": 30,
+                  "fromInternet": true,
+                  "installerVersion": "1.7.2",
+                  "sameApp": true,
+                  "signed": true
+                },
+                "finding": "leftover.installer/000000000038",
+                "group": "installer",
+                "key": "i26",
+                "options": [
+                  "trash",
+                  "keep",
+                  "ignore"
+                ],
+                "password": false,
+                "path": "~/Downloads/BirchSync-1.7.2-arm64.dmg",
+                "paths": [
+                  "~/Downloads/BirchSync-1.7.2-arm64.dmg"
+                ],
+                "pathsMore": 0,
+                "plan": "p-000000000008",
+                "reason": "installed",
+                "rebuilds": false,
+                "restorable": true,
+                "reveal": "~/Downloads/BirchSync-1.7.2-arm64.dmg",
+                "rule": "leftover.installer",
+                "suggested": "trash",
+                "userFiles": "none"
+              },
+              {
+                "app": "CedarChat",
+                "appInstalled": true,
+                "bytes": 5246976,
+                "facts": {
+                  "added": "2026-09-20",
+                  "app": "CedarChat",
+                  "appVersion": "1.16.2",
+                  "days": 30,
+                  "fromInternet": true,
+                  "installerVersion": "1.16.2",
+                  "sameApp": true,
+                  "signed": true
+                },
+                "finding": "leftover.installer/000000000039",
+                "group": "installer",
+                "key": "i27",
+                "options": [
+                  "trash",
+                  "keep",
+                  "ignore"
+                ],
+                "password": false,
+                "path": "~/Downloads/CedarChat-1.16.2-arm64.dmg",
+                "paths": [
+                  "~/Downloads/CedarChat-1.16.2-arm64.dmg"
+                ],
+                "pathsMore": 0,
+                "plan": "p-000000000008",
+                "reason": "installed",
+                "rebuilds": false,
+                "restorable": true,
+                "reveal": "~/Downloads/CedarChat-1.16.2-arm64.dmg",
+                "rule": "leftover.installer",
+                "suggested": "trash",
+                "userFiles": "none"
+              },
+              {
+                "app": "CedarCode",
+                "appInstalled": true,
+                "bytes": 5246976,
+                "facts": {
+                  "added": "2026-09-20",
+                  "app": "CedarCode",
+                  "appVersion": "1.17.2",
+                  "days": 30,
+                  "fromInternet": true,
+                  "installerVersion": "1.17.2",
+                  "sameApp": true,
+                  "signed": true
+                },
+                "finding": "leftover.installer/000000000040",
+                "group": "installer",
+                "key": "i28",
+                "options": [
+                  "trash",
+                  "keep",
+                  "ignore"
+                ],
+                "password": false,
+                "path": "~/Downloads/CedarCode-1.17.2-arm64.dmg",
+                "paths": [
+                  "~/Downloads/CedarCode-1.17.2-arm64.dmg"
+                ],
+                "pathsMore": 0,
+                "plan": "p-000000000008",
+                "reason": "installed",
+                "rebuilds": false,
+                "restorable": true,
+                "reveal": "~/Downloads/CedarCode-1.17.2-arm64.dmg",
+                "rule": "leftover.installer",
+                "suggested": "trash",
+                "userFiles": "none"
+              },
+              {
+                "app": "CedarDraw",
+                "appInstalled": true,
+                "bytes": 5246976,
+                "facts": {
+                  "added": "2026-09-20",
+                  "app": "CedarDraw",
+                  "appVersion": "1.14.2",
+                  "days": 30,
+                  "fromInternet": true,
+                  "installerVersion": "1.14.2",
+                  "sameApp": true,
+                  "signed": true
+                },
+                "finding": "leftover.installer/000000000041",
+                "group": "installer",
+                "key": "i29",
+                "options": [
+                  "trash",
+                  "keep",
+                  "ignore"
+                ],
+                "password": false,
+                "path": "~/Downloads/CedarDraw-1.14.2-arm64.dmg",
+                "paths": [
+                  "~/Downloads/CedarDraw-1.14.2-arm64.dmg"
+                ],
+                "pathsMore": 0,
+                "plan": "p-000000000008",
+                "reason": "installed",
+                "rebuilds": false,
+                "restorable": true,
+                "reveal": "~/Downloads/CedarDraw-1.14.2-arm64.dmg",
+                "rule": "leftover.installer",
+                "suggested": "trash",
+                "userFiles": "none"
+              },
+              {
+                "app": "CedarMail",
+                "appInstalled": true,
+                "bytes": 5246976,
+                "facts": {
+                  "added": "2026-09-20",
+                  "app": "CedarMail",
+                  "appVersion": "1.15.2",
+                  "days": 30,
+                  "fromInternet": true,
+                  "installerVersion": "1.15.2",
+                  "sameApp": true,
+                  "signed": true
+                },
+                "finding": "leftover.installer/000000000042",
+                "group": "installer",
+                "key": "i30",
+                "options": [
+                  "trash",
+                  "keep",
+                  "ignore"
+                ],
+                "password": false,
+                "path": "~/Downloads/CedarMail-1.15.2-arm64.dmg",
+                "paths": [
+                  "~/Downloads/CedarMail-1.15.2-arm64.dmg"
+                ],
+                "pathsMore": 0,
+                "plan": "p-000000000008",
+                "reason": "installed",
+                "rebuilds": false,
+                "restorable": true,
+                "reveal": "~/Downloads/CedarMail-1.15.2-arm64.dmg",
+                "rule": "leftover.installer",
+                "suggested": "trash",
+                "userFiles": "none"
+              },
+              {
+                "app": "CedarNote",
+                "appInstalled": true,
+                "bytes": 5246976,
+                "facts": {
+                  "added": "2026-09-20",
+                  "app": "CedarNote",
+                  "appVersion": "1.12.2",
+                  "days": 30,
+                  "fromInternet": true,
+                  "installerVersion": "1.12.2",
+                  "sameApp": true,
+                  "signed": true
+                },
+                "finding": "leftover.installer/000000000043",
+                "group": "installer",
+                "key": "i31",
+                "options": [
+                  "trash",
+                  "keep",
+                  "ignore"
+                ],
+                "password": false,
+                "path": "~/Downloads/CedarNote-1.12.2-arm64.dmg",
+                "paths": [
+                  "~/Downloads/CedarNote-1.12.2-arm64.dmg"
+                ],
+                "pathsMore": 0,
+                "plan": "p-000000000008",
+                "reason": "installed",
+                "rebuilds": false,
+                "restorable": true,
+                "reveal": "~/Downloads/CedarNote-1.12.2-arm64.dmg",
+                "rule": "leftover.installer",
+                "suggested": "trash",
+                "userFiles": "none"
+              },
+              {
+                "app": "CedarSync",
+                "appInstalled": true,
+                "bytes": 5246976,
+                "facts": {
+                  "added": "2026-09-20",
+                  "app": "CedarSync",
+                  "appVersion": "1.13.2",
+                  "days": 30,
+                  "fromInternet": true,
+                  "installerVersion": "1.13.2",
+                  "sameApp": true,
+                  "signed": true
+                },
+                "finding": "leftover.installer/000000000044",
+                "group": "installer",
+                "key": "i32",
+                "options": [
+                  "trash",
+                  "keep",
+                  "ignore"
+                ],
+                "password": false,
+                "path": "~/Downloads/CedarSync-1.13.2-arm64.dmg",
+                "paths": [
+                  "~/Downloads/CedarSync-1.13.2-arm64.dmg"
+                ],
+                "pathsMore": 0,
+                "plan": "p-000000000008",
+                "reason": "installed",
+                "rebuilds": false,
+                "restorable": true,
+                "reveal": "~/Downloads/CedarSync-1.13.2-arm64.dmg",
+                "rule": "leftover.installer",
+                "suggested": "trash",
+                "userFiles": "none"
+              },
+              {
+                "app": "DeltaChat",
+                "appInstalled": true,
+                "bytes": 5246976,
+                "facts": {
+                  "added": "2026-09-20",
+                  "app": "DeltaChat",
+                  "appVersion": "1.22.2",
+                  "days": 30,
+                  "fromInternet": true,
+                  "installerVersion": "1.22.2",
+                  "sameApp": true,
+                  "signed": true
+                },
+                "finding": "leftover.installer/000000000045",
+                "group": "installer",
+                "key": "i33",
+                "options": [
+                  "trash",
+                  "keep",
+                  "ignore"
+                ],
+                "password": false,
+                "path": "~/Downloads/DeltaChat-1.22.2-arm64.dmg",
+                "paths": [
+                  "~/Downloads/DeltaChat-1.22.2-arm64.dmg"
+                ],
+                "pathsMore": 0,
+                "plan": "p-000000000008",
+                "reason": "installed",
+                "rebuilds": false,
+                "restorable": true,
+                "reveal": "~/Downloads/DeltaChat-1.22.2-arm64.dmg",
+                "rule": "leftover.installer",
+                "suggested": "trash",
+                "userFiles": "none"
+              },
+              {
+                "app": "DeltaCode",
+                "appInstalled": true,
+                "bytes": 5246976,
+                "facts": {
+                  "added": "2026-09-20",
+                  "app": "DeltaCode",
+                  "appVersion": "1.23.2",
+                  "days": 30,
+                  "fromInternet": true,
+                  "installerVersion": "1.23.2",
+                  "sameApp": true,
+                  "signed": true
+                },
+                "finding": "leftover.installer/000000000046",
+                "group": "installer",
+                "key": "i34",
+                "options": [
+                  "trash",
+                  "keep",
+                  "ignore"
+                ],
+                "password": false,
+                "path": "~/Downloads/DeltaCode-1.23.2-arm64.dmg",
+                "paths": [
+                  "~/Downloads/DeltaCode-1.23.2-arm64.dmg"
+                ],
+                "pathsMore": 0,
+                "plan": "p-000000000008",
+                "reason": "installed",
+                "rebuilds": false,
+                "restorable": true,
+                "reveal": "~/Downloads/DeltaCode-1.23.2-arm64.dmg",
+                "rule": "leftover.installer",
+                "suggested": "trash",
+                "userFiles": "none"
+              },
+              {
+                "app": "DeltaDraw",
+                "appInstalled": true,
+                "bytes": 5246976,
+                "facts": {
+                  "added": "2026-09-20",
+                  "app": "DeltaDraw",
+                  "appVersion": "1.20.2",
+                  "days": 30,
+                  "fromInternet": true,
+                  "installerVersion": "1.20.2",
+                  "sameApp": true,
+                  "signed": true
+                },
+                "finding": "leftover.installer/000000000047",
+                "group": "installer",
+                "key": "i35",
+                "options": [
+                  "trash",
+                  "keep",
+                  "ignore"
+                ],
+                "password": false,
+                "path": "~/Downloads/DeltaDraw-1.20.2-arm64.dmg",
+                "paths": [
+                  "~/Downloads/DeltaDraw-1.20.2-arm64.dmg"
+                ],
+                "pathsMore": 0,
+                "plan": "p-000000000008",
+                "reason": "installed",
+                "rebuilds": false,
+                "restorable": true,
+                "reveal": "~/Downloads/DeltaDraw-1.20.2-arm64.dmg",
+                "rule": "leftover.installer",
+                "suggested": "trash",
+                "userFiles": "none"
+              },
+              {
+                "app": "DeltaMail",
+                "appInstalled": true,
+                "bytes": 5246976,
+                "facts": {
+                  "added": "2026-09-20",
+                  "app": "DeltaMail",
+                  "appVersion": "1.21.2",
+                  "days": 30,
+                  "fromInternet": true,
+                  "installerVersion": "1.21.2",
+                  "sameApp": true,
+                  "signed": true
+                },
+                "finding": "leftover.installer/000000000048",
+                "group": "installer",
+                "key": "i36",
+                "options": [
+                  "trash",
+                  "keep",
+                  "ignore"
+                ],
+                "password": false,
+                "path": "~/Downloads/DeltaMail-1.21.2-arm64.dmg",
+                "paths": [
+                  "~/Downloads/DeltaMail-1.21.2-arm64.dmg"
+                ],
+                "pathsMore": 0,
+                "plan": "p-000000000008",
+                "reason": "installed",
+                "rebuilds": false,
+                "restorable": true,
+                "reveal": "~/Downloads/DeltaMail-1.21.2-arm64.dmg",
+                "rule": "leftover.installer",
+                "suggested": "trash",
+                "userFiles": "none"
+              },
+              {
+                "app": "DeltaNote",
+                "appInstalled": true,
+                "bytes": 5246976,
+                "facts": {
+                  "added": "2026-09-20",
+                  "app": "DeltaNote",
+                  "appVersion": "1.18.2",
+                  "days": 30,
+                  "fromInternet": true,
+                  "installerVersion": "1.18.2",
+                  "sameApp": true,
+                  "signed": true
+                },
+                "finding": "leftover.installer/000000000049",
+                "group": "installer",
+                "key": "i37",
+                "options": [
+                  "trash",
+                  "keep",
+                  "ignore"
+                ],
+                "password": false,
+                "path": "~/Downloads/DeltaNote-1.18.2-arm64.dmg",
+                "paths": [
+                  "~/Downloads/DeltaNote-1.18.2-arm64.dmg"
+                ],
+                "pathsMore": 0,
+                "plan": "p-000000000008",
+                "reason": "installed",
+                "rebuilds": false,
+                "restorable": true,
+                "reveal": "~/Downloads/DeltaNote-1.18.2-arm64.dmg",
+                "rule": "leftover.installer",
+                "suggested": "trash",
+                "userFiles": "none"
+              },
+              {
+                "app": "DeltaSync",
+                "appInstalled": true,
+                "bytes": 5246976,
+                "facts": {
+                  "added": "2026-09-20",
+                  "app": "DeltaSync",
+                  "appVersion": "1.19.2",
+                  "days": 30,
+                  "fromInternet": true,
+                  "installerVersion": "1.19.2",
+                  "sameApp": true,
+                  "signed": true
+                },
+                "finding": "leftover.installer/000000000050",
+                "group": "installer",
+                "key": "i38",
+                "options": [
+                  "trash",
+                  "keep",
+                  "ignore"
+                ],
+                "password": false,
+                "path": "~/Downloads/DeltaSync-1.19.2-arm64.dmg",
+                "paths": [
+                  "~/Downloads/DeltaSync-1.19.2-arm64.dmg"
+                ],
+                "pathsMore": 0,
+                "plan": "p-000000000008",
+                "reason": "installed",
+                "rebuilds": false,
+                "restorable": true,
+                "reveal": "~/Downloads/DeltaSync-1.19.2-arm64.dmg",
+                "rule": "leftover.installer",
+                "suggested": "trash",
+                "userFiles": "none"
+              },
+              {
+                "app": "EmberChat",
+                "appInstalled": true,
+                "bytes": 5246976,
+                "facts": {
+                  "added": "2026-09-20",
+                  "app": "EmberChat",
+                  "appVersion": "1.28.2",
+                  "days": 30,
+                  "fromInternet": true,
+                  "installerVersion": "1.28.2",
+                  "sameApp": true,
+                  "signed": true
+                },
+                "finding": "leftover.installer/000000000051",
+                "group": "installer",
+                "key": "i39",
+                "options": [
+                  "trash",
+                  "keep",
+                  "ignore"
+                ],
+                "password": false,
+                "path": "~/Downloads/EmberChat-1.28.2-arm64.dmg",
+                "paths": [
+                  "~/Downloads/EmberChat-1.28.2-arm64.dmg"
+                ],
+                "pathsMore": 0,
+                "plan": "p-000000000008",
+                "reason": "installed",
+                "rebuilds": false,
+                "restorable": true,
+                "reveal": "~/Downloads/EmberChat-1.28.2-arm64.dmg",
+                "rule": "leftover.installer",
+                "suggested": "trash",
+                "userFiles": "none"
+              },
+              {
+                "app": "EmberCode",
+                "appInstalled": true,
+                "bytes": 5246976,
+                "facts": {
+                  "added": "2026-09-20",
+                  "app": "EmberCode",
+                  "appVersion": "1.29.2",
+                  "days": 30,
+                  "fromInternet": true,
+                  "installerVersion": "1.29.2",
+                  "sameApp": true,
+                  "signed": true
+                },
+                "finding": "leftover.installer/000000000052",
+                "group": "installer",
+                "key": "i40",
+                "options": [
+                  "trash",
+                  "keep",
+                  "ignore"
+                ],
+                "password": false,
+                "path": "~/Downloads/EmberCode-1.29.2-arm64.dmg",
+                "paths": [
+                  "~/Downloads/EmberCode-1.29.2-arm64.dmg"
+                ],
+                "pathsMore": 0,
+                "plan": "p-000000000008",
+                "reason": "installed",
+                "rebuilds": false,
+                "restorable": true,
+                "reveal": "~/Downloads/EmberCode-1.29.2-arm64.dmg",
+                "rule": "leftover.installer",
+                "suggested": "trash",
+                "userFiles": "none"
+              },
+              {
+                "app": "EmberDraw",
+                "appInstalled": true,
+                "bytes": 5246976,
+                "facts": {
+                  "added": "2026-09-20",
+                  "app": "EmberDraw",
+                  "appVersion": "1.26.2",
+                  "days": 30,
+                  "fromInternet": true,
+                  "installerVersion": "1.26.2",
+                  "sameApp": true,
+                  "signed": true
+                },
+                "finding": "leftover.installer/000000000053",
+                "group": "installer",
+                "key": "i41",
+                "options": [
+                  "trash",
+                  "keep",
+                  "ignore"
+                ],
+                "password": false,
+                "path": "~/Downloads/EmberDraw-1.26.2-arm64.dmg",
+                "paths": [
+                  "~/Downloads/EmberDraw-1.26.2-arm64.dmg"
+                ],
+                "pathsMore": 0,
+                "plan": "p-000000000008",
+                "reason": "installed",
+                "rebuilds": false,
+                "restorable": true,
+                "reveal": "~/Downloads/EmberDraw-1.26.2-arm64.dmg",
+                "rule": "leftover.installer",
+                "suggested": "trash",
+                "userFiles": "none"
+              },
+              {
+                "app": "EmberMail",
+                "appInstalled": true,
+                "bytes": 5246976,
+                "facts": {
+                  "added": "2026-09-20",
+                  "app": "EmberMail",
+                  "appVersion": "1.27.2",
+                  "days": 30,
+                  "fromInternet": true,
+                  "installerVersion": "1.27.2",
+                  "sameApp": true,
+                  "signed": true
+                },
+                "finding": "leftover.installer/000000000054",
+                "group": "installer",
+                "key": "i42",
+                "options": [
+                  "trash",
+                  "keep",
+                  "ignore"
+                ],
+                "password": false,
+                "path": "~/Downloads/EmberMail-1.27.2-arm64.dmg",
+                "paths": [
+                  "~/Downloads/EmberMail-1.27.2-arm64.dmg"
+                ],
+                "pathsMore": 0,
+                "plan": "p-000000000008",
+                "reason": "installed",
+                "rebuilds": false,
+                "restorable": true,
+                "reveal": "~/Downloads/EmberMail-1.27.2-arm64.dmg",
+                "rule": "leftover.installer",
+                "suggested": "trash",
+                "userFiles": "none"
+              },
+              {
+                "app": "EmberNote",
+                "appInstalled": true,
+                "bytes": 5246976,
+                "facts": {
+                  "added": "2026-09-20",
+                  "app": "EmberNote",
+                  "appVersion": "1.24.2",
+                  "days": 30,
+                  "fromInternet": true,
+                  "installerVersion": "1.24.2",
+                  "sameApp": true,
+                  "signed": true
+                },
+                "finding": "leftover.installer/000000000055",
+                "group": "installer",
+                "key": "i43",
+                "options": [
+                  "trash",
+                  "keep",
+                  "ignore"
+                ],
+                "password": false,
+                "path": "~/Downloads/EmberNote-1.24.2-arm64.dmg",
+                "paths": [
+                  "~/Downloads/EmberNote-1.24.2-arm64.dmg"
+                ],
+                "pathsMore": 0,
+                "plan": "p-000000000008",
+                "reason": "installed",
+                "rebuilds": false,
+                "restorable": true,
+                "reveal": "~/Downloads/EmberNote-1.24.2-arm64.dmg",
+                "rule": "leftover.installer",
+                "suggested": "trash",
+                "userFiles": "none"
+              },
+              {
+                "app": "EmberSync",
+                "appInstalled": true,
+                "bytes": 5246976,
+                "facts": {
+                  "added": "2026-09-20",
+                  "app": "EmberSync",
+                  "appVersion": "1.25.2",
+                  "days": 30,
+                  "fromInternet": true,
+                  "installerVersion": "1.25.2",
+                  "sameApp": true,
+                  "signed": true
+                },
+                "finding": "leftover.installer/000000000056",
+                "group": "installer",
+                "key": "i44",
+                "options": [
+                  "trash",
+                  "keep",
+                  "ignore"
+                ],
+                "password": false,
+                "path": "~/Downloads/EmberSync-1.25.2-arm64.dmg",
+                "paths": [
+                  "~/Downloads/EmberSync-1.25.2-arm64.dmg"
+                ],
+                "pathsMore": 0,
+                "plan": "p-000000000008",
+                "reason": "installed",
+                "rebuilds": false,
+                "restorable": true,
+                "reveal": "~/Downloads/EmberSync-1.25.2-arm64.dmg",
+                "rule": "leftover.installer",
+                "suggested": "trash",
+                "userFiles": "none"
+              },
+              {
+                "app": "FableChat",
+                "appInstalled": true,
+                "bytes": 5246976,
+                "facts": {
+                  "added": "2026-09-20",
+                  "app": "FableChat",
+                  "appVersion": "1.34.2",
+                  "days": 30,
+                  "fromInternet": true,
+                  "installerVersion": "1.34.2",
+                  "sameApp": true,
+                  "signed": true
+                },
+                "finding": "leftover.installer/000000000057",
+                "group": "installer",
+                "key": "i45",
+                "options": [
+                  "trash",
+                  "keep",
+                  "ignore"
+                ],
+                "password": false,
+                "path": "~/Downloads/FableChat-1.34.2-arm64.dmg",
+                "paths": [
+                  "~/Downloads/FableChat-1.34.2-arm64.dmg"
+                ],
+                "pathsMore": 0,
+                "plan": "p-000000000008",
+                "reason": "installed",
+                "rebuilds": false,
+                "restorable": true,
+                "reveal": "~/Downloads/FableChat-1.34.2-arm64.dmg",
+                "rule": "leftover.installer",
+                "suggested": "trash",
+                "userFiles": "none"
+              },
+              {
+                "app": "FableCode",
+                "appInstalled": true,
+                "bytes": 5246976,
+                "facts": {
+                  "added": "2026-09-20",
+                  "app": "FableCode",
+                  "appVersion": "1.35.2",
+                  "days": 30,
+                  "fromInternet": true,
+                  "installerVersion": "1.35.2",
+                  "sameApp": true,
+                  "signed": true
+                },
+                "finding": "leftover.installer/000000000058",
+                "group": "installer",
+                "key": "i46",
+                "options": [
+                  "trash",
+                  "keep",
+                  "ignore"
+                ],
+                "password": false,
+                "path": "~/Downloads/FableCode-1.35.2-arm64.dmg",
+                "paths": [
+                  "~/Downloads/FableCode-1.35.2-arm64.dmg"
+                ],
+                "pathsMore": 0,
+                "plan": "p-000000000008",
+                "reason": "installed",
+                "rebuilds": false,
+                "restorable": true,
+                "reveal": "~/Downloads/FableCode-1.35.2-arm64.dmg",
+                "rule": "leftover.installer",
+                "suggested": "trash",
+                "userFiles": "none"
+              },
+              {
+                "app": "FableDraw",
+                "appInstalled": true,
+                "bytes": 5246976,
+                "facts": {
+                  "added": "2026-09-20",
+                  "app": "FableDraw",
+                  "appVersion": "1.32.2",
+                  "days": 30,
+                  "fromInternet": true,
+                  "installerVersion": "1.32.2",
+                  "sameApp": true,
+                  "signed": true
+                },
+                "finding": "leftover.installer/000000000059",
+                "group": "installer",
+                "key": "i47",
+                "options": [
+                  "trash",
+                  "keep",
+                  "ignore"
+                ],
+                "password": false,
+                "path": "~/Downloads/FableDraw-1.32.2-arm64.dmg",
+                "paths": [
+                  "~/Downloads/FableDraw-1.32.2-arm64.dmg"
+                ],
+                "pathsMore": 0,
+                "plan": "p-000000000008",
+                "reason": "installed",
+                "rebuilds": false,
+                "restorable": true,
+                "reveal": "~/Downloads/FableDraw-1.32.2-arm64.dmg",
+                "rule": "leftover.installer",
+                "suggested": "trash",
+                "userFiles": "none"
+              },
+              {
+                "app": "FableMail",
+                "appInstalled": true,
+                "bytes": 5246976,
+                "facts": {
+                  "added": "2026-09-20",
+                  "app": "FableMail",
+                  "appVersion": "1.33.2",
+                  "days": 30,
+                  "fromInternet": true,
+                  "installerVersion": "1.33.2",
+                  "sameApp": true,
+                  "signed": true
+                },
+                "finding": "leftover.installer/000000000060",
+                "group": "installer",
+                "key": "i48",
+                "options": [
+                  "trash",
+                  "keep",
+                  "ignore"
+                ],
+                "password": false,
+                "path": "~/Downloads/FableMail-1.33.2-arm64.dmg",
+                "paths": [
+                  "~/Downloads/FableMail-1.33.2-arm64.dmg"
+                ],
+                "pathsMore": 0,
+                "plan": "p-000000000008",
+                "reason": "installed",
+                "rebuilds": false,
+                "restorable": true,
+                "reveal": "~/Downloads/FableMail-1.33.2-arm64.dmg",
+                "rule": "leftover.installer",
+                "suggested": "trash",
+                "userFiles": "none"
+              },
+              {
+                "app": "FableNote",
+                "appInstalled": true,
+                "bytes": 5246976,
+                "facts": {
+                  "added": "2026-09-20",
+                  "app": "FableNote",
+                  "appVersion": "1.30.2",
+                  "days": 30,
+                  "fromInternet": true,
+                  "installerVersion": "1.30.2",
+                  "sameApp": true,
+                  "signed": true
+                },
+                "finding": "leftover.installer/000000000061",
+                "group": "installer",
+                "key": "i49",
+                "options": [
+                  "trash",
+                  "keep",
+                  "ignore"
+                ],
+                "password": false,
+                "path": "~/Downloads/FableNote-1.30.2-arm64.dmg",
+                "paths": [
+                  "~/Downloads/FableNote-1.30.2-arm64.dmg"
+                ],
+                "pathsMore": 0,
+                "plan": "p-000000000008",
+                "reason": "installed",
+                "rebuilds": false,
+                "restorable": true,
+                "reveal": "~/Downloads/FableNote-1.30.2-arm64.dmg",
+                "rule": "leftover.installer",
+                "suggested": "trash",
+                "userFiles": "none"
+              },
+              {
+                "app": "FableSync",
+                "appInstalled": true,
+                "bytes": 5246976,
+                "facts": {
+                  "added": "2026-09-20",
+                  "app": "FableSync",
+                  "appVersion": "1.31.2",
+                  "days": 30,
+                  "fromInternet": true,
+                  "installerVersion": "1.31.2",
+                  "sameApp": true,
+                  "signed": true
+                },
+                "finding": "leftover.installer/000000000062",
+                "group": "installer",
+                "key": "i50",
+                "options": [
+                  "trash",
+                  "keep",
+                  "ignore"
+                ],
+                "password": false,
+                "path": "~/Downloads/FableSync-1.31.2-arm64.dmg",
+                "paths": [
+                  "~/Downloads/FableSync-1.31.2-arm64.dmg"
+                ],
+                "pathsMore": 0,
+                "plan": "p-000000000008",
+                "reason": "installed",
+                "rebuilds": false,
+                "restorable": true,
+                "reveal": "~/Downloads/FableSync-1.31.2-arm64.dmg",
+                "rule": "leftover.installer",
+                "suggested": "trash",
+                "userFiles": "none"
+              },
+              {
+                "app": "GroveChat",
+                "appInstalled": true,
+                "bytes": 5246976,
+                "facts": {
+                  "added": "2026-09-20",
+                  "app": "GroveChat",
+                  "appVersion": "1.40.2",
+                  "days": 30,
+                  "fromInternet": true,
+                  "installerVersion": "1.40.2",
+                  "sameApp": true,
+                  "signed": true
+                },
+                "finding": "leftover.installer/000000000063",
+                "group": "installer",
+                "key": "i51",
+                "options": [
+                  "trash",
+                  "keep",
+                  "ignore"
+                ],
+                "password": false,
+                "path": "~/Downloads/GroveChat-1.40.2-arm64.dmg",
+                "paths": [
+                  "~/Downloads/GroveChat-1.40.2-arm64.dmg"
+                ],
+                "pathsMore": 0,
+                "plan": "p-000000000008",
+                "reason": "installed",
+                "rebuilds": false,
+                "restorable": true,
+                "reveal": "~/Downloads/GroveChat-1.40.2-arm64.dmg",
+                "rule": "leftover.installer",
+                "suggested": "trash",
+                "userFiles": "none"
+              },
+              {
+                "app": "GroveDraw",
+                "appInstalled": true,
+                "bytes": 5246976,
+                "facts": {
+                  "added": "2026-09-20",
+                  "app": "GroveDraw",
+                  "appVersion": "1.38.2",
+                  "days": 30,
+                  "fromInternet": true,
+                  "installerVersion": "1.38.2",
+                  "sameApp": true,
+                  "signed": true
+                },
+                "finding": "leftover.installer/000000000064",
+                "group": "installer",
+                "key": "i52",
+                "options": [
+                  "trash",
+                  "keep",
+                  "ignore"
+                ],
+                "password": false,
+                "path": "~/Downloads/GroveDraw-1.38.2-arm64.dmg",
+                "paths": [
+                  "~/Downloads/GroveDraw-1.38.2-arm64.dmg"
+                ],
+                "pathsMore": 0,
+                "plan": "p-000000000008",
+                "reason": "installed",
+                "rebuilds": false,
+                "restorable": true,
+                "reveal": "~/Downloads/GroveDraw-1.38.2-arm64.dmg",
+                "rule": "leftover.installer",
+                "suggested": "trash",
+                "userFiles": "none"
+              },
+              {
+                "app": "GroveMail",
+                "appInstalled": true,
+                "bytes": 5246976,
+                "facts": {
+                  "added": "2026-09-20",
+                  "app": "GroveMail",
+                  "appVersion": "1.39.2",
+                  "days": 30,
+                  "fromInternet": true,
+                  "installerVersion": "1.39.2",
+                  "sameApp": true,
+                  "signed": true
+                },
+                "finding": "leftover.installer/000000000065",
+                "group": "installer",
+                "key": "i53",
+                "options": [
+                  "trash",
+                  "keep",
+                  "ignore"
+                ],
+                "password": false,
+                "path": "~/Downloads/GroveMail-1.39.2-arm64.dmg",
+                "paths": [
+                  "~/Downloads/GroveMail-1.39.2-arm64.dmg"
+                ],
+                "pathsMore": 0,
+                "plan": "p-000000000008",
+                "reason": "installed",
+                "rebuilds": false,
+                "restorable": true,
+                "reveal": "~/Downloads/GroveMail-1.39.2-arm64.dmg",
+                "rule": "leftover.installer",
+                "suggested": "trash",
+                "userFiles": "none"
+              },
+              {
+                "app": "GroveNote",
+                "appInstalled": true,
+                "bytes": 5246976,
+                "facts": {
+                  "added": "2026-09-20",
+                  "app": "GroveNote",
+                  "appVersion": "1.36.2",
+                  "days": 30,
+                  "fromInternet": true,
+                  "installerVersion": "1.36.2",
+                  "sameApp": true,
+                  "signed": true
+                },
+                "finding": "leftover.installer/000000000066",
+                "group": "installer",
+                "key": "i54",
+                "options": [
+                  "trash",
+                  "keep",
+                  "ignore"
+                ],
+                "password": false,
+                "path": "~/Downloads/GroveNote-1.36.2-arm64.dmg",
+                "paths": [
+                  "~/Downloads/GroveNote-1.36.2-arm64.dmg"
+                ],
+                "pathsMore": 0,
+                "plan": "p-000000000008",
+                "reason": "installed",
+                "rebuilds": false,
+                "restorable": true,
+                "reveal": "~/Downloads/GroveNote-1.36.2-arm64.dmg",
+                "rule": "leftover.installer",
+                "suggested": "trash",
+                "userFiles": "none"
+              },
+              {
+                "app": "GroveSync",
+                "appInstalled": true,
+                "bytes": 5246976,
+                "facts": {
+                  "added": "2026-09-20",
+                  "app": "GroveSync",
+                  "appVersion": "1.37.2",
+                  "days": 30,
+                  "fromInternet": true,
+                  "installerVersion": "1.37.2",
+                  "sameApp": true,
+                  "signed": true
+                },
+                "finding": "leftover.installer/000000000067",
+                "group": "installer",
+                "key": "i55",
+                "options": [
+                  "trash",
+                  "keep",
+                  "ignore"
+                ],
+                "password": false,
+                "path": "~/Downloads/GroveSync-1.37.2-arm64.dmg",
+                "paths": [
+                  "~/Downloads/GroveSync-1.37.2-arm64.dmg"
+                ],
+                "pathsMore": 0,
+                "plan": "p-000000000008",
+                "reason": "installed",
+                "rebuilds": false,
+                "restorable": true,
+                "reveal": "~/Downloads/GroveSync-1.37.2-arm64.dmg",
+                "rule": "leftover.installer",
+                "suggested": "trash",
+                "userFiles": "none"
+              },
+              {
+                "app": "AsterNote",
+                "appInstalled": true,
+                "bytes": 5242880,
+                "facts": {
+                  "added": "2026-09-20",
+                  "app": "AsterNote",
+                  "appVersion": "1.0.2",
+                  "days": 30,
+                  "fromInternet": true,
+                  "installerVersion": "1.0.2",
+                  "sameApp": true,
+                  "signed": true
+                },
+                "finding": "leftover.installer/000000000068",
+                "group": "installer",
+                "key": "i56",
+                "options": [
+                  "trash",
+                  "keep",
+                  "ignore"
+                ],
+                "password": false,
+                "path": "~/Downloads/AsterNote-1.0.2-arm64.dmg",
+                "paths": [
+                  "~/Downloads/AsterNote-1.0.2-arm64.dmg"
+                ],
+                "pathsMore": 0,
+                "plan": "p-000000000008",
+                "reason": "installed",
+                "rebuilds": false,
+                "restorable": true,
+                "reveal": "~/Downloads/AsterNote-1.0.2-arm64.dmg",
+                "rule": "leftover.installer",
+                "suggested": "trash",
+                "userFiles": "none"
+              }
+            ],
+            "known": true,
+            "more": 0,
+            "scanned": {
+              "finished": "2026-10-20T12:00:00Z",
+              "started": "2026-10-20T12:00:00Z"
+            },
+            "schema": 1,
+            "suggested": 41,
+            "suggestedBytes": 215121920
+          },
+          "uri": "data/category?id=installer"
+        }
+      ],
+      "resultType": "complete"
+    }
+  },
+  "request": {
+    "id": 1005,
+    "jsonrpc": "2.0",
+    "method": "resources/read",
+    "params": {
+      "_meta": {
+        "io.modelcontextprotocol/clientCapabilities": {},
+        "io.modelcontextprotocol/clientInfo": {
+          "name": "luoke-agent",
+          "version": "fixtures"
+        },
+        "io.modelcontextprotocol/protocolVersion": "2026-07-28"
+      },
+      "uri": "data/category?id=installer"
+    }
+  }
+}

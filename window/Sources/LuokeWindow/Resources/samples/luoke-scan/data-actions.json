@@ -1,0 +1,1787 @@
+{
+ "_about": "scripts/window_samples.py 用 fixtures/luoke-scan/data-actions（luoke-scan 8f13026aca0d）接上真核心生成的，不要手改",
+ "app": "luoke-scan",
+ "apps": {
+  "apps": [
+   {
+    "id": "luoke-scan",
+    "needs": [],
+    "pages": [
+     {
+      "id": "overview",
+      "title": "概览"
+     },
+     {
+      "id": "status",
+      "title": "状态"
+     },
+     {
+      "hidden": true,
+      "icon": "history",
+      "id": "cleaned",
+      "title": "清理记录"
+     },
+     {
+      "hidden": true,
+      "icon": "settings",
+      "id": "settings",
+      "title": "扫描设置"
+     },
+     {
+      "hidden": true,
+      "id": "category",
+      "title": "详情"
+     },
+     {
+      "hidden": true,
+      "id": "more",
+      "title": "其他"
+     },
+     {
+      "hidden": true,
+      "id": "folder",
+      "title": "文件夹"
+     },
+     {
+      "hidden": true,
+      "id": "mac",
+      "title": "状态"
+     }
+    ],
+    "running": true,
+    "summary": {
+     "count": 10,
+     "text": "可释放 312.7 MB，4 项待查看"
+    },
+    "ui": null
+   }
+  ]
+ },
+ "asked": [
+  "read-data-history.json",
+  "read-data-overview.json",
+  "read-outbox.json",
+  "read-page-mac.json",
+  "read-permissions.json",
+  "read-summary.json",
+  "tools-list.json"
+ ],
+ "clock": "2026-10-20T12:00:00Z",
+ "events": [
+  [
+   "a2ui",
+   {
+    "createSurface": {
+     "catalogId": "ai.luoke/a2ui/agent/1",
+     "surfaceId": "luoke-scan/round-000000000001"
+    },
+    "version": "v0.9"
+   }
+  ],
+  [
+   "a2ui",
+   {
+    "updateComponents": {
+     "components": [
+      {
+       "children": [
+        "h1",
+        "t2",
+        "r3"
+       ],
+       "component": "Column",
+       "id": "root"
+      },
+      {
+       "component": "Text",
+       "id": "h1",
+       "text": "可释放 181.5 MB",
+       "variant": "h4"
+      },
+      {
+       "component": "Text",
+       "id": "t2",
+       "text": "可重建的缓存 1 项，无需选择",
+       "variant": "caption"
+      },
+      {
+       "action": {
+        "event": {
+         "context": {
+          "choices": {
+           "i2": [
+            "remove"
+           ]
+          },
+          "plan_id": "p-000000000002"
+         },
+         "name": "scan_apply"
+        }
+       },
+       "child": "b4-text",
+       "component": "Button",
+       "id": "b4",
+       "variant": "primary"
+      },
+      {
+       "component": "Text",
+       "id": "b4-text",
+       "text": "清理 1 项缓存"
+      },
+      {
+       "action": {
+        "event": {
+         "context": {
+          "page": "overview"
+         },
+         "name": "agent.open_page"
+        }
+       },
+       "child": "b5-text",
+       "component": "Button",
+       "id": "b5"
+      },
+      {
+       "component": "Text",
+       "id": "b5-text",
+       "text": "在扫描页查看 9 项"
+      },
+      {
+       "action": {
+        "event": {
+         "context": {
+          "on": true
+         },
+         "name": "scan_autoclean"
+        }
+       },
+       "child": "b6-text",
+       "component": "Button",
+       "id": "b6"
+      },
+      {
+       "component": "Text",
+       "id": "b6-text",
+       "text": "开启自动清理"
+      },
+      {
+       "children": [
+        "b4",
+        "b5",
+        "b6"
+       ],
+       "component": "Row",
+       "id": "r3"
+      }
+     ],
+     "surfaceId": "luoke-scan/round-000000000001"
+    },
+    "version": "v0.9"
+   }
+  ],
+  [
+   "feed",
+   {
+    "brief": {
+     "next": "2026-10-20T08:00:00+08:00",
+     "words": null
+    },
+    "cards": [
+     {
+      "app": "luoke-scan",
+      "id": "luoke-scan/round-000000000001",
+      "kind": "findings",
+      "section": "later",
+      "time": "2026-10-20T20:00:00+08:00",
+      "title": "可释放 181.5 MB，另有 9 项待处理"
+     }
+    ],
+    "dot": false,
+    "hello": null,
+    "notice_rows": [],
+    "notices": [],
+    "open": 1,
+    "order": [
+     "luoke-scan/round-000000000001"
+    ],
+    "paused_until": null
+   }
+  ]
+ ],
+ "host": {
+  "fda": "granted"
+ },
+ "pages": {
+  "cleaned": {
+   "messages": [
+    {
+     "createSurface": {
+      "catalogId": "ai.luoke/a2ui/agent/1",
+      "surfaceId": "luoke-scan/page/cleaned"
+     },
+     "version": "v0.9"
+    },
+    {
+     "updateComponents": {
+      "components": [
+       {
+        "children": [
+         "t1"
+        ],
+        "component": "Column",
+        "id": "root"
+       },
+       {
+        "component": "Text",
+        "id": "t1",
+        "text": "暂无清理记录",
+        "variant": "caption"
+       }
+      ],
+      "surfaceId": "luoke-scan/page/cleaned"
+     },
+     "version": "v0.9"
+    }
+   ]
+  },
+  "mac": {
+   "messages": [
+    {
+     "createSurface": {
+      "catalogId": "ai.luoke/a2ui/agent/1",
+      "surfaceId": "luoke-scan/page/mac"
+     },
+     "version": "v0.9"
+    },
+    {
+     "updateComponents": {
+      "components": [
+       {
+        "children": [
+         "r10",
+         "r13",
+         "d14",
+         "r18",
+         "d19",
+         "t20",
+         "r24",
+         "r28",
+         "r32",
+         "r36",
+         "r40",
+         "r44",
+         "r48",
+         "r52",
+         "t53",
+         "d54",
+         "t55",
+         "t56",
+         "t57",
+         "d58",
+         "t59",
+         "r62",
+         "r65",
+         "t66",
+         "d67",
+         "t68",
+         "r72",
+         "r76",
+         "r80",
+         "r84",
+         "r88",
+         "r92",
+         "t93",
+         "t94"
+        ],
+        "component": "Column",
+        "id": "root"
+       },
+       {
+        "component": "Text",
+        "id": "t2",
+        "text": "硬盘还剩",
+        "variant": "caption"
+       },
+       {
+        "component": "Text",
+        "id": "t3",
+        "text": "182.0 GB",
+        "variant": "h3"
+       },
+       {
+        "children": [
+         "t2",
+         "t3"
+        ],
+        "component": "Column",
+        "id": "s1"
+       },
+       {
+        "component": "Text",
+        "id": "t5",
+        "text": "一年多没打开过的大文件",
+        "variant": "caption"
+       },
+       {
+        "component": "Text",
+        "id": "t6",
+        "text": "没有",
+        "variant": "h3"
+       },
+       {
+        "children": [
+         "t5",
+         "t6"
+        ],
+        "component": "Column",
+        "id": "s4"
+       },
+       {
+        "component": "Text",
+        "id": "t8",
+        "text": "安全设置（1 项没查成）",
+        "variant": "caption"
+       },
+       {
+        "component": "Text",
+        "id": "t9",
+        "text": "1 项没开启",
+        "variant": "h3"
+       },
+       {
+        "children": [
+         "t8",
+         "t9"
+        ],
+        "component": "Column",
+        "id": "s7"
+       },
+       {
+        "children": [
+         "s1",
+         "s4",
+         "s7"
+        ],
+        "component": "Row",
+        "id": "r10",
+        "justify": "spaceEvenly"
+       },
+       {
+        "component": "Text",
+        "id": "n11",
+        "text": "上次扫描：10月20日 20:00",
+        "variant": "caption"
+       },
+       {
+        "action": {
+         "event": {
+          "context": {},
+          "name": "scan_now"
+         }
+        },
+        "child": "b12-text",
+        "component": "Button",
+        "id": "b12"
+       },
+       {
+        "component": "Text",
+        "id": "b12-text",
+        "text": "现在查一下"
+       },
+       {
+        "children": [
+         "n11",
+         "b12"
+        ],
+        "component": "Row",
+        "id": "r13"
+       },
+       {
+        "component": "Divider",
+        "id": "d14"
+       },
+       {
+        "component": "Text",
+        "id": "t15",
+        "text": "硬盘"
+       },
+       {
+        "component": "Text",
+        "id": "t16",
+        "text": "用了 312.0 GB，一共 494.0 GB",
+        "variant": "caption"
+       },
+       {
+        "component": "ProgressBar",
+        "id": "p17",
+        "value": 0.631578947368421
+       },
+       {
+        "children": [
+         "t15",
+         "t16",
+         "p17"
+        ],
+        "component": "Row",
+        "id": "r18",
+        "justify": "spaceBetween"
+       },
+       {
+        "component": "Divider",
+        "id": "d19"
+       },
+       {
+        "component": "Text",
+        "id": "t20",
+        "text": "占地方最多的文件夹",
+        "variant": "caption"
+       },
+       {
+        "component": "Text",
+        "id": "t21",
+        "text": "临时文件"
+       },
+       {
+        "component": "Text",
+        "id": "t22",
+        "text": "372.3 MB",
+        "variant": "caption"
+       },
+       {
+        "component": "ProgressBar",
+        "id": "p23",
+        "value": 0.7991981994654663
+       },
+       {
+        "children": [
+         "t21",
+         "t22",
+         "p23"
+        ],
+        "component": "Row",
+        "id": "r24",
+        "justify": "spaceBetween"
+       },
+       {
+        "component": "Text",
+        "id": "t25",
+        "text": "开发工具的缓存"
+       },
+       {
+        "component": "Text",
+        "id": "t26",
+        "text": "64.0 MB",
+        "variant": "caption"
+       },
+       {
+        "component": "ProgressBar",
+        "id": "p27",
+        "value": 0.1372907581938388
+       },
+       {
+        "children": [
+         "t25",
+         "t26",
+         "p27"
+        ],
+        "component": "Row",
+        "id": "r28",
+        "justify": "spaceBetween"
+       },
+       {
+        "component": "Text",
+        "id": "t29",
+        "text": "已经删掉的应用留下的数据（5 个应用）"
+       },
+       {
+        "component": "Text",
+        "id": "t30",
+        "text": "11.5 MB",
+        "variant": "caption"
+       },
+       {
+        "component": "ProgressBar",
+        "id": "p31",
+        "value": 0.024757349838233224
+       },
+       {
+        "children": [
+         "t29",
+         "t30",
+         "p31"
+        ],
+        "component": "Row",
+        "id": "r32",
+        "justify": "spaceBetween"
+       },
+       {
+        "component": "Text",
+        "id": "t33",
+        "text": "下载"
+       },
+       {
+        "component": "Text",
+        "id": "t34",
+        "text": "8.4 MB",
+        "variant": "caption"
+       },
+       {
+        "component": "ProgressBar",
+        "id": "p35",
+        "value": 0.018014137009424672
+       },
+       {
+        "children": [
+         "t33",
+         "t34",
+         "p35"
+        ],
+        "component": "Row",
+        "id": "r36",
+        "justify": "spaceBetween"
+       },
+       {
+        "component": "Text",
+        "id": "t37",
+        "text": "Projects"
+       },
+       {
+        "component": "Text",
+        "id": "t38",
+        "text": "3.4 MB",
+        "variant": "caption"
+       },
+       {
+        "component": "ProgressBar",
+        "id": "p39",
+        "value": 0.007235546490364327
+       },
+       {
+        "children": [
+         "t37",
+         "t38",
+         "p39"
+        ],
+        "component": "Row",
+        "id": "r40",
+        "justify": "spaceBetween"
+       },
+       {
+        "component": "Text",
+        "id": "t41",
+        "text": "Present 的缓存"
+       },
+       {
+        "component": "Text",
+        "id": "t42",
+        "text": "2.1 MB",
+        "variant": "caption"
+       },
+       {
+        "component": "ProgressBar",
+        "id": "p43",
+        "value": 0.004501336334224223
+       },
+       {
+        "children": [
+         "t41",
+         "t42",
+         "p43"
+        ],
+        "component": "Row",
+        "id": "r44",
+        "justify": "spaceBetween"
+       },
+       {
+        "component": "Text",
+        "id": "t45",
+        "text": "几个应用共用的数据"
+       },
+       {
+        "component": "Text",
+        "id": "t46",
+        "text": "2.1 MB",
+        "variant": "caption"
+       },
+       {
+        "component": "ProgressBar",
+        "id": "p47",
+        "value": 0.004501336334224223
+       },
+       {
+        "children": [
+         "t45",
+         "t46",
+         "p47"
+        ],
+        "component": "Row",
+        "id": "r48",
+        "justify": "spaceBetween"
+       },
+       {
+        "component": "Text",
+        "id": "t49",
+        "text": "文稿"
+       },
+       {
+        "component": "Text",
+        "id": "t50",
+        "text": "2.1 MB",
+        "variant": "caption"
+       },
+       {
+        "component": "ProgressBar",
+        "id": "p51",
+        "value": 0.004501336334224223
+       },
+       {
+        "children": [
+         "t49",
+         "t50",
+         "p51"
+        ],
+        "component": "Row",
+        "id": "r52",
+        "justify": "spaceBetween"
+       },
+       {
+        "component": "Text",
+        "id": "t53",
+        "text": "这些加起来约 465 MB。其余是没列出来的小文件夹，以及系统和应用本身。",
+        "variant": "caption"
+       },
+       {
+        "component": "Divider",
+        "id": "d54"
+       },
+       {
+        "component": "Text",
+        "id": "t55",
+        "text": "一年多没打开过的大文件",
+        "variant": "caption"
+       },
+       {
+        "component": "Text",
+        "id": "t56",
+        "text": "1 MB 以上算大文件，按大小排",
+        "variant": "caption"
+       },
+       {
+        "component": "Text",
+        "id": "t57",
+        "text": "没找到一年多没打开过的大文件。",
+        "variant": "caption"
+       },
+       {
+        "component": "Divider",
+        "id": "d58"
+       },
+       {
+        "component": "Text",
+        "id": "t59",
+        "text": "权限",
+        "variant": "caption"
+       },
+       {
+        "component": "Text",
+        "id": "t60",
+        "text": "完全磁盘访问"
+       },
+       {
+        "component": "Text",
+        "id": "t61",
+        "text": "已允许",
+        "variant": "caption"
+       },
+       {
+        "children": [
+         "t60",
+         "t61"
+        ],
+        "component": "Row",
+        "id": "r62",
+        "justify": "spaceBetween"
+       },
+       {
+        "component": "Text",
+        "id": "t63",
+        "text": "已经删掉的应用还拿着权限"
+       },
+       {
+        "component": "Text",
+        "id": "t64",
+        "text": "2 个",
+        "variant": "caption"
+       },
+       {
+        "children": [
+         "t63",
+         "t64"
+        ],
+        "component": "Row",
+        "id": "r65",
+        "justify": "spaceBetween"
+       },
+       {
+        "component": "Text",
+        "id": "t66",
+        "text": "要收回，去「概览」看。",
+        "variant": "caption"
+       },
+       {
+        "component": "Divider",
+        "id": "d67"
+       },
+       {
+        "component": "Text",
+        "id": "t68",
+        "text": "安全设置",
+        "variant": "caption"
+       },
+       {
+        "component": "Text",
+        "id": "t69",
+        "text": "硬盘加密（文件保险箱）"
+       },
+       {
+        "component": "Icon",
+        "id": "i70",
+        "name": "warning"
+       },
+       {
+        "component": "Text",
+        "id": "t71",
+        "text": "没开启"
+       },
+       {
+        "children": [
+         "t69",
+         "t71",
+         "i70"
+        ],
+        "component": "Row",
+        "id": "r72",
+        "justify": "spaceBetween"
+       },
+       {
+        "component": "Text",
+        "id": "t73",
+        "text": "只打开来路清楚的应用"
+       },
+       {
+        "component": "Icon",
+        "id": "i74",
+        "name": "question"
+       },
+       {
+        "component": "Text",
+        "id": "t75",
+        "text": "没查成"
+       },
+       {
+        "children": [
+         "t73",
+         "t75",
+         "i74"
+        ],
+        "component": "Row",
+        "id": "r76",
+        "justify": "spaceBetween"
+       },
+       {
+        "component": "Text",
+        "id": "t77",
+        "text": "防火墙"
+       },
+       {
+        "component": "Icon",
+        "id": "i78",
+        "name": "check"
+       },
+       {
+        "component": "Text",
+        "id": "t79",
+        "text": "已开启",
+        "variant": "caption"
+       },
+       {
+        "children": [
+         "t77",
+         "t79",
+         "i78"
+        ],
+        "component": "Row",
+        "id": "r80",
+        "justify": "spaceBetween"
+       },
+       {
+        "component": "Text",
+        "id": "t81",
+        "text": "系统完整性保护"
+       },
+       {
+        "component": "Icon",
+        "id": "i82",
+        "name": "check"
+       },
+       {
+        "component": "Text",
+        "id": "t83",
+        "text": "已开启",
+        "variant": "caption"
+       },
+       {
+        "children": [
+         "t81",
+         "t83",
+         "i82"
+        ],
+        "component": "Row",
+        "id": "r84",
+        "justify": "spaceBetween"
+       },
+       {
+        "component": "Text",
+        "id": "t85",
+        "text": "锁屏要密码"
+       },
+       {
+        "component": "Icon",
+        "id": "i86",
+        "name": "check"
+       },
+       {
+        "component": "Text",
+        "id": "t87",
+        "text": "已开启",
+        "variant": "caption"
+       },
+       {
+        "children": [
+         "t85",
+         "t87",
+         "i86"
+        ],
+        "component": "Row",
+        "id": "r88",
+        "justify": "spaceBetween"
+       },
+       {
+        "component": "Text",
+        "id": "t89",
+        "text": "自动检查系统更新"
+       },
+       {
+        "component": "Icon",
+        "id": "i90",
+        "name": "check"
+       },
+       {
+        "component": "Text",
+        "id": "t91",
+        "text": "已开启",
+        "variant": "caption"
+       },
+       {
+        "children": [
+         "t89",
+         "t91",
+         "i90"
+        ],
+        "component": "Row",
+        "id": "r92",
+        "justify": "spaceBetween"
+       },
+       {
+        "component": "Text",
+        "id": "t93",
+        "text": "没开启的怎么打开，在「概览」的「要你看看的」里有写。",
+        "variant": "caption"
+       },
+       {
+        "component": "Text",
+        "id": "t94",
+        "text": "没查成的，下次扫描或点上面的「现在查一下」时会再查。",
+        "variant": "caption"
+       }
+      ],
+      "surfaceId": "luoke-scan/page/mac"
+     },
+     "version": "v0.9"
+    }
+   ]
+  },
+  "overview": {
+   "messages": [
+    {
+     "createSurface": {
+      "catalogId": "ai.luoke/a2ui/agent/1",
+      "surfaceId": "luoke-scan/page/overview"
+     },
+     "version": "v0.9"
+    },
+    {
+     "updateComponents": {
+      "components": [
+       {
+        "children": [
+         "t6",
+         "l7",
+         "t8",
+         "l35",
+         "t36",
+         "l61"
+        ],
+        "component": "Column",
+        "id": "root"
+       },
+       {
+        "action": {
+         "event": {
+          "context": {},
+          "name": "scan_now"
+         }
+        },
+        "child": "b1-row",
+        "component": "Button",
+        "id": "b1",
+        "variant": "borderless"
+       },
+       {
+        "component": "Icon",
+        "id": "b1-icon",
+        "name": "refresh-cw"
+       },
+       {
+        "component": "Text",
+        "id": "b1-text",
+        "text": "立即检查"
+       },
+       {
+        "children": [
+         "b1-icon",
+         "b1-text"
+        ],
+        "component": "Row",
+        "id": "b1-row"
+       },
+       {
+        "component": "Text",
+        "id": "t2",
+        "text": "上次检查：10月20日 20:00"
+       },
+       {
+        "children": [
+         "t2"
+        ],
+        "component": "Column",
+        "id": "c3"
+       },
+       {
+        "children": [
+         "b1"
+        ],
+        "component": "Row",
+        "id": "r4"
+       },
+       {
+        "children": [
+         "c3",
+         "r4"
+        ],
+        "component": "Row",
+        "id": "r5",
+        "justify": "spaceBetween"
+       },
+       {
+        "component": "Text",
+        "id": "t6",
+        "text": "检查",
+        "variant": "caption"
+       },
+       {
+        "children": [
+         "r5"
+        ],
+        "component": "List",
+        "id": "l7"
+       },
+       {
+        "component": "Text",
+        "id": "t8",
+        "text": "安全 · 4",
+        "variant": "caption"
+       },
+       {
+        "action": {
+         "event": {
+          "context": {
+           "finding_id": "posture.filevault"
+          },
+          "name": "scan_ignore"
+         }
+        },
+        "child": "b9-row",
+        "component": "Button",
+        "id": "b9",
+        "variant": "borderless"
+       },
+       {
+        "component": "Icon",
+        "id": "b9-icon",
+        "name": "bell-off"
+       },
+       {
+        "component": "Text",
+        "id": "b9-text",
+        "text": "不再提醒"
+       },
+       {
+        "children": [
+         "b9-icon",
+         "b9-text"
+        ],
+        "component": "Row",
+        "id": "b9-row"
+       },
+       {
+        "component": "Text",
+        "id": "t10",
+        "text": "硬盘未加密",
+        "variant": "strong"
+       },
+       {
+        "component": "Text",
+        "id": "t11",
+        "text": "高风险",
+        "variant": "caption"
+       },
+       {
+        "children": [
+         "t10",
+         "t11"
+        ],
+        "component": "Column",
+        "id": "c12"
+       },
+       {
+        "children": [
+         "b9"
+        ],
+        "component": "Row",
+        "id": "r13"
+       },
+       {
+        "children": [
+         "c12",
+         "r13"
+        ],
+        "component": "Row",
+        "id": "r14",
+        "justify": "spaceBetween"
+       },
+       {
+        "action": {
+         "event": {
+          "context": {
+           "finding_id": "process.deleted-binary/000000000003"
+          },
+          "name": "scan_reveal"
+         }
+        },
+        "child": "b15-row",
+        "component": "Button",
+        "id": "b15",
+        "variant": "borderless"
+       },
+       {
+        "component": "Icon",
+        "id": "b15-icon",
+        "name": "folder"
+       },
+       {
+        "component": "Text",
+        "id": "b15-text",
+        "text": "在访达中显示"
+       },
+       {
+        "children": [
+         "b15-icon",
+         "b15-text"
+        ],
+        "component": "Row",
+        "id": "b15-row"
+       },
+       {
+        "action": {
+         "event": {
+          "context": {
+           "finding_id": "process.deleted-binary/000000000003"
+          },
+          "name": "scan_ignore"
+         }
+        },
+        "child": "b16-row",
+        "component": "Button",
+        "id": "b16",
+        "variant": "borderless"
+       },
+       {
+        "component": "Icon",
+        "id": "b16-icon",
+        "name": "bell-off"
+       },
+       {
+        "component": "Text",
+        "id": "b16-text",
+        "text": "不再提醒"
+       },
+       {
+        "children": [
+         "b16-icon",
+         "b16-text"
+        ],
+        "component": "Row",
+        "id": "b16-row"
+       },
+       {
+        "component": "Text",
+        "id": "t17",
+        "text": "程序文件已删除的进程",
+        "variant": "strong"
+       },
+       {
+        "component": "Text",
+        "id": "t18",
+        "text": "中风险 · gone",
+        "variant": "caption"
+       },
+       {
+        "children": [
+         "t17",
+         "t18"
+        ],
+        "component": "Column",
+        "id": "c19"
+       },
+       {
+        "children": [
+         "b15",
+         "b16"
+        ],
+        "component": "Row",
+        "id": "r20"
+       },
+       {
+        "children": [
+         "c19",
+         "r20"
+        ],
+        "component": "Row",
+        "id": "r21",
+        "justify": "spaceBetween"
+       },
+       {
+        "action": {
+         "event": {
+          "context": {
+           "finding_id": "permission.stale-grant/000000000004"
+          },
+          "name": "scan_reveal"
+         }
+        },
+        "child": "b22-row",
+        "component": "Button",
+        "id": "b22",
+        "variant": "borderless"
+       },
+       {
+        "component": "Icon",
+        "id": "b22-icon",
+        "name": "folder"
+       },
+       {
+        "component": "Text",
+        "id": "b22-text",
+        "text": "在访达中显示"
+       },
+       {
+        "children": [
+         "b22-icon",
+         "b22-text"
+        ],
+        "component": "Row",
+        "id": "b22-row"
+       },
+       {
+        "action": {
+         "event": {
+          "context": {
+           "finding_id": "permission.stale-grant/000000000004"
+          },
+          "name": "scan_ignore"
+         }
+        },
+        "child": "b23-row",
+        "component": "Button",
+        "id": "b23",
+        "variant": "borderless"
+       },
+       {
+        "component": "Icon",
+        "id": "b23-icon",
+        "name": "bell-off"
+       },
+       {
+        "component": "Text",
+        "id": "b23-text",
+        "text": "不再提醒"
+       },
+       {
+        "children": [
+         "b23-icon",
+         "b23-text"
+        ],
+        "component": "Row",
+        "id": "b23-row"
+       },
+       {
+        "component": "Text",
+        "id": "t24",
+        "text": "已删除应用仍保留权限",
+        "variant": "strong"
+       },
+       {
+        "component": "Text",
+        "id": "t25",
+        "text": "中风险 · tool",
+        "variant": "caption"
+       },
+       {
+        "children": [
+         "t24",
+         "t25"
+        ],
+        "component": "Column",
+        "id": "c26"
+       },
+       {
+        "children": [
+         "b22",
+         "b23"
+        ],
+        "component": "Row",
+        "id": "r27"
+       },
+       {
+        "children": [
+         "c26",
+         "r27"
+        ],
+        "component": "Row",
+        "id": "r28",
+        "justify": "spaceBetween"
+       },
+       {
+        "action": {
+         "event": {
+          "context": {
+           "finding_id": "permission.stale-grant/000000000005"
+          },
+          "name": "scan_ignore"
+         }
+        },
+        "child": "b29-row",
+        "component": "Button",
+        "id": "b29",
+        "variant": "borderless"
+       },
+       {
+        "component": "Icon",
+        "id": "b29-icon",
+        "name": "bell-off"
+       },
+       {
+        "component": "Text",
+        "id": "b29-text",
+        "text": "不再提醒"
+       },
+       {
+        "children": [
+         "b29-icon",
+         "b29-text"
+        ],
+        "component": "Row",
+        "id": "b29-row"
+       },
+       {
+        "component": "Text",
+        "id": "t30",
+        "text": "已删除应用仍保留权限",
+        "variant": "strong"
+       },
+       {
+        "component": "Text",
+        "id": "t31",
+        "text": "中风险",
+        "variant": "caption"
+       },
+       {
+        "children": [
+         "t30",
+         "t31"
+        ],
+        "component": "Column",
+        "id": "c32"
+       },
+       {
+        "children": [
+         "b29"
+        ],
+        "component": "Row",
+        "id": "r33"
+       },
+       {
+        "children": [
+         "c32",
+         "r33"
+        ],
+        "component": "Row",
+        "id": "r34",
+        "justify": "spaceBetween"
+       },
+       {
+        "children": [
+         "r14",
+         "r21",
+         "r28",
+         "r34"
+        ],
+        "component": "List",
+        "id": "l35"
+       },
+       {
+        "component": "Text",
+        "id": "t36",
+        "text": "清理 · 可释放 312.7 MB",
+        "variant": "caption"
+       },
+       {
+        "action": {
+         "event": {
+          "context": {
+           "args": {
+            "id": "temp"
+           },
+           "page": "category"
+          },
+          "name": "agent.open_page"
+         }
+        },
+        "child": "b37-text",
+        "component": "Button",
+        "id": "b37"
+       },
+       {
+        "component": "Text",
+        "id": "b37-text",
+        "text": "查看详情"
+       },
+       {
+        "component": "Text",
+        "id": "t38",
+        "text": "残留的临时文件夹",
+        "variant": "strong"
+       },
+       {
+        "component": "Text",
+        "id": "t39",
+        "text": "46 个文件夹，测试工具运行后未删除 · 241.3 MB",
+        "variant": "caption"
+       },
+       {
+        "children": [
+         "t38",
+         "t39"
+        ],
+        "component": "Column",
+        "id": "c40"
+       },
+       {
+        "children": [
+         "b37"
+        ],
+        "component": "Row",
+        "id": "r41"
+       },
+       {
+        "children": [
+         "c40",
+         "r41"
+        ],
+        "component": "Row",
+        "id": "r42",
+        "justify": "spaceBetween",
+        "open": "b37"
+       },
+       {
+        "action": {
+         "event": {
+          "context": {
+           "args": {
+            "id": "cache"
+           },
+           "page": "category"
+          },
+          "name": "agent.open_page"
+         }
+        },
+        "child": "b43-text",
+        "component": "Button",
+        "id": "b43"
+       },
+       {
+        "component": "Text",
+        "id": "b43-text",
+        "text": "查看详情"
+       },
+       {
+        "component": "Text",
+        "id": "t44",
+        "text": "缓存",
+        "variant": "strong"
+       },
+       {
+        "component": "Text",
+        "id": "t45",
+        "text": "pip的缓存，可自动重建 · 62.9 MB",
+        "variant": "caption"
+       },
+       {
+        "children": [
+         "t44",
+         "t45"
+        ],
+        "component": "Column",
+        "id": "c46"
+       },
+       {
+        "children": [
+         "b43"
+        ],
+        "component": "Row",
+        "id": "r47"
+       },
+       {
+        "children": [
+         "c46",
+         "r47"
+        ],
+        "component": "Row",
+        "id": "r48",
+        "justify": "spaceBetween",
+        "open": "b43"
+       },
+       {
+        "action": {
+         "event": {
+          "context": {
+           "args": {
+            "id": "installer"
+           },
+           "page": "category"
+          },
+          "name": "agent.open_page"
+         }
+        },
+        "child": "b49-text",
+        "component": "Button",
+        "id": "b49"
+       },
+       {
+        "component": "Text",
+        "id": "b49-text",
+        "text": "查看详情"
+       },
+       {
+        "component": "Text",
+        "id": "t50",
+        "text": "旧安装包",
+        "variant": "strong"
+       },
+       {
+        "component": "Text",
+        "id": "t51",
+        "text": "1 个安装包，其中 1 个对应的应用已安装 · 6.3 MB",
+        "variant": "caption"
+       },
+       {
+        "children": [
+         "t50",
+         "t51"
+        ],
+        "component": "Column",
+        "id": "c52"
+       },
+       {
+        "children": [
+         "b49"
+        ],
+        "component": "Row",
+        "id": "r53"
+       },
+       {
+        "children": [
+         "c52",
+         "r53"
+        ],
+        "component": "Row",
+        "id": "r54",
+        "justify": "spaceBetween",
+        "open": "b49"
+       },
+       {
+        "action": {
+         "event": {
+          "context": {
+           "page": "more"
+          },
+          "name": "agent.open_page"
+         }
+        },
+        "child": "b55-text",
+        "component": "Button",
+        "id": "b55"
+       },
+       {
+        "component": "Text",
+        "id": "b55-text",
+        "text": "其他"
+       },
+       {
+        "component": "Text",
+        "id": "t56",
+        "text": "其他 2 类"
+       },
+       {
+        "component": "Text",
+        "id": "t57",
+        "text": "2.2 MB",
+        "variant": "caption"
+       },
+       {
+        "children": [
+         "t56",
+         "t57"
+        ],
+        "component": "Column",
+        "id": "c58"
+       },
+       {
+        "children": [
+         "b55"
+        ],
+        "component": "Row",
+        "id": "r59"
+       },
+       {
+        "children": [
+         "c58",
+         "r59"
+        ],
+        "component": "Row",
+        "id": "r60",
+        "justify": "spaceBetween",
+        "open": "b55"
+       },
+       {
+        "children": [
+         "r42",
+         "r48",
+         "r54",
+         "r60"
+        ],
+        "component": "List",
+        "id": "l61"
+       }
+      ],
+      "surfaceId": "luoke-scan/page/overview"
+     },
+     "version": "v0.9"
+    }
+   ]
+  }
+ },
+ "permissions": {
+  "rows": [
+   {
+    "app": "luoke-scan",
+    "can": [
+     "settings"
+    ],
+    "facts": [
+     "看文件名、大小、修改时间",
+     "重复文件、散落的密钥、AI 的 skill 和说明文件在本机读内容",
+     "结果不出这台 Mac"
+    ],
+    "id": "fda",
+    "kind": "system",
+    "owner": "luoke",
+    "state": "granted",
+    "tcc": "SystemPolicyAllFiles",
+    "title": "完全磁盘访问",
+    "without": "degrade"
+   },
+   {
+    "app": "luoke-scan",
+    "can": [
+     "on"
+    ],
+    "id": "auto",
+    "kind": "delegate",
+    "state": "off",
+    "title": "自动清理 4 类文件"
+   },
+   {
+    "app": "luoke-scan",
+    "id": "admin",
+    "kind": "each-time",
+    "state": "ask",
+    "title": "删除系统目录中的项目（需输入 Mac 密码）"
+   }
+  ]
+ },
+ "replies": [
+  {
+   "card": [
+    {
+     "updateComponents": {
+      "components": [
+       {
+        "children": [
+         "r97960-t1"
+        ],
+        "component": "Column",
+        "id": "root"
+       },
+       {
+        "component": "Text",
+        "id": "r97960-t1",
+        "text": "以后不再提 1 项。"
+       }
+      ],
+      "surfaceId": "luoke-scan/overview"
+     },
+     "version": "v0.9"
+    }
+   ],
+   "file": "call-scan_apply-ignore.json",
+   "surface": "luoke-scan/overview",
+   "text": "以后不再提 1 项。"
+  },
+  {
+   "card": [
+    {
+     "updateComponents": {
+      "components": [
+       {
+        "children": [
+         "r97900-t1",
+         "r97900-t2",
+         "r97900-t3",
+         "r97900-r5"
+        ],
+        "component": "Column",
+        "id": "root"
+       },
+       {
+        "component": "Text",
+        "id": "r97900-t1",
+        "text": "移到废纸篓 1 项（110.2 MB）。"
+       },
+       {
+        "component": "Text",
+        "id": "r97900-t2",
+        "text": "临时目录里有 21 个 puppeteer_dev_chrome_profile-* 没被删掉，共 110.2 MB",
+        "variant": "caption"
+       },
+       {
+        "component": "Text",
+        "id": "r97900-t3",
+        "text": "倒掉废纸篓才真正腾出空间。",
+        "variant": "caption"
+       },
+       {
+        "action": {
+         "event": {
+          "context": {
+           "id": "p-000000000002"
+          },
+          "name": "scan_restore"
+         }
+        },
+        "child": "r97900-b4-text",
+        "component": "Button",
+        "id": "r97900-b4"
+       },
+       {
+        "component": "Text",
+        "id": "r97900-b4-text",
+        "text": "放回"
+       },
+       {
+        "children": [
+         "r97900-b4"
+        ],
+        "component": "Row",
+        "id": "r97900-r5"
+       }
+      ],
+      "surfaceId": "luoke-scan/overview"
+     },
+     "version": "v0.9"
+    }
+   ],
+   "file": "call-scan_apply-selected.json",
+   "surface": "luoke-scan/overview",
+   "text": "移到废纸篓 1 项（110.2 MB）。"
+  },
+  {
+   "card": [
+    {
+     "updateComponents": {
+      "components": [
+       {
+        "children": [
+         "r98200-t1",
+         "r98200-t2"
+        ],
+        "component": "Column",
+        "id": "root"
+       },
+       {
+        "component": "Text",
+        "id": "r98200-t1",
+        "text": "放回了 21 项。"
+       },
+       {
+        "component": "Text",
+        "id": "r98200-t2",
+        "text": "临时目录里有 21 个 puppeteer_dev_chrome_profile-* 没被删掉，共 110.2 MB",
+        "variant": "caption"
+       }
+      ],
+      "surfaceId": "luoke-scan/overview"
+     },
+     "version": "v0.9"
+    }
+   ],
+   "file": "call-scan_restore.json",
+   "surface": "luoke-scan/overview",
+   "text": "放回了 21 项。"
+  }
+ ],
+ "scenario": "data-actions",
+ "title": "agent 自己拼扫描页：只读数据，照数据点按",
+ "version": "0.3.40"
+}

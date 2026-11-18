@@ -1,0 +1,59 @@
+{
+  "reply": {
+    "id": 21,
+    "jsonrpc": "2.0",
+    "result": {
+      "contents": [
+        {
+          "mimeType": "application/json",
+          "text": {
+            "archived_asks": 0,
+            "kept": 2,
+            "next": "idle",
+            "ready": true,
+            "terms": 5,
+            "tidied": {
+              "at": null,
+              "counts": {}
+            },
+            "typing": {
+              "at": null,
+              "outcome": null
+            },
+            "v": 1
+          },
+          "uri": "data/data"
+        }
+      ],
+      "resultType": "complete"
+    }
+  },
+  "request": {
+    "id": 21,
+    "jsonrpc": "2.0",
+    "method": "resources/read",
+    "params": {
+      "_meta": {
+        "io.modelcontextprotocol/clientCapabilities": {
+          "experimental": {
+            "ai.luoke/a2ui": {
+              "features": [
+                "openPage",
+                "pageArgs",
+                "confirm",
+                "rowOpen",
+                "fieldSubmit"
+              ]
+            }
+          }
+        },
+        "io.modelcontextprotocol/clientInfo": {
+          "name": "luoke-agent",
+          "version": "fixtures"
+        },
+        "io.modelcontextprotocol/protocolVersion": "2026-07-28"
+      },
+      "uri": "data/data"
+    }
+  }
+}

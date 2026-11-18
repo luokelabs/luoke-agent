@@ -1,0 +1,8085 @@
+{
+ "_about": "scripts/window_samples.py 用 fixtures/apppages/luoke-mail/pages.json 照原始数据拼的页（照 luoke-mail docs/agent-data.md（agent-data 分支 9fa3ac7）的草案手写的原始数据，人名、邮件都是编的；邮件助手录了 data/… 的场景样例以后换掉），不要手改",
+ "app": "luoke-mail",
+ "apps": {
+  "apps": [
+   {
+    "id": "luoke-mail",
+    "needs": [],
+    "pages": [
+     {
+      "id": "inbox",
+      "title": "收件箱"
+     },
+     {
+      "id": "digest",
+      "title": "精选"
+     },
+     {
+      "id": "clean",
+      "title": "清理"
+     },
+     {
+      "hidden": true,
+      "icon": "history",
+      "id": "activity",
+      "title": "处理记录"
+     },
+     {
+      "hidden": true,
+      "icon": "settings",
+      "id": "settings",
+      "title": "邮件助手设置"
+     },
+     {
+      "hidden": true,
+      "id": "mail",
+      "title": "邮件"
+     },
+     {
+      "hidden": true,
+      "id": "piece",
+      "title": "精选"
+     },
+     {
+      "hidden": true,
+      "id": "sender",
+      "title": "发件人"
+     },
+     {
+      "hidden": true,
+      "id": "subs",
+      "title": "订阅体检"
+     },
+     {
+      "hidden": true,
+      "id": "old",
+      "title": "旧邮件"
+     },
+     {
+      "hidden": true,
+      "id": "sources",
+      "title": "精选来源"
+     },
+     {
+      "hidden": true,
+      "id": "job",
+      "title": "后台任务"
+     },
+     {
+      "hidden": true,
+      "id": "done",
+      "title": "已处理的邮件"
+     },
+     {
+      "hidden": true,
+      "id": "today",
+      "title": "今日"
+     },
+     {
+      "hidden": true,
+      "id": "legacy-settings",
+      "title": "邮箱和设置"
+     },
+     {
+      "hidden": true,
+      "id": "rules",
+      "title": "规则"
+     },
+     {
+      "hidden": true,
+      "id": "sweep",
+      "title": "清理旧邮件"
+     }
+    ],
+    "running": true,
+    "summary": {
+     "count": 2,
+     "text": "1 封待处理，1 封可疑"
+    },
+    "ui": {
+     "pages": [
+      {
+       "id": "accounts",
+       "title": "邮箱"
+      },
+      {
+       "id": "rules",
+       "title": "规则"
+      }
+     ]
+    }
+   }
+  ]
+ },
+ "asked": [
+  "read-data-accounts.json",
+  "read-data-activity-all.json",
+  "read-data-clean-all.json",
+  "read-data-digest-all.json",
+  "read-data-digest-today-all.json",
+  "read-data-inbox-all.json",
+  "read-data-old.json",
+  "read-data-today-all.json",
+  "read-outbox.json",
+  "read-page-legacy-settings.json",
+  "read-page-rules.json",
+  "read-page-sweep.json",
+  "read-permissions.json",
+  "read-summary.json",
+  "tools-list.json"
+ ],
+ "clock": "2026-10-20T01:30:00Z",
+ "events": [
+  [
+   "a2ui",
+   {
+    "createSurface": {
+     "catalogId": "ai.luoke/a2ui/agent/1",
+     "surfaceId": "luoke-mail/suspicious-000000000001"
+    },
+    "version": "v0.9"
+   }
+  ],
+  [
+   "a2ui",
+   {
+    "updateComponents": {
+     "components": [
+      {
+       "children": [
+        "r3",
+        "r6",
+        "t7",
+        "r8"
+       ],
+       "component": "Column",
+       "id": "root",
+       "subtitle": "某银行 · 账户已冻结"
+      },
+      {
+       "component": "Text",
+       "id": "h1",
+       "text": "可疑邮件",
+       "variant": "h4"
+      },
+      {
+       "component": "Text",
+       "id": "t2",
+       "text": "me@example.com",
+       "variant": "badge"
+      },
+      {
+       "children": [
+        "h1",
+        "t2"
+       ],
+       "component": "Row",
+       "id": "r3"
+      },
+      {
+       "component": "Text",
+       "id": "t4",
+       "text": "某银行",
+       "variant": "strong"
+      },
+      {
+       "component": "Text",
+       "id": "t5",
+       "maxLines": 1,
+       "text": "账户已冻结"
+      },
+      {
+       "children": [
+        "t4",
+        "t5"
+       ],
+       "component": "Row",
+       "id": "r6"
+      },
+      {
+       "component": "Text",
+       "id": "t7",
+       "text": "发件域名仿冒银行",
+       "variant": "caption"
+      },
+      {
+       "action": {
+        "event": {
+         "context": {
+          "choices": {
+           "m2": [
+            "spam"
+           ]
+          },
+          "plan_id": "suspicious-000000000001"
+         },
+         "name": "mail_apply_plan"
+        }
+       },
+       "child": "b9-row",
+       "component": "Button",
+       "id": "b9",
+       "variant": "destructive"
+      },
+      {
+       "component": "Icon",
+       "id": "b9-icon",
+       "name": "shield-alert"
+      },
+      {
+       "component": "Text",
+       "id": "b9-text",
+       "text": "移到垃圾邮件"
+      },
+      {
+       "children": [
+        "b9-icon",
+        "b9-text"
+       ],
+       "component": "Row",
+       "id": "b9-row"
+      },
+      {
+       "action": {
+        "event": {
+         "context": {
+          "choices": {
+           "m2": [
+            "keep"
+           ]
+          },
+          "plan_id": "suspicious-000000000001"
+         },
+         "name": "mail_apply_plan"
+        }
+       },
+       "child": "b10-row",
+       "component": "Button",
+       "id": "b10"
+      },
+      {
+       "component": "Icon",
+       "id": "b10-icon",
+       "name": "circle-minus"
+      },
+      {
+       "component": "Text",
+       "id": "b10-text",
+       "text": "暂不处理"
+      },
+      {
+       "children": [
+        "b10-icon",
+        "b10-text"
+       ],
+       "component": "Row",
+       "id": "b10-row"
+      },
+      {
+       "action": {
+        "event": {
+         "context": {
+          "args": {
+           "id": "2"
+          },
+          "page": "inbox"
+         },
+         "name": "agent.open_page"
+        }
+       },
+       "child": "b11-row",
+       "component": "Button",
+       "id": "b11"
+      },
+      {
+       "component": "Icon",
+       "id": "b11-icon",
+       "name": "inbox"
+      },
+      {
+       "component": "Text",
+       "id": "b11-text",
+       "text": "在邮件助手中查看"
+      },
+      {
+       "children": [
+        "b11-icon",
+        "b11-text"
+       ],
+       "component": "Row",
+       "id": "b11-row"
+      },
+      {
+       "children": [
+        "b9",
+        "b10",
+        "b11"
+       ],
+       "component": "Row",
+       "id": "r8"
+      }
+     ],
+     "surfaceId": "luoke-mail/suspicious-000000000001"
+    },
+    "version": "v0.9"
+   }
+  ],
+  [
+   "a2ui",
+   {
+    "createSurface": {
+     "catalogId": "ai.luoke/a2ui/agent/1",
+     "surfaceId": "luoke-mail/new-mail-000000000002"
+    },
+    "version": "v0.9"
+   }
+  ],
+  [
+   "a2ui",
+   {
+    "updateComponents": {
+     "components": [
+      {
+       "children": [
+        "r3",
+        "l4",
+        "r12"
+       ],
+       "component": "Column",
+       "id": "root",
+       "subtitle": "me@example.com"
+      },
+      {
+       "component": "Text",
+       "id": "h1",
+       "text": "1 封待处理",
+       "variant": "h4"
+      },
+      {
+       "component": "Text",
+       "id": "t2",
+       "text": "me@example.com",
+       "variant": "badge"
+      },
+      {
+       "children": [
+        "h1",
+        "t2"
+       ],
+       "component": "Row",
+       "id": "r3"
+      },
+      {
+       "component": "Text",
+       "id": "t5",
+       "text": "王老师",
+       "variant": "strong"
+      },
+      {
+       "component": "Text",
+       "id": "t6",
+       "maxLines": 1,
+       "text": "答辩时间确认"
+      },
+      {
+       "component": "Text",
+       "id": "t7",
+       "text": "10-23 截止",
+       "variant": "badge"
+      },
+      {
+       "children": [
+        "t5",
+        "t6",
+        "t7"
+       ],
+       "component": "Row",
+       "id": "r8"
+      },
+      {
+       "component": "Text",
+       "id": "t9",
+       "maxLines": 1,
+       "text": "王老师问答辩时间，周五前回",
+       "variant": "caption"
+      },
+      {
+       "children": [
+        "r8",
+        "t9"
+       ],
+       "component": "Column",
+       "id": "c10"
+      },
+      {
+       "component": "ChoicePicker",
+       "id": "c-m1",
+       "label": "王老师：答辩时间确认",
+       "options": [
+        {
+         "icon": "pencil-line",
+         "label": "写草稿",
+         "value": "draft"
+        },
+        {
+         "icon": "star",
+         "label": "加星标",
+         "value": "flag"
+        },
+        {
+         "icon": "archive",
+         "label": "归档",
+         "value": "archive"
+        },
+        {
+         "icon": "circle-minus",
+         "label": "暂不处理",
+         "value": "keep"
+        }
+       ],
+       "value": {
+        "path": "/choices/m1"
+       }
+      },
+      {
+       "children": [
+        "c10",
+        "c-m1"
+       ],
+       "component": "Row",
+       "id": "r11",
+       "justify": "spaceBetween"
+      },
+      {
+       "children": [
+        "r11"
+       ],
+       "component": "List",
+       "id": "l4"
+      },
+      {
+       "action": {
+        "event": {
+         "context": {
+          "choices": {
+           "path": "/choices"
+          },
+          "plan_id": "new-mail-000000000002"
+         },
+         "name": "mail_apply_plan"
+        }
+       },
+       "child": "b13-row",
+       "component": "Button",
+       "id": "b13",
+       "variant": "primary"
+      },
+      {
+       "component": "Icon",
+       "id": "b13-icon",
+       "name": "check"
+      },
+      {
+       "component": "Text",
+       "id": "b13-text",
+       "text": "处理这封"
+      },
+      {
+       "children": [
+        "b13-icon",
+        "b13-text"
+       ],
+       "component": "Row",
+       "id": "b13-row"
+      },
+      {
+       "action": {
+        "event": {
+         "context": {
+          "args": {
+           "id": "1"
+          },
+          "page": "inbox"
+         },
+         "name": "agent.open_page"
+        }
+       },
+       "child": "b14-row",
+       "component": "Button",
+       "id": "b14"
+      },
+      {
+       "component": "Icon",
+       "id": "b14-icon",
+       "name": "inbox"
+      },
+      {
+       "component": "Text",
+       "id": "b14-text",
+       "text": "在邮件助手中查看"
+      },
+      {
+       "children": [
+        "b14-icon",
+        "b14-text"
+       ],
+       "component": "Row",
+       "id": "b14-row"
+      },
+      {
+       "children": [
+        "b13",
+        "b14"
+       ],
+       "component": "Row",
+       "id": "r12"
+      }
+     ],
+     "surfaceId": "luoke-mail/new-mail-000000000002"
+    },
+    "version": "v0.9"
+   }
+  ],
+  [
+   "a2ui",
+   {
+    "updateDataModel": {
+     "path": "/",
+     "surfaceId": "luoke-mail/new-mail-000000000002",
+     "value": {
+      "choices": {
+       "m1": [
+        "draft"
+       ]
+      }
+     }
+    },
+    "version": "v0.9"
+   }
+  ],
+  [
+   "a2ui",
+   {
+    "createSurface": {
+     "catalogId": "ai.luoke/a2ui/agent/1",
+     "surfaceId": "luoke-mail/handled-2026-10-20"
+    },
+    "version": "v0.9"
+   }
+  ],
+  [
+   "a2ui",
+   {
+    "updateComponents": {
+     "components": [
+      {
+       "children": [
+        "l8"
+       ],
+       "component": "Column",
+       "id": "root"
+      },
+      {
+       "action": {
+        "event": {
+         "context": {
+          "account": "me@example.com",
+          "log_id": 1
+         },
+         "name": "mail_undo_step"
+        }
+       },
+       "child": "b1-row",
+       "component": "Button",
+       "id": "b1",
+       "variant": "borderless"
+      },
+      {
+       "component": "Icon",
+       "id": "b1-icon",
+       "name": "undo-2"
+      },
+      {
+       "component": "Text",
+       "id": "b1-text",
+       "text": "撤销此项"
+      },
+      {
+       "children": [
+        "b1-icon",
+        "b1-text"
+       ],
+       "component": "Row",
+       "id": "b1-row"
+      },
+      {
+       "action": {
+        "event": {
+         "context": {
+          "args": {
+           "account": "me@example.com",
+           "log_id": "1"
+          },
+          "page": "done"
+         },
+         "name": "agent.open_page"
+        }
+       },
+       "child": "b2-text",
+       "component": "Button",
+       "id": "b2"
+      },
+      {
+       "component": "Text",
+       "id": "b2-text",
+       "text": "查看邮件"
+      },
+      {
+       "component": "Text",
+       "id": "t3",
+       "text": "王老师、某银行"
+      },
+      {
+       "component": "Text",
+       "id": "t4",
+       "text": "2 封",
+       "variant": "caption"
+      },
+      {
+       "children": [
+        "t3",
+        "t4"
+       ],
+       "component": "Column",
+       "id": "c5"
+      },
+      {
+       "children": [
+        "b1",
+        "b2"
+       ],
+       "component": "Row",
+       "id": "r6"
+      },
+      {
+       "children": [
+        "c5",
+        "r6"
+       ],
+       "component": "Row",
+       "id": "r7",
+       "justify": "spaceBetween",
+       "open": "b2"
+      },
+      {
+       "children": [
+        "r7"
+       ],
+       "component": "List",
+       "id": "l8"
+      }
+     ],
+     "surfaceId": "luoke-mail/handled-2026-10-20"
+    },
+    "version": "v0.9"
+   }
+  ],
+  [
+   "feed",
+   {
+    "brief": {
+     "next": "2026-10-20T08:00:00+08:00",
+     "words": null
+    },
+    "cards": [
+     {
+      "app": "luoke-mail",
+      "id": "luoke-mail/suspicious-000000000001",
+      "kind": "suspicious",
+      "section": "urgent",
+      "time": "2026-10-20T03:42:00+08:00",
+      "title": "可疑邮件「某银行：账户已冻结」"
+     },
+     {
+      "app": "luoke-mail",
+      "id": "luoke-mail/new-mail-000000000002",
+      "kind": "new-mail",
+      "section": "decide",
+      "time": "2026-10-20T01:18:00+08:00",
+      "title": "1 封待处理邮件"
+     },
+     {
+      "app": "luoke-mail",
+      "id": "luoke-mail/handled-2026-10-20",
+      "kind": "auto-done",
+      "section": "done",
+      "time": "2026-10-20T09:30:00+08:00",
+      "title": "标为已读 2 封"
+     }
+    ],
+    "dot": true,
+    "hello": null,
+    "notice_rows": [],
+    "notices": [],
+    "open": 3,
+    "order": [
+     "luoke-mail/suspicious-000000000001",
+     "luoke-mail/new-mail-000000000002",
+     "luoke-mail/handled-2026-10-20"
+    ],
+    "paused_until": null
+   }
+  ]
+ ],
+ "host": {},
+ "pages": {
+  "activity": {
+   "messages": [
+    {
+     "createSurface": {
+      "catalogId": "ai.luoke/a2ui/agent/1",
+      "surfaceId": "luoke-mail/page/activity"
+     },
+     "version": "v0.9"
+    },
+    {
+     "updateComponents": {
+      "components": [
+       {
+        "children": [
+         "l13"
+        ],
+        "component": "Column",
+        "id": "root"
+       },
+       {
+        "action": {
+         "event": {
+          "context": {
+           "account": "me@company.example",
+           "log_id": 812
+          },
+          "name": "mail_undo_step"
+         }
+        },
+        "child": "b1-row",
+        "component": "Button",
+        "id": "b1",
+        "variant": "borderless"
+       },
+       {
+        "component": "Icon",
+        "id": "b1-icon",
+        "name": "undo-2"
+       },
+       {
+        "component": "Text",
+        "id": "b1-text",
+        "text": "撤销"
+       },
+       {
+        "children": [
+         "b1-icon",
+         "b1-text"
+        ],
+        "component": "Row",
+        "id": "b1-row"
+       },
+       {
+        "component": "Text",
+        "id": "t2",
+        "text": "今天 08:45　归档 9 封 · 加星标 2 封",
+        "variant": "strong"
+       },
+       {
+        "component": "Text",
+        "id": "t3",
+        "text": "按习惯",
+        "variant": "caption"
+       },
+       {
+        "children": [
+         "t2",
+         "t3"
+        ],
+        "component": "Column",
+        "id": "c4"
+       },
+       {
+        "children": [
+         "b1"
+        ],
+        "component": "Row",
+        "id": "r5"
+       },
+       {
+        "children": [
+         "c4",
+         "r5"
+        ],
+        "component": "Row",
+        "id": "r6",
+        "justify": "spaceBetween"
+       },
+       {
+        "action": {
+         "event": {
+          "context": {
+           "account": "me@company.example",
+           "log_id": 790
+          },
+          "name": "mail_undo_step"
+         }
+        },
+        "child": "b7-row",
+        "component": "Button",
+        "id": "b7",
+        "variant": "borderless"
+       },
+       {
+        "component": "Icon",
+        "id": "b7-icon",
+        "name": "undo-2"
+       },
+       {
+        "component": "Text",
+        "id": "b7-text",
+        "text": "撤销"
+       },
+       {
+        "children": [
+         "b7-icon",
+         "b7-text"
+        ],
+        "component": "Row",
+        "id": "b7-row"
+       },
+       {
+        "component": "Text",
+        "id": "t8",
+        "text": "昨天 20:10　归档 14 封",
+        "variant": "strong"
+       },
+       {
+        "component": "Text",
+        "id": "t9",
+        "text": "按习惯",
+        "variant": "caption"
+       },
+       {
+        "children": [
+         "t8",
+         "t9"
+        ],
+        "component": "Column",
+        "id": "c10"
+       },
+       {
+        "children": [
+         "b7"
+        ],
+        "component": "Row",
+        "id": "r11"
+       },
+       {
+        "children": [
+         "c10",
+         "r11"
+        ],
+        "component": "Row",
+        "id": "r12",
+        "justify": "spaceBetween"
+       },
+       {
+        "children": [
+         "r6",
+         "r12"
+        ],
+        "component": "List",
+        "id": "l13"
+       }
+      ],
+      "surfaceId": "luoke-mail/page/activity"
+     },
+     "version": "v0.9"
+    }
+   ]
+  },
+  "clean": {
+   "messages": [
+    {
+     "createSurface": {
+      "catalogId": "ai.luoke/a2ui/agent/1",
+      "surfaceId": "luoke-mail/page/clean"
+     },
+     "version": "v0.9"
+    },
+    {
+     "updateComponents": {
+      "components": [
+       {
+        "children": [
+         "k2",
+         "t3",
+         "l30",
+         "t33",
+         "l43",
+         "t44",
+         "l83"
+        ],
+        "component": "Column",
+        "id": "root"
+       },
+       {
+        "action": {
+         "event": {
+          "context": {
+           "args": {
+            "account": {
+             "path": "/choices/account/0"
+            }
+           },
+           "page": "clean"
+          },
+          "name": "agent.open_page"
+         }
+        },
+        "child": "b1-text",
+        "component": "Button",
+        "id": "b1"
+       },
+       {
+        "component": "Text",
+        "id": "b1-text",
+        "text": "切换邮箱"
+       },
+       {
+        "component": "ChoicePicker",
+        "id": "k2",
+        "options": [
+         {
+          "label": "全部邮箱",
+          "value": "all"
+         },
+         {
+          "label": "工作",
+          "tooltip": "me@company.example",
+          "value": "me@company.example"
+         },
+         {
+          "label": "个人",
+          "tooltip": "me@mail.example",
+          "value": "me@mail.example"
+         }
+        ],
+        "placement": "header",
+        "submit": "b1",
+        "value": {
+         "path": "/choices/account"
+        }
+       },
+       {
+        "component": "Text",
+        "id": "t3",
+        "text": "可退订 · 3 个发件人",
+        "variant": "caption"
+       },
+       {
+        "action": {
+         "event": {
+          "context": {
+           "account": "me@mail.example",
+           "key": "list:promo.shop.example"
+          },
+          "name": "mail_unsubscribe"
+         }
+        },
+        "child": "b4-row",
+        "component": "Button",
+        "confirm": {
+         "label": "退订",
+         "text": "退订后无法在螺壳中撤销",
+         "title": "退订「某电商促销」？"
+        },
+        "id": "b4",
+        "variant": "borderless"
+       },
+       {
+        "component": "Icon",
+        "id": "b4-icon",
+        "name": "mail-x"
+       },
+       {
+        "component": "Text",
+        "id": "b4-text",
+        "text": "退订"
+       },
+       {
+        "children": [
+         "b4-icon",
+         "b4-text"
+        ],
+        "component": "Row",
+        "id": "b4-row"
+       },
+       {
+        "action": {
+         "event": {
+          "context": {
+           "account": "me@mail.example",
+           "key": "list:promo.shop.example"
+          },
+          "name": "mail_sender_keep"
+         }
+        },
+        "child": "b5-row",
+        "component": "Button",
+        "id": "b5",
+        "variant": "borderless"
+       },
+       {
+        "component": "Icon",
+        "id": "b5-icon",
+        "name": "bell-off"
+       },
+       {
+        "component": "Text",
+        "id": "b5-text",
+        "text": "保留，不再提示"
+       },
+       {
+        "children": [
+         "b5-icon",
+         "b5-text"
+        ],
+        "component": "Row",
+        "id": "b5-row"
+       },
+       {
+        "action": {
+         "event": {
+          "context": {
+           "args": {
+            "account": "me@mail.example",
+            "key": "list:promo.shop.example"
+           },
+           "page": "sender"
+          },
+          "name": "agent.open_page"
+         }
+        },
+        "child": "b6-text",
+        "component": "Button",
+        "id": "b6"
+       },
+       {
+        "component": "Text",
+        "id": "b6-text",
+        "text": "这个发件人"
+       },
+       {
+        "component": "Text",
+        "id": "t7",
+        "text": "某电商促销",
+        "variant": "strong"
+       },
+       {
+        "component": "Text",
+        "id": "t8",
+        "text": "每周 5 封，均未读，支持一键退订",
+        "variant": "caption"
+       },
+       {
+        "children": [
+         "t7",
+         "t8"
+        ],
+        "component": "Column",
+        "id": "c9"
+       },
+       {
+        "children": [
+         "b4",
+         "b5",
+         "b6"
+        ],
+        "component": "Row",
+        "id": "r10"
+       },
+       {
+        "children": [
+         "c9",
+         "r10"
+        ],
+        "component": "Row",
+        "id": "r11",
+        "justify": "spaceBetween",
+        "open": "b6"
+       },
+       {
+        "action": {
+         "event": {
+          "context": {
+           "account": "me@mail.example",
+           "key": "list:course.example"
+          },
+          "name": "mail_unsubscribe"
+         }
+        },
+        "child": "b12-row",
+        "component": "Button",
+        "confirm": {
+         "label": "退订",
+         "text": "退订后无法在螺壳中撤销",
+         "title": "退订「某课程平台」？"
+        },
+        "id": "b12",
+        "variant": "borderless"
+       },
+       {
+        "component": "Icon",
+        "id": "b12-icon",
+        "name": "mail-x"
+       },
+       {
+        "component": "Text",
+        "id": "b12-text",
+        "text": "退订"
+       },
+       {
+        "children": [
+         "b12-icon",
+         "b12-text"
+        ],
+        "component": "Row",
+        "id": "b12-row"
+       },
+       {
+        "action": {
+         "event": {
+          "context": {
+           "account": "me@mail.example",
+           "key": "list:course.example"
+          },
+          "name": "mail_sender_keep"
+         }
+        },
+        "child": "b13-row",
+        "component": "Button",
+        "id": "b13",
+        "variant": "borderless"
+       },
+       {
+        "component": "Icon",
+        "id": "b13-icon",
+        "name": "bell-off"
+       },
+       {
+        "component": "Text",
+        "id": "b13-text",
+        "text": "保留，不再提示"
+       },
+       {
+        "children": [
+         "b13-icon",
+         "b13-text"
+        ],
+        "component": "Row",
+        "id": "b13-row"
+       },
+       {
+        "action": {
+         "event": {
+          "context": {
+           "args": {
+            "account": "me@mail.example",
+            "key": "list:course.example"
+           },
+           "page": "sender"
+          },
+          "name": "agent.open_page"
+         }
+        },
+        "child": "b14-text",
+        "component": "Button",
+        "id": "b14"
+       },
+       {
+        "component": "Text",
+        "id": "b14-text",
+        "text": "这个发件人"
+       },
+       {
+        "component": "Text",
+        "id": "t15",
+        "text": "某课程平台",
+        "variant": "strong"
+       },
+       {
+        "component": "Text",
+        "id": "t16",
+        "text": "每周 2 封，均未读，支持一键退订",
+        "variant": "caption"
+       },
+       {
+        "children": [
+         "t15",
+         "t16"
+        ],
+        "component": "Column",
+        "id": "c17"
+       },
+       {
+        "children": [
+         "b12",
+         "b13",
+         "b14"
+        ],
+        "component": "Row",
+        "id": "r18"
+       },
+       {
+        "children": [
+         "c17",
+         "r18"
+        ],
+        "component": "Row",
+        "id": "r19",
+        "justify": "spaceBetween",
+        "open": "b14"
+       },
+       {
+        "action": {
+         "event": {
+          "context": {
+           "account": "me@mail.example",
+           "key": "list:club.example"
+          },
+          "name": "mail_unsubscribe"
+         }
+        },
+        "child": "b20-row",
+        "component": "Button",
+        "confirm": {
+         "label": "退订",
+         "text": "退订后无法在螺壳中撤销",
+         "title": "退订「某会员通讯」？"
+        },
+        "id": "b20",
+        "variant": "borderless"
+       },
+       {
+        "component": "Icon",
+        "id": "b20-icon",
+        "name": "mail-x"
+       },
+       {
+        "component": "Text",
+        "id": "b20-text",
+        "text": "退订"
+       },
+       {
+        "children": [
+         "b20-icon",
+         "b20-text"
+        ],
+        "component": "Row",
+        "id": "b20-row"
+       },
+       {
+        "action": {
+         "event": {
+          "context": {
+           "account": "me@mail.example",
+           "key": "list:club.example"
+          },
+          "name": "mail_sender_keep"
+         }
+        },
+        "child": "b21-row",
+        "component": "Button",
+        "id": "b21",
+        "variant": "borderless"
+       },
+       {
+        "component": "Icon",
+        "id": "b21-icon",
+        "name": "bell-off"
+       },
+       {
+        "component": "Text",
+        "id": "b21-text",
+        "text": "保留，不再提示"
+       },
+       {
+        "children": [
+         "b21-icon",
+         "b21-text"
+        ],
+        "component": "Row",
+        "id": "b21-row"
+       },
+       {
+        "action": {
+         "event": {
+          "context": {
+           "args": {
+            "account": "me@mail.example",
+            "key": "list:club.example"
+           },
+           "page": "sender"
+          },
+          "name": "agent.open_page"
+         }
+        },
+        "child": "b22-text",
+        "component": "Button",
+        "id": "b22"
+       },
+       {
+        "component": "Text",
+        "id": "b22-text",
+        "text": "这个发件人"
+       },
+       {
+        "component": "Text",
+        "id": "t23",
+        "text": "某会员通讯",
+        "variant": "strong"
+       },
+       {
+        "component": "Text",
+        "id": "t24",
+        "text": "每月 4 封，已读 1 封，支持一键退订",
+        "variant": "caption"
+       },
+       {
+        "children": [
+         "t23",
+         "t24"
+        ],
+        "component": "Column",
+        "id": "c25"
+       },
+       {
+        "children": [
+         "b20",
+         "b21",
+         "b22"
+        ],
+        "component": "Row",
+        "id": "r26"
+       },
+       {
+        "children": [
+         "c25",
+         "r26"
+        ],
+        "component": "Row",
+        "id": "r27",
+        "justify": "spaceBetween",
+        "open": "b22"
+       },
+       {
+        "action": {
+         "event": {
+          "context": {
+           "account": "me@mail.example",
+           "keys": [
+            "list:promo.shop.example",
+            "list:course.example",
+            "list:club.example"
+           ]
+          },
+          "name": "mail_unsubscribe"
+         }
+        },
+        "child": "b28-text",
+        "component": "Button",
+        "confirm": {
+         "label": "全部退订",
+         "text": "某电商促销、某课程平台、某会员通讯。退订后无法在螺壳中撤销；如需重新订阅，需在对方网站操作",
+         "title": "退订这 3 个发件人？"
+        },
+        "id": "b28",
+        "variant": "primary"
+       },
+       {
+        "component": "Text",
+        "id": "b28-text",
+        "text": "全部退订（3）"
+       },
+       {
+        "children": [
+         "b28"
+        ],
+        "component": "Row",
+        "id": "r29"
+       },
+       {
+        "children": [
+         "r11",
+         "r19",
+         "r27",
+         "r29"
+        ],
+        "component": "List",
+        "id": "l30"
+       },
+       {
+        "action": {
+         "event": {
+          "context": {
+           "page": "subs"
+          },
+          "name": "agent.open_page"
+         }
+        },
+        "child": "b31-text",
+        "component": "Button",
+        "id": "b31"
+       },
+       {
+        "component": "Text",
+        "id": "b31-text",
+        "text": "订阅体检"
+       },
+       {
+        "action": {
+         "event": {
+          "context": {
+           "account": "all"
+          },
+          "name": "mail_subscriptions_check"
+         }
+        },
+        "child": "b32-row",
+        "component": "Button",
+        "id": "b32",
+        "variant": "borderless"
+       },
+       {
+        "component": "Icon",
+        "id": "b32-icon",
+        "name": "refresh-cw"
+       },
+       {
+        "component": "Text",
+        "id": "b32-text",
+        "text": "重新检查"
+       },
+       {
+        "children": [
+         "b32-icon",
+         "b32-text"
+        ],
+        "component": "Row",
+        "id": "b32-row"
+       },
+       {
+        "component": "Text",
+        "id": "t33",
+        "text": "订阅体检",
+        "variant": "caption"
+       },
+       {
+        "component": "Text",
+        "id": "t34",
+        "text": "全部结果"
+       },
+       {
+        "component": "Text",
+        "id": "t35",
+        "text": "建议退订 3、无法退订 1、可疑 1、已处理 1、建议保留 1",
+        "variant": "caption"
+       },
+       {
+        "children": [
+         "t34",
+         "t35"
+        ],
+        "component": "Column",
+        "id": "c36"
+       },
+       {
+        "children": [
+         "b31"
+        ],
+        "component": "Row",
+        "id": "r37"
+       },
+       {
+        "children": [
+         "c36",
+         "r37"
+        ],
+        "component": "Row",
+        "id": "r38",
+        "justify": "spaceBetween",
+        "open": "b31"
+       },
+       {
+        "component": "Text",
+        "id": "t39",
+        "text": "上次检查：11月10日，最近 60 天的订阅"
+       },
+       {
+        "children": [
+         "t39"
+        ],
+        "component": "Column",
+        "id": "c40"
+       },
+       {
+        "children": [
+         "b32"
+        ],
+        "component": "Row",
+        "id": "r41"
+       },
+       {
+        "children": [
+         "c40",
+         "r41"
+        ],
+        "component": "Row",
+        "id": "r42",
+        "justify": "spaceBetween"
+       },
+       {
+        "children": [
+         "r38",
+         "r42"
+        ],
+        "component": "List",
+        "id": "l43"
+       },
+       {
+        "component": "Text",
+        "id": "t44",
+        "text": "可归档的旧邮件",
+        "variant": "caption"
+       },
+       {
+        "action": {
+         "event": {
+          "context": {
+           "account": "me@company.example",
+           "key": "notice|from:noreply@post.example",
+           "on": true,
+           "scope": "inbox"
+          },
+          "name": "mail_old_keep"
+         }
+        },
+        "child": "b45-row",
+        "component": "Button",
+        "id": "b45",
+        "variant": "borderless"
+       },
+       {
+        "component": "Icon",
+        "id": "b45-icon",
+        "name": "bell-off"
+       },
+       {
+        "component": "Text",
+        "id": "b45-text",
+        "text": "保留，不再提示"
+       },
+       {
+        "children": [
+         "b45-icon",
+         "b45-text"
+        ],
+        "component": "Row",
+        "id": "b45-row"
+       },
+       {
+        "action": {
+         "event": {
+          "context": {
+           "account": "me@company.example",
+           "count": 41,
+           "keys": [
+            "notice|from:noreply@post.example"
+           ]
+          },
+          "name": "mail_old_archive"
+         }
+        },
+        "child": "b46-text",
+        "component": "Button",
+        "id": "b46",
+        "tooltip": "标为已读、移出收件箱，不会删除；能在处理记录里撤销"
+       },
+       {
+        "component": "Text",
+        "id": "b46-text",
+        "text": "归档"
+       },
+       {
+        "component": "Text",
+        "id": "t47",
+        "text": "半年前的快递和验证码通知",
+        "variant": "strong"
+       },
+       {
+        "component": "Text",
+        "id": "t48",
+        "text": "通知，41 封，5.3 MB，20 封未读，2023 年 1 月起",
+        "variant": "caption"
+       },
+       {
+        "children": [
+         "t47",
+         "t48"
+        ],
+        "component": "Column",
+        "id": "c49"
+       },
+       {
+        "children": [
+         "b45",
+         "b46"
+        ],
+        "component": "Row",
+        "id": "r50"
+       },
+       {
+        "children": [
+         "c49",
+         "r50"
+        ],
+        "component": "Row",
+        "id": "r51",
+        "justify": "spaceBetween"
+       },
+       {
+        "action": {
+         "event": {
+          "context": {
+           "account": "me@company.example",
+           "key": "promotion|from:ad@store.example",
+           "on": true,
+           "scope": "inbox"
+          },
+          "name": "mail_old_keep"
+         }
+        },
+        "child": "b52-row",
+        "component": "Button",
+        "id": "b52",
+        "variant": "borderless"
+       },
+       {
+        "component": "Icon",
+        "id": "b52-icon",
+        "name": "bell-off"
+       },
+       {
+        "component": "Text",
+        "id": "b52-text",
+        "text": "保留，不再提示"
+       },
+       {
+        "children": [
+         "b52-icon",
+         "b52-text"
+        ],
+        "component": "Row",
+        "id": "b52-row"
+       },
+       {
+        "action": {
+         "event": {
+          "context": {
+           "account": "me@company.example",
+           "count": 310,
+           "keys": [
+            "promotion|from:ad@store.example"
+           ],
+           "scope": "inbox"
+          },
+          "name": "mail_old_trash"
+         }
+        },
+        "child": "b53-text",
+        "component": "Button",
+        "confirm": {
+         "label": "移到已删除",
+         "text": "如未开启处理模式，需先在设置 ·「更多」中开启。邮箱清空「已删除」前可撤销",
+         "title": "把「某店」的 310 封移到已删除？"
+        },
+        "id": "b53"
+       },
+       {
+        "component": "Text",
+        "id": "b53-text",
+        "text": "移到已删除"
+       },
+       {
+        "component": "Text",
+        "id": "t54",
+        "text": "某店",
+        "variant": "strong"
+       },
+       {
+        "component": "Text",
+        "id": "t55",
+        "text": "推广邮件，310 封，40 MB，155 封未读，2023 年 1 月起",
+        "variant": "caption"
+       },
+       {
+        "children": [
+         "t54",
+         "t55"
+        ],
+        "component": "Column",
+        "id": "c56"
+       },
+       {
+        "children": [
+         "b52",
+         "b53"
+        ],
+        "component": "Row",
+        "id": "r57"
+       },
+       {
+        "children": [
+         "c56",
+         "r57"
+        ],
+        "component": "Row",
+        "id": "r58",
+        "justify": "spaceBetween"
+       },
+       {
+        "action": {
+         "event": {
+          "context": {
+           "account": "me@company.example",
+           "key": "promotion|from:ad2@store.example",
+           "on": true,
+           "scope": "inbox"
+          },
+          "name": "mail_old_keep"
+         }
+        },
+        "child": "b59-row",
+        "component": "Button",
+        "id": "b59",
+        "variant": "borderless"
+       },
+       {
+        "component": "Icon",
+        "id": "b59-icon",
+        "name": "bell-off"
+       },
+       {
+        "component": "Text",
+        "id": "b59-text",
+        "text": "保留，不再提示"
+       },
+       {
+        "children": [
+         "b59-icon",
+         "b59-text"
+        ],
+        "component": "Row",
+        "id": "b59-row"
+       },
+       {
+        "action": {
+         "event": {
+          "context": {
+           "account": "me@company.example",
+           "count": 22,
+           "keys": [
+            "promotion|from:ad2@store.example"
+           ],
+           "scope": "inbox"
+          },
+          "name": "mail_old_trash"
+         }
+        },
+        "child": "b60-text",
+        "component": "Button",
+        "confirm": {
+         "label": "移到已删除",
+         "text": "如未开启处理模式，需先在设置 ·「更多」中开启。邮箱清空「已删除」前可撤销",
+         "title": "把「另一家店」的 22 封移到已删除？"
+        },
+        "id": "b60"
+       },
+       {
+        "component": "Text",
+        "id": "b60-text",
+        "text": "移到已删除"
+       },
+       {
+        "component": "Text",
+        "id": "t61",
+        "text": "另一家店",
+        "variant": "strong"
+       },
+       {
+        "component": "Text",
+        "id": "t62",
+        "text": "推广邮件，22 封，2.9 MB，11 封未读，2023 年 1 月起",
+        "variant": "caption"
+       },
+       {
+        "children": [
+         "t61",
+         "t62"
+        ],
+        "component": "Column",
+        "id": "c63"
+       },
+       {
+        "children": [
+         "b59",
+         "b60"
+        ],
+        "component": "Row",
+        "id": "r64"
+       },
+       {
+        "children": [
+         "c63",
+         "r64"
+        ],
+        "component": "Row",
+        "id": "r65",
+        "justify": "spaceBetween"
+       },
+       {
+        "action": {
+         "event": {
+          "context": {
+           "account": "me@company.example",
+           "count": 332,
+           "keys": [
+            "promotion|from:ad@store.example",
+            "promotion|from:ad2@store.example"
+           ],
+           "scope": "inbox"
+          },
+          "name": "mail_old_trash"
+         }
+        },
+        "child": "b66-text",
+        "component": "Button",
+        "confirm": {
+         "label": "移到已删除",
+         "text": "推广邮件 332 封，约 43 MB。如未开启处理模式，需先在设置 ·「更多」中开启。邮箱清空「已删除」前可撤销",
+         "title": "将这 2 组的 332 封移到已删除？"
+        },
+        "id": "b66"
+       },
+       {
+        "component": "Text",
+        "id": "b66-text",
+        "text": "全部移到已删除"
+       },
+       {
+        "component": "Text",
+        "id": "t67",
+        "text": "建议移到已删除的全部分组",
+        "variant": "strong"
+       },
+       {
+        "component": "Text",
+        "id": "t68",
+        "text": "2 组，共 332 封",
+        "variant": "caption"
+       },
+       {
+        "children": [
+         "t67",
+         "t68"
+        ],
+        "component": "Column",
+        "id": "c69"
+       },
+       {
+        "children": [
+         "b66"
+        ],
+        "component": "Row",
+        "id": "r70"
+       },
+       {
+        "children": [
+         "c69",
+         "r70"
+        ],
+        "component": "Row",
+        "id": "r71",
+        "justify": "spaceBetween"
+       },
+       {
+        "action": {
+         "event": {
+          "context": {
+           "account": "me@company.example",
+           "on": false,
+           "scope": "inbox"
+          },
+          "name": "mail_old_judge"
+         }
+        },
+        "child": "b72-text",
+        "component": "Button",
+        "id": "b72",
+        "variant": "borderless"
+       },
+       {
+        "component": "Text",
+        "id": "b72-text",
+        "text": "暂停"
+       },
+       {
+        "component": "Text",
+        "id": "t73",
+        "text": "已分析 1180 / 1211 封旧邮件（me@company.example）",
+        "variant": "strong"
+       },
+       {
+        "component": "Text",
+        "id": "t74",
+        "text": "本机模型分析中",
+        "variant": "caption"
+       },
+       {
+        "children": [
+         "t73",
+         "t74"
+        ],
+        "component": "Column",
+        "id": "c75"
+       },
+       {
+        "children": [
+         "b72"
+        ],
+        "component": "Row",
+        "id": "r76"
+       },
+       {
+        "children": [
+         "c75",
+         "r76"
+        ],
+        "component": "Row",
+        "id": "r77",
+        "justify": "spaceBetween"
+       },
+       {
+        "action": {
+         "event": {
+          "context": {
+           "args": {
+            "account": "me@company.example",
+            "scope": "inbox"
+           },
+           "page": "old"
+          },
+          "name": "agent.open_page"
+         }
+        },
+        "child": "b78-text",
+        "component": "Button",
+        "id": "b78"
+       },
+       {
+        "component": "Text",
+        "id": "b78-text",
+        "text": "全部旧邮件"
+       },
+       {
+        "component": "Text",
+        "id": "t79",
+        "text": "全部分组，含已归档的旧邮件"
+       },
+       {
+        "children": [
+         "t79"
+        ],
+        "component": "Column",
+        "id": "c80"
+       },
+       {
+        "children": [
+         "b78"
+        ],
+        "component": "Row",
+        "id": "r81"
+       },
+       {
+        "children": [
+         "c80",
+         "r81"
+        ],
+        "component": "Row",
+        "id": "r82",
+        "justify": "spaceBetween",
+        "open": "b78"
+       },
+       {
+        "children": [
+         "r51",
+         "r58",
+         "r65",
+         "r71",
+         "r77",
+         "r82"
+        ],
+        "component": "List",
+        "id": "l83"
+       }
+      ],
+      "surfaceId": "luoke-mail/page/clean"
+     },
+     "version": "v0.9"
+    },
+    {
+     "updateDataModel": {
+      "path": "/",
+      "surfaceId": "luoke-mail/page/clean",
+      "value": {
+       "choices": {
+        "account": [
+         "all"
+        ]
+       }
+      }
+     },
+     "version": "v0.9"
+    }
+   ]
+  },
+  "digest": {
+   "messages": [
+    {
+     "createSurface": {
+      "catalogId": "ai.luoke/a2ui/agent/1",
+      "surfaceId": "luoke-mail/page/digest"
+     },
+     "version": "v0.9"
+    },
+    {
+     "updateComponents": {
+      "components": [
+       {
+        "children": [
+         "k2",
+         "k4",
+         "l32",
+         "l38"
+        ],
+        "component": "Column",
+        "id": "root"
+       },
+       {
+        "action": {
+         "event": {
+          "context": {
+           "args": {
+            "account": {
+             "path": "/choices/account/0"
+            },
+            "range": "today"
+           },
+           "page": "digest"
+          },
+          "name": "agent.open_page"
+         }
+        },
+        "child": "b1-text",
+        "component": "Button",
+        "id": "b1"
+       },
+       {
+        "component": "Text",
+        "id": "b1-text",
+        "text": "切换邮箱"
+       },
+       {
+        "component": "ChoicePicker",
+        "id": "k2",
+        "options": [
+         {
+          "label": "全部邮箱",
+          "value": "all"
+         },
+         {
+          "label": "工作",
+          "tooltip": "me@company.example",
+          "value": "me@company.example"
+         },
+         {
+          "label": "个人",
+          "tooltip": "me@mail.example",
+          "value": "me@mail.example"
+         }
+        ],
+        "placement": "header",
+        "submit": "b1",
+        "value": {
+         "path": "/choices/account"
+        }
+       },
+       {
+        "action": {
+         "event": {
+          "context": {
+           "args": {
+            "range": {
+             "path": "/choices/range/0"
+            }
+           },
+           "page": "digest"
+          },
+          "name": "agent.open_page"
+         }
+        },
+        "child": "b3-text",
+        "component": "Button",
+        "id": "b3"
+       },
+       {
+        "component": "Text",
+        "id": "b3-text",
+        "text": "切换时间段"
+       },
+       {
+        "component": "ChoicePicker",
+        "id": "k4",
+        "options": [
+         {
+          "label": "今天",
+          "value": "today"
+         },
+         {
+          "label": "本周",
+          "value": "week"
+         },
+         {
+          "label": "收藏 2",
+          "value": "saved"
+         },
+         {
+          "label": "已读 5",
+          "value": "archived"
+         }
+        ],
+        "submit": "b3",
+        "value": {
+         "path": "/choices/range"
+        }
+       },
+       {
+        "action": {
+         "event": {
+          "context": {
+           "account": "me@company.example",
+           "id": 77,
+           "value": "useful"
+          },
+          "name": "mail_digest_feedback"
+         }
+        },
+        "child": "b5-row",
+        "component": "Button",
+        "id": "b5",
+        "variant": "borderless"
+       },
+       {
+        "component": "Icon",
+        "id": "b5-icon",
+        "name": "star"
+       },
+       {
+        "component": "Text",
+        "id": "b5-text",
+        "text": "收藏并增加此类"
+       },
+       {
+        "children": [
+         "b5-icon",
+         "b5-text"
+        ],
+        "component": "Row",
+        "id": "b5-row"
+       },
+       {
+        "action": {
+         "event": {
+          "context": {
+           "account": "me@company.example",
+           "id": 77,
+           "value": "dismissed"
+          },
+          "name": "mail_digest_feedback"
+         }
+        },
+        "child": "b6-row",
+        "component": "Button",
+        "id": "b6",
+        "variant": "borderless"
+       },
+       {
+        "component": "Icon",
+        "id": "b6-icon",
+        "name": "thumbs-down"
+       },
+       {
+        "component": "Text",
+        "id": "b6-text",
+        "text": "减少此类"
+       },
+       {
+        "children": [
+         "b6-icon",
+         "b6-text"
+        ],
+        "component": "Row",
+        "id": "b6-row"
+       },
+       {
+        "action": {
+         "event": {
+          "context": {
+           "account": "me@company.example",
+           "id": 77,
+           "on": true
+          },
+          "name": "mail_digest_archive"
+         }
+        },
+        "child": "b7-row",
+        "component": "Button",
+        "id": "b7",
+        "variant": "borderless"
+       },
+       {
+        "component": "Icon",
+        "id": "b7-icon",
+        "name": "archive"
+       },
+       {
+        "component": "Text",
+        "id": "b7-text",
+        "text": "标为已读并移出精选"
+       },
+       {
+        "children": [
+         "b7-icon",
+         "b7-text"
+        ],
+        "component": "Row",
+        "id": "b7-row"
+       },
+       {
+        "action": {
+         "event": {
+          "context": {
+           "args": {
+            "account": "me@company.example",
+            "id": "77",
+            "range": "today"
+           },
+           "page": "piece"
+          },
+          "name": "agent.open_page"
+         }
+        },
+        "child": "b8-text",
+        "component": "Button",
+        "id": "b8"
+       },
+       {
+        "component": "Text",
+        "id": "b8-text",
+        "text": "打开"
+       },
+       {
+        "component": "Text",
+        "id": "t9",
+        "text": "本机模型剪枝的新做法",
+        "variant": "strong"
+       },
+       {
+        "component": "Text",
+        "id": "t10",
+        "text": "某技术周报 · 讲怎么在不掉准确率的情况下把模型缩小一半",
+        "variant": "caption"
+       },
+       {
+        "children": [
+         "t9",
+         "t10"
+        ],
+        "component": "Column",
+        "id": "c11"
+       },
+       {
+        "children": [
+         "b5",
+         "b6",
+         "b7",
+         "b8"
+        ],
+        "component": "Row",
+        "id": "r12"
+       },
+       {
+        "children": [
+         "c11",
+         "r12"
+        ],
+        "component": "Row",
+        "id": "r13",
+        "justify": "spaceBetween",
+        "open": "b8"
+       },
+       {
+        "action": {
+         "event": {
+          "context": {
+           "account": "me@company.example",
+           "id": 78,
+           "value": "useful"
+          },
+          "name": "mail_digest_feedback"
+         }
+        },
+        "child": "b14-row",
+        "component": "Button",
+        "id": "b14",
+        "variant": "borderless"
+       },
+       {
+        "component": "Icon",
+        "id": "b14-icon",
+        "name": "star"
+       },
+       {
+        "component": "Text",
+        "id": "b14-text",
+        "text": "收藏并增加此类"
+       },
+       {
+        "children": [
+         "b14-icon",
+         "b14-text"
+        ],
+        "component": "Row",
+        "id": "b14-row"
+       },
+       {
+        "action": {
+         "event": {
+          "context": {
+           "account": "me@company.example",
+           "id": 78,
+           "value": "dismissed"
+          },
+          "name": "mail_digest_feedback"
+         }
+        },
+        "child": "b15-row",
+        "component": "Button",
+        "id": "b15",
+        "variant": "borderless"
+       },
+       {
+        "component": "Icon",
+        "id": "b15-icon",
+        "name": "thumbs-down"
+       },
+       {
+        "component": "Text",
+        "id": "b15-text",
+        "text": "减少此类"
+       },
+       {
+        "children": [
+         "b15-icon",
+         "b15-text"
+        ],
+        "component": "Row",
+        "id": "b15-row"
+       },
+       {
+        "action": {
+         "event": {
+          "context": {
+           "account": "me@company.example",
+           "id": 78,
+           "on": true
+          },
+          "name": "mail_digest_archive"
+         }
+        },
+        "child": "b16-row",
+        "component": "Button",
+        "id": "b16",
+        "variant": "borderless"
+       },
+       {
+        "component": "Icon",
+        "id": "b16-icon",
+        "name": "archive"
+       },
+       {
+        "component": "Text",
+        "id": "b16-text",
+        "text": "标为已读并移出精选"
+       },
+       {
+        "children": [
+         "b16-icon",
+         "b16-text"
+        ],
+        "component": "Row",
+        "id": "b16-row"
+       },
+       {
+        "action": {
+         "event": {
+          "context": {
+           "args": {
+            "account": "me@company.example",
+            "id": "78",
+            "range": "today"
+           },
+           "page": "piece"
+          },
+          "name": "agent.open_page"
+         }
+        },
+        "child": "b17-text",
+        "component": "Button",
+        "id": "b17"
+       },
+       {
+        "component": "Text",
+        "id": "b17-text",
+        "text": "打开"
+       },
+       {
+        "component": "Text",
+        "id": "t18",
+        "text": "macOS 新版里的输入法接口变化",
+        "variant": "strong"
+       },
+       {
+        "component": "Text",
+        "id": "t19",
+        "text": "某开发者通讯 · 两处会影响第三方输入法的改动",
+        "variant": "caption"
+       },
+       {
+        "children": [
+         "t18",
+         "t19"
+        ],
+        "component": "Column",
+        "id": "c20"
+       },
+       {
+        "children": [
+         "b14",
+         "b15",
+         "b16",
+         "b17"
+        ],
+        "component": "Row",
+        "id": "r21"
+       },
+       {
+        "children": [
+         "c20",
+         "r21"
+        ],
+        "component": "Row",
+        "id": "r22",
+        "justify": "spaceBetween",
+        "open": "b17"
+       },
+       {
+        "action": {
+         "event": {
+          "context": {
+           "account": "me@mail.example",
+           "id": 79,
+           "value": "useful"
+          },
+          "name": "mail_digest_feedback"
+         }
+        },
+        "child": "b23-row",
+        "component": "Button",
+        "id": "b23",
+        "variant": "borderless"
+       },
+       {
+        "component": "Icon",
+        "id": "b23-icon",
+        "name": "star"
+       },
+       {
+        "component": "Text",
+        "id": "b23-text",
+        "text": "收藏并增加此类"
+       },
+       {
+        "children": [
+         "b23-icon",
+         "b23-text"
+        ],
+        "component": "Row",
+        "id": "b23-row"
+       },
+       {
+        "action": {
+         "event": {
+          "context": {
+           "account": "me@mail.example",
+           "id": 79,
+           "value": "dismissed"
+          },
+          "name": "mail_digest_feedback"
+         }
+        },
+        "child": "b24-row",
+        "component": "Button",
+        "id": "b24",
+        "variant": "borderless"
+       },
+       {
+        "component": "Icon",
+        "id": "b24-icon",
+        "name": "thumbs-down"
+       },
+       {
+        "component": "Text",
+        "id": "b24-text",
+        "text": "减少此类"
+       },
+       {
+        "children": [
+         "b24-icon",
+         "b24-text"
+        ],
+        "component": "Row",
+        "id": "b24-row"
+       },
+       {
+        "action": {
+         "event": {
+          "context": {
+           "account": "me@mail.example",
+           "id": 79,
+           "on": true
+          },
+          "name": "mail_digest_archive"
+         }
+        },
+        "child": "b25-row",
+        "component": "Button",
+        "id": "b25",
+        "variant": "borderless"
+       },
+       {
+        "component": "Icon",
+        "id": "b25-icon",
+        "name": "archive"
+       },
+       {
+        "component": "Text",
+        "id": "b25-text",
+        "text": "标为已读并移出精选"
+       },
+       {
+        "children": [
+         "b25-icon",
+         "b25-text"
+        ],
+        "component": "Row",
+        "id": "b25-row"
+       },
+       {
+        "action": {
+         "event": {
+          "context": {
+           "args": {
+            "account": "me@mail.example",
+            "id": "79",
+            "range": "today"
+           },
+           "page": "piece"
+          },
+          "name": "agent.open_page"
+         }
+        },
+        "child": "b26-text",
+        "component": "Button",
+        "id": "b26"
+       },
+       {
+        "component": "Text",
+        "id": "b26-text",
+        "text": "打开"
+       },
+       {
+        "component": "Text",
+        "id": "t27",
+        "text": "一家小团队怎么做用户访谈",
+        "variant": "strong"
+       },
+       {
+        "component": "Text",
+        "id": "t28",
+        "text": "某产品周报 · 五个问题的访谈提纲",
+        "variant": "caption"
+       },
+       {
+        "children": [
+         "t27",
+         "t28"
+        ],
+        "component": "Column",
+        "id": "c29"
+       },
+       {
+        "children": [
+         "b23",
+         "b24",
+         "b25",
+         "b26"
+        ],
+        "component": "Row",
+        "id": "r30"
+       },
+       {
+        "children": [
+         "c29",
+         "r30"
+        ],
+        "component": "Row",
+        "id": "r31",
+        "justify": "spaceBetween",
+        "open": "b26"
+       },
+       {
+        "children": [
+         "r13",
+         "r22",
+         "r31"
+        ],
+        "component": "List",
+        "id": "l32"
+       },
+       {
+        "action": {
+         "event": {
+          "context": {
+           "page": "sources"
+          },
+          "name": "agent.open_page"
+         }
+        },
+        "child": "b33-text",
+        "component": "Button",
+        "id": "b33"
+       },
+       {
+        "component": "Text",
+        "id": "b33-text",
+        "text": "精选来源"
+       },
+       {
+        "component": "Text",
+        "id": "t34",
+        "text": "精选来源：2 个发件人"
+       },
+       {
+        "children": [
+         "t34"
+        ],
+        "component": "Column",
+        "id": "c35"
+       },
+       {
+        "children": [
+         "b33"
+        ],
+        "component": "Row",
+        "id": "r36"
+       },
+       {
+        "children": [
+         "c35",
+         "r36"
+        ],
+        "component": "Row",
+        "id": "r37",
+        "justify": "spaceBetween",
+        "open": "b33"
+       },
+       {
+        "children": [
+         "r37"
+        ],
+        "component": "List",
+        "id": "l38"
+       }
+      ],
+      "surfaceId": "luoke-mail/page/digest"
+     },
+     "version": "v0.9"
+    },
+    {
+     "updateDataModel": {
+      "path": "/",
+      "surfaceId": "luoke-mail/page/digest",
+      "value": {
+       "choices": {
+        "account": [
+         "all"
+        ],
+        "range": [
+         "today"
+        ]
+       }
+      }
+     },
+     "version": "v0.9"
+    }
+   ]
+  },
+  "done": {
+   "messages": [
+    {
+     "createSurface": {
+      "catalogId": "ai.luoke/a2ui/agent/1",
+      "surfaceId": "luoke-mail/page/done"
+     },
+     "version": "v0.9"
+    },
+    {
+     "updateComponents": {
+      "components": [
+       {
+        "children": [
+         "t1",
+         "t2",
+         "l9",
+         "r11"
+        ],
+        "component": "Column",
+        "id": "root"
+       },
+       {
+        "component": "Text",
+        "id": "t1",
+        "text": "已归档 9 封通知",
+        "variant": "h4"
+       },
+       {
+        "component": "Text",
+        "id": "t2",
+        "text": "今天 08:40",
+        "variant": "caption"
+       },
+       {
+        "action": {
+         "event": {
+          "context": {
+           "args": {
+            "account": "me@company.example",
+            "id": "5001"
+           },
+           "page": "mail"
+          },
+          "name": "agent.open_page"
+         }
+        },
+        "child": "b3-text",
+        "component": "Button",
+        "id": "b3"
+       },
+       {
+        "component": "Text",
+        "id": "b3-text",
+        "text": "打开邮件"
+       },
+       {
+        "component": "Text",
+        "id": "t4",
+        "text": "您的包裹已签收",
+        "variant": "strong"
+       },
+       {
+        "component": "Text",
+        "id": "t5",
+        "text": "某快递 · 今天 08:30",
+        "variant": "caption"
+       },
+       {
+        "children": [
+         "t4",
+         "t5"
+        ],
+        "component": "Column",
+        "id": "c6"
+       },
+       {
+        "children": [
+         "b3"
+        ],
+        "component": "Row",
+        "id": "r7"
+       },
+       {
+        "children": [
+         "c6",
+         "r7"
+        ],
+        "component": "Row",
+        "id": "r8",
+        "justify": "spaceBetween",
+        "open": "b3"
+       },
+       {
+        "children": [
+         "r8"
+        ],
+        "component": "List",
+        "id": "l9"
+       },
+       {
+        "action": {
+         "event": {
+          "context": {
+           "account": "me@company.example",
+           "log_id": 812
+          },
+          "name": "mail_undo_step"
+         }
+        },
+        "child": "b10-row",
+        "component": "Button",
+        "id": "b10"
+       },
+       {
+        "component": "Icon",
+        "id": "b10-icon",
+        "name": "undo-2"
+       },
+       {
+        "component": "Text",
+        "id": "b10-text",
+        "text": "撤销此次处理"
+       },
+       {
+        "children": [
+         "b10-icon",
+         "b10-text"
+        ],
+        "component": "Row",
+        "id": "b10-row"
+       },
+       {
+        "children": [
+         "b10"
+        ],
+        "component": "Row",
+        "id": "r11"
+       }
+      ],
+      "surfaceId": "luoke-mail/page/done"
+     },
+     "version": "v0.9"
+    }
+   ]
+  },
+  "inbox": {
+   "messages": [
+    {
+     "createSurface": {
+      "catalogId": "ai.luoke/a2ui/agent/1",
+      "surfaceId": "luoke-mail/page/inbox"
+     },
+     "version": "v0.9"
+    },
+    {
+     "updateComponents": {
+      "components": [
+       {
+        "children": [
+         "k2",
+         "r6",
+         "l40"
+        ],
+        "component": "Column",
+        "id": "root"
+       },
+       {
+        "action": {
+         "event": {
+          "context": {
+           "args": {
+            "account": {
+             "path": "/choices/account/0"
+            },
+            "list": "reply"
+           },
+           "page": "inbox"
+          },
+          "name": "agent.open_page"
+         }
+        },
+        "child": "b1-text",
+        "component": "Button",
+        "id": "b1"
+       },
+       {
+        "component": "Text",
+        "id": "b1-text",
+        "text": "切换邮箱"
+       },
+       {
+        "component": "ChoicePicker",
+        "id": "k2",
+        "options": [
+         {
+          "label": "全部邮箱",
+          "value": "all"
+         },
+         {
+          "label": "工作",
+          "tooltip": "me@company.example",
+          "value": "me@company.example"
+         },
+         {
+          "label": "个人",
+          "tooltip": "me@mail.example",
+          "value": "me@mail.example"
+         }
+        ],
+        "placement": "header",
+        "submit": "b1",
+        "value": {
+         "path": "/choices/account"
+        }
+       },
+       {
+        "action": {
+         "event": {
+          "context": {
+           "args": {
+            "list": {
+             "path": "/choices/list/0"
+            }
+           },
+           "page": "inbox"
+          },
+          "name": "agent.open_page"
+         }
+        },
+        "child": "b3-text",
+        "component": "Button",
+        "id": "b3"
+       },
+       {
+        "component": "Text",
+        "id": "b3-text",
+        "text": "切换分组"
+       },
+       {
+        "action": {
+         "event": {
+          "context": {
+           "account": "all"
+          },
+          "name": "mail_sync"
+         }
+        },
+        "child": "b4-row",
+        "component": "Button",
+        "id": "b4",
+        "variant": "borderless"
+       },
+       {
+        "component": "Icon",
+        "id": "b4-icon",
+        "name": "refresh-cw"
+       },
+       {
+        "component": "Text",
+        "id": "b4-text",
+        "text": "同步新邮件"
+       },
+       {
+        "children": [
+         "b4-icon",
+         "b4-text"
+        ],
+        "component": "Row",
+        "id": "b4-row"
+       },
+       {
+        "component": "ChoicePicker",
+        "id": "k5",
+        "options": [
+         {
+          "label": "待回复 3",
+          "value": "reply"
+         },
+         {
+          "label": "待处理 5",
+          "value": "needs"
+         },
+         {
+          "label": "已归档待处理 1",
+          "value": "archived"
+         },
+         {
+          "label": "全部",
+          "value": "all"
+         }
+        ],
+        "submit": "b3",
+        "value": {
+         "path": "/choices/list"
+        }
+       },
+       {
+        "children": [
+         "k5",
+         "b4"
+        ],
+        "component": "Row",
+        "id": "r6",
+        "justify": "spaceBetween"
+       },
+       {
+        "action": {
+         "event": {
+          "context": {
+           "account": "me@company.example",
+           "id": 4019
+          },
+          "name": "mail_draft"
+         }
+        },
+        "child": "b7-row",
+        "component": "Button",
+        "id": "b7",
+        "variant": "primary"
+       },
+       {
+        "component": "Icon",
+        "id": "b7-icon",
+        "name": "reply"
+       },
+       {
+        "component": "Text",
+        "id": "b7-text",
+        "text": "回复"
+       },
+       {
+        "children": [
+         "b7-icon",
+         "b7-text"
+        ],
+        "component": "Row",
+        "id": "b7-row"
+       },
+       {
+        "action": {
+         "event": {
+          "context": {
+           "account": "me@company.example",
+           "ids": [
+            4019
+           ],
+           "op": "archive"
+          },
+          "name": "mail_act"
+         }
+        },
+        "child": "b8-row",
+        "component": "Button",
+        "id": "b8",
+        "variant": "borderless"
+       },
+       {
+        "component": "Icon",
+        "id": "b8-icon",
+        "name": "archive"
+       },
+       {
+        "component": "Text",
+        "id": "b8-text",
+        "text": "归档"
+       },
+       {
+        "children": [
+         "b8-icon",
+         "b8-text"
+        ],
+        "component": "Row",
+        "id": "b8-row"
+       },
+       {
+        "action": {
+         "event": {
+          "context": {
+           "args": {
+            "account": "me@company.example",
+            "id": "4019"
+           },
+           "page": "mail"
+          },
+          "name": "agent.open_page"
+         }
+        },
+        "child": "b9-text",
+        "component": "Button",
+        "id": "b9"
+       },
+       {
+        "component": "Text",
+        "id": "b9-text",
+        "text": "打开邮件"
+       },
+       {
+        "component": "Text",
+        "id": "t11",
+        "text": "合作方 A",
+        "variant": "strong"
+       },
+       {
+        "component": "Text",
+        "id": "t10",
+        "maxLines": 1,
+        "text": "下周评审的时间"
+       },
+       {
+        "component": "Text",
+        "id": "t12",
+        "text": "11-12",
+        "variant": "caption"
+       },
+       {
+        "children": [
+         "t11",
+         "t10",
+         "t12"
+        ],
+        "component": "Row",
+        "id": "r13"
+       },
+       {
+        "component": "Text",
+        "id": "t14",
+        "maxLines": 1,
+        "text": "问你周三还是周四下午方便",
+        "variant": "caption"
+       },
+       {
+        "children": [
+         "r13",
+         "t14"
+        ],
+        "component": "Column",
+        "id": "c15"
+       },
+       {
+        "children": [
+         "b7",
+         "b8",
+         "b9"
+        ],
+        "component": "Row",
+        "id": "r16"
+       },
+       {
+        "children": [
+         "c15",
+         "r16"
+        ],
+        "component": "Row",
+        "id": "r17",
+        "justify": "spaceBetween",
+        "open": "b9"
+       },
+       {
+        "action": {
+         "event": {
+          "context": {
+           "account": "me@company.example",
+           "id": 4020
+          },
+          "name": "mail_draft"
+         }
+        },
+        "child": "b18-row",
+        "component": "Button",
+        "id": "b18",
+        "variant": "primary"
+       },
+       {
+        "component": "Icon",
+        "id": "b18-icon",
+        "name": "reply"
+       },
+       {
+        "component": "Text",
+        "id": "b18-text",
+        "text": "回复"
+       },
+       {
+        "children": [
+         "b18-icon",
+         "b18-text"
+        ],
+        "component": "Row",
+        "id": "b18-row"
+       },
+       {
+        "action": {
+         "event": {
+          "context": {
+           "account": "me@company.example",
+           "ids": [
+            4020
+           ],
+           "op": "archive"
+          },
+          "name": "mail_act"
+         }
+        },
+        "child": "b19-row",
+        "component": "Button",
+        "id": "b19",
+        "variant": "borderless"
+       },
+       {
+        "component": "Icon",
+        "id": "b19-icon",
+        "name": "archive"
+       },
+       {
+        "component": "Text",
+        "id": "b19-text",
+        "text": "归档"
+       },
+       {
+        "children": [
+         "b19-icon",
+         "b19-text"
+        ],
+        "component": "Row",
+        "id": "b19-row"
+       },
+       {
+        "action": {
+         "event": {
+          "context": {
+           "args": {
+            "account": "me@company.example",
+            "id": "4020"
+           },
+           "page": "mail"
+          },
+          "name": "agent.open_page"
+         }
+        },
+        "child": "b20-text",
+        "component": "Button",
+        "id": "b20"
+       },
+       {
+        "component": "Text",
+        "id": "b20-text",
+        "text": "打开邮件"
+       },
+       {
+        "component": "Text",
+        "id": "t22",
+        "text": "同事 B",
+        "variant": "strong"
+       },
+       {
+        "component": "Text",
+        "id": "t21",
+        "maxLines": 1,
+        "text": "报销单缺一张发票"
+       },
+       {
+        "component": "Text",
+        "id": "t23",
+        "text": "11-12",
+        "variant": "caption"
+       },
+       {
+        "children": [
+         "t22",
+         "t21",
+         "t23"
+        ],
+        "component": "Row",
+        "id": "r24"
+       },
+       {
+        "component": "Text",
+        "id": "t25",
+        "maxLines": 1,
+        "text": "请你补 10 月的打车发票",
+        "variant": "caption"
+       },
+       {
+        "children": [
+         "r24",
+         "t25"
+        ],
+        "component": "Column",
+        "id": "c26"
+       },
+       {
+        "children": [
+         "b18",
+         "b19",
+         "b20"
+        ],
+        "component": "Row",
+        "id": "r27"
+       },
+       {
+        "children": [
+         "c26",
+         "r27"
+        ],
+        "component": "Row",
+        "id": "r28",
+        "justify": "spaceBetween",
+        "open": "b20"
+       },
+       {
+        "action": {
+         "event": {
+          "context": {
+           "account": "me@mail.example",
+           "id": 4022
+          },
+          "name": "mail_draft"
+         }
+        },
+        "child": "b29-row",
+        "component": "Button",
+        "id": "b29",
+        "variant": "primary"
+       },
+       {
+        "component": "Icon",
+        "id": "b29-icon",
+        "name": "reply"
+       },
+       {
+        "component": "Text",
+        "id": "b29-text",
+        "text": "回复"
+       },
+       {
+        "children": [
+         "b29-icon",
+         "b29-text"
+        ],
+        "component": "Row",
+        "id": "b29-row"
+       },
+       {
+        "action": {
+         "event": {
+          "context": {
+           "account": "me@mail.example",
+           "ids": [
+            4022
+           ],
+           "op": "archive"
+          },
+          "name": "mail_act"
+         }
+        },
+        "child": "b30-row",
+        "component": "Button",
+        "id": "b30",
+        "variant": "borderless"
+       },
+       {
+        "component": "Icon",
+        "id": "b30-icon",
+        "name": "archive"
+       },
+       {
+        "component": "Text",
+        "id": "b30-text",
+        "text": "归档"
+       },
+       {
+        "children": [
+         "b30-icon",
+         "b30-text"
+        ],
+        "component": "Row",
+        "id": "b30-row"
+       },
+       {
+        "action": {
+         "event": {
+          "context": {
+           "args": {
+            "account": "me@mail.example",
+            "id": "4022"
+           },
+           "page": "mail"
+          },
+          "name": "agent.open_page"
+         }
+        },
+        "child": "b31-text",
+        "component": "Button",
+        "id": "b31"
+       },
+       {
+        "component": "Text",
+        "id": "b31-text",
+        "text": "打开邮件"
+       },
+       {
+        "component": "Text",
+        "id": "t33",
+        "text": "某平台客服",
+        "variant": "strong"
+       },
+       {
+        "component": "Text",
+        "id": "t32",
+        "maxLines": 1,
+        "text": "工单已更新"
+       },
+       {
+        "component": "Text",
+        "id": "t34",
+        "text": "11-11",
+        "variant": "caption"
+       },
+       {
+        "children": [
+         "t33",
+         "t32",
+         "t34"
+        ],
+        "component": "Row",
+        "id": "r35"
+       },
+       {
+        "component": "Text",
+        "id": "t36",
+        "maxLines": 1,
+        "text": "对方请你确认问题是否解决",
+        "variant": "caption"
+       },
+       {
+        "children": [
+         "r35",
+         "t36"
+        ],
+        "component": "Column",
+        "id": "c37"
+       },
+       {
+        "children": [
+         "b29",
+         "b30",
+         "b31"
+        ],
+        "component": "Row",
+        "id": "r38"
+       },
+       {
+        "children": [
+         "c37",
+         "r38"
+        ],
+        "component": "Row",
+        "id": "r39",
+        "justify": "spaceBetween",
+        "open": "b31"
+       },
+       {
+        "children": [
+         "r17",
+         "r28",
+         "r39"
+        ],
+        "component": "List",
+        "id": "l40"
+       }
+      ],
+      "surfaceId": "luoke-mail/page/inbox"
+     },
+     "version": "v0.9"
+    },
+    {
+     "updateDataModel": {
+      "path": "/",
+      "surfaceId": "luoke-mail/page/inbox",
+      "value": {
+       "choices": {
+        "account": [
+         "all"
+        ],
+        "list": [
+         "reply"
+        ]
+       }
+      }
+     },
+     "version": "v0.9"
+    }
+   ]
+  },
+  "job": {
+   "messages": [
+    {
+     "createSurface": {
+      "catalogId": "ai.luoke/a2ui/agent/1",
+      "surfaceId": "luoke-mail/page/job"
+     },
+     "version": "v0.9"
+    },
+    {
+     "updateComponents": {
+      "components": [
+       {
+        "children": [
+         "t1",
+         "t2",
+         "t3",
+         "t4",
+         "t9",
+         "l10"
+        ],
+        "component": "Column",
+        "id": "root"
+       },
+       {
+        "component": "Text",
+        "id": "t1",
+        "text": "预览 Gmail 过滤器",
+        "variant": "h4"
+       },
+       {
+        "component": "Text",
+        "id": "t2",
+        "text": "此规则在过去一年会匹配 24 封",
+        "variant": "strong"
+       },
+       {
+        "component": "Text",
+        "id": "t3",
+        "text": "本机模型分析了其中 24 封，均适用此处理方式",
+        "variant": "caption"
+       },
+       {
+        "component": "Text",
+        "id": "t4",
+        "text": "例如：「双十一预热」、「会员日」",
+        "variant": "caption"
+       },
+       {
+        "component": "Text",
+        "id": "t5",
+        "text": "发件人域名是 shop.example"
+       },
+       {
+        "component": "Text",
+        "id": "t6",
+        "text": "40 封，有 3 封可能不应一并处理",
+        "variant": "caption"
+       },
+       {
+        "children": [
+         "t5",
+         "t6"
+        ],
+        "component": "Column",
+        "id": "c7"
+       },
+       {
+        "children": [
+         "c7"
+        ],
+        "component": "Row",
+        "id": "r8",
+        "justify": "spaceBetween"
+       },
+       {
+        "component": "Text",
+        "id": "t9",
+        "text": "更宽松的条件",
+        "variant": "caption"
+       },
+       {
+        "children": [
+         "r8"
+        ],
+        "component": "List",
+        "id": "l10"
+       }
+      ],
+      "surfaceId": "luoke-mail/page/job"
+     },
+     "version": "v0.9"
+    }
+   ]
+  },
+  "legacy-settings": {
+   "messages": [
+    {
+     "createSurface": {
+      "catalogId": "ai.luoke/a2ui/agent/1",
+      "surfaceId": "luoke-mail/page/legacy-settings"
+     },
+     "version": "v0.9"
+    },
+    {
+     "updateComponents": {
+      "components": [
+       {
+        "children": [
+         "g5-d1",
+         "g5-t2",
+         "g5-k13",
+         "g5-t14",
+         "g5-r16",
+         "g5-d17",
+         "g5-t18",
+         "g5-r21",
+         "g5-d22",
+         "g5-t23",
+         "g5-t24",
+         "g5-p25",
+         "g5-r27",
+         "g5-c85"
+        ],
+        "component": "Column",
+        "id": "root"
+       },
+       {
+        "component": "Divider",
+        "id": "g5-d1"
+       },
+       {
+        "component": "Text",
+        "id": "g5-t2",
+        "text": "账号",
+        "variant": "h4"
+       },
+       {
+        "component": "Text",
+        "id": "g5-b3-t",
+        "text": "设为螺壳自己的邮箱"
+       },
+       {
+        "action": {
+         "event": {
+          "context": {
+           "button": "g5-b3",
+           "page": "legacy-settings"
+          },
+          "name": "mail_do"
+         }
+        },
+        "child": "g5-b3-t",
+        "component": "Button",
+        "confirm": {
+         "label": "设为螺壳自己的邮箱",
+         "text": "把 me@example.com 设为螺壳自己的邮箱：这个邮箱的邮件分析后会直接处理，该归档的归档，该删的删除；可疑的和要你处理的留在收件箱。每封都列在「今日处理」里，可以撤销；删除的，在邮箱清空「已删除」之前都能撤销。只用于专给螺壳的邮箱，不要设在日常用的邮箱上。",
+         "title": "设为螺壳自己的邮箱？"
+        },
+        "id": "g5-b3",
+        "variant": "borderless"
+       },
+       {
+        "component": "Text",
+        "id": "g5-b4-t",
+        "text": "修改授权码…"
+       },
+       {
+        "action": {
+         "event": {
+          "context": {
+           "button": "g5-b4",
+           "page": "legacy-settings"
+          },
+          "name": "mail_view"
+         }
+        },
+        "child": "g5-b4-t",
+        "component": "Button",
+        "id": "g5-b4",
+        "variant": "borderless"
+       },
+       {
+        "component": "TextField",
+        "id": "g5-f5",
+        "label": "显示名",
+        "submit": "g5-b6",
+        "value": {
+         "path": "/fields/name0"
+        }
+       },
+       {
+        "component": "Text",
+        "id": "g5-b6-t",
+        "text": "保存名字"
+       },
+       {
+        "action": {
+         "event": {
+          "context": {
+           "button": "g5-b6",
+           "fields": {
+            "path": "/fields"
+           },
+           "page": "legacy-settings"
+          },
+          "name": "mail_do"
+         }
+        },
+        "child": "g5-b6-t",
+        "component": "Button",
+        "id": "g5-b6"
+       },
+       {
+        "component": "Text",
+        "id": "g5-t7",
+        "text": "me@example.com",
+        "variant": "h5"
+       },
+       {
+        "component": "Text",
+        "id": "g5-t8",
+        "text": "Gmail · IMAP",
+        "variant": "caption"
+       },
+       {
+        "children": [
+         "g5-f5",
+         "g5-b6"
+        ],
+        "component": "Row",
+        "id": "g5-r9"
+       },
+       {
+        "component": "Text",
+        "id": "g5-b10-t",
+        "text": "移除"
+       },
+       {
+        "action": {
+         "event": {
+          "context": {
+           "button": "g5-b10",
+           "page": "legacy-settings"
+          },
+          "name": "mail_do"
+         }
+        },
+        "child": "g5-b10-t",
+        "component": "Button",
+        "confirm": {
+         "label": "移除",
+         "text": "移除 me@example.com：螺壳不再读这个邮箱，并删掉本机存的授权码，以及它的分析结果、规则、清理和精选记录、操作记录。邮箱里的邮件和关于你的记忆不受影响。可以重新连接，但删掉的记录找不回来。",
+         "title": "移除？"
+        },
+        "id": "g5-b10",
+        "variant": "borderless"
+       },
+       {
+        "children": [
+         "g5-b4",
+         "g5-b3",
+         "g5-b10"
+        ],
+        "component": "Row",
+        "id": "g5-r11"
+       },
+       {
+        "children": [
+         "g5-t7",
+         "g5-t8",
+         "g5-r9",
+         "g5-r11"
+        ],
+        "component": "Column",
+        "id": "g5-c12"
+       },
+       {
+        "child": "g5-c12",
+        "component": "Card",
+        "id": "g5-k13"
+       },
+       {
+        "component": "Text",
+        "id": "g5-t14",
+        "text": "推荐给螺壳一个专用邮箱，把订阅、通知转发过去，由它自动整理。",
+        "variant": "caption"
+       },
+       {
+        "component": "Text",
+        "id": "g5-b15-t",
+        "text": "添加邮箱…"
+       },
+       {
+        "action": {
+         "event": {
+          "context": {
+           "button": "g5-b15",
+           "page": "legacy-settings"
+          },
+          "name": "mail_view"
+         }
+        },
+        "child": "g5-b15-t",
+        "component": "Button",
+        "id": "g5-b15"
+       },
+       {
+        "children": [
+         "g5-b15"
+        ],
+        "component": "Row",
+        "id": "g5-r16"
+       },
+       {
+        "component": "Divider",
+        "id": "g5-d17"
+       },
+       {
+        "component": "Text",
+        "id": "g5-t18",
+        "text": "规则",
+        "variant": "h4"
+       },
+       {
+        "component": "Text",
+        "id": "g5-t19",
+        "text": "还没有规则：告诉螺壳某类邮件以后怎么处理。"
+       },
+       {
+        "component": "Text",
+        "id": "g5-b20-t",
+        "text": "管理规则"
+       },
+       {
+        "action": {
+         "event": {
+          "context": {
+           "page": "rules"
+          },
+          "name": "agent.open_page"
+         }
+        },
+        "child": "g5-b20-t",
+        "component": "Button",
+        "id": "g5-b20"
+       },
+       {
+        "children": [
+         "g5-t19",
+         "g5-b20"
+        ],
+        "component": "Row",
+        "id": "g5-r21"
+       },
+       {
+        "component": "Divider",
+        "id": "g5-d22"
+       },
+       {
+        "component": "Text",
+        "id": "g5-t23",
+        "text": "提醒",
+        "variant": "h4"
+       },
+       {
+        "component": "Text",
+        "id": "g5-t24",
+        "text": "已关闭：开启后定时整理，有要你处理的邮件时发通知。"
+       },
+       {
+        "component": "ChoicePicker",
+        "id": "g5-p25",
+        "label": "整理间隔",
+        "options": [
+         {
+          "label": "每 15 分钟",
+          "value": "15"
+         },
+         {
+          "label": "每 30 分钟",
+          "value": "30"
+         },
+         {
+          "label": "每 1 小时",
+          "value": "60"
+         },
+         {
+          "label": "每 2 小时",
+          "value": "120"
+         }
+        ],
+        "value": {
+         "path": "/choices/every"
+        }
+       },
+       {
+        "component": "Text",
+        "id": "g5-b26-t",
+        "text": "开启"
+       },
+       {
+        "action": {
+         "event": {
+          "context": {
+           "button": "g5-b26",
+           "choices": {
+            "path": "/choices"
+           },
+           "page": "legacy-settings"
+          },
+          "name": "mail_do"
+         }
+        },
+        "child": "g5-b26-t",
+        "component": "Button",
+        "confirm": {
+         "label": "开启",
+         "text": "开启后台自动整理：按选好的间隔同步并分析新邮件；有要回复、加日程或跟进的邮件时通知你，每晚 20:00 发一条「今天处理了 N 封」；标为已读，按你确认过的习惯归档或加标签，都能在「今日处理」里撤销。不会删除邮件、退订或发信。第一次通知时，请在系统提示里选「允许」。",
+         "title": "开启？"
+        },
+        "id": "g5-b26",
+        "variant": "primary"
+       },
+       {
+        "children": [
+         "g5-b26"
+        ],
+        "component": "Row",
+        "id": "g5-r27"
+       },
+       {
+        "component": "Divider",
+        "id": "g5-d28"
+       },
+       {
+        "component": "Text",
+        "id": "g5-t29",
+        "text": "分析",
+        "variant": "h4"
+       },
+       {
+        "component": "Text",
+        "id": "g5-t30",
+        "text": "同步范围：同步和整理只看这个范围内的邮件"
+       },
+       {
+        "component": "TextField",
+        "id": "g5-f31",
+        "label": "最近几天（1–365）",
+        "value": {
+         "path": "/fields/days"
+        }
+       },
+       {
+        "component": "TextField",
+        "id": "g5-f32",
+        "label": "每次最多几封（1–500）",
+        "value": {
+         "path": "/fields/limit"
+        }
+       },
+       {
+        "component": "Text",
+        "id": "g5-b33-t",
+        "text": "保存范围"
+       },
+       {
+        "action": {
+         "event": {
+          "context": {
+           "button": "g5-b33",
+           "fields": {
+            "path": "/fields"
+           },
+           "page": "legacy-settings"
+          },
+          "name": "mail_do"
+         }
+        },
+        "child": "g5-b33-t",
+        "component": "Button",
+        "id": "g5-b33"
+       },
+       {
+        "children": [
+         "g5-b33"
+        ],
+        "component": "Row",
+        "id": "g5-r34"
+       },
+       {
+        "component": "Text",
+        "id": "g5-t35",
+        "text": "回复署名：写在回复草稿的末尾"
+       },
+       {
+        "component": "TextField",
+        "id": "g5-f36",
+        "label": "署名（例如：小周）",
+        "value": {
+         "path": "/fields/signature"
+        }
+       },
+       {
+        "component": "Text",
+        "id": "g5-b37-t",
+        "text": "保存署名"
+       },
+       {
+        "action": {
+         "event": {
+          "context": {
+           "button": "g5-b37",
+           "fields": {
+            "path": "/fields"
+           },
+           "page": "legacy-settings"
+          },
+          "name": "mail_do"
+         }
+        },
+        "child": "g5-b37-t",
+        "component": "Button",
+        "id": "g5-b37"
+       },
+       {
+        "children": [
+         "g5-b37"
+        ],
+        "component": "Row",
+        "id": "g5-r38"
+       },
+       {
+        "component": "Divider",
+        "id": "g5-d39"
+       },
+       {
+        "component": "Text",
+        "id": "g5-t40",
+        "text": "已读",
+        "variant": "h4"
+       },
+       {
+        "component": "Text",
+        "id": "g5-t41",
+        "text": "分析过的邮件标为已读（已开启）"
+       },
+       {
+        "component": "Text",
+        "id": "g5-b42-t",
+        "text": "关闭"
+       },
+       {
+        "action": {
+         "event": {
+          "context": {
+           "button": "g5-b42",
+           "page": "legacy-settings"
+          },
+          "name": "mail_do"
+         }
+        },
+        "child": "g5-b42-t",
+        "component": "Button",
+        "id": "g5-b42"
+       },
+       {
+        "children": [
+         "g5-t41",
+         "g5-b42"
+        ],
+        "component": "Row",
+        "id": "g5-r43"
+       },
+       {
+        "component": "Divider",
+        "id": "g5-d44"
+       },
+       {
+        "component": "Text",
+        "id": "g5-t45",
+        "text": "往来邮件",
+        "variant": "h4"
+       },
+       {
+        "component": "Text",
+        "id": "g5-t46",
+        "text": "提醒在等对方回复的邮件（已开启）"
+       },
+       {
+        "component": "Text",
+        "id": "g5-b47-t",
+        "text": "关闭"
+       },
+       {
+        "action": {
+         "event": {
+          "context": {
+           "button": "g5-b47",
+           "page": "legacy-settings"
+          },
+          "name": "mail_do"
+         }
+        },
+        "child": "g5-b47-t",
+        "component": "Button",
+        "id": "g5-b47"
+       },
+       {
+        "children": [
+         "g5-t46",
+         "g5-b47"
+        ],
+        "component": "Row",
+        "id": "g5-r48"
+       },
+       {
+        "component": "Text",
+        "id": "g5-t49",
+        "text": "会读「已发送」里最近一个月的邮件，只在本机分析。",
+        "variant": "caption"
+       },
+       {
+        "component": "Divider",
+        "id": "g5-d50"
+       },
+       {
+        "component": "Text",
+        "id": "g5-t51",
+        "text": "处理模式",
+        "variant": "h4"
+       },
+       {
+        "component": "Text",
+        "id": "g5-t52",
+        "text": "已开启：批量删除、移到垃圾邮件时，每次都需要你确认。"
+       },
+       {
+        "component": "Text",
+        "id": "g5-b53-t",
+        "text": "关闭"
+       },
+       {
+        "action": {
+         "event": {
+          "context": {
+           "button": "g5-b53",
+           "page": "legacy-settings"
+          },
+          "name": "mail_do"
+         }
+        },
+        "child": "g5-b53-t",
+        "component": "Button",
+        "id": "g5-b53"
+       },
+       {
+        "children": [
+         "g5-t52",
+         "g5-b53"
+        ],
+        "component": "Row",
+        "id": "g5-r54"
+       },
+       {
+        "component": "Divider",
+        "id": "g5-d55"
+       },
+       {
+        "component": "Text",
+        "id": "g5-t56",
+        "text": "本机模型",
+        "variant": "h4"
+       },
+       {
+        "component": "Text",
+        "id": "g5-t57",
+        "text": "test-model · 本机模型服务"
+       },
+       {
+        "component": "Divider",
+        "id": "g5-d58"
+       },
+       {
+        "component": "Text",
+        "id": "g5-t59",
+        "text": "功耗",
+        "variant": "h4"
+       },
+       {
+        "component": "Text",
+        "id": "g5-t60",
+        "text": "全速（当前）",
+        "variant": "h5"
+       },
+       {
+        "component": "Text",
+        "id": "g5-b61-t",
+        "text": "均衡"
+       },
+       {
+        "action": {
+         "event": {
+          "context": {
+           "button": "g5-b61",
+           "page": "legacy-settings"
+          },
+          "name": "mail_do"
+         }
+        },
+        "child": "g5-b61-t",
+        "component": "Button",
+        "id": "g5-b61",
+        "variant": "borderless"
+       },
+       {
+        "component": "Text",
+        "id": "g5-b62-t",
+        "text": "安静"
+       },
+       {
+        "action": {
+         "event": {
+          "context": {
+           "button": "g5-b62",
+           "page": "legacy-settings"
+          },
+          "name": "mail_do"
+         }
+        },
+        "child": "g5-b62-t",
+        "component": "Button",
+        "id": "g5-b62",
+        "variant": "borderless"
+       },
+       {
+        "children": [
+         "g5-t60",
+         "g5-b61",
+         "g5-b62"
+        ],
+        "component": "Row",
+        "id": "g5-r63"
+       },
+       {
+        "component": "Text",
+        "id": "g5-t64",
+        "text": "模型连续运行，速度最快，风扇可能全速转。",
+        "variant": "caption"
+       },
+       {
+        "component": "Divider",
+        "id": "g5-d65"
+       },
+       {
+        "component": "Text",
+        "id": "g5-t66",
+        "text": "记忆",
+        "variant": "h4"
+       },
+       {
+        "component": "Text",
+        "id": "g5-t67",
+        "text": "关于你 0 条 · 关注的话题 0 个",
+        "variant": "caption"
+       },
+       {
+        "component": "Text",
+        "id": "g5-t68",
+        "text": "从邮件中了解你",
+        "variant": "h5"
+       },
+       {
+        "component": "Text",
+        "id": "g5-t69",
+        "text": "已开启，下次空闲时继续",
+        "variant": "caption"
+       },
+       {
+        "component": "Text",
+        "id": "g5-b70-t",
+        "text": "暂停"
+       },
+       {
+        "action": {
+         "event": {
+          "context": {
+           "button": "g5-b70",
+           "page": "legacy-settings"
+          },
+          "name": "mail_do"
+         }
+        },
+        "child": "g5-b70-t",
+        "component": "Button",
+        "id": "g5-b70",
+        "variant": "borderless"
+       },
+       {
+        "children": [
+         "g5-t69",
+         "g5-b70"
+        ],
+        "component": "Row",
+        "id": "g5-r71"
+       },
+       {
+        "component": "Text",
+        "id": "g5-t72",
+        "text": "你的网站和博客",
+        "variant": "h5"
+       },
+       {
+        "component": "Text",
+        "id": "g5-t73",
+        "text": "螺壳会读取这些网站上的文章，用来了解你关注的话题。只读取你填写的网址。",
+        "variant": "caption"
+       },
+       {
+        "component": "TextField",
+        "id": "g5-f74",
+        "label": "网站或博客的网址（例如：https://example.com）",
+        "value": {
+         "path": "/fields/site"
+        }
+       },
+       {
+        "component": "Text",
+        "id": "g5-b75-t",
+        "text": "添加"
+       },
+       {
+        "action": {
+         "event": {
+          "context": {
+           "button": "g5-b75",
+           "fields": {
+            "path": "/fields"
+           },
+           "page": "legacy-settings"
+          },
+          "name": "mail_do"
+         }
+        },
+        "child": "g5-b75-t",
+        "component": "Button",
+        "id": "g5-b75"
+       },
+       {
+        "children": [
+         "g5-b75"
+        ],
+        "component": "Row",
+        "id": "g5-r76"
+       },
+       {
+        "component": "Divider",
+        "id": "g5-d77"
+       },
+       {
+        "component": "Text",
+        "id": "g5-t78",
+        "text": "本机数据",
+        "variant": "h4"
+       },
+       {
+        "component": "Text",
+        "id": "g5-t79",
+        "text": "账号、授权码和分析结果只保存在本机。"
+       },
+       {
+        "component": "Text",
+        "id": "g5-t80",
+        "text": "注意：在此系统上，授权码以明文保存在本机文件中（仅你的账户可读）。",
+        "variant": "caption"
+       },
+       {
+        "component": "CheckBox",
+        "id": "g5-x81",
+        "label": "同时删除邮件助手写进记忆的内容",
+        "value": {
+         "path": "/checks/forget_memory"
+        }
+       },
+       {
+        "component": "Text",
+        "id": "g5-t82",
+        "text": "不勾选，记忆留给其他螺壳工具用。勾选也只删邮件助手自己记下和推测的；你确认过、改过或自己写的会保留。",
+        "variant": "caption"
+       },
+       {
+        "component": "Text",
+        "id": "g5-b83-t",
+        "text": "全部清除"
+       },
+       {
+        "action": {
+         "event": {
+          "context": {
+           "button": "g5-b83",
+           "checks": {
+            "path": "/checks"
+           },
+           "page": "legacy-settings"
+          },
+          "name": "mail_do"
+         }
+        },
+        "child": "g5-b83-t",
+        "component": "Button",
+        "confirm": {
+         "label": "全部清除",
+         "text": "清除本机数据：删除邮箱授权码、模型 API Key、规则、分析结果和操作记录，并关闭后台自动整理。邮箱里的邮件不受影响。勾选了「同时删除邮件助手写进记忆的内容」的，也只删邮件助手自己记下和推测的；你确认过、改过或自己写的会保留。",
+         "title": "全部清除？"
+        },
+        "id": "g5-b83"
+       },
+       {
+        "children": [
+         "g5-b83"
+        ],
+        "component": "Row",
+        "id": "g5-r84"
+       },
+       {
+        "children": [
+         "g5-d28",
+         "g5-t29",
+         "g5-t30",
+         "g5-f31",
+         "g5-f32",
+         "g5-r34",
+         "g5-t35",
+         "g5-f36",
+         "g5-r38",
+         "g5-d39",
+         "g5-t40",
+         "g5-r43",
+         "g5-d44",
+         "g5-t45",
+         "g5-r48",
+         "g5-t49",
+         "g5-d50",
+         "g5-t51",
+         "g5-r54",
+         "g5-d55",
+         "g5-t56",
+         "g5-t57",
+         "g5-d58",
+         "g5-t59",
+         "g5-r63",
+         "g5-t64",
+         "g5-d65",
+         "g5-t66",
+         "g5-t67",
+         "g5-t68",
+         "g5-r71",
+         "g5-t72",
+         "g5-t73",
+         "g5-f74",
+         "g5-r76",
+         "g5-d77",
+         "g5-t78",
+         "g5-t79",
+         "g5-t80",
+         "g5-x81",
+         "g5-t82",
+         "g5-r84"
+        ],
+        "collapsed": "更多设置：同步范围、署名、已读、处理模式、模型、记忆、本机数据",
+        "component": "Column",
+        "id": "g5-c85"
+       }
+      ],
+      "surfaceId": "luoke-mail/page/legacy-settings"
+     },
+     "version": "v0.9"
+    },
+    {
+     "updateDataModel": {
+      "path": "/",
+      "surfaceId": "luoke-mail/page/legacy-settings",
+      "value": {
+       "checks": {
+        "forget_memory": false
+       },
+       "choices": {
+        "every": [
+         "30"
+        ]
+       },
+       "fields": {
+        "days": "30",
+        "limit": "100",
+        "name0": "me",
+        "signature": "",
+        "site": ""
+       }
+      }
+     },
+     "version": "v0.9"
+    }
+   ]
+  },
+  "mail": {
+   "messages": [
+    {
+     "createSurface": {
+      "catalogId": "ai.luoke/a2ui/agent/1",
+      "surfaceId": "luoke-mail/page/mail"
+     },
+     "version": "v0.9"
+    },
+    {
+     "updateComponents": {
+      "components": [
+       {
+        "children": [
+         "t1",
+         "t2",
+         "t5",
+         "t3",
+         "t4",
+         "r7",
+         "t20",
+         "l21",
+         "c26"
+        ],
+        "component": "Column",
+        "id": "root"
+       },
+       {
+        "component": "Text",
+        "id": "t1",
+        "text": "下周评审的时间",
+        "variant": "h4"
+       },
+       {
+        "component": "Text",
+        "id": "t2",
+        "text": "合作方 A · a@partner.example · 昨天 16:20",
+        "variant": "caption"
+       },
+       {
+        "component": "Text",
+        "id": "t3",
+        "text": "问你周三还是周四下午方便。",
+        "variant": "strong"
+       },
+       {
+        "component": "Text",
+        "id": "t4",
+        "text": "你好，下周的评审想约在周三或周四下午，你哪天方便？"
+       },
+       {
+        "component": "Text",
+        "id": "t5",
+        "text": "发给 me@company.example、boss@company.example",
+        "variant": "caption"
+       },
+       {
+        "action": {
+         "event": {
+          "context": {
+           "account": "me@company.example",
+           "ids": [
+            4019
+           ],
+           "op": "archive"
+          },
+          "name": "mail_act"
+         }
+        },
+        "child": "b6-text",
+        "component": "Button",
+        "id": "b6"
+       },
+       {
+        "component": "Text",
+        "id": "b6-text",
+        "text": "归档"
+       },
+       {
+        "children": [
+         "b6"
+        ],
+        "component": "Row",
+        "id": "r7"
+       },
+       {
+        "component": "Text",
+        "id": "t8",
+        "text": "已加入",
+        "variant": "caption"
+       },
+       {
+        "component": "Text",
+        "id": "t9",
+        "text": "去程",
+        "variant": "strong"
+       },
+       {
+        "component": "Text",
+        "id": "t10",
+        "text": "12月20日 08:00",
+        "variant": "caption"
+       },
+       {
+        "children": [
+         "t9",
+         "t10"
+        ],
+        "component": "Column",
+        "id": "c11"
+       },
+       {
+        "children": [
+         "t8"
+        ],
+        "component": "Row",
+        "id": "r12"
+       },
+       {
+        "children": [
+         "c11",
+         "r12"
+        ],
+        "component": "Row",
+        "id": "r13",
+        "justify": "spaceBetween"
+       },
+       {
+        "action": {
+         "event": {
+          "context": {
+           "account": "me@company.example",
+           "id": 4019,
+           "index": 1
+          },
+          "name": "mail_calendar"
+         }
+        },
+        "child": "b14-row",
+        "component": "Button",
+        "id": "b14",
+        "variant": "borderless"
+       },
+       {
+        "component": "Icon",
+        "id": "b14-icon",
+        "name": "calendar-plus"
+       },
+       {
+        "component": "Text",
+        "id": "b14-text",
+        "text": "加入日程"
+       },
+       {
+        "children": [
+         "b14-icon",
+         "b14-text"
+        ],
+        "component": "Row",
+        "id": "b14-row"
+       },
+       {
+        "component": "Text",
+        "id": "t15",
+        "text": "回程",
+        "variant": "strong"
+       },
+       {
+        "component": "Text",
+        "id": "t16",
+        "text": "12月22日 15:30–17:00 · 机场",
+        "variant": "caption"
+       },
+       {
+        "children": [
+         "t15",
+         "t16"
+        ],
+        "component": "Column",
+        "id": "c17"
+       },
+       {
+        "children": [
+         "b14"
+        ],
+        "component": "Row",
+        "id": "r18"
+       },
+       {
+        "children": [
+         "c17",
+         "r18"
+        ],
+        "component": "Row",
+        "id": "r19",
+        "justify": "spaceBetween"
+       },
+       {
+        "component": "Text",
+        "id": "t20",
+        "text": "邮件中的日程 · 2",
+        "variant": "caption"
+       },
+       {
+        "children": [
+         "r13",
+         "r19"
+        ],
+        "component": "List",
+        "id": "l21"
+       },
+       {
+        "action": {
+         "event": {
+          "context": {
+           "account": "me@company.example",
+           "action": {
+            "path": "/choices/change/0"
+           },
+           "ids": [
+            4019
+           ],
+           "remember": {
+            "path": "/choices/remember/0"
+           }
+          },
+          "name": "mail_change"
+         }
+        },
+        "child": "b22-text",
+        "component": "Button",
+        "id": "b22"
+       },
+       {
+        "component": "Text",
+        "id": "b22-text",
+        "text": "更改"
+       },
+       {
+        "component": "ChoicePicker",
+        "id": "k23",
+        "label": "改成",
+        "options": [
+         {
+          "label": "回复",
+          "value": "reply"
+         },
+         {
+          "label": "加入日程",
+          "value": "schedule"
+         },
+         {
+          "label": "加星标",
+          "value": "follow_up"
+         },
+         {
+          "label": "归档",
+          "value": "archive"
+         },
+         {
+          "label": "删除",
+          "value": "ignore"
+         }
+        ],
+        "value": {
+         "path": "/choices/change"
+        }
+       },
+       {
+        "component": "ChoicePicker",
+        "id": "k24",
+        "label": "以后",
+        "options": [
+         {
+          "label": "仅此邮件",
+          "value": "none"
+         },
+         {
+          "label": "此发件人今后同样处理",
+          "value": "sender"
+         },
+         {
+          "label": "此域名今后同样处理",
+          "value": "domain"
+         }
+        ],
+        "value": {
+         "path": "/choices/remember"
+        }
+       },
+       {
+        "children": [
+         "b22"
+        ],
+        "component": "Row",
+        "id": "r25"
+       },
+       {
+        "children": [
+         "k23",
+         "k24",
+         "r25"
+        ],
+        "collapsed": "更改处理方式，可同时保存为规则",
+        "component": "Column",
+        "id": "c26"
+       }
+      ],
+      "surfaceId": "luoke-mail/page/mail"
+     },
+     "version": "v0.9"
+    },
+    {
+     "updateDataModel": {
+      "path": "/",
+      "surfaceId": "luoke-mail/page/mail",
+      "value": {
+       "choices": {
+        "change": [
+         "archive"
+        ],
+        "remember": [
+         "none"
+        ]
+       }
+      }
+     },
+     "version": "v0.9"
+    }
+   ]
+  },
+  "old": {
+   "messages": [
+    {
+     "createSurface": {
+      "catalogId": "ai.luoke/a2ui/agent/1",
+      "surfaceId": "luoke-mail/page/old"
+     },
+     "version": "v0.9"
+    },
+    {
+     "updateComponents": {
+      "components": [
+       {
+        "children": [
+         "k2",
+         "k4",
+         "t5",
+         "l12",
+         "k14",
+         "l38"
+        ],
+        "component": "Column",
+        "id": "root"
+       },
+       {
+        "action": {
+         "event": {
+          "context": {
+           "args": {
+            "account": {
+             "path": "/choices/box/0"
+            },
+            "scope": "inbox"
+           },
+           "page": "old"
+          },
+          "name": "agent.open_page"
+         }
+        },
+        "child": "b1-text",
+        "component": "Button",
+        "id": "b1"
+       },
+       {
+        "component": "Text",
+        "id": "b1-text",
+        "text": "切换邮箱"
+       },
+       {
+        "component": "ChoicePicker",
+        "id": "k2",
+        "options": [
+         {
+          "label": "工作",
+          "tooltip": "me@company.example",
+          "value": "me@company.example"
+         },
+         {
+          "label": "个人",
+          "tooltip": "me@mail.example",
+          "value": "me@mail.example"
+         }
+        ],
+        "placement": "header",
+        "submit": "b1",
+        "value": {
+         "path": "/choices/box"
+        }
+       },
+       {
+        "action": {
+         "event": {
+          "context": {
+           "args": {
+            "account": "me@company.example",
+            "scope": {
+             "path": "/choices/scope/0"
+            }
+           },
+           "page": "old"
+          },
+          "name": "agent.open_page"
+         }
+        },
+        "child": "b3-text",
+        "component": "Button",
+        "id": "b3"
+       },
+       {
+        "component": "Text",
+        "id": "b3-text",
+        "text": "切换范围"
+       },
+       {
+        "component": "ChoicePicker",
+        "id": "k4",
+        "options": [
+         {
+          "label": "收件箱",
+          "value": "inbox"
+         },
+         {
+          "label": "已归档",
+          "value": "archive"
+         }
+        ],
+        "submit": "b3",
+        "value": {
+         "path": "/choices/scope"
+        }
+       },
+       {
+        "component": "Text",
+        "id": "t5",
+        "text": "收件箱中超过 30 天的邮件共 1211 封，占 91 MB，本机模型已分析 1180 封；星标和按标签保留的 37 封不处理",
+        "variant": "caption"
+       },
+       {
+        "action": {
+         "event": {
+          "context": {
+           "account": "me@company.example",
+           "on": false,
+           "scope": "inbox"
+          },
+          "name": "mail_old_judge"
+         }
+        },
+        "child": "b6-text",
+        "component": "Button",
+        "id": "b6",
+        "variant": "borderless"
+       },
+       {
+        "component": "Text",
+        "id": "b6-text",
+        "text": "暂停"
+       },
+       {
+        "component": "Text",
+        "id": "t7",
+        "text": "已分析 1180 / 1211 封旧邮件",
+        "variant": "strong"
+       },
+       {
+        "component": "Text",
+        "id": "t8",
+        "text": "本机模型分析中",
+        "variant": "caption"
+       },
+       {
+        "children": [
+         "t7",
+         "t8"
+        ],
+        "component": "Column",
+        "id": "c9"
+       },
+       {
+        "children": [
+         "b6"
+        ],
+        "component": "Row",
+        "id": "r10"
+       },
+       {
+        "children": [
+         "c9",
+         "r10"
+        ],
+        "component": "Row",
+        "id": "r11",
+        "justify": "spaceBetween"
+       },
+       {
+        "children": [
+         "r11"
+        ],
+        "component": "List",
+        "id": "l12"
+       },
+       {
+        "action": {
+         "event": {
+          "context": {
+           "args": {
+            "account": "me@company.example",
+            "part": {
+             "path": "/choices/part/0"
+            },
+            "scope": "inbox"
+           },
+           "page": "old"
+          },
+          "name": "agent.open_page"
+         }
+        },
+        "child": "b13-text",
+        "component": "Button",
+        "id": "b13"
+       },
+       {
+        "component": "Text",
+        "id": "b13-text",
+        "text": "切换分类"
+       },
+       {
+        "component": "ChoicePicker",
+        "id": "k14",
+        "options": [
+         {
+          "label": "建议 3",
+          "value": "suggested"
+         },
+         {
+          "label": "待确认 1",
+          "value": "unsure"
+         },
+         {
+          "label": "未分析 1",
+          "value": "pending"
+         },
+         {
+          "label": "已保留 1",
+          "value": "kept"
+         }
+        ],
+        "submit": "b13",
+        "value": {
+         "path": "/choices/part"
+        }
+       },
+       {
+        "action": {
+         "event": {
+          "context": {
+           "account": "me@company.example",
+           "key": "notice|from:noreply@post.example",
+           "on": true,
+           "scope": "inbox"
+          },
+          "name": "mail_old_keep"
+         }
+        },
+        "child": "b15-row",
+        "component": "Button",
+        "id": "b15",
+        "variant": "borderless"
+       },
+       {
+        "component": "Icon",
+        "id": "b15-icon",
+        "name": "bell-off"
+       },
+       {
+        "component": "Text",
+        "id": "b15-text",
+        "text": "保留，不再提示"
+       },
+       {
+        "children": [
+         "b15-icon",
+         "b15-text"
+        ],
+        "component": "Row",
+        "id": "b15-row"
+       },
+       {
+        "action": {
+         "event": {
+          "context": {
+           "account": "me@company.example",
+           "count": 41,
+           "keys": [
+            "notice|from:noreply@post.example"
+           ]
+          },
+          "name": "mail_old_archive"
+         }
+        },
+        "child": "b16-text",
+        "component": "Button",
+        "id": "b16",
+        "tooltip": "标为已读、移出收件箱，不会删除；能在处理记录里撤销"
+       },
+       {
+        "component": "Text",
+        "id": "b16-text",
+        "text": "归档"
+       },
+       {
+        "component": "Text",
+        "id": "t17",
+        "text": "半年前的快递和验证码通知",
+        "variant": "strong"
+       },
+       {
+        "component": "Text",
+        "id": "t18",
+        "text": "通知，41 封，5.3 MB，20 封未读，2023 年 1 月起",
+        "variant": "caption"
+       },
+       {
+        "children": [
+         "t17",
+         "t18"
+        ],
+        "component": "Column",
+        "id": "c19"
+       },
+       {
+        "children": [
+         "b15",
+         "b16"
+        ],
+        "component": "Row",
+        "id": "r20"
+       },
+       {
+        "children": [
+         "c19",
+         "r20"
+        ],
+        "component": "Row",
+        "id": "r21",
+        "justify": "spaceBetween"
+       },
+       {
+        "action": {
+         "event": {
+          "context": {
+           "account": "me@company.example",
+           "key": "promotion|from:ad@store.example",
+           "on": true,
+           "scope": "inbox"
+          },
+          "name": "mail_old_keep"
+         }
+        },
+        "child": "b22-row",
+        "component": "Button",
+        "id": "b22",
+        "variant": "borderless"
+       },
+       {
+        "component": "Icon",
+        "id": "b22-icon",
+        "name": "bell-off"
+       },
+       {
+        "component": "Text",
+        "id": "b22-text",
+        "text": "保留，不再提示"
+       },
+       {
+        "children": [
+         "b22-icon",
+         "b22-text"
+        ],
+        "component": "Row",
+        "id": "b22-row"
+       },
+       {
+        "action": {
+         "event": {
+          "context": {
+           "account": "me@company.example",
+           "count": 310,
+           "keys": [
+            "promotion|from:ad@store.example"
+           ],
+           "scope": "inbox"
+          },
+          "name": "mail_old_trash"
+         }
+        },
+        "child": "b23-text",
+        "component": "Button",
+        "confirm": {
+         "label": "移到已删除",
+         "text": "如未开启处理模式，需先在设置 ·「更多」中开启。邮箱清空「已删除」前可撤销",
+         "title": "把「某店」的 310 封移到已删除？"
+        },
+        "id": "b23"
+       },
+       {
+        "component": "Text",
+        "id": "b23-text",
+        "text": "移到已删除"
+       },
+       {
+        "component": "Text",
+        "id": "t24",
+        "text": "某店",
+        "variant": "strong"
+       },
+       {
+        "component": "Text",
+        "id": "t25",
+        "text": "推广邮件，310 封，40 MB，155 封未读，2023 年 1 月起",
+        "variant": "caption"
+       },
+       {
+        "children": [
+         "t24",
+         "t25"
+        ],
+        "component": "Column",
+        "id": "c26"
+       },
+       {
+        "children": [
+         "b22",
+         "b23"
+        ],
+        "component": "Row",
+        "id": "r27"
+       },
+       {
+        "children": [
+         "c26",
+         "r27"
+        ],
+        "component": "Row",
+        "id": "r28",
+        "justify": "spaceBetween"
+       },
+       {
+        "action": {
+         "event": {
+          "context": {
+           "account": "me@company.example",
+           "key": "promotion|from:ad2@store.example",
+           "on": true,
+           "scope": "inbox"
+          },
+          "name": "mail_old_keep"
+         }
+        },
+        "child": "b29-row",
+        "component": "Button",
+        "id": "b29",
+        "variant": "borderless"
+       },
+       {
+        "component": "Icon",
+        "id": "b29-icon",
+        "name": "bell-off"
+       },
+       {
+        "component": "Text",
+        "id": "b29-text",
+        "text": "保留，不再提示"
+       },
+       {
+        "children": [
+         "b29-icon",
+         "b29-text"
+        ],
+        "component": "Row",
+        "id": "b29-row"
+       },
+       {
+        "action": {
+         "event": {
+          "context": {
+           "account": "me@company.example",
+           "count": 22,
+           "keys": [
+            "promotion|from:ad2@store.example"
+           ],
+           "scope": "inbox"
+          },
+          "name": "mail_old_trash"
+         }
+        },
+        "child": "b30-text",
+        "component": "Button",
+        "confirm": {
+         "label": "移到已删除",
+         "text": "如未开启处理模式，需先在设置 ·「更多」中开启。邮箱清空「已删除」前可撤销",
+         "title": "把「另一家店」的 22 封移到已删除？"
+        },
+        "id": "b30"
+       },
+       {
+        "component": "Text",
+        "id": "b30-text",
+        "text": "移到已删除"
+       },
+       {
+        "component": "Text",
+        "id": "t31",
+        "text": "另一家店",
+        "variant": "strong"
+       },
+       {
+        "component": "Text",
+        "id": "t32",
+        "text": "推广邮件，22 封，2.9 MB，11 封未读，2023 年 1 月起",
+        "variant": "caption"
+       },
+       {
+        "children": [
+         "t31",
+         "t32"
+        ],
+        "component": "Column",
+        "id": "c33"
+       },
+       {
+        "children": [
+         "b29",
+         "b30"
+        ],
+        "component": "Row",
+        "id": "r34"
+       },
+       {
+        "children": [
+         "c33",
+         "r34"
+        ],
+        "component": "Row",
+        "id": "r35",
+        "justify": "spaceBetween"
+       },
+       {
+        "action": {
+         "event": {
+          "context": {
+           "account": "me@company.example",
+           "count": 332,
+           "keys": [
+            "promotion|from:ad@store.example",
+            "promotion|from:ad2@store.example"
+           ],
+           "scope": "inbox"
+          },
+          "name": "mail_old_trash"
+         }
+        },
+        "child": "b36-text",
+        "component": "Button",
+        "confirm": {
+         "label": "移到已删除",
+         "text": "推广邮件 332 封，约 43 MB。如未开启处理模式，需先在设置 ·「更多」中开启。邮箱清空「已删除」前可撤销",
+         "title": "把这 2 组的 332 封移到已删除？"
+        },
+        "id": "b36",
+        "variant": "primary"
+       },
+       {
+        "component": "Text",
+        "id": "b36-text",
+        "text": "全部移到已删除（332 封）"
+       },
+       {
+        "children": [
+         "b36"
+        ],
+        "component": "Row",
+        "id": "r37"
+       },
+       {
+        "children": [
+         "r21",
+         "r28",
+         "r35",
+         "r37"
+        ],
+        "component": "List",
+        "id": "l38"
+       }
+      ],
+      "surfaceId": "luoke-mail/page/old"
+     },
+     "version": "v0.9"
+    },
+    {
+     "updateDataModel": {
+      "path": "/",
+      "surfaceId": "luoke-mail/page/old",
+      "value": {
+       "choices": {
+        "box": [
+         "me@company.example"
+        ],
+        "part": [
+         "suggested"
+        ],
+        "scope": [
+         "inbox"
+        ]
+       }
+      }
+     },
+     "version": "v0.9"
+    }
+   ]
+  },
+  "piece": {
+   "messages": [
+    {
+     "createSurface": {
+      "catalogId": "ai.luoke/a2ui/agent/1",
+      "surfaceId": "luoke-mail/page/piece"
+     },
+     "version": "v0.9"
+    },
+    {
+     "updateComponents": {
+      "components": [
+       {
+        "children": [
+         "t1",
+         "t2",
+         "t3",
+         "t4",
+         "r9"
+        ],
+        "component": "Column",
+        "id": "root"
+       },
+       {
+        "component": "Text",
+        "id": "t1",
+        "text": "本机模型剪枝的新做法",
+        "variant": "h4"
+       },
+       {
+        "component": "Text",
+        "id": "t2",
+        "text": "某技术周报 · 11月13日",
+        "variant": "caption"
+       },
+       {
+        "component": "Text",
+        "id": "t3",
+        "text": "讲怎么在不掉准确率的情况下把模型缩小一半。"
+       },
+       {
+        "component": "Text",
+        "id": "t4",
+        "text": "入选理由：你最近在关注本机模型。",
+        "variant": "caption"
+       },
+       {
+        "action": {
+         "event": {
+          "context": {
+           "url": "https://news.example/a"
+          },
+          "name": "agent.open_url"
+         }
+        },
+        "child": "b5-text",
+        "component": "Button",
+        "id": "b5",
+        "variant": "primary"
+       },
+       {
+        "component": "Text",
+        "id": "b5-text",
+        "text": "在浏览器中打开（news.example）"
+       },
+       {
+        "action": {
+         "event": {
+          "context": {
+           "account": "me@company.example",
+           "id": 77,
+           "value": "useful"
+          },
+          "name": "mail_digest_feedback"
+         }
+        },
+        "child": "b6-row",
+        "component": "Button",
+        "id": "b6"
+       },
+       {
+        "component": "Icon",
+        "id": "b6-icon",
+        "name": "star"
+       },
+       {
+        "component": "Text",
+        "id": "b6-text",
+        "text": "收藏"
+       },
+       {
+        "children": [
+         "b6-icon",
+         "b6-text"
+        ],
+        "component": "Row",
+        "id": "b6-row"
+       },
+       {
+        "action": {
+         "event": {
+          "context": {
+           "account": "me@company.example",
+           "id": 77,
+           "value": "dismissed"
+          },
+          "name": "mail_digest_feedback"
+         }
+        },
+        "child": "b7-row",
+        "component": "Button",
+        "id": "b7"
+       },
+       {
+        "component": "Icon",
+        "id": "b7-icon",
+        "name": "thumbs-down"
+       },
+       {
+        "component": "Text",
+        "id": "b7-text",
+        "text": "减少此类"
+       },
+       {
+        "children": [
+         "b7-icon",
+         "b7-text"
+        ],
+        "component": "Row",
+        "id": "b7-row"
+       },
+       {
+        "action": {
+         "event": {
+          "context": {
+           "account": "me@company.example",
+           "id": 77,
+           "on": true
+          },
+          "name": "mail_digest_archive"
+         }
+        },
+        "child": "b8-row",
+        "component": "Button",
+        "id": "b8"
+       },
+       {
+        "component": "Icon",
+        "id": "b8-icon",
+        "name": "archive"
+       },
+       {
+        "component": "Text",
+        "id": "b8-text",
+        "text": "已读"
+       },
+       {
+        "children": [
+         "b8-icon",
+         "b8-text"
+        ],
+        "component": "Row",
+        "id": "b8-row"
+       },
+       {
+        "children": [
+         "b5",
+         "b6",
+         "b7",
+         "b8"
+        ],
+        "component": "Row",
+        "id": "r9"
+       }
+      ],
+      "surfaceId": "luoke-mail/page/piece"
+     },
+     "version": "v0.9"
+    }
+   ]
+  },
+  "rules": {
+   "messages": [
+    {
+     "createSurface": {
+      "catalogId": "ai.luoke/a2ui/agent/1",
+      "surfaceId": "luoke-mail/page/rules"
+     },
+     "version": "v0.9"
+    },
+    {
+     "updateComponents": {
+      "components": [
+       {
+        "children": [
+         "g7-t1",
+         "g7-k8",
+         "g7-t9",
+         "g7-t10",
+         "g7-t11",
+         "g7-t12"
+        ],
+        "component": "Column",
+        "id": "root"
+       },
+       {
+        "component": "Text",
+        "id": "g7-t1",
+        "text": "告诉螺壳某类邮件以后怎么处理。",
+        "variant": "caption"
+       },
+       {
+        "component": "Text",
+        "id": "g7-t2",
+        "text": "添加规则",
+        "variant": "h5"
+       },
+       {
+        "component": "ChoicePicker",
+        "id": "g7-p3",
+        "label": "类型",
+        "options": [
+         {
+          "label": "发件人",
+          "value": "sender"
+         },
+         {
+          "label": "域名",
+          "value": "domain"
+         },
+         {
+          "label": "邮件列表",
+          "value": "list"
+         }
+        ],
+        "value": {
+         "path": "/choices/kind"
+        }
+       },
+       {
+        "component": "TextField",
+        "id": "g7-f4",
+        "label": "内容（例如 news.shop.example）",
+        "value": {
+         "path": "/fields/value"
+        }
+       },
+       {
+        "component": "ChoicePicker",
+        "id": "g7-p5",
+        "label": "处理方式",
+        "options": [
+         {
+          "label": "回复",
+          "value": "reply"
+         },
+         {
+          "label": "加入日程",
+          "value": "schedule"
+         },
+         {
+          "label": "加星标",
+          "value": "follow_up"
+         },
+         {
+          "label": "归档",
+          "value": "archive"
+         },
+         {
+          "label": "删除",
+          "value": "ignore"
+         },
+         {
+          "label": "移到垃圾邮件",
+          "value": "spam"
+         }
+        ],
+        "value": {
+         "path": "/choices/action"
+        }
+       },
+       {
+        "component": "Text",
+        "id": "g7-b6-t",
+        "text": "添加"
+       },
+       {
+        "action": {
+         "event": {
+          "context": {
+           "button": "g7-b6",
+           "choices": {
+            "path": "/choices"
+           },
+           "fields": {
+            "path": "/fields"
+           },
+           "page": "rules"
+          },
+          "name": "mail_do"
+         }
+        },
+        "child": "g7-b6-t",
+        "component": "Button",
+        "id": "g7-b6",
+        "variant": "primary"
+       },
+       {
+        "children": [
+         "g7-t2",
+         "g7-p3",
+         "g7-f4",
+         "g7-p5",
+         "g7-b6"
+        ],
+        "component": "Column",
+        "id": "g7-c7"
+       },
+       {
+        "child": "g7-c7",
+        "component": "Card",
+        "id": "g7-k8"
+       },
+       {
+        "component": "Text",
+        "id": "g7-t9",
+        "text": "规则",
+        "variant": "h5"
+       },
+       {
+        "component": "Text",
+        "id": "g7-t10",
+        "text": "还没有规则。在收件箱中更改建议时可以创建规则，也可以在订阅体检中设置。",
+        "variant": "caption"
+       },
+       {
+        "component": "Text",
+        "id": "g7-t11",
+        "text": "按习惯自动做的",
+        "variant": "h5"
+       },
+       {
+        "component": "Text",
+        "id": "g7-t12",
+        "text": "还没有。你确认过的处理习惯会列在这里。",
+        "variant": "caption"
+       }
+      ],
+      "surfaceId": "luoke-mail/page/rules"
+     },
+     "version": "v0.9"
+    },
+    {
+     "updateDataModel": {
+      "path": "/",
+      "surfaceId": "luoke-mail/page/rules",
+      "value": {
+       "choices": {
+        "action": [
+         "archive"
+        ],
+        "kind": [
+         "sender"
+        ]
+       },
+       "fields": {
+        "value": ""
+       }
+      }
+     },
+     "version": "v0.9"
+    }
+   ]
+  },
+  "sender": {
+   "messages": [
+    {
+     "createSurface": {
+      "catalogId": "ai.luoke/a2ui/agent/1",
+      "surfaceId": "luoke-mail/page/sender"
+     },
+     "version": "v0.9"
+    },
+    {
+     "updateComponents": {
+      "components": [
+       {
+        "children": [
+         "t1",
+         "t2",
+         "t3",
+         "t4",
+         "t6",
+         "r8",
+         "t9",
+         "r13",
+         "r15",
+         "t16",
+         "t17",
+         "r19"
+        ],
+        "component": "Column",
+        "id": "root"
+       },
+       {
+        "component": "Text",
+        "id": "t1",
+        "text": "某论坛",
+        "variant": "h4"
+       },
+       {
+        "component": "Text",
+        "id": "t2",
+        "text": "notice@forum.example · 每周 3 封，均未读 · 3.4 MB",
+        "variant": "caption"
+       },
+       {
+        "component": "Text",
+        "id": "t3",
+        "text": "最近的邮件：「本周热帖」",
+        "variant": "caption"
+       },
+       {
+        "component": "Text",
+        "id": "t4",
+        "text": "建议理由：收信多、阅读少，可退订 · 一般通知",
+        "variant": "caption"
+       },
+       {
+        "action": {
+         "event": {
+          "context": {
+           "account": "me@mail.example",
+           "key": "from:notice@forum.example"
+          },
+          "name": "mail_sender_unsubscribed"
+         }
+        },
+        "child": "b5-text",
+        "component": "Button",
+        "id": "b5"
+       },
+       {
+        "component": "Text",
+        "id": "b5-text",
+        "text": "已完成退订"
+       },
+       {
+        "component": "Text",
+        "id": "t6",
+        "text": "退订需回复邮件至 notice@forum.example，正文填写「TD」",
+        "variant": "caption"
+       },
+       {
+        "action": {
+         "event": {
+          "context": {
+           "account": "me@mail.example",
+           "key": "from:notice@forum.example"
+          },
+          "name": "mail_sender_keep"
+         }
+        },
+        "child": "b7-text",
+        "component": "Button",
+        "id": "b7"
+       },
+       {
+        "component": "Text",
+        "id": "b7-text",
+        "text": "保留，不再提示"
+       },
+       {
+        "children": [
+         "b5",
+         "b7"
+        ],
+        "component": "Row",
+        "id": "r8"
+       },
+       {
+        "component": "Text",
+        "id": "t9",
+        "text": "今后的来信",
+        "variant": "caption"
+       },
+       {
+        "action": {
+         "event": {
+          "context": {
+           "account": "me@mail.example",
+           "action": "archive",
+           "key": "from:notice@forum.example"
+          },
+          "name": "mail_sender_rule"
+         }
+        },
+        "child": "b10-row",
+        "component": "Button",
+        "id": "b10",
+        "variant": "borderless"
+       },
+       {
+        "component": "Icon",
+        "id": "b10-icon",
+        "name": "archive"
+       },
+       {
+        "component": "Text",
+        "id": "b10-text",
+        "text": "今后一律归档"
+       },
+       {
+        "children": [
+         "b10-icon",
+         "b10-text"
+        ],
+        "component": "Row",
+        "id": "b10-row"
+       },
+       {
+        "action": {
+         "event": {
+          "context": {
+           "account": "me@mail.example",
+           "action": "trash",
+           "key": "from:notice@forum.example"
+          },
+          "name": "mail_sender_rule"
+         }
+        },
+        "child": "b11-row",
+        "component": "Button",
+        "id": "b11",
+        "variant": "borderless"
+       },
+       {
+        "component": "Icon",
+        "id": "b11-icon",
+        "name": "trash-2"
+       },
+       {
+        "component": "Text",
+        "id": "b11-text",
+        "text": "今后一律删除"
+       },
+       {
+        "children": [
+         "b11-icon",
+         "b11-text"
+        ],
+        "component": "Row",
+        "id": "b11-row"
+       },
+       {
+        "action": {
+         "event": {
+          "context": {
+           "account": "me@mail.example",
+           "action": "spam",
+           "key": "from:notice@forum.example"
+          },
+          "name": "mail_sender_rule"
+         }
+        },
+        "child": "b12-row",
+        "component": "Button",
+        "id": "b12",
+        "variant": "borderless"
+       },
+       {
+        "component": "Icon",
+        "id": "b12-icon",
+        "name": "shield-alert"
+       },
+       {
+        "component": "Text",
+        "id": "b12-text",
+        "text": "今后一律移到垃圾邮件"
+       },
+       {
+        "children": [
+         "b12-icon",
+         "b12-text"
+        ],
+        "component": "Row",
+        "id": "b12-row"
+       },
+       {
+        "children": [
+         "b10",
+         "b11",
+         "b12"
+        ],
+        "component": "Row",
+        "id": "r13"
+       },
+       {
+        "action": {
+         "event": {
+          "context": {
+           "account": "me@mail.example",
+           "key": "from:notice@forum.example",
+           "name": "某论坛",
+           "on": true
+          },
+          "name": "mail_digest_source"
+         }
+        },
+        "child": "b14-row",
+        "component": "Button",
+        "id": "b14",
+        "variant": "borderless"
+       },
+       {
+        "component": "Icon",
+        "id": "b14-icon",
+        "name": "sparkles"
+       },
+       {
+        "component": "Text",
+        "id": "b14-text",
+        "text": "加入精选来源"
+       },
+       {
+        "children": [
+         "b14-icon",
+         "b14-text"
+        ],
+        "component": "Row",
+        "id": "b14-row"
+       },
+       {
+        "children": [
+         "b14"
+        ],
+        "component": "Row",
+        "id": "r15"
+       },
+       {
+        "component": "Text",
+        "id": "t16",
+        "text": "以往的来信",
+        "variant": "caption"
+       },
+       {
+        "component": "Text",
+        "id": "t17",
+        "text": "邮箱中还有 25 封，3.4 MB；移到「已删除」后，邮箱 30 天后清空",
+        "variant": "caption"
+       },
+       {
+        "action": {
+         "event": {
+          "context": {
+           "account": "me@mail.example",
+           "key": "from:notice@forum.example"
+          },
+          "name": "mail_sender_history"
+         }
+        },
+        "child": "b18-row",
+        "component": "Button",
+        "confirm": {
+         "label": "移到已删除",
+         "text": "如未开启处理模式，需先在设置 ·「更多」中开启。邮箱清空「已删除」前可撤销",
+         "title": "将「某论坛」以往的 25 封邮件移到「已删除」？"
+        },
+        "id": "b18",
+        "variant": "borderless"
+       },
+       {
+        "component": "Icon",
+        "id": "b18-icon",
+        "name": "trash-2"
+       },
+       {
+        "component": "Text",
+        "id": "b18-text",
+        "text": "清理历史邮件"
+       },
+       {
+        "children": [
+         "b18-icon",
+         "b18-text"
+        ],
+        "component": "Row",
+        "id": "b18-row"
+       },
+       {
+        "children": [
+         "b18"
+        ],
+        "component": "Row",
+        "id": "r19"
+       }
+      ],
+      "surfaceId": "luoke-mail/page/sender"
+     },
+     "version": "v0.9"
+    }
+   ]
+  },
+  "settings": {
+   "messages": [
+    {
+     "createSurface": {
+      "catalogId": "ai.luoke/a2ui/agent/1",
+      "surfaceId": "luoke-mail/page/settings"
+     },
+     "version": "v0.9"
+    },
+    {
+     "updateComponents": {
+      "components": [
+       {
+        "children": [
+         "k2",
+         "t21",
+         "c22",
+         "t40",
+         "c41",
+         "t43",
+         "l48",
+         "t51",
+         "c54"
+        ],
+        "component": "Column",
+        "id": "root"
+       },
+       {
+        "action": {
+         "event": {
+          "context": {
+           "args": {
+            "tab": {
+             "path": "/choices/tab/0"
+            }
+           },
+           "page": "settings"
+          },
+          "name": "agent.open_page"
+         }
+        },
+        "child": "b1-text",
+        "component": "Button",
+        "id": "b1"
+       },
+       {
+        "component": "Text",
+        "id": "b1-text",
+        "text": "切换分页"
+       },
+       {
+        "component": "ChoicePicker",
+        "id": "k2",
+        "options": [
+         {
+          "label": "账号",
+          "value": "accounts"
+         },
+         {
+          "label": "规则",
+          "value": "rules"
+         },
+         {
+          "label": "提醒",
+          "value": "remind"
+         },
+         {
+          "label": "更多",
+          "value": "more"
+         }
+        ],
+        "submit": "b1",
+        "value": {
+         "path": "/choices/tab"
+        }
+       },
+       {
+        "action": {
+         "event": {
+          "context": {
+           "args": {
+            "tab": "accounts"
+           },
+           "page": "settings"
+          },
+          "name": "agent.open_page"
+         }
+        },
+        "child": "b3-text",
+        "component": "Button",
+        "id": "b3",
+        "variant": "borderless"
+       },
+       {
+        "component": "Text",
+        "id": "b3-text",
+        "text": "取消"
+       },
+       {
+        "action": {
+         "event": {
+          "context": {
+           "account": "me@company.example",
+           "name": {
+            "path": "/fields/name_0"
+           }
+          },
+          "name": "mail_set_name"
+         }
+        },
+        "child": "b4-text",
+        "component": "Button",
+        "id": "b4"
+       },
+       {
+        "component": "Text",
+        "id": "b4-text",
+        "text": "保存"
+       },
+       {
+        "component": "TextField",
+        "id": "f5",
+        "label": "工作、个人……",
+        "value": {
+         "path": "/fields/name_0"
+        }
+       },
+       {
+        "action": {
+         "event": {
+          "context": {
+           "account": "me@company.example"
+          },
+          "name": "mail_remove"
+         }
+        },
+        "child": "b6-row",
+        "component": "Button",
+        "confirm": {
+         "label": "移除",
+         "text": "将删除此邮箱的授权码，以及邮件助手在这台 Mac 上为其保存的列表、规则、清理、精选和处理记录，无法撤销。邮箱中的邮件和记忆不受影响。",
+         "title": "移除 me@company.example？"
+        },
+        "id": "b6",
+        "variant": "borderless"
+       },
+       {
+        "component": "Icon",
+        "id": "b6-icon",
+        "name": "trash-2"
+       },
+       {
+        "component": "Text",
+        "id": "b6-text",
+        "text": "移除"
+       },
+       {
+        "children": [
+         "b6-icon",
+         "b6-text"
+        ],
+        "component": "Row",
+        "id": "b6-row"
+       },
+       {
+        "action": {
+         "event": {
+          "context": {
+           "args": {
+            "edit": "me@company.example",
+            "tab": "accounts"
+           },
+           "page": "settings"
+          },
+          "name": "agent.open_page"
+         }
+        },
+        "child": "b7-row",
+        "component": "Button",
+        "id": "b7",
+        "variant": "borderless"
+       },
+       {
+        "component": "Icon",
+        "id": "b7-icon",
+        "name": "key"
+       },
+       {
+        "component": "Text",
+        "id": "b7-text",
+        "text": "重新填写授权码"
+       },
+       {
+        "children": [
+         "b7-icon",
+         "b7-text"
+        ],
+        "component": "Row",
+        "id": "b7-row"
+       },
+       {
+        "component": "Text",
+        "id": "t8",
+        "text": "me@company.example",
+        "variant": "strong"
+       },
+       {
+        "component": "Text",
+        "id": "t9",
+        "text": "上次同步 今天 09:12",
+        "variant": "caption"
+       },
+       {
+        "children": [
+         "t8",
+         "t9"
+        ],
+        "component": "Column",
+        "id": "c10"
+       },
+       {
+        "children": [
+         "b7",
+         "b6"
+        ],
+        "component": "Row",
+        "id": "r11"
+       },
+       {
+        "children": [
+         "c10",
+         "r11"
+        ],
+        "component": "Row",
+        "id": "r12",
+        "justify": "spaceBetween"
+       },
+       {
+        "component": "Text",
+        "id": "t13",
+        "text": "显示为",
+        "variant": "caption"
+       },
+       {
+        "children": [
+         "t13",
+         "f5",
+         "b4"
+        ],
+        "component": "Row",
+        "id": "r14"
+       },
+       {
+        "action": {
+         "event": {
+          "context": {
+           "account": "me@company.example",
+           "own": true
+          },
+          "name": "mail_set_own"
+         }
+        },
+        "child": "b15-text",
+        "component": "Button",
+        "confirm": {
+         "label": "确认设置",
+         "text": "此邮箱中分拣后建议删除的将直接删除、建议归档的直接归档，不再确认；可疑邮件和待处理邮件保留在收件箱，每封都记入处理记录，可撤销。请勿用于日常邮箱；可随时关闭",
+         "title": "将 me@company.example 设为螺壳自己的邮箱？"
+        },
+        "id": "b15",
+        "on": false,
+        "variant": "switch"
+       },
+       {
+        "component": "Text",
+        "id": "b15-text",
+        "text": "设为螺壳自己的邮箱"
+       },
+       {
+        "component": "Text",
+        "id": "t16",
+        "text": "设为螺壳自己的邮箱"
+       },
+       {
+        "component": "Text",
+        "id": "t17",
+        "text": "分拣后直接归档、删除，不再确认；仅用于螺壳专用的邮箱",
+        "variant": "caption"
+       },
+       {
+        "children": [
+         "t16",
+         "t17"
+        ],
+        "component": "Column",
+        "id": "c18"
+       },
+       {
+        "children": [
+         "b15"
+        ],
+        "component": "Row",
+        "id": "r19"
+       },
+       {
+        "children": [
+         "c18",
+         "r19"
+        ],
+        "component": "Row",
+        "id": "r20",
+        "justify": "spaceBetween"
+       },
+       {
+        "component": "Text",
+        "id": "t21",
+        "text": "工作",
+        "variant": "caption"
+       },
+       {
+        "children": [
+         "r12",
+         "r14",
+         "r20"
+        ],
+        "component": "Column",
+        "id": "c22"
+       },
+       {
+        "action": {
+         "event": {
+          "context": {
+           "account": "me@mail.example",
+           "name": {
+            "path": "/fields/name_2"
+           }
+          },
+          "name": "mail_set_name"
+         }
+        },
+        "child": "b23-text",
+        "component": "Button",
+        "id": "b23"
+       },
+       {
+        "component": "Text",
+        "id": "b23-text",
+        "text": "保存"
+       },
+       {
+        "component": "TextField",
+        "id": "f24",
+        "label": "工作、个人……",
+        "value": {
+         "path": "/fields/name_2"
+        }
+       },
+       {
+        "action": {
+         "event": {
+          "context": {
+           "account": "me@mail.example"
+          },
+          "name": "mail_remove"
+         }
+        },
+        "child": "b25-row",
+        "component": "Button",
+        "confirm": {
+         "label": "移除",
+         "text": "将删除此邮箱的授权码，以及邮件助手在这台 Mac 上为其保存的列表、规则、清理、精选和处理记录，无法撤销。邮箱中的邮件和记忆不受影响。",
+         "title": "移除 me@mail.example？"
+        },
+        "id": "b25",
+        "variant": "borderless"
+       },
+       {
+        "component": "Icon",
+        "id": "b25-icon",
+        "name": "trash-2"
+       },
+       {
+        "component": "Text",
+        "id": "b25-text",
+        "text": "移除"
+       },
+       {
+        "children": [
+         "b25-icon",
+         "b25-text"
+        ],
+        "component": "Row",
+        "id": "b25-row"
+       },
+       {
+        "action": {
+         "event": {
+          "context": {
+           "args": {
+            "edit": "me@mail.example",
+            "tab": "accounts"
+           },
+           "page": "settings"
+          },
+          "name": "agent.open_page"
+         }
+        },
+        "child": "b26-row",
+        "component": "Button",
+        "id": "b26",
+        "variant": "borderless"
+       },
+       {
+        "component": "Icon",
+        "id": "b26-icon",
+        "name": "key"
+       },
+       {
+        "component": "Text",
+        "id": "b26-text",
+        "text": "重新填写授权码"
+       },
+       {
+        "children": [
+         "b26-icon",
+         "b26-text"
+        ],
+        "component": "Row",
+        "id": "b26-row"
+       },
+       {
+        "component": "Text",
+        "id": "t27",
+        "text": "me@mail.example",
+        "variant": "strong"
+       },
+       {
+        "component": "Text",
+        "id": "t28",
+        "text": "上次同步 今天 09:10",
+        "variant": "caption"
+       },
+       {
+        "children": [
+         "t27",
+         "t28"
+        ],
+        "component": "Column",
+        "id": "c29"
+       },
+       {
+        "children": [
+         "b26",
+         "b25"
+        ],
+        "component": "Row",
+        "id": "r30"
+       },
+       {
+        "children": [
+         "c29",
+         "r30"
+        ],
+        "component": "Row",
+        "id": "r31",
+        "justify": "spaceBetween"
+       },
+       {
+        "component": "Text",
+        "id": "t32",
+        "text": "显示为",
+        "variant": "caption"
+       },
+       {
+        "children": [
+         "t32",
+         "f24",
+         "b23"
+        ],
+        "component": "Row",
+        "id": "r33"
+       },
+       {
+        "action": {
+         "event": {
+          "context": {
+           "account": "me@mail.example",
+           "own": true
+          },
+          "name": "mail_set_own"
+         }
+        },
+        "child": "b34-text",
+        "component": "Button",
+        "confirm": {
+         "label": "确认设置",
+         "text": "此邮箱中分拣后建议删除的将直接删除、建议归档的直接归档，不再确认；可疑邮件和待处理邮件保留在收件箱，每封都记入处理记录，可撤销。请勿用于日常邮箱；可随时关闭",
+         "title": "将 me@mail.example 设为螺壳自己的邮箱？"
+        },
+        "id": "b34",
+        "on": false,
+        "variant": "switch"
+       },
+       {
+        "component": "Text",
+        "id": "b34-text",
+        "text": "设为螺壳自己的邮箱"
+       },
+       {
+        "component": "Text",
+        "id": "t35",
+        "text": "设为螺壳自己的邮箱"
+       },
+       {
+        "component": "Text",
+        "id": "t36",
+        "text": "分拣后直接归档、删除，不再确认；仅用于螺壳专用的邮箱",
+        "variant": "caption"
+       },
+       {
+        "children": [
+         "t35",
+         "t36"
+        ],
+        "component": "Column",
+        "id": "c37"
+       },
+       {
+        "children": [
+         "b34"
+        ],
+        "component": "Row",
+        "id": "r38"
+       },
+       {
+        "children": [
+         "c37",
+         "r38"
+        ],
+        "component": "Row",
+        "id": "r39",
+        "justify": "spaceBetween"
+       },
+       {
+        "component": "Text",
+        "id": "t40",
+        "text": "个人",
+        "variant": "caption"
+       },
+       {
+        "children": [
+         "r31",
+         "r33",
+         "r39"
+        ],
+        "component": "Column",
+        "id": "c41"
+       },
+       {
+        "action": {
+         "event": {
+          "context": {
+           "args": {
+            "add": "new",
+            "tab": "accounts"
+           },
+           "page": "settings"
+          },
+          "name": "agent.open_page"
+         }
+        },
+        "child": "b42-text",
+        "component": "Button",
+        "id": "b42"
+       },
+       {
+        "component": "Text",
+        "id": "b42-text",
+        "text": "添加邮箱"
+       },
+       {
+        "component": "Text",
+        "id": "t43",
+        "text": "添加",
+        "variant": "caption"
+       },
+       {
+        "component": "Text",
+        "id": "t44",
+        "text": "添加邮箱"
+       },
+       {
+        "children": [
+         "t44"
+        ],
+        "component": "Column",
+        "id": "c45"
+       },
+       {
+        "children": [
+         "b42"
+        ],
+        "component": "Row",
+        "id": "r46"
+       },
+       {
+        "children": [
+         "c45",
+         "r46"
+        ],
+        "component": "Row",
+        "id": "r47",
+        "justify": "spaceBetween",
+        "open": "b42"
+       },
+       {
+        "children": [
+         "r47"
+        ],
+        "component": "List",
+        "id": "l48"
+       },
+       {
+        "component": "CheckBox",
+        "id": "x49",
+        "label": "同时清除邮件助手写入记忆的内容",
+        "value": {
+         "path": "/fields/forget_memory"
+        }
+       },
+       {
+        "action": {
+         "event": {
+          "context": {
+           "memory": {
+            "path": "/fields/forget_memory"
+           }
+          },
+          "name": "mail_forget"
+         }
+        },
+        "child": "b50-text",
+        "component": "Button",
+        "confirm": {
+         "label": "全部清除",
+         "text": "将从这台 Mac 上删除所有邮箱的授权码、邮件列表、设置、规则和处理记录，无法撤销。邮箱中的邮件不受影响；勾选「同时清除邮件助手写入记忆的内容」时，一并删除邮件助手写入的记忆。",
+         "title": "清除邮件助手的全部数据？"
+        },
+        "id": "b50",
+        "variant": "borderless"
+       },
+       {
+        "component": "Text",
+        "id": "b50-text",
+        "text": "全部清除"
+       },
+       {
+        "component": "Text",
+        "id": "t51",
+        "text": "全部清除",
+        "variant": "caption"
+       },
+       {
+        "children": [
+         "x49",
+         "b50"
+        ],
+        "component": "Row",
+        "id": "r52",
+        "justify": "spaceBetween"
+       },
+       {
+        "component": "Text",
+        "id": "t53",
+        "text": "已确认、已修改或手动添加的记忆不会删除",
+        "variant": "caption"
+       },
+       {
+        "children": [
+         "r52",
+         "t53"
+        ],
+        "component": "Column",
+        "id": "c54"
+       }
+      ],
+      "surfaceId": "luoke-mail/page/settings"
+     },
+     "version": "v0.9"
+    },
+    {
+     "updateDataModel": {
+      "path": "/",
+      "surfaceId": "luoke-mail/page/settings",
+      "value": {
+       "choices": {
+        "tab": [
+         "accounts"
+        ]
+       },
+       "fields": {
+        "forget_memory": false,
+        "name_0": "工作",
+        "name_2": "个人"
+       }
+      }
+     },
+     "version": "v0.9"
+    }
+   ]
+  },
+  "sources": {
+   "messages": [
+    {
+     "createSurface": {
+      "catalogId": "ai.luoke/a2ui/agent/1",
+      "surfaceId": "luoke-mail/page/sources"
+     },
+     "version": "v0.9"
+    },
+    {
+     "updateComponents": {
+      "components": [
+       {
+        "children": [
+         "l13"
+        ],
+        "component": "Column",
+        "id": "root"
+       },
+       {
+        "action": {
+         "event": {
+          "context": {
+           "account": "me@company.example",
+           "key": "list:weekly.news.example",
+           "on": false
+          },
+          "name": "mail_digest_source"
+         }
+        },
+        "child": "b1-row",
+        "component": "Button",
+        "id": "b1",
+        "variant": "borderless"
+       },
+       {
+        "component": "Icon",
+        "id": "b1-icon",
+        "name": "x"
+       },
+       {
+        "component": "Text",
+        "id": "b1-text",
+        "text": "移出精选"
+       },
+       {
+        "children": [
+         "b1-icon",
+         "b1-text"
+        ],
+        "component": "Row",
+        "id": "b1-row"
+       },
+       {
+        "component": "Text",
+        "id": "t2",
+        "text": "周刊",
+        "variant": "strong"
+       },
+       {
+        "component": "Text",
+        "id": "t3",
+        "text": "手动添加，10月2日添加",
+        "variant": "caption"
+       },
+       {
+        "children": [
+         "t2",
+         "t3"
+        ],
+        "component": "Column",
+        "id": "c4"
+       },
+       {
+        "children": [
+         "b1"
+        ],
+        "component": "Row",
+        "id": "r5"
+       },
+       {
+        "children": [
+         "c4",
+         "r5"
+        ],
+        "component": "Row",
+        "id": "r6",
+        "justify": "spaceBetween"
+       },
+       {
+        "action": {
+         "event": {
+          "context": {
+           "account": "me@company.example",
+           "key": "from:news@ai.example",
+           "on": false
+          },
+          "name": "mail_digest_source"
+         }
+        },
+        "child": "b7-row",
+        "component": "Button",
+        "id": "b7",
+        "variant": "borderless"
+       },
+       {
+        "component": "Icon",
+        "id": "b7-icon",
+        "name": "x"
+       },
+       {
+        "component": "Text",
+        "id": "b7-text",
+        "text": "移出精选"
+       },
+       {
+        "children": [
+         "b7-icon",
+         "b7-text"
+        ],
+        "component": "Row",
+        "id": "b7-row"
+       },
+       {
+        "component": "Text",
+        "id": "t8",
+        "text": "AI 简讯",
+        "variant": "strong"
+       },
+       {
+        "component": "Text",
+        "id": "t9",
+        "text": "来自订阅体检，11月2日添加",
+        "variant": "caption"
+       },
+       {
+        "children": [
+         "t8",
+         "t9"
+        ],
+        "component": "Column",
+        "id": "c10"
+       },
+       {
+        "children": [
+         "b7"
+        ],
+        "component": "Row",
+        "id": "r11"
+       },
+       {
+        "children": [
+         "c10",
+         "r11"
+        ],
+        "component": "Row",
+        "id": "r12",
+        "justify": "spaceBetween"
+       },
+       {
+        "children": [
+         "r6",
+         "r12"
+        ],
+        "component": "List",
+        "id": "l13"
+       }
+      ],
+      "surfaceId": "luoke-mail/page/sources"
+     },
+     "version": "v0.9"
+    }
+   ]
+  },
+  "subs": {
+   "messages": [
+    {
+     "createSurface": {
+      "catalogId": "ai.luoke/a2ui/agent/1",
+      "surfaceId": "luoke-mail/page/subs"
+     },
+     "version": "v0.9"
+    },
+    {
+     "updateComponents": {
+      "components": [
+       {
+        "children": [
+         "k2",
+         "k4",
+         "l12",
+         "r15"
+        ],
+        "component": "Column",
+        "id": "root"
+       },
+       {
+        "action": {
+         "event": {
+          "context": {
+           "args": {
+            "account": {
+             "path": "/choices/account/0"
+            },
+            "group": "handled"
+           },
+           "page": "subs"
+          },
+          "name": "agent.open_page"
+         }
+        },
+        "child": "b1-text",
+        "component": "Button",
+        "id": "b1"
+       },
+       {
+        "component": "Text",
+        "id": "b1-text",
+        "text": "切换邮箱"
+       },
+       {
+        "component": "ChoicePicker",
+        "id": "k2",
+        "options": [
+         {
+          "label": "全部邮箱",
+          "value": "all"
+         },
+         {
+          "label": "工作",
+          "tooltip": "me@company.example",
+          "value": "me@company.example"
+         },
+         {
+          "label": "个人",
+          "tooltip": "me@mail.example",
+          "value": "me@mail.example"
+         }
+        ],
+        "placement": "header",
+        "submit": "b1",
+        "value": {
+         "path": "/choices/account"
+        }
+       },
+       {
+        "action": {
+         "event": {
+          "context": {
+           "args": {
+            "group": {
+             "path": "/choices/group/0"
+            }
+           },
+           "page": "subs"
+          },
+          "name": "agent.open_page"
+         }
+        },
+        "child": "b3-text",
+        "component": "Button",
+        "id": "b3"
+       },
+       {
+        "component": "Text",
+        "id": "b3-text",
+        "text": "切换分组"
+       },
+       {
+        "component": "ChoicePicker",
+        "id": "k4",
+        "options": [
+         {
+          "label": "建议退订 3",
+          "value": "unsubscribe"
+         },
+         {
+          "label": "无法退订 1",
+          "value": "no_way"
+         },
+         {
+          "label": "可疑 1",
+          "value": "suspicious"
+         },
+         {
+          "label": "已处理 1",
+          "value": "handled"
+         },
+         {
+          "label": "建议保留 1",
+          "value": "keep"
+         }
+        ],
+        "submit": "b3",
+        "value": {
+         "path": "/choices/group"
+        }
+       },
+       {
+        "action": {
+         "event": {
+          "context": {
+           "account": "me@company.example",
+           "key": "list:old.news.example"
+          },
+          "name": "mail_sender_reset"
+         }
+        },
+        "child": "b5-row",
+        "component": "Button",
+        "id": "b5",
+        "variant": "borderless"
+       },
+       {
+        "component": "Icon",
+        "id": "b5-icon",
+        "name": "undo-2"
+       },
+       {
+        "component": "Text",
+        "id": "b5-text",
+        "text": "撤销"
+       },
+       {
+        "children": [
+         "b5-icon",
+         "b5-text"
+        ],
+        "component": "Row",
+        "id": "b5-row"
+       },
+       {
+        "action": {
+         "event": {
+          "context": {
+           "args": {
+            "account": "me@company.example",
+            "key": "list:old.news.example"
+           },
+           "page": "sender"
+          },
+          "name": "agent.open_page"
+         }
+        },
+        "child": "b6-text",
+        "component": "Button",
+        "id": "b6"
+       },
+       {
+        "component": "Text",
+        "id": "b6-text",
+        "text": "这个发件人"
+       },
+       {
+        "component": "Text",
+        "id": "t7",
+        "text": "某旧周刊",
+        "variant": "strong"
+       },
+       {
+        "component": "Text",
+        "id": "t8",
+        "text": "已退订（11月8日），退订后仍在发送",
+        "variant": "caption"
+       },
+       {
+        "children": [
+         "t7",
+         "t8"
+        ],
+        "component": "Column",
+        "id": "c9"
+       },
+       {
+        "children": [
+         "b5",
+         "b6"
+        ],
+        "component": "Row",
+        "id": "r10"
+       },
+       {
+        "children": [
+         "c9",
+         "r10"
+        ],
+        "component": "Row",
+        "id": "r11",
+        "justify": "spaceBetween",
+        "open": "b6"
+       },
+       {
+        "children": [
+         "r11"
+        ],
+        "component": "List",
+        "id": "l12"
+       },
+       {
+        "action": {
+         "event": {
+          "context": {
+           "account": "all"
+          },
+          "name": "mail_subscriptions_check"
+         }
+        },
+        "child": "b13-row",
+        "component": "Button",
+        "id": "b13",
+        "variant": "borderless"
+       },
+       {
+        "component": "Icon",
+        "id": "b13-icon",
+        "name": "refresh-cw"
+       },
+       {
+        "component": "Text",
+        "id": "b13-text",
+        "text": "重新检查"
+       },
+       {
+        "children": [
+         "b13-icon",
+         "b13-text"
+        ],
+        "component": "Row",
+        "id": "b13-row"
+       },
+       {
+        "component": "Text",
+        "id": "t14",
+        "text": "上次检查：11月10日，最近 60 天 1800 封，建议退订的约占 2.7 MB",
+        "variant": "caption"
+       },
+       {
+        "children": [
+         "t14",
+         "b13"
+        ],
+        "component": "Row",
+        "id": "r15",
+        "justify": "spaceBetween"
+       }
+      ],
+      "surfaceId": "luoke-mail/page/subs"
+     },
+     "version": "v0.9"
+    },
+    {
+     "updateDataModel": {
+      "path": "/",
+      "surfaceId": "luoke-mail/page/subs",
+      "value": {
+       "choices": {
+        "account": [
+         "all"
+        ],
+        "group": [
+         "handled"
+        ]
+       }
+      }
+     },
+     "version": "v0.9"
+    }
+   ]
+  },
+  "sweep": {
+   "messages": [
+    {
+     "createSurface": {
+      "catalogId": "ai.luoke/a2ui/agent/1",
+      "surfaceId": "luoke-mail/page/sweep"
+     },
+     "version": "v0.9"
+    },
+    {
+     "updateComponents": {
+      "components": [
+       {
+        "children": [
+         "g9-r3",
+         "g9-t4",
+         "g9-r7"
+        ],
+        "component": "Column",
+        "id": "root"
+       },
+       {
+        "component": "Text",
+        "id": "g9-t1",
+        "text": "收件箱中的旧邮件",
+        "variant": "h5"
+       },
+       {
+        "component": "Text",
+        "id": "g9-b2-t",
+        "text": "已归档的邮件"
+       },
+       {
+        "action": {
+         "event": {
+          "context": {
+           "button": "g9-b2",
+           "page": "sweep"
+          },
+          "name": "mail_view"
+         }
+        },
+        "child": "g9-b2-t",
+        "component": "Button",
+        "id": "g9-b2",
+        "variant": "borderless"
+       },
+       {
+        "children": [
+         "g9-t1",
+         "g9-b2"
+        ],
+        "component": "Row",
+        "id": "g9-r3"
+       },
+       {
+        "component": "Text",
+        "id": "g9-t4",
+        "text": "收件箱里超过 30 天的邮件。加了星标或「收藏」「重要」这类标签的不会动。",
+        "variant": "caption"
+       },
+       {
+        "component": "Text",
+        "id": "g9-t5",
+        "text": "还没有读取这些邮件。",
+        "variant": "caption"
+       },
+       {
+        "component": "Text",
+        "id": "g9-b6-t",
+        "text": "读取邮件"
+       },
+       {
+        "action": {
+         "event": {
+          "context": {
+           "button": "g9-b6",
+           "page": "sweep"
+          },
+          "name": "mail_do"
+         }
+        },
+        "child": "g9-b6-t",
+        "component": "Button",
+        "id": "g9-b6",
+        "variant": "primary"
+       },
+       {
+        "children": [
+         "g9-t5",
+         "g9-b6"
+        ],
+        "component": "Row",
+        "id": "g9-r7"
+       }
+      ],
+      "surfaceId": "luoke-mail/page/sweep"
+     },
+     "version": "v0.9"
+    }
+   ]
+  },
+  "today": {
+   "messages": [
+    {
+     "createSurface": {
+      "catalogId": "ai.luoke/a2ui/agent/1",
+      "surfaceId": "luoke-mail/page/today"
+     },
+     "version": "v0.9"
+    },
+    {
+     "updateComponents": {
+      "components": [
+       {
+        "children": [
+         "k2",
+         "t3",
+         "l23",
+         "t24",
+         "c34",
+         "l40"
+        ],
+        "component": "Column",
+        "id": "root"
+       },
+       {
+        "action": {
+         "event": {
+          "context": {
+           "args": {
+            "account": {
+             "path": "/choices/account/0"
+            }
+           },
+           "page": "today"
+          },
+          "name": "agent.open_page"
+         }
+        },
+        "child": "b1-text",
+        "component": "Button",
+        "id": "b1"
+       },
+       {
+        "component": "Text",
+        "id": "b1-text",
+        "text": "切换邮箱"
+       },
+       {
+        "component": "ChoicePicker",
+        "id": "k2",
+        "options": [
+         {
+          "label": "全部邮箱",
+          "value": "all"
+         },
+         {
+          "label": "工作",
+          "tooltip": "me@company.example",
+          "value": "me@company.example"
+         },
+         {
+          "label": "个人",
+          "tooltip": "me@mail.example",
+          "value": "me@mail.example"
+         }
+        ],
+        "placement": "header",
+        "submit": "b1",
+        "value": {
+         "path": "/choices/account"
+        }
+       },
+       {
+        "component": "Text",
+        "id": "t3",
+        "text": "今日已处理",
+        "variant": "caption"
+       },
+       {
+        "action": {
+         "event": {
+          "context": {
+           "account": "me@company.example",
+           "log_id": 812
+          },
+          "name": "mail_undo_step"
+         }
+        },
+        "child": "b4-row",
+        "component": "Button",
+        "id": "b4",
+        "variant": "borderless"
+       },
+       {
+        "component": "Icon",
+        "id": "b4-icon",
+        "name": "undo-2"
+       },
+       {
+        "component": "Text",
+        "id": "b4-text",
+        "text": "撤销"
+       },
+       {
+        "children": [
+         "b4-icon",
+         "b4-text"
+        ],
+        "component": "Row",
+        "id": "b4-row"
+       },
+       {
+        "action": {
+         "event": {
+          "context": {
+           "args": {
+            "account": "me@company.example",
+            "id": "5001"
+           },
+           "page": "mail"
+          },
+          "name": "agent.open_page"
+         }
+        },
+        "child": "b5-text",
+        "component": "Button",
+        "id": "b5"
+       },
+       {
+        "component": "Text",
+        "id": "b5-text",
+        "text": "打开邮件"
+       },
+       {
+        "component": "Text",
+        "id": "t6",
+        "text": "已归档 9 封通知",
+        "variant": "strong"
+       },
+       {
+        "component": "Text",
+        "id": "t7",
+        "text": "某快递：您的包裹已签收",
+        "variant": "caption"
+       },
+       {
+        "children": [
+         "t6",
+         "t7"
+        ],
+        "component": "Column",
+        "id": "c8"
+       },
+       {
+        "children": [
+         "b4",
+         "b5"
+        ],
+        "component": "Row",
+        "id": "r9"
+       },
+       {
+        "children": [
+         "c8",
+         "r9"
+        ],
+        "component": "Row",
+        "id": "r10",
+        "justify": "spaceBetween",
+        "open": "b5"
+       },
+       {
+        "action": {
+         "event": {
+          "context": {
+           "account": "me@company.example",
+           "log_id": 813
+          },
+          "name": "mail_undo_step"
+         }
+        },
+        "child": "b11-row",
+        "component": "Button",
+        "id": "b11",
+        "variant": "borderless"
+       },
+       {
+        "component": "Icon",
+        "id": "b11-icon",
+        "name": "undo-2"
+       },
+       {
+        "component": "Text",
+        "id": "b11-text",
+        "text": "撤销"
+       },
+       {
+        "children": [
+         "b11-icon",
+         "b11-text"
+        ],
+        "component": "Row",
+        "id": "b11-row"
+       },
+       {
+        "component": "Text",
+        "id": "t12",
+        "text": "已为 2 封账单加星标",
+        "variant": "strong"
+       },
+       {
+        "component": "Text",
+        "id": "t13",
+        "text": "某银行、某运营商",
+        "variant": "caption"
+       },
+       {
+        "children": [
+         "t12",
+         "t13"
+        ],
+        "component": "Column",
+        "id": "c14"
+       },
+       {
+        "children": [
+         "b11"
+        ],
+        "component": "Row",
+        "id": "r15"
+       },
+       {
+        "children": [
+         "c14",
+         "r15"
+        ],
+        "component": "Row",
+        "id": "r16",
+        "justify": "spaceBetween"
+       },
+       {
+        "action": {
+         "event": {
+          "context": {
+           "args": {
+            "range": "today"
+           },
+           "page": "digest"
+          },
+          "name": "agent.open_page"
+         }
+        },
+        "child": "b17-text",
+        "component": "Button",
+        "id": "b17"
+       },
+       {
+        "component": "Text",
+        "id": "b17-text",
+        "text": "查看精选"
+       },
+       {
+        "component": "Text",
+        "id": "t18",
+        "text": "精选 3 篇",
+        "variant": "strong"
+       },
+       {
+        "component": "Text",
+        "id": "t19",
+        "text": "位于「精选」",
+        "variant": "caption"
+       },
+       {
+        "children": [
+         "t18",
+         "t19"
+        ],
+        "component": "Column",
+        "id": "c20"
+       },
+       {
+        "children": [
+         "b17"
+        ],
+        "component": "Row",
+        "id": "r21"
+       },
+       {
+        "children": [
+         "c20",
+         "r21"
+        ],
+        "component": "Row",
+        "id": "r22",
+        "justify": "spaceBetween",
+        "open": "b17"
+       },
+       {
+        "children": [
+         "r10",
+         "r16",
+         "r22"
+        ],
+        "component": "List",
+        "id": "l23"
+       },
+       {
+        "component": "Text",
+        "id": "t24",
+        "text": "待确认",
+        "variant": "caption"
+       },
+       {
+        "action": {
+         "event": {
+          "context": {
+           "args": {
+            "account": "me@company.example",
+            "id": "4021"
+           },
+           "page": "mail"
+          },
+          "name": "agent.open_page"
+         }
+        },
+        "child": "b25-text",
+        "component": "Button",
+        "id": "b25"
+       },
+       {
+        "component": "Text",
+        "id": "b25-text",
+        "text": "打开邮件"
+       },
+       {
+        "component": "Text",
+        "id": "t26",
+        "text": "某航空：行程变更通知",
+        "variant": "strong"
+       },
+       {
+        "component": "Text",
+        "id": "t27",
+        "text": "起飞时间从 14:10 改到 16:40",
+        "variant": "caption"
+       },
+       {
+        "children": [
+         "t26",
+         "t27"
+        ],
+        "component": "Column",
+        "id": "c28"
+       },
+       {
+        "children": [
+         "b25"
+        ],
+        "component": "Row",
+        "id": "r29"
+       },
+       {
+        "children": [
+         "c28",
+         "r29"
+        ],
+        "component": "Row",
+        "id": "r30",
+        "justify": "spaceBetween",
+        "open": "b25"
+       },
+       {
+        "action": {
+         "event": {
+          "context": {
+           "account": "me@company.example",
+           "ids": [
+            4021
+           ],
+           "op": {
+            "path": "/choices/m4021/0"
+           }
+          },
+          "name": "mail_act"
+         }
+        },
+        "child": "b31-text",
+        "component": "Button",
+        "id": "b31",
+        "variant": "primary"
+       },
+       {
+        "component": "Text",
+        "id": "b31-text",
+        "text": "处理"
+       },
+       {
+        "component": "ChoicePicker",
+        "id": "k32",
+        "options": [
+         {
+          "label": "加星标",
+          "value": "flag"
+         },
+         {
+          "label": "归档",
+          "value": "archive"
+         },
+         {
+          "label": "留在收件箱",
+          "value": "skip"
+         }
+        ],
+        "value": {
+         "path": "/choices/m4021"
+        }
+       },
+       {
+        "children": [
+         "k32",
+         "b31"
+        ],
+        "component": "Row",
+        "id": "r33"
+       },
+       {
+        "children": [
+         "r30",
+         "r33"
+        ],
+        "component": "Column",
+        "id": "c34"
+       },
+       {
+        "action": {
+         "event": {
+          "context": {
+           "args": {
+            "list": "reply"
+           },
+           "page": "inbox"
+          },
+          "name": "agent.open_page"
+         }
+        },
+        "child": "b35-text",
+        "component": "Button",
+        "id": "b35"
+       },
+       {
+        "component": "Text",
+        "id": "b35-text",
+        "text": "前往收件箱"
+       },
+       {
+        "component": "Text",
+        "id": "t36",
+        "text": "收件箱有 4 封待回复"
+       },
+       {
+        "children": [
+         "t36"
+        ],
+        "component": "Column",
+        "id": "c37"
+       },
+       {
+        "children": [
+         "b35"
+        ],
+        "component": "Row",
+        "id": "r38"
+       },
+       {
+        "children": [
+         "c37",
+         "r38"
+        ],
+        "component": "Row",
+        "id": "r39",
+        "justify": "spaceBetween",
+        "open": "b35"
+       },
+       {
+        "children": [
+         "r39"
+        ],
+        "component": "List",
+        "id": "l40"
+       }
+      ],
+      "surfaceId": "luoke-mail/page/today"
+     },
+     "version": "v0.9"
+    },
+    {
+     "updateDataModel": {
+      "path": "/",
+      "surfaceId": "luoke-mail/page/today",
+      "value": {
+       "choices": {
+        "account": [
+         "all"
+        ],
+        "m4021": [
+         "flag"
+        ]
+       }
+      }
+     },
+     "version": "v0.9"
+    }
+   ]
+  }
+ },
+ "permissions": {
+  "rows": [
+   {
+    "app": "luoke-mail",
+    "can": [
+     "open",
+     "remove"
+    ],
+    "facts": [
+     "用授权码连接，授权码只存在这台 Mac 的钥匙串里",
+     "邮件内容不离开这台 Mac",
+     "不发信，不永久删除"
+    ],
+    "id": "mailbox",
+    "kind": "account",
+    "state": "granted",
+    "title": "邮箱"
+   }
+  ]
+ },
+ "replies": [
+  {
+   "card": [
+    {
+     "updateComponents": {
+      "components": [
+       {
+        "children": [
+         "res-t1",
+         "res-r2"
+        ],
+        "component": "Column",
+        "group": {
+         "badge": "me@example.com",
+         "key": "me@example.com/spam",
+         "label": "可疑邮件",
+         "n": 1,
+         "text": "已移到垃圾邮件 {n} 封"
+        },
+        "id": "root"
+       },
+       {
+        "component": "Text",
+        "id": "res-t1",
+        "text": "已移到垃圾邮件 1 封。"
+       },
+       {
+        "action": {
+         "event": {
+          "context": {
+           "execution_id": "suspicious-000000000001"
+          },
+          "name": "mail_undo"
+         }
+        },
+        "child": "res-b3-text",
+        "component": "Button",
+        "id": "res-b3"
+       },
+       {
+        "component": "Text",
+        "id": "res-b3-text",
+        "text": "撤销"
+       },
+       {
+        "children": [
+         "res-b3"
+        ],
+        "component": "Row",
+        "id": "res-r2"
+       }
+      ],
+      "surfaceId": "luoke-mail/suspicious-000000000001"
+     },
+     "version": "v0.9"
+    }
+   ],
+   "file": "call-mail_apply_plan.json",
+   "surface": "luoke-mail/suspicious-000000000001",
+   "text": "已移到垃圾邮件 1 封。"
+  }
+ ],
+ "scenario": "pages",
+ "title": "可疑邮件",
+ "version": "0.19.71"
+}

@@ -19,85 +19,71 @@
                 "components": [
                   {
                     "children": [
-                      "h1",
+                      "t1",
                       "t2",
                       "t3",
-                      "d4",
-                      "t5",
-                      "t6",
-                      "t7",
-                      "d8",
-                      "t9",
-                      "t10",
-                      "t11",
-                      "t12",
-                      "r14"
+                      "r5",
+                      "r7"
                     ],
                     "component": "Column",
                     "id": "root"
                   },
                   {
                     "component": "Text",
-                    "id": "h1",
-                    "text": "概览",
-                    "variant": "h4"
+                    "id": "t1",
+                    "text": "最近了解到的",
+                    "variant": "caption"
                   },
                   {
                     "component": "Text",
                     "id": "t2",
-                    "text": "记下了 2 条，有 2 条猜测等你确认。"
-                  },
-                  {
-                    "component": "Text",
-                    "id": "t3",
-                    "text": "关于你 1 · 常用说法 1",
-                    "variant": "caption"
-                  },
-                  {
-                    "component": "Divider",
-                    "id": "d4"
-                  },
-                  {
-                    "component": "Text",
-                    "id": "t5",
-                    "text": "最近记下的（没问你就记下的，不对就在「记下的」里点「不对」）",
-                    "variant": "caption"
-                  },
-                  {
-                    "component": "Text",
-                    "id": "t6",
                     "text": "在读研究生，导师是王老师"
                   },
                   {
                     "component": "Text",
-                    "id": "t7",
-                    "text": "关于你 · 根据你发出的邮件和你在邮件助手里的操作 · 11月5日",
+                    "id": "t3",
+                    "text": "关于你 · 11月5日",
                     "variant": "caption"
                   },
                   {
-                    "component": "Divider",
-                    "id": "d8"
+                    "action": {
+                      "event": {
+                        "context": {
+                          "note": 3,
+                          "op": "reject"
+                        },
+                        "name": "mem_note"
+                      }
+                    },
+                    "child": "b4-label",
+                    "component": "Button",
+                    "id": "b4",
+                    "variant": "borderless"
+                  },
+                  {
+                    "children": [
+                      "b4-icon",
+                      "b4-text"
+                    ],
+                    "component": "Row",
+                    "id": "b4-label"
+                  },
+                  {
+                    "component": "Icon",
+                    "id": "b4-icon",
+                    "name": "x"
                   },
                   {
                     "component": "Text",
-                    "id": "t9",
-                    "text": "最近 14 天各应用记下的",
-                    "variant": "caption"
+                    "id": "b4-text",
+                    "text": "不对"
                   },
                   {
-                    "component": "Text",
-                    "id": "t10",
-                    "text": "螺壳输入法：2 条"
-                  },
-                  {
-                    "component": "Text",
-                    "id": "t11",
-                    "text": "邮件助手：2 条"
-                  },
-                  {
-                    "component": "Text",
-                    "id": "t12",
-                    "text": "螺壳记忆：1 条"
+                    "children": [
+                      "b4"
+                    ],
+                    "component": "Row",
+                    "id": "r5"
                   },
                   {
                     "action": {
@@ -106,21 +92,21 @@
                         "name": "mem_open"
                       }
                     },
-                    "child": "b13-text",
+                    "child": "b6-text",
                     "component": "Button",
-                    "id": "b13"
+                    "id": "b6"
                   },
                   {
                     "component": "Text",
-                    "id": "b13-text",
+                    "id": "b6-text",
                     "text": "打开整份记忆"
                   },
                   {
                     "children": [
-                      "b13"
+                      "b6"
                     ],
                     "component": "Row",
-                    "id": "r14"
+                    "id": "r7"
                   }
                 ],
                 "surfaceId": "overview"

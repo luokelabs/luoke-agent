@@ -131,6 +131,85 @@
                   }
                 ],
                 "created": "2026-10-20T12:00:00Z",
+                "data": {
+                  "cleans": [
+                    {
+                      "at": "2026-10-20T12:00:00Z",
+                      "batch": "auto-2026-10-20T12:00:00Z",
+                      "bytes": 62914560,
+                      "failed": [],
+                      "moved": [
+                        {
+                          "bytes": 6291456,
+                          "count": 1,
+                          "kind": "installer",
+                          "names": [
+                            {
+                              "name": "Fixtureapp-2.0.dmg",
+                              "tool": ""
+                            }
+                          ]
+                        },
+                        {
+                          "bytes": 2097152,
+                          "count": 1,
+                          "kind": "duplicate",
+                          "names": [
+                            {
+                              "name": "report-2026.pdf",
+                              "tool": ""
+                            }
+                          ]
+                        },
+                        {
+                          "bytes": 110186496,
+                          "count": 21,
+                          "kind": "temp",
+                          "names": [
+                            {
+                              "name": "puppeteer_dev_chrome_profile-P00000",
+                              "tool": "Puppeteer"
+                            },
+                            {
+                              "name": "puppeteer_dev_chrome_profile-P00001",
+                              "tool": "Puppeteer"
+                            },
+                            {
+                              "name": "puppeteer_dev_chrome_profile-P00002",
+                              "tool": "Puppeteer"
+                            }
+                          ]
+                        }
+                      ],
+                      "offerStop": true,
+                      "partial": [],
+                      "restorable": true,
+                      "tools": [
+                        "pip"
+                      ],
+                      "unrecorded": []
+                    }
+                  ],
+                  "decide": {
+                    "bytes": 0,
+                    "caches": 0,
+                    "cleaned": 0,
+                    "freed": 0,
+                    "offerAuto": false,
+                    "plan": null,
+                    "rest": 6,
+                    "skipped": {
+                      "fda": 0,
+                      "other": 0,
+                      "virusDb": 0
+                    },
+                    "toLook": 6,
+                    "trash": 0
+                  },
+                  "failed": [],
+                  "moreCleans": 0,
+                  "type": "round"
+                },
                 "deadline": null,
                 "expires": "2026-10-27T12:00:00Z",
                 "id": "round/2026-10-20T12:00:00Z",

@@ -1,0 +1,317 @@
+{
+  "reply": {
+    "id": 58,
+    "jsonrpc": "2.0",
+    "result": {
+      "contents": [
+        {
+          "mimeType": "application/json",
+          "text": [
+            {
+              "createSurface": {
+                "catalogId": "ai.luoke/a2ui/agent/1",
+                "surfaceId": "settings"
+              },
+              "version": "v0.9"
+            },
+            {
+              "updateComponents": {
+                "components": [
+                  {
+                    "children": [
+                      "t1",
+                      "t2",
+                      "r10",
+                      "d11",
+                      "t12",
+                      "t13",
+                      "t14",
+                      "t15",
+                      "t16",
+                      "r18"
+                    ],
+                    "component": "Column",
+                    "id": "root"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "t1",
+                    "text": "邮件助手：记录 14 条，理解 6 条"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "t2",
+                    "text": "最近 14 天里记下东西的日子",
+                    "variant": "caption"
+                  },
+                  {
+                    "action": {
+                      "event": {
+                        "context": {
+                          "args": {
+                            "day": "2026-11-05",
+                            "tool": "luoke-mail"
+                          },
+                          "page": "settings"
+                        },
+                        "name": "agent.open_page"
+                      }
+                    },
+                    "child": "b3-text",
+                    "component": "Button",
+                    "id": "b3"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "b3-text",
+                    "text": "11月5日 2 条"
+                  },
+                  {
+                    "action": {
+                      "event": {
+                        "context": {
+                          "args": {
+                            "day": "2026-11-04",
+                            "tool": "luoke-mail"
+                          },
+                          "page": "settings"
+                        },
+                        "name": "agent.open_page"
+                      }
+                    },
+                    "child": "b4-text",
+                    "component": "Button",
+                    "id": "b4",
+                    "variant": "borderless"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "b4-text",
+                    "text": "11月4日 1 条"
+                  },
+                  {
+                    "action": {
+                      "event": {
+                        "context": {
+                          "args": {
+                            "day": "2026-11-03",
+                            "tool": "luoke-mail"
+                          },
+                          "page": "settings"
+                        },
+                        "name": "agent.open_page"
+                      }
+                    },
+                    "child": "b5-text",
+                    "component": "Button",
+                    "id": "b5",
+                    "variant": "borderless"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "b5-text",
+                    "text": "11月3日 2 条"
+                  },
+                  {
+                    "action": {
+                      "event": {
+                        "context": {
+                          "args": {
+                            "day": "2026-11-02",
+                            "tool": "luoke-mail"
+                          },
+                          "page": "settings"
+                        },
+                        "name": "agent.open_page"
+                      }
+                    },
+                    "child": "b6-text",
+                    "component": "Button",
+                    "id": "b6",
+                    "variant": "borderless"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "b6-text",
+                    "text": "11月2日 1 条"
+                  },
+                  {
+                    "action": {
+                      "event": {
+                        "context": {
+                          "args": {
+                            "day": "2026-10-30",
+                            "tool": "luoke-mail"
+                          },
+                          "page": "settings"
+                        },
+                        "name": "agent.open_page"
+                      }
+                    },
+                    "child": "b7-text",
+                    "component": "Button",
+                    "id": "b7",
+                    "variant": "borderless"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "b7-text",
+                    "text": "10月30日 2 条"
+                  },
+                  {
+                    "action": {
+                      "event": {
+                        "context": {
+                          "args": {
+                            "day": "2026-10-28",
+                            "tool": "luoke-mail"
+                          },
+                          "page": "settings"
+                        },
+                        "name": "agent.open_page"
+                      }
+                    },
+                    "child": "b8-text",
+                    "component": "Button",
+                    "id": "b8",
+                    "variant": "borderless"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "b8-text",
+                    "text": "10月28日 2 条"
+                  },
+                  {
+                    "action": {
+                      "event": {
+                        "context": {
+                          "args": {
+                            "day": "2026-10-27",
+                            "tool": "luoke-mail"
+                          },
+                          "page": "settings"
+                        },
+                        "name": "agent.open_page"
+                      }
+                    },
+                    "child": "b9-text",
+                    "component": "Button",
+                    "id": "b9",
+                    "variant": "borderless"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "b9-text",
+                    "text": "10月27日 1 条"
+                  },
+                  {
+                    "children": [
+                      "b3",
+                      "b4",
+                      "b5",
+                      "b6",
+                      "b7",
+                      "b8",
+                      "b9"
+                    ],
+                    "component": "Row",
+                    "id": "r10"
+                  },
+                  {
+                    "component": "Divider",
+                    "id": "d11"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "t12",
+                    "text": "11月5日 · 2 条",
+                    "variant": "caption"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "t13",
+                    "text": "我在北京这边住下了，地址回头发你"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "t14",
+                    "text": "发出的邮件 · 你说的 · 20:45",
+                    "variant": "caption"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "t15",
+                    "text": "搬到北京以后还没换驾照地址"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "t16",
+                    "text": "发出的邮件 · 你说的 · 20:45",
+                    "variant": "caption"
+                  },
+                  {
+                    "action": {
+                      "event": {
+                        "context": {
+                          "page": "settings"
+                        },
+                        "name": "agent.open_page"
+                      }
+                    },
+                    "child": "b17-text",
+                    "component": "Button",
+                    "id": "b17"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "b17-text",
+                    "text": "回到设置"
+                  },
+                  {
+                    "children": [
+                      "b17"
+                    ],
+                    "component": "Row",
+                    "id": "r18"
+                  }
+                ],
+                "surfaceId": "settings"
+              },
+              "version": "v0.9"
+            }
+          ],
+          "uri": "page/settings?tool=luoke-mail"
+        }
+      ],
+      "resultType": "complete"
+    }
+  },
+  "request": {
+    "id": 58,
+    "jsonrpc": "2.0",
+    "method": "resources/read",
+    "params": {
+      "_meta": {
+        "io.modelcontextprotocol/clientCapabilities": {
+          "experimental": {
+            "ai.luoke/a2ui": {
+              "features": [
+                "openPage",
+                "pageArgs",
+                "confirm",
+                "rowOpen",
+                "fieldSubmit"
+              ]
+            }
+          }
+        },
+        "io.modelcontextprotocol/clientInfo": {
+          "name": "luoke-agent",
+          "version": "fixtures"
+        },
+        "io.modelcontextprotocol/protocolVersion": "2026-07-28"
+      },
+      "uri": "page/settings?tool=luoke-mail"
+    }
+  }
+}

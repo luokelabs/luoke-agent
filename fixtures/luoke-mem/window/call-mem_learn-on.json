@@ -1,0 +1,58 @@
+{
+  "reply": {
+    "id": 67,
+    "jsonrpc": "2.0",
+    "result": {
+      "content": [
+        {
+          "text": "记忆又从邮件助手学了。",
+          "type": "text"
+        }
+      ],
+      "isError": false,
+      "resultType": "complete",
+      "structuredContent": {
+        "on": true,
+        "result": "learn",
+        "tool": "luoke-mail"
+      }
+    }
+  },
+  "request": {
+    "id": 67,
+    "jsonrpc": "2.0",
+    "method": "tools/call",
+    "params": {
+      "_meta": {
+        "ai.luoke/user-action": {
+          "at": "2026-11-06T10:32:00+08:00",
+          "componentId": "b7",
+          "surfaceId": "settings"
+        },
+        "io.modelcontextprotocol/clientCapabilities": {
+          "experimental": {
+            "ai.luoke/a2ui": {
+              "features": [
+                "openPage",
+                "pageArgs",
+                "confirm",
+                "rowOpen",
+                "fieldSubmit"
+              ]
+            }
+          }
+        },
+        "io.modelcontextprotocol/clientInfo": {
+          "name": "luoke-agent",
+          "version": "fixtures"
+        },
+        "io.modelcontextprotocol/protocolVersion": "2026-07-28"
+      },
+      "arguments": {
+        "on": true,
+        "tool": "luoke-mail"
+      },
+      "name": "mem_learn"
+    }
+  }
+}

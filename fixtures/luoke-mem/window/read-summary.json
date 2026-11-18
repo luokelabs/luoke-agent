@@ -1,0 +1,56 @@
+{
+  "reply": {
+    "id": 5,
+    "jsonrpc": "2.0",
+    "result": {
+      "contents": [
+        {
+          "mimeType": "application/json",
+          "text": {
+            "count": 0,
+            "kept": 23,
+            "pending": 3,
+            "recent": {
+              "formed_at": "2026-11-05 20:45:00",
+              "id": 25,
+              "kind": "fact",
+              "text": "学校：某大学计算机系"
+            },
+            "state": "recent",
+            "text": "最近了解到：学校：某大学计算机系"
+          },
+          "uri": "summary"
+        }
+      ],
+      "resultType": "complete"
+    }
+  },
+  "request": {
+    "id": 5,
+    "jsonrpc": "2.0",
+    "method": "resources/read",
+    "params": {
+      "_meta": {
+        "io.modelcontextprotocol/clientCapabilities": {
+          "experimental": {
+            "ai.luoke/a2ui": {
+              "features": [
+                "openPage",
+                "pageArgs",
+                "confirm",
+                "rowOpen",
+                "fieldSubmit"
+              ]
+            }
+          }
+        },
+        "io.modelcontextprotocol/clientInfo": {
+          "name": "luoke-agent",
+          "version": "fixtures"
+        },
+        "io.modelcontextprotocol/protocolVersion": "2026-07-28"
+      },
+      "uri": "summary"
+    }
+  }
+}

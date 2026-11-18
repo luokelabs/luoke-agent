@@ -6,6 +6,49 @@ import UserNotifications
 // 螺壳.app 接核心要的几样（docs/界面接口.md §11、§14）：系统通知、用户在不在、通知授权。
 // 照 luoke-agent 原来的壳（app/Sources/Luoke）搬过来，本体直接用，不用再拷。
 
+/// 主窗口的标题栏：最上面一条（`WindowControls.height`），红黄绿在它的正中。
+/// 不用工具栏撑高标题栏：工具栏那一层盖在上面，标题栏里收起侧栏的按钮、右上角的胶囊都点不动（负责人 11-14）。
+/// 标题栏透明、内容铺满，红黄绿自己挪到正中；窗口变大小、退出全屏后系统会把它们放回去，再挪一次。
+/// 螺壳.app 建好主窗口以后调一次；`luoke-window-demo` 和 `TitlebarTests` 也用它
+public enum MainWindowChrome {
+    @MainActor public static func apply(to window: NSWindow) {
+        window.titleVisibility = .hidden
+        window.titlebarAppearsTransparent = true
+        window.styleMask.insert(.fullSizeContentView)
+        window.toolbar = nil
+        placeLights(window)
+        let names = [NSWindow.didResizeNotification, NSWindow.didEndLiveResizeNotification,
+                     NSWindow.didExitFullScreenNotification, NSWindow.didBecomeKeyNotification, NSWindow.didResignKeyNotification]
+        for n in names {
+            NotificationCenter.default.addObserver(forName: n, object: window, queue: .main) { [weak window] _ in
+                MainActor.assumeIsolated { if let window { placeLights(window) } }
+            }
+        }
+        // 系统排标题栏时（换内容、变大小）会把它们放回原处：它们一挪就再放回来
+        for k in [NSWindow.ButtonType.closeButton, .miniaturizeButton, .zoomButton] {
+            guard let b = window.standardWindowButton(k) else { continue }
+            b.postsFrameChangedNotifications = true
+            NotificationCenter.default.addObserver(forName: NSView.frameDidChangeNotification, object: b, queue: nil) { [weak window] _ in
+                MainActor.assumeIsolated { if let window { placeLights(window) } }
+                // 系统一次排三个，排到后面的会把刚挪好的又放回去：这一轮排完再放一次
+                DispatchQueue.main.async { MainActor.assumeIsolated { if let window { placeLights(window) } } }
+            }
+        }
+    }
+
+    /// 红黄绿：中心离上沿 `lightsCenterY`，从 `lightsLeading` 起，一个 14 宽、隔 9
+    @MainActor static func placeLights(_ w: NSWindow) {
+        let kinds: [NSWindow.ButtonType] = [.closeButton, .miniaturizeButton, .zoomButton]
+        for (i, k) in kinds.enumerated() {
+            guard let b = w.standardWindowButton(k), let sup = b.superview else { continue }
+            let h = b.frame.height
+            let y = sup.isFlipped ? WindowControls.lightsCenterY - h / 2 : sup.bounds.height - WindowControls.lightsCenterY - h / 2
+            let to = NSPoint(x: WindowControls.lightsLeading + CGFloat(i) * 23, y: y)
+            if b.frame.origin != to { b.setFrameOrigin(to) }     // 已经在了不再挪：挪了又发通知，别来回
+        }
+    }
+}
+
 public extension AgentNotification {
     /// 点通知时认得出是核心发的：`userInfo` 里有这个键（值是通知编号）
     static let userInfoKey = "luoke-agent"

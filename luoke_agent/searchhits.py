@@ -15,6 +15,8 @@ THUMB_REF = re.compile(r"thumb/(?!\.+$)[A-Za-z0-9._-]{1,64}")   # 用 fullmatch�
 MAX_THUMB_BYTES = 256 * 1024     # 一张缩略图最大（工具协议 §1b Image 组件）
 MAX_THUMB_SIDE = 2048            # 长边最大
 
+WHERE_KEYS = ("page", "part", "sheet", "time", "end")
+MAX_DURATION = 30 * 24 * 3600        # 再长的不当时长（多半是坏数据）
 # 字段 → 最多几个字
 TEXT_FIELDS = {"id": 200, "kind": 40, "kind_label": 20, "title": 200, "line": 120, "date": 40, "snippet": 400,
                "source": 200, "path": 1024, "alt": 200}
@@ -53,6 +55,18 @@ def hit(h: Any) -> Optional[dict]:
         return None
     if h.get("strong") is True:
         out["strong"] = True
+    # 命中在文件的哪里（页、部分、工作表、时间），照数字留着：这一行字由核心写（apppages 的 hit_words，顶层 ADR 0028），
+    # 不交给窗口
+    where = h.get("where")
+    if isinstance(where, dict):
+        kept = {k: v for k, v in where.items() if k in WHERE_KEYS and isinstance(v, (int, float)) and not isinstance(v, bool)
+                and 0 <= v < 1e9}
+        if kept:
+            out["where"] = kept
+    # 视频、录音有多长（秒）：窗口画在封面上和预览那一行里
+    dur = h.get("duration")
+    if isinstance(dur, (int, float)) and not isinstance(dur, bool) and 0 <= dur <= MAX_DURATION:
+        out["duration"] = dur
     thumb = h.get("thumb")
     if isinstance(thumb, str) and THUMB_REF.fullmatch(thumb):
         out["thumb"] = thumb
@@ -92,7 +106,7 @@ def for_window(hits: List[dict]) -> List[dict]:
             if a["args"].get("reveal") is True:
                 w["reveal"] = True
             acts.append(w)
-        out.append({**h, "actions": acts})
+        out.append({**{k: v for k, v in h.items() if k != "where"}, "actions": acts})
     return out
 
 

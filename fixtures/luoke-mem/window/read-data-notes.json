@@ -1,0 +1,457 @@
+{
+  "reply": {
+    "id": 18,
+    "jsonrpc": "2.0",
+    "result": {
+      "contents": [
+        {
+          "mimeType": "application/json",
+          "text": {
+            "counts": {
+              "all": 22,
+              "dislike": 0,
+              "fact": 5,
+              "interest": 17,
+              "past": 1,
+              "pending": 3,
+              "preference": 0,
+              "rejected": 0,
+              "taste": 1,
+              "term": 4
+            },
+            "filter": "all",
+            "items": [
+              {
+                "cites": 2,
+                "confidence": "likely",
+                "decided_at": null,
+                "entity": null,
+                "formed_at": "2026-11-05 20:45:00",
+                "fresh": "2026-11-04 08:15:00",
+                "id": 25,
+                "kind": "fact",
+                "origin": "inferred",
+                "pending": false,
+                "sources": [
+                  "luoke-mail"
+                ],
+                "status": "active",
+                "text": "学校：某大学计算机系",
+                "topic": "学校",
+                "why_data": {
+                  "code": "sent_mail",
+                  "waiting": false
+                }
+              },
+              {
+                "cites": 3,
+                "confidence": "sure",
+                "decided_at": "2026-11-05 22:00:00",
+                "entity": null,
+                "formed_at": "2026-11-05 20:45:00",
+                "fresh": "2026-11-05 22:00:00",
+                "id": 23,
+                "kind": "fact",
+                "origin": "inferred",
+                "pending": false,
+                "sources": [
+                  "luoke-mail",
+                  "luoke-mem"
+                ],
+                "status": "active",
+                "text": "住在北京",
+                "topic": "城市",
+                "why_data": {
+                  "code": "sent_mail",
+                  "waiting": false
+                }
+              },
+              {
+                "cites": 2,
+                "confidence": "likely",
+                "decided_at": null,
+                "entity": null,
+                "formed_at": "2026-11-04 08:15:00",
+                "fresh": "2026-11-04 08:15:00",
+                "id": 24,
+                "kind": "fact",
+                "origin": "inferred",
+                "pending": false,
+                "sources": [
+                  "luoke-mail"
+                ],
+                "status": "active",
+                "text": "在读研究生，导师是王老师",
+                "topic": "学业",
+                "why_data": {
+                  "code": "sent_mail",
+                  "waiting": false
+                }
+              },
+              {
+                "cites": 2,
+                "confidence": "guess",
+                "decided_at": null,
+                "entity": null,
+                "formed_at": "2026-10-30 09:30:00",
+                "fresh": "2026-10-30 09:30:00",
+                "id": 1,
+                "kind": "interest",
+                "origin": "inferred",
+                "pending": true,
+                "sources": [
+                  "luoke-ime"
+                ],
+                "status": "proposed",
+                "text": "本地大模型",
+                "topic": null,
+                "why_data": null
+              },
+              {
+                "cites": 2,
+                "confidence": "guess",
+                "decided_at": null,
+                "entity": 1,
+                "formed_at": "2026-10-28 18:00:00",
+                "fresh": "2026-11-03 18:00:00",
+                "id": 27,
+                "kind": "fact",
+                "origin": "inferred",
+                "pending": true,
+                "sources": [
+                  "luoke-mail"
+                ],
+                "status": "proposed",
+                "text": "合作方：Wang Lei（wanglei@corp.example）",
+                "topic": "合作方:Wang Lei",
+                "why_data": null
+              },
+              {
+                "cites": 2,
+                "confidence": "guess",
+                "decided_at": null,
+                "entity": 1,
+                "formed_at": "2026-10-28 18:00:00",
+                "fresh": "2026-11-03 18:00:00",
+                "id": 26,
+                "kind": "fact",
+                "origin": "inferred",
+                "pending": true,
+                "sources": [
+                  "luoke-mail"
+                ],
+                "status": "proposed",
+                "text": "同事：王磊（wanglei@corp.example）",
+                "topic": "同事:王磊",
+                "why_data": null
+              },
+              {
+                "cites": 1,
+                "confidence": "sure",
+                "decided_at": "2026-10-25 09:00:00",
+                "entity": null,
+                "formed_at": "2026-10-25 09:00:00",
+                "fresh": "2026-10-25 09:00:00",
+                "id": 21,
+                "kind": "interest",
+                "origin": "user",
+                "pending": false,
+                "sources": [
+                  "luoke-mem"
+                ],
+                "status": "active",
+                "text": "隐私计算",
+                "topic": null,
+                "why_data": null
+              },
+              {
+                "cites": 1,
+                "confidence": "sure",
+                "decided_at": "2026-10-24 09:00:00",
+                "entity": null,
+                "formed_at": "2026-10-24 09:00:00",
+                "fresh": "2026-10-24 09:00:00",
+                "id": 20,
+                "kind": "interest",
+                "origin": "user",
+                "pending": false,
+                "sources": [
+                  "luoke-mem"
+                ],
+                "status": "active",
+                "text": "量子计算",
+                "topic": null,
+                "why_data": null
+              },
+              {
+                "cites": 1,
+                "confidence": "sure",
+                "decided_at": "2026-10-23 09:00:00",
+                "entity": null,
+                "formed_at": "2026-10-23 09:00:00",
+                "fresh": "2026-10-23 09:00:00",
+                "id": 19,
+                "kind": "interest",
+                "origin": "user",
+                "pending": false,
+                "sources": [
+                  "luoke-mem"
+                ],
+                "status": "active",
+                "text": "嵌入式",
+                "topic": null,
+                "why_data": null
+              },
+              {
+                "cites": 1,
+                "confidence": "sure",
+                "decided_at": "2026-10-22 09:00:00",
+                "entity": null,
+                "formed_at": "2026-10-22 09:00:00",
+                "fresh": "2026-10-22 09:00:00",
+                "id": 18,
+                "kind": "interest",
+                "origin": "user",
+                "pending": false,
+                "sources": [
+                  "luoke-mem"
+                ],
+                "status": "active",
+                "text": "图形学",
+                "topic": null,
+                "why_data": null
+              },
+              {
+                "cites": 1,
+                "confidence": "sure",
+                "decided_at": "2026-10-21 09:00:00",
+                "entity": null,
+                "formed_at": "2026-10-21 09:00:00",
+                "fresh": "2026-10-21 09:00:00",
+                "id": 17,
+                "kind": "interest",
+                "origin": "user",
+                "pending": false,
+                "sources": [
+                  "luoke-mem"
+                ],
+                "status": "active",
+                "text": "知识图谱",
+                "topic": null,
+                "why_data": null
+              },
+              {
+                "cites": 1,
+                "confidence": "sure",
+                "decided_at": "2026-10-20 09:00:00",
+                "entity": null,
+                "formed_at": "2026-10-20 09:00:00",
+                "fresh": "2026-10-20 09:00:00",
+                "id": 16,
+                "kind": "interest",
+                "origin": "user",
+                "pending": false,
+                "sources": [
+                  "luoke-mem"
+                ],
+                "status": "active",
+                "text": "强化学习",
+                "topic": null,
+                "why_data": null
+              },
+              {
+                "cites": 1,
+                "confidence": "sure",
+                "decided_at": "2026-10-19 09:00:00",
+                "entity": null,
+                "formed_at": "2026-10-19 09:00:00",
+                "fresh": "2026-10-19 09:00:00",
+                "id": 15,
+                "kind": "interest",
+                "origin": "user",
+                "pending": false,
+                "sources": [
+                  "luoke-mem"
+                ],
+                "status": "active",
+                "text": "推荐系统",
+                "topic": null,
+                "why_data": null
+              },
+              {
+                "cites": 1,
+                "confidence": "sure",
+                "decided_at": "2026-10-18 09:00:00",
+                "entity": null,
+                "formed_at": "2026-10-18 09:00:00",
+                "fresh": "2026-10-18 09:00:00",
+                "id": 14,
+                "kind": "interest",
+                "origin": "user",
+                "pending": false,
+                "sources": [
+                  "luoke-mem"
+                ],
+                "status": "active",
+                "text": "语音识别",
+                "topic": null,
+                "why_data": null
+              },
+              {
+                "cites": 1,
+                "confidence": "sure",
+                "decided_at": "2026-10-17 09:00:00",
+                "entity": null,
+                "formed_at": "2026-10-17 09:00:00",
+                "fresh": "2026-10-17 09:00:00",
+                "id": 13,
+                "kind": "interest",
+                "origin": "user",
+                "pending": false,
+                "sources": [
+                  "luoke-mem"
+                ],
+                "status": "active",
+                "text": "计算机视觉",
+                "topic": null,
+                "why_data": null
+              },
+              {
+                "cites": 1,
+                "confidence": "sure",
+                "decided_at": "2026-10-16 09:00:00",
+                "entity": null,
+                "formed_at": "2026-10-16 09:00:00",
+                "fresh": "2026-10-16 09:00:00",
+                "id": 12,
+                "kind": "interest",
+                "origin": "user",
+                "pending": false,
+                "sources": [
+                  "luoke-mem"
+                ],
+                "status": "active",
+                "text": "网络安全",
+                "topic": null,
+                "why_data": null
+              },
+              {
+                "cites": 1,
+                "confidence": "sure",
+                "decided_at": "2026-10-15 09:00:00",
+                "entity": null,
+                "formed_at": "2026-10-15 09:00:00",
+                "fresh": "2026-10-15 09:00:00",
+                "id": 11,
+                "kind": "interest",
+                "origin": "user",
+                "pending": false,
+                "sources": [
+                  "luoke-mem"
+                ],
+                "status": "active",
+                "text": "操作系统",
+                "topic": null,
+                "why_data": null
+              },
+              {
+                "cites": 1,
+                "confidence": "sure",
+                "decided_at": "2026-10-14 09:00:00",
+                "entity": null,
+                "formed_at": "2026-10-14 09:00:00",
+                "fresh": "2026-10-14 09:00:00",
+                "id": 10,
+                "kind": "interest",
+                "origin": "user",
+                "pending": false,
+                "sources": [
+                  "luoke-mem"
+                ],
+                "status": "active",
+                "text": "分布式存储",
+                "topic": null,
+                "why_data": null
+              },
+              {
+                "cites": 1,
+                "confidence": "sure",
+                "decided_at": "2026-10-13 09:00:00",
+                "entity": null,
+                "formed_at": "2026-10-13 09:00:00",
+                "fresh": "2026-10-13 09:00:00",
+                "id": 9,
+                "kind": "interest",
+                "origin": "user",
+                "pending": false,
+                "sources": [
+                  "luoke-mem"
+                ],
+                "status": "active",
+                "text": "数据库",
+                "topic": null,
+                "why_data": null
+              },
+              {
+                "cites": 1,
+                "confidence": "sure",
+                "decided_at": "2026-10-12 09:00:00",
+                "entity": null,
+                "formed_at": "2026-10-12 09:00:00",
+                "fresh": "2026-10-12 09:00:00",
+                "id": 8,
+                "kind": "interest",
+                "origin": "user",
+                "pending": false,
+                "sources": [
+                  "luoke-mem"
+                ],
+                "status": "active",
+                "text": "编译器",
+                "topic": null,
+                "why_data": null
+              }
+            ],
+            "page": 1,
+            "pages": 2,
+            "q": "",
+            "ready": true,
+            "total": 22,
+            "v": 1,
+            "waiting": 3
+          },
+          "uri": "data/notes"
+        }
+      ],
+      "resultType": "complete"
+    }
+  },
+  "request": {
+    "id": 18,
+    "jsonrpc": "2.0",
+    "method": "resources/read",
+    "params": {
+      "_meta": {
+        "io.modelcontextprotocol/clientCapabilities": {
+          "experimental": {
+            "ai.luoke/a2ui": {
+              "features": [
+                "openPage",
+                "pageArgs",
+                "confirm",
+                "rowOpen",
+                "fieldSubmit"
+              ]
+            }
+          }
+        },
+        "io.modelcontextprotocol/clientInfo": {
+          "name": "luoke-agent",
+          "version": "fixtures"
+        },
+        "io.modelcontextprotocol/protocolVersion": "2026-07-28"
+      },
+      "uri": "data/notes"
+    }
+  }
+}

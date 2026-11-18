@@ -36,8 +36,11 @@ CLIENT_CAPABILITIES = {"experimental": {"ai.luoke/a2ui": {"features": ["placemen
                                                                        "doneGroup", "itemIcons", "countLabel", "openPage",
                                                                        "subtitle", "countAlso", "countWeights",
                                                                        "pageArgs", "bigPages", "secureField", "pageRefresh",
-                                                                       "saveFile", "neutralBadge", "chips", "pageSections"]}}}
+                                                                       "saveFile", "neutralBadge", "chips", "pageSections",
+                                                                       "confirm", "rowOpen", "fieldSubmit", "lucide2", "choiceSubmit", "headerPlacement"]}}}
 USER_ACTION = "ai.luoke/user-action"  # 会改动东西的调用必带：用户在哪张卡片上点的（§5）
+
+LISTEN_BACKLOG = 128   # Unix socket 上还没接下来的连接最多排几条（socketserver 默认 5，一下来十几条就拒）
 
 PARSE_ERROR = -32700
 INVALID_REQUEST = -32600
@@ -322,6 +325,8 @@ def _where(e: BaseException, frames: int = 3) -> str:
 
 class _UnixServer(socketserver.ThreadingMixIn, socketserver.UnixStreamServer):
     daemon_threads = True
+    # 还没接下来的连接最多排几条（默认 5）：agent 同时连过来的多了，macOS 上排不下的当场拒
+    request_queue_size = LISTEN_BACKLOG
     tool_server: ToolServer
 
     def handle_error(self, request: Any, client_address: Any) -> None:
@@ -381,6 +386,11 @@ class _Handler(BaseHTTPRequestHandler):
 
 class NotRunning(Exception):
     """工具现在没在运行：socket 不在、连不上、连上了不答。不算出错（§2）。"""
+
+
+class NoAnswer(NotRunning):
+    """读数据在时限内没等到答复：连上了、请求发出去了，工具在，只是慢。
+    是 NotRunning 的一种（不区分的地方照旧当这一次没读到）；要对用户说话的地方分开说「未响应」，不说「未运行」。"""
 
 
 class TimedOut(Exception):
@@ -549,7 +559,7 @@ class ToolClient:
             except socket.timeout:
                 if method == "tools/call":
                     raise TimedOut(method) from None
-                raise NotRunning("timeout") from None
+                raise NoAnswer("timeout") from None
             except (ConnectionError, http.client.HTTPException) as e:
                 raise NotRunning(type(e).__name__) from None
         finally:
@@ -580,7 +590,7 @@ class ToolClient:
             except socket.timeout:
                 if method == "tools/call":
                     raise TimedOut(method) from None
-                raise NotRunning("timeout") from None
+                raise NoAnswer("timeout") from None
             except OSError as e:
                 raise NotRunning(type(e).__name__) from None
         finally:
@@ -589,8 +599,8 @@ class ToolClient:
     def discover(self) -> dict:
         return self.request("server/discover")
 
-    def read_json(self, uri: str) -> Any:
-        result = self.request("resources/read", {"uri": uri})
+    def read_json(self, uri: str, *, timeout: float = LIST_TIMEOUT) -> Any:
+        result = self.request("resources/read", {"uri": uri}, timeout=timeout)
         contents = result.get("contents") or []
         if not contents or not isinstance(contents[0], dict) or not isinstance(contents[0].get("text"), str):
             raise RpcError(INVALID_REQUEST, "资源没有文字内容")

@@ -2,7 +2,7 @@ import LuokeA2UI
 import XCTest
 @testable import LuokeWindow
 
-/// 「今天」按类处理：要你决定同一类的挨着，一件件处理照页上的次序走，「按类处理」里点一类就只走这一类
+/// 「今天」按类处理：要你决定同一类的挨着，逐件处理照页上的次序走，「按类处理」里点一类就只走这一类
 @MainActor
 final class DecideCategoryTests: XCTestCase {
     private var m: WindowModel!
@@ -44,7 +44,7 @@ final class DecideCategoryTests: XCTestCase {
         m.cards = mixed()
         XCTAssertEqual(m.categoriesToPick.map(\.ids), [["m1", "m2"], ["a1", "a2"]], "只有一件的那一类不列：点开那张卡片就是了")
         m.cards = (1...5).map { card("m\($0)", .mail, "new-mail") }
-        XCTAssertEqual(m.categoriesToPick, [], "只有一类：页头的「一件件处理」就是它")
+        XCTAssertEqual(m.categoriesToPick, [], "只有一类：页头的「逐件处理」就是它")
         m.cards = [card("m1", .mail, "new-mail"), card("a1", .mem, "question"), card("s1", .scan, "findings")]
         XCTAssertEqual(m.categoriesToPick, [], "每类都只有一件：不列")
         m.cards = [card("m1", .mail, "new-mail"), card("m2", .mail, "new-mail"), card("s1", .scan, "findings")]
@@ -53,11 +53,11 @@ final class DecideCategoryTests: XCTestCase {
 
     func testFocusOnOneKind() throws {
         m.cards = mixed()
-        m.kinds = [KindSetting(id: "luoke-mem:question", tool: .mem, title: "记忆想问的事", level: .brief)]
+        m.kinds = [KindSetting(id: "luoke-mem:question", tool: .mem, title: "记忆的待确认事项", level: .brief)]
         let mem = try XCTUnwrap(m.categoriesToPick.first { $0.tool == .mem })
         m.enterFocus(category: mem.id)
         XCTAssertEqual(m.focus?.ids, ["a1", "a2"], "只走这一类")
-        XCTAssertEqual(m.focus?.categoryName, "记忆想问的事")
+        XCTAssertEqual(m.focus?.categoryName, "记忆的待确认事项")
         XCTAssertEqual(m.focusCurrent?.id, "a1")
         m.skipFocus()
         XCTAssertEqual(m.focusCurrent?.id, "a2")
@@ -69,7 +69,7 @@ final class DecideCategoryTests: XCTestCase {
         m.focus?.tapped = ["a1", "a2"]
         m.cards.removeAll { $0.tool == .mem }   // 都点过了，记忆答完收走
         XCTAssertEqual(m.focusLeft, 0)
-        XCTAssertEqual(m.focusCategoryDone, "记忆想问的事", "这一类完了，「要你决定」里还有别的")
+        XCTAssertEqual(m.focusCategoryDone, "记忆的待确认事项", "这一类完了，「要你决定」里还有别的")
         XCTAssertEqual(m.focusAnswered, 2)
         m.cards = []
         XCTAssertNil(m.focusCategoryDone, "什么都不剩了：照「今天没什么要你操心的」说")

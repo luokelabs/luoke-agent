@@ -265,7 +265,7 @@
                   {
                     "component": "Text",
                     "id": "t23",
-                    "text": "打开时会给你一个恢复密钥，抄下来放好。",
+                    "text": "打开时会给你恢复密钥，抄下来放好",
                     "variant": "caption"
                   },
                   {
@@ -301,7 +301,7 @@
                   {
                     "component": "Text",
                     "id": "t27",
-                    "text": "重启一下电脑就好。",
+                    "text": "重启一下电脑就好",
                     "variant": "caption"
                   },
                   {
@@ -312,7 +312,7 @@
                   {
                     "component": "Text",
                     "id": "t29",
-                    "text": "「tool」、「removed」\n在系统设置中选中它们，点「−」移除。",
+                    "text": "「tool」、「removed」\n应用已经删了，权限可以一起移除",
                     "variant": "caption"
                   },
                   {

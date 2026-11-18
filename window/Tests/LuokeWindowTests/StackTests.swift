@@ -58,7 +58,7 @@ final class StackTests: XCTestCase {
         let rows = m.statusMenu.items.drop { $0.id != "h-urgent" }.dropFirst().prefix { $0.kind != .separator }
         XCTAssertLessThanOrEqual(rows.count, WindowModel.urgentMenuRows)
         XCTAssertEqual(rows.first?.title, "40 封可疑邮件")
-        XCTAssertEqual(rows.last?.title, "还有 3 件急事…", "4 行（可疑邮件 1 行、扫描 3 行），剩下 3 件合成一行")
+        XCTAssertEqual(rows.last?.title, "其余 3 件急事", "4 行（可疑邮件 1 行、扫描 3 行），剩下 3 件合成一行")
         XCTAssertTrue(m.statusMenu.items.contains { $0.id == "open" }, "「打开螺壳」还在")
     }
 
@@ -80,6 +80,7 @@ final class StackTests: XCTestCase {
         // 邮件助手 0.19.4x 起引这一封的标题：书名号里的冒号不当分隔
         XCTAssertEqual(TodayStack.what("可疑邮件「某银行：账户已冻结」", 4, unit: "封"), "4 封可疑邮件")
         XCTAssertEqual(TodayStack.what("1 封邮件要你处理", 3, unit: "封"), "3 封邮件要你处理")
+        XCTAssertEqual(TodayStack.what("1 封待处理邮件", 3, unit: "封"), "3 封待处理邮件", "邮件助手 11-16 起的书面标题")
     }
 
     // review #60 第 3、4、5 条
@@ -91,10 +92,10 @@ final class StackTests: XCTestCase {
 
     func testJumpOpensTheStackHidingTheCard() {
         let cards = [card("a"), card("b"), card("c"), card("x", kind: "plan", title: "这 1 封要你处理")]
-        XCTAssertEqual(TodayPage.stackToOpen(for: "b", in: cards), "c:" + TodayStack.key(.mail, "suspicious", "可疑邮件：某银行：账户已冻结"),
-                       "收在一叠里的：先展开那一叠")
+        XCTAssertEqual(TodayPage.stackToOpen(for: "b", in: cards), "c:" + TodayStack.appKey(.mail), "收在一叠里的：先展开那一叠")
         XCTAssertNil(TodayPage.stackToOpen(for: "a", in: cards), "露着的第一张不用展开")
-        XCTAssertNil(TodayPage.stackToOpen(for: "x", in: cards), "自己一张")
+        XCTAssertEqual(TodayPage.stackToOpen(for: "x", in: cards), "c:" + TodayStack.appKey(.mail),
+                       "同一个应用的不分类，也在这一叠里（负责人 11-13）")
     }
 
     func testStackKeySurvivesTheFirstCardGoing() {

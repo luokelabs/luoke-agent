@@ -24,10 +24,12 @@ public protocol WindowBackend: AnyObject {
     func reportHost(permissions: [String: JSONValue], confirmed: [String: [String: String]]?)
     /// 用户在搜索框按了回车（§7 `POST /search`）
     func search(query: String)
-    /// 要一条结果的缩略图（§7 `GET /thumb`）；答来了调 `WindowModel.setThumb`
+    /// 要一条结果的缩略图（§7 `GET /thumb`）；答来了调 `WindowModel.setThumb`，没读到调 `thumbFailed`
     func searchThumb(app: String, ref: String)
     /// 用户点了结果上的按钮、按了回车或 ⌘↩（§7 `POST /hit`）：`action` 是它在这条结果 `actions` 里的序号
     func searchHit(search: Int, app: String, hit: String, action: Int)
+    /// 重新取右边栏的「历史」（§5 `GET /activity`）
+    func reloadActivity()
     /// 窗口换了一页（§11 `POST /window` 的 `page`）
     func windowPageChanged()
 }
@@ -43,7 +45,9 @@ public extension WindowBackend {
     func search(query: String) {}
     func searchThumb(app: String, ref: String) {}
     func searchHit(search: Int, app: String, hit: String, action: Int) {}
+    func reloadActivity() {}
     func windowPageChanged() {}
+    func cardSurface(_ sid: String) -> SurfaceModel? { nil }
 }
 
 /// 核心要螺壳.app 发的一条系统通知（`/feed` 的 `notify`）
@@ -77,7 +81,7 @@ public final class AgentFeed {
     private weak var model: WindowModel?
     private var gotFeed = false
     /// 核心删了、下一份 feed 还没到的卡片：照旧画着。核心换卡片时先删旧的、再发新的、最后发 feed，
-    /// 删的那一下就把它从「今天」拿掉的话，一件件处理会当成工具收走了、跳到下一件；等 feed 到了再一起换
+    /// 删的那一下就把它从「今天」拿掉的话，逐件处理会当成工具收走了、跳到下一件；等 feed 到了再一起换
     private var held: [String: SurfaceModel] = [:]
 
     public init(model: WindowModel) {
@@ -106,6 +110,12 @@ public final class AgentFeed {
                                                           kind: "", section: "decide", title: "", time: nil) }
             }
             model?.notices = (v["notices"]?.array ?? []).compactMap(\.string)
+            model?.noticeRows = (v["notice_rows"]?.array ?? []).compactMap { r in
+                guard let id = r["id"]?.string, let t = r["text"]?.string else { return nil }
+                return NoticeRow(id: id, kind: r["kind"]?.string ?? "info", text: t)
+            }
+            model?.helloLine = v["hello"]?["text"]?.string.flatMap { $0.isEmpty ? nil : $0 }
+            model?.briefWords = v["brief"]?["words"]?.string.flatMap { $0.isEmpty ? nil : $0 }
             model?.agentDot = v["dot"]?.bool         // 老的核心不给：照有没有急事
             model?.lastSeen = model?.now()
             if let p = v["paused_until"] { model?.setPausedFromAgent(Self.date(p).map(Self.hhmm)) }
@@ -113,6 +123,7 @@ public final class AgentFeed {
             held = [:]
             rebuild()
             model?.feedArrived()
+            if model?.historyShowing == true { model?.backend?.reloadActivity() }   // 正看着「历史」：事情变了就重新列
         case "settings":
             applySettings(v)
         case "apps":
@@ -138,6 +149,32 @@ public final class AgentFeed {
         if event == "a2ui", gotFeed { rebuild() }
     }
 
+    /// `GET /activity` 的答复：换掉右边栏「历史」里的行（§5）
+    public func applyActivity(_ v: JSONValue) {
+        guard let model, let rows = v["rows"]?.array else { return }
+        model.activity = rows.compactMap { r in
+            guard let id = r["id"]?.string, let at = r["time"].flatMap(Self.date) else { return nil }
+            let undo = r["undo"].flatMap { u -> AgentUndo? in
+                guard let s = u["surfaceId"]?.string, let c = u["componentId"]?.string else { return nil }
+                return AgentUndo(surfaceId: s, componentId: c)
+            }
+            return ActivityRow(id: id, day: Self.day(at), time: Self.hhmm(at), tool: Self.tool(r["app"]?.string ?? ""),
+                               auto: r["outcome"]?.string == "auto", text: r["text"]?.string ?? "",
+                               undoLabel: undo == nil ? nil : (r["undo"]?["label"]?.string ?? "撤销"),
+                               undone: r["undone"]?.bool == true, undo: undo, surfaceId: r["surface"]?.string)
+        }
+    }
+
+    /// 「历史」按天分：今天、昨天、几月几日
+    static func day(_ d: Date) -> String {
+        if Calendar.current.isDateInToday(d) { return "今天" }
+        if Calendar.current.isDateInYesterday(d) { return "昨天" }
+        let f = DateFormatter()
+        f.locale = Locale(identifier: "zh_CN")
+        f.dateFormat = "M月d日"
+        return f.string(from: d)
+    }
+
     /// `GET /settings` 的答复或 `settings` 事件：换掉「设置 · 提醒」里的值
     public func applySettings(_ v: JSONValue) {
         guard let o = v.object, let model else { return }
@@ -149,6 +186,10 @@ public final class AgentFeed {
         case "on_open": model.brief = .onOpen
         default: break
         }
+        if let cs = o["classes"]?.object {
+            for (k, v) in cs { if let c = AlertClass(rawValue: k), let t = v.string.flatMap(AlertTiming.init(rawValue:)) { model.alertClasses[c] = t } }
+        }
+        if let t = o["brief_time"]?.string { model.briefTime = t }
         if let q = o["quiet"] {
             if let s = q["start"]?.string, let e = q["end"]?.string { model.quietHours = "\(s) – \(e)" } else { model.quietHours = "关" }
         }
@@ -190,19 +231,38 @@ public final class AgentFeed {
         let old = model.agentPages[key]?.surface
         if status == 200, let msgs = v?["messages"]?.array, let s = try? Surface.build(msgs, page: true) {
             let fresh = SurfaceModel(surface: s)
+            fresh.queues = true         // 页上的点按排队做，不锁整页（负责人 11-17）
             // 同一页重新取（点完按钮、定时刷新）：用户填了、这次没交出去的密码框照留（§4 secureField）。工具给的初值只能是空的，
-            // 留不留由窗口定；交出去的点按时已经清了，离开这一页时全清了，都不会带过来
+            // 留不留由窗口定；交出去的点按时已经清了，离开这一页时全清了（forgetUnsent），都不会带过来
             for p in s.secureFieldPaths {
                 if let v = old?.value(p), v != .string(""), (try? s.data.value(at: p)) != nil { fresh.set(p, v) }
             }
+            // 用户改过的选择也照留（luoke-scan「可以清掉」：点了一行的「清理」，别的行改成的「先不动」又变回工具给的）：新取的页上
+            // 同一个路径还画着样子一样的选择框（标题、选项一样），值放得进去。用户没改过的照工具新给的（做完的、换了默认的）。
+            // 只在点完按钮、定时刷新时：离开这一页时没交的选择已经放回工具给的（forgetUnsent），回来再取不会带过来
+            if let old {
+                fresh.opened = old.opened       // 点开的折叠段照留（重新取页不收回去）
+                let was = old.surface.choiceShapes
+                for (p, shape) in s.choiceShapes where was[p] == shape && old.changed(p) {
+                    if let v = old.value(p), shape.allows(v) { fresh.set(p, v) }
+                }
+                // 输入框里填了没交出去的字也照留（「添加邮箱」连不上，地址、服务器不用重填）：同一个路径、同一个标题，工具这回给的值
+                // 和上回一样（工具改了的，例如保存过的显示名，照工具的）
+                let labels = old.surface.textFieldLabels
+                for (p, label) in s.textFieldLabels where labels[p] == label && old.changed(p) {
+                    if let v = old.value(p), case .string = v, (try? s.data.value(at: p)) == (try? old.given.value(at: p)) {
+                        fresh.set(p, v)
+                    }
+                }
+            }
             out.surface = fresh
         } else if status == 200 {
-            out.error = "这一页画不了。"
+            out.error = "此页无法显示"
         } else if status == 0 {
-            out.error = "\(WindowModel.offlineShort)，打不开这一页。"
+            out.error = "\(WindowModel.offlineShort)，无法打开此页"
             out.offline = true
         } else {
-            out.error = v?["error"]?.string ?? "这一页现在拿不到。"
+            out.error = v?["error"]?.string ?? "此页暂时无法读取"
         }
         model.coreReachable = status != 0
         if out.surface == nil, model.agentPages[key]?.surface != nil, status == 0 { return }   // 断了：先留着上次的
@@ -243,7 +303,7 @@ public final class AgentFeed {
             out.note = v?["text"]?.string
         } else {
             let q = model.searchQuery.isEmpty ? "" : "「\(model.searchQuery)」"
-            out.note = status == 0 ? "\(WindowModel.offlineShort)，搜不了\(q)。" : (v?["error"]?.string ?? "没能搜成\(q)。")
+            out.note = status == 0 ? "\(WindowModel.offlineShort)，无法搜索\(q)" : (v?["error"]?.string ?? "搜索\(q)失败")
             out.retry = true
         }
         model.searching = false
@@ -261,7 +321,8 @@ public final class AgentFeed {
         func refs(_ a: JSONValue?) -> [AgentApp.PageRef] {
             (a?.array ?? []).compactMap { p in
                 guard let id = p["id"]?.string, let t = p["title"]?.string else { return nil }
-                return AgentApp.PageRef(id: id, title: t, hidden: p["hidden"]?.bool == true)
+                let hidden = p["hidden"]?.bool == true
+                return AgentApp.PageRef(id: id, title: t, hidden: hidden, icon: hidden ? p["icon"]?.string : nil)
             }
         }
         var summary: AgentApp.Summary?
@@ -284,6 +345,7 @@ public final class AgentFeed {
     func rebuild() {
         guard let model else { return }
         var urgent: [UrgentItem] = [], decide: [TodayCard] = [], done: [DoneRow] = [], later: [QuietRow] = []
+        var heldCount = 0
         for c in cards {
             guard let s = held[c.id] ?? surfaces[c.id] else { continue }
             let tool = Self.tool(c.app)
@@ -297,13 +359,19 @@ public final class AgentFeed {
                 done.append(DoneRow(id: c.id, tool: tool, text: c.title, time: time, undoLabel: nil, surface: s, group: g))
             case "later":
                 later.append(QuietRow(id: c.id, tool: tool, text: c.title, surface: s))
+            case "held":
+                heldCount += 1      // 今天的名额满了，先攒着：不画，只数个数
+            case "undone", "past":
+                continue            // 撤销过的、今天零点以前做完的：不在「今天」，右边栏「历史」里有
             default:
                 decide.append(TodayCard(id: c.id, tool: tool, time: c.time.map(Self.display), surface: s, title: c.title, kind: c.kind))
             }
         }
         model.hostAsks = Dictionary(cards.compactMap { c in c.hostAsk.map { (c.id, $0) } }, uniquingKeysWith: { a, _ in a })
         model.urgent = urgent
-        model.cards = decide
+        // 一天最多问 3 件：核心已经挑过（多的是 held），窗口这里再拦一道，旧的核心、没挑过的也只画前 3 件
+        model.cards = Array(decide.prefix(TodayPage.askLimit))
+        model.heldAsks = heldCount + max(0, decide.count - TodayPage.askLimit)
         model.done = done
         model.quiet = later + model.updateRows()      // 「有新版本」是本体报的，接在核心给的后面
     }
@@ -372,6 +440,9 @@ public final class AgentFeed {
 /// 螺壳.app（和演示窗口）拿着它；窗口经 `WindowBackend` 用它。
 @MainActor
 public final class AgentConnection: WindowBackend {
+    /// 「历史」里一行点开看明细：卡片还在窗口里的那一张
+    public func cardSurface(_ sid: String) -> SurfaceModel? { feed.surface(sid) }
+
     /// 发一次请求：（状态码，正文）。默认走 Unix socket；测试换成假的。
     public typealias Transport = @Sendable (_ method: String, _ path: String, _ body: Data?) throws -> (Int, Data)
 
@@ -384,6 +455,9 @@ public final class AgentConnection: WindowBackend {
     /// 正在取的（应用列表、某一页、权限）：取着的时候又要取，等这次回来再取一次
     private var loading: Set<String> = []
     private var again: Set<String> = []
+    /// 页上排着队的点按（键是页的编号）；正有一个点按在等答复的页（页中途重新取、换了一份界面对象也认得）
+    private var tapQueue: [String: [QueuedTap]] = [:]
+    private var acting: Set<String> = []
     private var searchSerial = 0
     /// 螺壳.app 报过的它自己的权限（只在内存里）：核心重启后连上时再报一遍
     private var host: [String: JSONValue] = [:]
@@ -462,29 +536,82 @@ public final class AgentConnection: WindowBackend {
     // MARK: WindowBackend
 
     public func action(surfaceId: String, componentId: String, context: JSONValue) {
-        // 上一下点按还没答完：不再发（快按两次 ⏎、连点两下都只交一次）
-        if feed.surface(surfaceId)?.busy == true { return }
-        feed.surface(surfaceId)?.busy = true
-        feed.surface(surfaceId)?.pressed = componentId
         let page = model.agentPages[surfaceId]
+        let name = (try? feed.surface(surfaceId)?.surface.action(componentId))?.name
+        // 页上换页、换分组（agent.open_page）：不算一件要等的事，不转圈、不锁、不排队，前一个动作还在做也照发
+        let nav = page != nil && name == "agent.open_page"
+        if !nav, let s = feed.surface(surfaceId), s.busy || acting.contains(surfaceId) {
+            // 上一下点按还没答完。卡片：不再发（快按两次 ⏎、连点两下都只交一次）。应用的页：排在后面，上一个做完、
+            // 页重新取了以后，按「同一个动作、同样的上下文」重新找到按钮再发（负责人 11-17：归档一封时别的都点不了）
+            if page != nil, let name, !s.waiting(componentId) {
+                tapQueue[surfaceId, default: []].append(QueuedTap(name: name, context: context))
+                s.queued.insert(componentId)
+            }
+            return
+        }
+        if !nav {
+            feed.surface(surfaceId)?.busy = true
+            feed.surface(surfaceId)?.pressed = componentId
+            if page != nil { acting.insert(surfaceId) }
+        }
         let body = JSONValue.object(["surfaceId": .string(surfaceId), "sourceComponentId": .string(componentId), "context": context])
         // 密码框里填的字（工具协议 §4 secureField）只随这一次交出去：交了的就清掉，不管成没成；这个按钮没交的照留
         if let s = feed.surface(surfaceId) { s.clearSecureFields(only: s.surface.sentSecureFieldPaths(componentId)) }
         send("POST", "/action", body.serialized()) { [weak self] status, reply in
             guard let self else { return }
-            self.feed.surface(surfaceId)?.busy = false
-            self.feed.surface(surfaceId)?.pressed = nil
-            if status == 0 { self.model.show(WindowModel.offlineFailed) }
+            if !nav {
+                self.feed.surface(surfaceId)?.busy = false
+                self.feed.surface(surfaceId)?.pressed = nil
+                self.acting.remove(surfaceId)
+            }
+            if status == 0 {
+                self.model.show(WindowModel.offlineFailed)
+                self.dropQueue(surfaceId)          // 连不上：排着的不发了
+            }
             // 答复带了文件（工具协议 §4 saveFile）：用户选了位置才存
             if status == 200, let file = Self.savedFile(reply) { self.saveFile(file.name, file.text) }
+            // agent.search：核心拼的页上的搜索框、「最近搜过」，拿这一句去底部的搜索里搜（结果在那里）
+            if status == 200, let q = Self.searchAsked(reply) { self.model.runSearch(q); return }
             // agent.open_page（工具协议 §5）：核心核过是这个应用自己的页，换过去（带 args 时读这一页带上，§4 pageArgs）
             if status == 200, let (app, p, args) = Self.openedPage(reply) {
                 self.model.openAgentPage(app: app, page: p, args: args)
                 if let page, page.app == app, page.page == p { return }   // 换到的就是这一页：换页时已经重新取了
             }
-            // 基础页上点完：工具答复里的卡片不画，重新取这一页（§6）
-            if let page, status != 0 { self.reloadPage(app: page.app, page: page.page) }
+            // 基础页上点完：工具答复里的卡片不画，重新取这一页（§6）；取到以后发排着的下一个（reloadPage 里）
+            if let page, status != 0, !nav { self.reloadPage(app: page.app, page: page.page) }
         }
+    }
+
+    /// 页上排着队的点按：点的是什么动作、交什么（按钮的编号页一重取就可能变，不记）
+    struct QueuedTap { let name: String; let context: JSONValue }
+
+    private func dropQueue(_ sid: String) {
+        tapQueue[sid] = nil
+        feed.surface(sid)?.queued = []
+    }
+
+    /// 页重新取到了：排着的头一个在新的页上重新找按钮，找到就发；找不到（那一封已经不在这一页了）不发，说一声，接着看下一个。
+    /// 剩下的在新的页上重新标成「排着」
+    func drainQueue(_ sid: String) {
+        guard var q = tapQueue[sid], !q.isEmpty else { return }
+        guard let s = model.agentPages[sid]?.surface else {
+            dropQueue(sid)
+            model.show("页面无法读取，\(q.count) 项操作未执行")
+            return
+        }
+        var skipped = 0
+        var next: (String, JSONValue)?
+        while !s.busy, !acting.contains(sid), next == nil, !q.isEmpty {
+            let t = q.removeFirst()
+            if let id = s.surface.buttonID(name: t.name, context: t.context) { next = (id, t.context) } else { skipped += 1 }
+        }
+        let ids = q.map { s.surface.buttonID(name: $0.name, context: $0.context) }
+        skipped += ids.filter { $0 == nil }.count
+        q = zip(q, ids).filter { $0.1 != nil }.map(\.0)
+        tapQueue[sid] = q.isEmpty ? nil : q
+        s.queued = Set(ids.compactMap { $0 })
+        if skipped > 0 { model.show("\(skipped) 项操作的对象已变化，未执行") }
+        if let (id, ctx) = next { action(surfaceId: sid, componentId: id, context: ctx) }
     }
 
     /// `POST /action` 的答复里的文件（`{"file": {"name", "mediaType", "text"}}`，界面接口 §4）：形状不对是 nil
@@ -502,12 +629,12 @@ public final class AgentConnection: WindowBackend {
         if let w = NSApp.keyWindow ?? NSApp.mainWindow, w.isVisible {
             panel.beginSheetModal(for: w) { [weak self] r in
                 guard r == .OK, !AgentConnection.write(text, to: panel.url) else { return }
-                MainActor.assumeIsolated { self?.model.show("没存成。") }
+                MainActor.assumeIsolated { self?.model.show("保存失败") }
             }
         } else {
             panel.begin { [weak self] r in
                 guard r == .OK, !AgentConnection.write(text, to: panel.url) else { return }
-                MainActor.assumeIsolated { self?.model.show("没存成。") }
+                MainActor.assumeIsolated { self?.model.show("保存失败") }
             }
         }
     }
@@ -539,7 +666,11 @@ public final class AgentConnection: WindowBackend {
     public func searchThumb(app: String, ref: String) {
         // 查询串里只留 ASCII 字母、数字和 -._~，别的（+ & = / 和非 ASCII）都编码
         send("GET", "/thumb?app=\(Self.segment(app))&ref=\(Self.segment(ref))", nil) { [weak self] status, body in
-            guard let self, status == 200, let image = Self.thumbImage(body) else { return }   // 读不到：占位框
+            guard let self else { return }
+            guard status == 200, let image = Self.thumbImage(body) else {      // 读不到：占位框，过几秒再要
+                self.model.thumbFailed(app: app, ref: ref)
+                return
+            }
             self.model.setThumb(app: app, ref: ref, image: image)
         }
     }
@@ -561,7 +692,7 @@ public final class AgentConnection: WindowBackend {
             guard let self else { return }
             let v = try? JSONValue.parse(body)
             if status != 200 || v?["error"]?.bool == true {
-                self.model.show(status == 0 ? WindowModel.offlineFailed : (v?["text"]?.string ?? "没打开。"))
+                self.model.show(status == 0 ? WindowModel.offlineFailed : (v?["text"]?.string ?? "打开失败"))
             }
         }
     }
@@ -573,7 +704,7 @@ public final class AgentConnection: WindowBackend {
             if status == 200, let v {
                 self.feed.applySettings(v)
             } else {
-                self.model.show(status == 0 ? WindowModel.offlineFailed : (v?["error"]?.string ?? "没改成。"))
+                self.model.show(status == 0 ? WindowModel.offlineFailed : (v?["error"]?.string ?? "修改失败"))
                 self.reloadSettings()       // 改回核心里现在的值
             }
         }
@@ -584,6 +715,12 @@ public final class AgentConnection: WindowBackend {
             guard status == 200, let v = try? JSONValue.parse(body) else { return }
             self?.feed.applyApps(v)
         }
+    }
+
+    /// `POST /action` 的答复里要搜的一句（`{"search": "打车发票"}`，agent.search）
+    nonisolated static func searchAsked(_ body: Data) -> String? {
+        guard let q = (try? JSONValue.parse(body))?["search"]?.string?.trimmingCharacters(in: .whitespacesAndNewlines), !q.isEmpty else { return nil }
+        return q
     }
 
     /// `POST /action` 的答复里要换去的页（`{"page": {"app", "page", "args"}}`，界面接口 §4）。`args` 不对的整个不认
@@ -604,7 +741,23 @@ public final class AgentConnection: WindowBackend {
         once("page:" + key + query, path) { [weak self] status, body in
             guard let self else { return }
             self.feed.applyPage(app: app, page: page, status: status, body: body, args: args)
+            self.drainQueue(key)
             self.refreshLater(app: app, page: page)
+            self.retryLater(app: app, page: page)
+        }
+    }
+
+    /// 这一页没取到（应用还没起来、暂时读不到）：还看着它就每 3 秒自己再取，取到为止。不让用户去点「重试」
+    /// （负责人 11-16：断开时不应该自动重试吗；实例刚起来时记忆页停在「未运行」，要手点才好）
+    static let retryEvery: TimeInterval = 3
+    private func retryLater(app: String, page: String) {
+        let key = AgentFeed.pageKey(app, page)
+        // 只给正看着的那一页排重试：预取的别的标签没取到，等用户点过去时再取
+        guard model.visibleAgentPageKey == key, let p = model.agentPages[key], p.surface == nil, p.error != nil else { return }
+        after(Self.retryEvery) { [weak self] in
+            guard let self, self.model.visibleAgentPageKey == key,
+                  let now = self.model.agentPages[key], now.surface == nil, now.error != nil else { return }
+            self.reloadPage(app: app, page: page)
         }
     }
 
@@ -628,7 +781,14 @@ public final class AgentConnection: WindowBackend {
         send("POST", "/open", JSONValue.object(b).serialized()) { [weak self] status, body in
             guard let self else { return }
             let (text, error) = Self.answer(status, body)
-            if !text.isEmpty { self.model.show(text) } else if error { self.model.show("没打开。") }
+            if !text.isEmpty { self.model.show(text) } else if error { self.model.show("打开失败") }
+        }
+    }
+
+    public func reloadActivity() {
+        once("activity", "/activity?limit=100") { [weak self] status, body in
+            guard status == 200, let v = try? JSONValue.parse(body) else { return }
+            self?.feed.applyActivity(v)
         }
     }
 

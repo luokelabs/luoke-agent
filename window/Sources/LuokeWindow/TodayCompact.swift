@@ -72,8 +72,8 @@ struct TodayCompact: View {
                         moreUrgentRow(shown.more)
                     }
                 }
-                group("要你决定", model.cards.count)
-                ForEach(TodayStack.cards(model.cards).flatMap { $0 }) { c in   // 同一类的挨着，和标准的「今天」、一件件处理一个次序
+                group("待确认", model.cards.count)
+                ForEach(TodayStack.cards(model.cards).flatMap { $0 }) { c in   // 同一类的挨着，和标准的「今天」、逐件处理一个次序
                     VStack(spacing: 0) {
                         cardRow(c)
                         expandedCard(c.id) { CardFrame(card: c, model: model) }
@@ -82,11 +82,11 @@ struct TodayCompact: View {
                 }
                 if !model.done.isEmpty {
                     let rows = DoneRow.merged(model.done)   // 同一组的合成一行
-                    group("已经替你做了", rows.count)
+                    group("已自动处理", rows.count)
                     ForEach(rows) { d in doneRow(d) }
                 }
                 if !model.quiet.isEmpty {
-                    group("顺便看看", model.quiet.count)
+                    group("稍后查看", model.quiet.count)
                     ForEach(model.quiet) { q in
                         laterRow(q)
                         if let s = q.surface {
@@ -119,16 +119,16 @@ struct TodayCompact: View {
                 LKCount(value: model.urgent.count, delay: Motion.counterAt).foregroundStyle(p.fg).fontWeight(.semibold)
                 Text(" 急事 · ")
                 LKCount(value: model.cards.count, delay: Motion.counterAt).foregroundStyle(p.fg).fontWeight(.semibold)
-                Text(" 要你决定 · ")
+                Text(" 待确认 · ")
                 LKCount(value: model.done.count, delay: Motion.counterAt).foregroundStyle(p.fg).fontWeight(.semibold)
-                Text(" 做了")
+                Text(" 已完成")
             }
             .font(LKFont.ui(LKType.small))
             .foregroundStyle(p.mutedFg)
             Spacer(minLength: 0)
             Button { model.enterFocus() } label: {
                 HStack(spacing: LKSpace.x1 + 2) {
-                    Text("一件件处理")
+                    Text("逐件处理")
                     LKCount(value: model.cards.count, delay: Motion.counterAt).foregroundStyle(p.mutedFg)
                 }
             }
@@ -275,7 +275,7 @@ struct TodayCompact: View {
             .frame(maxWidth: .infinity, minHeight: LKHeight.tableRow)
             .contentShape(Rectangle())
         }
-        .buttonStyle(.plain)
+        .buttonStyle(.plainPointer)
         .background(p.bg)
         .overlay(alignment: .bottom) { line }
     }
@@ -386,7 +386,7 @@ struct TodayCompact: View {
             let open = model.compactExpanded.contains(id)
             Button(open ? "收起" : Self.chooseLabel) { toggle(id) }
                 .buttonStyle(LKButtonStyle(size: .small))
-                .accessibilityLabel(open ? "收起这张卡片" : "选一下：展开成整张卡片")
+                .accessibilityLabel(open ? "收起这张卡片" : "选择：展开为整张卡片")
         } else {
             ForEach(digest.actions.filter { borderless || $0.variant != "borderless" }.prefix(2)) { a in
                 DigestButton(action: a, surface: s, style: style(a)) {
@@ -397,7 +397,7 @@ struct TodayCompact: View {
     }
 
     /// 有要填、要选的卡片那一行的按钮
-    static let chooseLabel = "选一下"
+    static let chooseLabel = "选择"
 
     private func toggle(_ id: String) {
         withAnimation(Motion.enter(Motion.reflow, reduce: reduce)) {
@@ -420,18 +420,10 @@ struct TodayCompact: View {
     }
 
     @ViewBuilder private var notices: some View {
-        let notices = (model.hostNotice.map { [$0] } ?? []) + model.notices
-        if !notices.isEmpty || model.notificationsNotAsked {
+        let notices = model.shownNotices
+        if !notices.isEmpty {
             VStack(alignment: .leading, spacing: LKSpace.x1) {
-                ForEach(notices, id: \.self) { n in
-                    Text(n).font(LKFont.ui(LKType.small)).foregroundStyle(p.mutedFg).fixedSize(horizontal: false, vertical: true)
-                }
-                if model.notificationsNotAsked {
-                    HStack(spacing: LKSpace.x2) {
-                        Text("通知还没打开，简报和急事到不了你。").font(LKFont.ui(LKType.small)).foregroundStyle(p.mutedFg)
-                        Button("打开通知") { model.host?.askNotifications() }.buttonStyle(LKButtonStyle())
-                    }
-                }
+                ForEach(notices) { n in NoticeLine(row: n, action: model.noticeAction(n), compact: true) }
             }
             .padding(.horizontal, LKSpace.x6)
             .padding(.top, LKSpace.x4)

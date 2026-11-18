@@ -1,0 +1,80 @@
+{
+  "reply": {
+    "id": 12,
+    "jsonrpc": "2.0",
+    "result": {
+      "content": [
+        {
+          "text": "放回了 21 项。",
+          "type": "text"
+        }
+      ],
+      "isError": false,
+      "resultType": "complete",
+      "structuredContent": {
+        "card": [
+          {
+            "updateComponents": {
+              "components": [
+                {
+                  "children": [
+                    "r98200-t1",
+                    "r98200-t2"
+                  ],
+                  "component": "Column",
+                  "id": "root"
+                },
+                {
+                  "component": "Text",
+                  "id": "r98200-t1",
+                  "text": "放回了 21 项。"
+                },
+                {
+                  "component": "Text",
+                  "id": "r98200-t2",
+                  "text": "临时目录里有 21 个 puppeteer_dev_chrome_profile-* 没被删掉，共 110.2 MB",
+                  "variant": "caption"
+                }
+              ],
+              "surfaceId": "overview"
+            },
+            "version": "v0.9"
+          }
+        ],
+        "data": {
+          "back": 21,
+          "before": 0,
+          "left": 0,
+          "notes": [],
+          "round": null,
+          "type": "restored"
+        },
+        "done": true
+      }
+    }
+  },
+  "request": {
+    "id": 12,
+    "jsonrpc": "2.0",
+    "method": "tools/call",
+    "params": {
+      "_meta": {
+        "ai.luoke/user-action": {
+          "at": "2026-10-20T20:10:00+08:00",
+          "componentId": "restore",
+          "surfaceId": "overview"
+        },
+        "io.modelcontextprotocol/clientCapabilities": {},
+        "io.modelcontextprotocol/clientInfo": {
+          "name": "luoke-agent",
+          "version": "fixtures"
+        },
+        "io.modelcontextprotocol/protocolVersion": "2026-07-28"
+      },
+      "arguments": {
+        "id": "p-000000000002"
+      },
+      "name": "scan_restore"
+    }
+  }
+}

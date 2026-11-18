@@ -1,0 +1,68 @@
+{
+  "reply": {
+    "id": 25,
+    "jsonrpc": "2.0",
+    "result": {
+      "content": [
+        {
+          "text": "归档了：不算回答，也不会自己再问。想答了，在记忆的「想问的」里放回。",
+          "type": "text"
+        }
+      ],
+      "isError": false,
+      "resultType": "complete",
+      "structuredContent": {
+        "card": [
+          {
+            "updateComponents": {
+              "components": [
+                {
+                  "children": [
+                    "end-t1"
+                  ],
+                  "component": "Column",
+                  "id": "root"
+                },
+                {
+                  "component": "Text",
+                  "id": "end-t1",
+                  "text": "归档了：不算回答，也不会自己再问。想答了，在记忆的「想问的」里放回。"
+                }
+              ],
+              "surfaceId": "ask-2"
+            },
+            "version": "v0.9"
+          }
+        ],
+        "done": true,
+        "result": "archive",
+        "stale": false
+      }
+    }
+  },
+  "request": {
+    "id": 25,
+    "jsonrpc": "2.0",
+    "method": "tools/call",
+    "params": {
+      "_meta": {
+        "ai.luoke/user-action": {
+          "at": "2026-11-06T10:05:00+08:00",
+          "componentId": "b12",
+          "surfaceId": "ask-2"
+        },
+        "io.modelcontextprotocol/clientCapabilities": {},
+        "io.modelcontextprotocol/clientInfo": {
+          "name": "luoke-agent",
+          "version": "fixtures"
+        },
+        "io.modelcontextprotocol/protocolVersion": "2026-07-28"
+      },
+      "arguments": {
+        "ask": 2,
+        "choice": "archive"
+      },
+      "name": "mem_reply"
+    }
+  }
+}

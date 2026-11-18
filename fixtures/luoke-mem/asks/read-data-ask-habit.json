@@ -1,0 +1,98 @@
+{
+  "reply": {
+    "id": 29,
+    "jsonrpc": "2.0",
+    "result": {
+      "contents": [
+        {
+          "mimeType": "application/json",
+          "text": {
+            "about_note": 4,
+            "action": {
+              "capability": "habit",
+              "params": {
+                "sender": "news@shop.example"
+              },
+              "tool": "luoke-mail"
+            },
+            "affects": [
+              {
+                "tool": "luoke-mail",
+                "use": "habit"
+              }
+            ],
+            "answer": {
+              "type": "yes_no"
+            },
+            "cites": [
+              {
+                "happened_at": "2026-11-05 20:45:00",
+                "id": 4,
+                "kind": "receipt",
+                "recorded_at": "2026-11-05 20:45:00",
+                "sensitive": null,
+                "speaker": "user",
+                "text": "亲手归档：某商城 · 促销",
+                "tool": "luoke-mail",
+                "topic": "mail-acted"
+              }
+            ],
+            "cites_total": 1,
+            "created_at": "2026-11-05 20:45:00",
+            "evidence": "亲手归档 6 封",
+            "expires_at": "2026-11-20 10:00:00",
+            "facts": {
+              "account": "me@example.com",
+              "action": "archive",
+              "category": "promotion",
+              "sender": "news@shop.example"
+            },
+            "found": true,
+            "id": 4,
+            "kind": "suggestion",
+            "rank": 2,
+            "ready": true,
+            "replies": [
+              {
+                "choice": "useful"
+              },
+              {
+                "choice": "useless"
+              },
+              {
+                "choice": "never"
+              },
+              {
+                "choice": "archive"
+              }
+            ],
+            "status": "open",
+            "text": "以后某商城的促销邮件都归档？",
+            "type": "habit",
+            "v": 1,
+            "why": "这个月你亲手归档了 6 封某商城的促销。",
+            "write": []
+          },
+          "uri": "data/ask?id=4"
+        }
+      ],
+      "resultType": "complete"
+    }
+  },
+  "request": {
+    "id": 29,
+    "jsonrpc": "2.0",
+    "method": "resources/read",
+    "params": {
+      "_meta": {
+        "io.modelcontextprotocol/clientCapabilities": {},
+        "io.modelcontextprotocol/clientInfo": {
+          "name": "luoke-agent",
+          "version": "fixtures"
+        },
+        "io.modelcontextprotocol/protocolVersion": "2026-07-28"
+      },
+      "uri": "data/ask?id=4"
+    }
+  }
+}

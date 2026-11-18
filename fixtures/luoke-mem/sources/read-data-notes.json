@@ -1,0 +1,74 @@
+{
+  "reply": {
+    "id": 18,
+    "jsonrpc": "2.0",
+    "result": {
+      "contents": [
+        {
+          "mimeType": "application/json",
+          "text": {
+            "counts": {
+              "all": 1,
+              "dislike": 0,
+              "fact": 1,
+              "interest": 0,
+              "past": 0,
+              "pending": 0,
+              "preference": 0,
+              "rejected": 0,
+              "taste": 0,
+              "term": 0
+            },
+            "filter": "all",
+            "items": [
+              {
+                "cites": 1,
+                "confidence": "sure",
+                "decided_at": "2026-11-01 08:00:00",
+                "entity": null,
+                "formed_at": "2026-11-01 08:00:00",
+                "fresh": "2026-11-01 08:00:00",
+                "id": 1,
+                "kind": "fact",
+                "origin": "user",
+                "pending": false,
+                "sources": [
+                  "luoke-mem"
+                ],
+                "status": "active",
+                "text": "在读研究生",
+                "topic": null,
+                "why_data": null
+              }
+            ],
+            "page": 1,
+            "pages": 1,
+            "q": "",
+            "ready": true,
+            "total": 1,
+            "v": 1,
+            "waiting": 0
+          },
+          "uri": "data/notes"
+        }
+      ],
+      "resultType": "complete"
+    }
+  },
+  "request": {
+    "id": 18,
+    "jsonrpc": "2.0",
+    "method": "resources/read",
+    "params": {
+      "_meta": {
+        "io.modelcontextprotocol/clientCapabilities": {},
+        "io.modelcontextprotocol/clientInfo": {
+          "name": "luoke-agent",
+          "version": "fixtures"
+        },
+        "io.modelcontextprotocol/protocolVersion": "2026-07-28"
+      },
+      "uri": "data/notes"
+    }
+  }
+}

@@ -594,7 +594,7 @@
                   {
                     "component": "Text",
                     "id": "t37",
-                    "text": "AI 用到它时，可能改动、删除或外传你的文件。不认识的建议移到废纸篓。",
+                    "text": "不会自己运行；AI 用到它时能改动、删除或外传文件\n不认识的建议移到废纸篓。",
                     "variant": "caption"
                   },
                   {
@@ -647,7 +647,7 @@
                   {
                     "component": "Text",
                     "id": "t40",
-                    "text": "AI 用到它时，可能改动、删除或外传你的文件。不认识的建议移到废纸篓。",
+                    "text": "不会自己运行；AI 用到它时能改动、删除或外传文件\n不认识的建议移到废纸篓。",
                     "variant": "caption"
                   },
                   {
@@ -700,7 +700,7 @@
                   {
                     "component": "Text",
                     "id": "t43",
-                    "text": "AI 用到它时，可能改动、删除或外传你的文件。不认识的建议移到废纸篓。",
+                    "text": "不会自己运行；AI 用到它时能改动、删除或外传文件\n不认识的建议移到废纸篓。",
                     "variant": "caption"
                   },
                   {
@@ -865,7 +865,7 @@
                   {
                     "component": "Text",
                     "id": "t55",
-                    "text": "「command-development」、「hook-development」\nAI 用到它们时，可能改动、删除或外传你的文件。不认识的，在 Claude Code 里输入 /plugin 卸载。",
+                    "text": "「command-development」、「hook-development」\n不会自己运行；不是你装的，就在 Claude Code 里用 /plugin 卸掉",
                     "variant": "caption"
                   },
                   {
@@ -920,7 +920,7 @@
                   {
                     "component": "Text",
                     "id": "t60",
-                    "text": "打开时会给你一个恢复密钥，抄下来放好。",
+                    "text": "打开时会给你恢复密钥，抄下来放好",
                     "variant": "caption"
                   },
                   {
@@ -967,7 +967,7 @@
                   {
                     "component": "Text",
                     "id": "t66",
-                    "text": "「tool」、「Discord」、「removed」\n在系统设置中选中它们，点「−」移除。",
+                    "text": "「tool」、「Discord」、「removed」\n应用已经删了，权限可以一起移除",
                     "variant": "caption"
                   },
                   {

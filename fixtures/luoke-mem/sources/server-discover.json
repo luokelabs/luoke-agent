@@ -6,7 +6,7 @@
       "_meta": {
         "io.modelcontextprotocol/serverInfo": {
           "name": "luoke-mem",
-          "version": "$VERSION"
+          "version": "0.44.0"
         }
       },
       "capabilities": {

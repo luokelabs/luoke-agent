@@ -1,0 +1,231 @@
+{
+  "reply": {
+    "id": 1010,
+    "jsonrpc": "2.0",
+    "result": {
+      "contents": [
+        {
+          "mimeType": "application/json",
+          "text": {
+            "auto": null,
+            "bytes": 0,
+            "count": 5,
+            "facts": {
+              "apps": [],
+              "appsInstalled": 0,
+              "appsMissing": 0,
+              "groups": {
+                "skill": 5
+              },
+              "password": 0,
+              "rebuilds": 0,
+              "tools": [],
+              "userFiles": "none"
+            },
+            "files": 5,
+            "id": "ai-plugin",
+            "items": [
+              {
+                "bytes": null,
+                "facts": {
+                  "agent": "Claude Code",
+                  "kinds": [
+                    "download-exec",
+                    "escalation"
+                  ],
+                  "scope": "personal",
+                  "skill": "helper-0"
+                },
+                "finding": "skill.download-exec/000000000009",
+                "group": "skill",
+                "key": "i2",
+                "options": [
+                  "trash",
+                  "keep",
+                  "ignore"
+                ],
+                "password": false,
+                "path": "~/.claude/skills/helper-0",
+                "paths": [
+                  "~/.claude/skills/helper-0"
+                ],
+                "pathsMore": 0,
+                "plan": "p-000000000008",
+                "reason": "download-exec",
+                "rebuilds": false,
+                "restorable": true,
+                "reveal": "~/.claude/skills/helper-0",
+                "rule": "skill.download-exec",
+                "suggested": "trash",
+                "userFiles": "none"
+              },
+              {
+                "bytes": null,
+                "facts": {
+                  "agent": "Claude Code",
+                  "kinds": [
+                    "download-exec",
+                    "escalation"
+                  ],
+                  "scope": "personal",
+                  "skill": "helper-1"
+                },
+                "finding": "skill.download-exec/000000000010",
+                "group": "skill",
+                "key": "i3",
+                "options": [
+                  "trash",
+                  "keep",
+                  "ignore"
+                ],
+                "password": false,
+                "path": "~/.claude/skills/helper-1",
+                "paths": [
+                  "~/.claude/skills/helper-1"
+                ],
+                "pathsMore": 0,
+                "plan": "p-000000000008",
+                "reason": "download-exec",
+                "rebuilds": false,
+                "restorable": true,
+                "reveal": "~/.claude/skills/helper-1",
+                "rule": "skill.download-exec",
+                "suggested": "trash",
+                "userFiles": "none"
+              },
+              {
+                "bytes": null,
+                "facts": {
+                  "agent": "Claude Code",
+                  "kinds": [
+                    "download-exec",
+                    "escalation"
+                  ],
+                  "scope": "personal",
+                  "skill": "helper-2"
+                },
+                "finding": "skill.download-exec/000000000011",
+                "group": "skill",
+                "key": "i4",
+                "options": [
+                  "trash",
+                  "keep",
+                  "ignore"
+                ],
+                "password": false,
+                "path": "~/.claude/skills/helper-2",
+                "paths": [
+                  "~/.claude/skills/helper-2"
+                ],
+                "pathsMore": 0,
+                "plan": "p-000000000008",
+                "reason": "download-exec",
+                "rebuilds": false,
+                "restorable": true,
+                "reveal": "~/.claude/skills/helper-2",
+                "rule": "skill.download-exec",
+                "suggested": "trash",
+                "userFiles": "none"
+              },
+              {
+                "bytes": null,
+                "facts": {
+                  "agent": "Claude Code",
+                  "kinds": [
+                    "download-exec",
+                    "escalation"
+                  ],
+                  "scope": "personal",
+                  "skill": "helper-3"
+                },
+                "finding": "skill.download-exec/000000000012",
+                "group": "skill",
+                "key": "i5",
+                "options": [
+                  "trash",
+                  "keep",
+                  "ignore"
+                ],
+                "password": false,
+                "path": "~/.claude/skills/helper-3",
+                "paths": [
+                  "~/.claude/skills/helper-3"
+                ],
+                "pathsMore": 0,
+                "plan": "p-000000000008",
+                "reason": "download-exec",
+                "rebuilds": false,
+                "restorable": true,
+                "reveal": "~/.claude/skills/helper-3",
+                "rule": "skill.download-exec",
+                "suggested": "trash",
+                "userFiles": "none"
+              },
+              {
+                "bytes": null,
+                "facts": {
+                  "agent": "Claude Code",
+                  "kinds": [
+                    "download-exec",
+                    "escalation"
+                  ],
+                  "scope": "personal",
+                  "skill": "helper-4"
+                },
+                "finding": "skill.download-exec/000000000013",
+                "group": "skill",
+                "key": "i6",
+                "options": [
+                  "trash",
+                  "keep",
+                  "ignore"
+                ],
+                "password": false,
+                "path": "~/.claude/skills/helper-4",
+                "paths": [
+                  "~/.claude/skills/helper-4"
+                ],
+                "pathsMore": 0,
+                "plan": "p-000000000008",
+                "reason": "download-exec",
+                "rebuilds": false,
+                "restorable": true,
+                "reveal": "~/.claude/skills/helper-4",
+                "rule": "skill.download-exec",
+                "suggested": "trash",
+                "userFiles": "none"
+              }
+            ],
+            "known": true,
+            "more": 0,
+            "scanned": {
+              "finished": "2026-10-20T12:00:00Z",
+              "started": "2026-10-20T12:00:00Z"
+            },
+            "schema": 1,
+            "suggested": 5,
+            "suggestedBytes": 0
+          },
+          "uri": "data/category?id=ai-plugin"
+        }
+      ],
+      "resultType": "complete"
+    }
+  },
+  "request": {
+    "id": 1010,
+    "jsonrpc": "2.0",
+    "method": "resources/read",
+    "params": {
+      "_meta": {
+        "io.modelcontextprotocol/clientCapabilities": {},
+        "io.modelcontextprotocol/clientInfo": {
+          "name": "luoke-agent",
+          "version": "fixtures"
+        },
+        "io.modelcontextprotocol/protocolVersion": "2026-07-28"
+      },
+      "uri": "data/category?id=ai-plugin"
+    }
+  }
+}

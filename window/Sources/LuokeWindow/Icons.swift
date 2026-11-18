@@ -74,6 +74,24 @@ struct BrandBadge: View {
     }
 }
 
+/// 带字的主 logo：品牌 media-kit 的横排组合（海螺加字标 luoke），浅色、深色各一版，用现成的图，不自己拼。
+/// `height` 是海螺的高（也就是整张图的高）
+public struct BrandLockup: View {
+    var height: CGFloat
+    @Environment(\.lk) private var p
+
+    public init(height: CGFloat = 20) { self.height = height }
+
+    public var body: some View {
+        if let image = Resources.image(p.dark ? "lockup-dark" : "lockup-light") {
+            Image(nsImage: image).resizable().interpolation(.high)
+                .aspectRatio(image.size.width / max(image.size.height, 1), contentMode: .fit)
+                .frame(height: height)
+                .accessibilityLabel("螺壳")
+        }
+    }
+}
+
 /// 螺壳的海螺（原型 conch 符号的路径，viewBox 171 141 916 916；只有 M、C、Z）
 struct Conch: Shape {
     nonisolated(unsafe) static let base: Path = {
@@ -153,7 +171,7 @@ struct ConchMark: View {
     }
 }
 
-/// 吉祥物（探出头的海螺）：「今天」没有要你决定的、一件件处理都答完了
+/// 吉祥物（探出头的海螺）：「今天」没有要你决定的、逐件处理都答完了
 struct Mascot: View {
     var width: CGFloat = 56
 

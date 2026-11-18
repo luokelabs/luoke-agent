@@ -1,0 +1,139 @@
+{
+  "reply": {
+    "id": 10,
+    "jsonrpc": "2.0",
+    "result": {
+      "content": [
+        {
+          "text": "移到废纸篓 1 项（110.2 MB）。",
+          "type": "text"
+        }
+      ],
+      "isError": false,
+      "resultType": "complete",
+      "structuredContent": {
+        "card": [
+          {
+            "updateComponents": {
+              "components": [
+                {
+                  "children": [
+                    "r97900-t1",
+                    "r97900-t2",
+                    "r97900-t3",
+                    "r97900-r5"
+                  ],
+                  "component": "Column",
+                  "id": "root"
+                },
+                {
+                  "component": "Text",
+                  "id": "r97900-t1",
+                  "text": "移到废纸篓 1 项（110.2 MB）。"
+                },
+                {
+                  "component": "Text",
+                  "id": "r97900-t2",
+                  "text": "临时目录里有 21 个 puppeteer_dev_chrome_profile-* 没被删掉，共 110.2 MB",
+                  "variant": "caption"
+                },
+                {
+                  "component": "Text",
+                  "id": "r97900-t3",
+                  "text": "倒掉废纸篓才真正腾出空间。",
+                  "variant": "caption"
+                },
+                {
+                  "action": {
+                    "event": {
+                      "context": {
+                        "id": "p-000000000002"
+                      },
+                      "name": "scan_restore"
+                    }
+                  },
+                  "child": "r97900-b4-text",
+                  "component": "Button",
+                  "id": "r97900-b4"
+                },
+                {
+                  "component": "Text",
+                  "id": "r97900-b4-text",
+                  "text": "放回"
+                },
+                {
+                  "children": [
+                    "r97900-b4"
+                  ],
+                  "component": "Row",
+                  "id": "r97900-r5"
+                }
+              ],
+              "surfaceId": "overview"
+            },
+            "version": "v0.9"
+          }
+        ],
+        "data": {
+          "cloned": {
+            "bytes": 0,
+            "count": 0
+          },
+          "gone": 0,
+          "ignored": 0,
+          "left": [],
+          "links": 0,
+          "moved": {
+            "bytes": 110186496,
+            "count": 1
+          },
+          "partly": 0,
+          "password": false,
+          "removed": {
+            "bytes": 0,
+            "count": 0
+          },
+          "restore": "p-000000000002",
+          "retry": null,
+          "round": null,
+          "scriptsOff": 0,
+          "skipped": 0,
+          "trashed": true,
+          "type": "applied",
+          "unchanged": 0,
+          "unrecorded": []
+        },
+        "done": true
+      }
+    }
+  },
+  "request": {
+    "id": 10,
+    "jsonrpc": "2.0",
+    "method": "tools/call",
+    "params": {
+      "_meta": {
+        "ai.luoke/user-action": {
+          "at": "2026-10-20T20:05:00+08:00",
+          "componentId": "trash-selected",
+          "surfaceId": "overview"
+        },
+        "io.modelcontextprotocol/clientCapabilities": {},
+        "io.modelcontextprotocol/clientInfo": {
+          "name": "luoke-agent",
+          "version": "fixtures"
+        },
+        "io.modelcontextprotocol/protocolVersion": "2026-07-28"
+      },
+      "arguments": {
+        "choices": {
+          "i1": [
+            "trash"
+          ]
+        },
+        "plan_id": "p-000000000002"
+      },
+      "name": "scan_apply"
+    }
+  }
+}

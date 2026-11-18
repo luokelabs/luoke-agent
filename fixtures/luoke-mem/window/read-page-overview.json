@@ -1,0 +1,283 @@
+{
+  "reply": {
+    "id": 6,
+    "jsonrpc": "2.0",
+    "result": {
+      "contents": [
+        {
+          "mimeType": "application/json",
+          "text": [
+            {
+              "createSurface": {
+                "catalogId": "ai.luoke/a2ui/agent/1",
+                "surfaceId": "overview"
+              },
+              "version": "v0.9"
+            },
+            {
+              "updateComponents": {
+                "components": [
+                  {
+                    "children": [
+                      "t1",
+                      "i8",
+                      "i15"
+                    ],
+                    "component": "Column",
+                    "id": "root"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "t1",
+                    "text": "最近了解到的",
+                    "variant": "caption"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "t2",
+                    "text": "学校：某大学计算机系"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "t3",
+                    "text": "关于你 · 11月5日",
+                    "variant": "caption"
+                  },
+                  {
+                    "children": [
+                      "t2",
+                      "t3"
+                    ],
+                    "component": "Column",
+                    "id": "c4"
+                  },
+                  {
+                    "action": {
+                      "event": {
+                        "context": {
+                          "note": 25,
+                          "op": "reject"
+                        },
+                        "name": "mem_note"
+                      }
+                    },
+                    "child": "b5-label",
+                    "component": "Button",
+                    "id": "b5",
+                    "variant": "borderless"
+                  },
+                  {
+                    "children": [
+                      "b5-icon",
+                      "b5-text"
+                    ],
+                    "component": "Row",
+                    "id": "b5-label"
+                  },
+                  {
+                    "component": "Icon",
+                    "id": "b5-icon",
+                    "name": "x"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "b5-text",
+                    "text": "不对"
+                  },
+                  {
+                    "action": {
+                      "event": {
+                        "context": {
+                          "args": {
+                            "id": "25"
+                          },
+                          "page": "item"
+                        },
+                        "name": "agent.open_page"
+                      }
+                    },
+                    "child": "b6-label",
+                    "component": "Button",
+                    "id": "b6",
+                    "variant": "borderless"
+                  },
+                  {
+                    "children": [
+                      "b6-icon",
+                      "b6-text"
+                    ],
+                    "component": "Row",
+                    "id": "b6-label"
+                  },
+                  {
+                    "component": "Icon",
+                    "id": "b6-icon",
+                    "name": "eye"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "b6-text",
+                    "text": "看依据"
+                  },
+                  {
+                    "children": [
+                      "b5",
+                      "b6"
+                    ],
+                    "component": "Row",
+                    "id": "r7"
+                  },
+                  {
+                    "children": [
+                      "c4",
+                      "r7"
+                    ],
+                    "component": "Row",
+                    "id": "i8",
+                    "justify": "spaceBetween"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "t9",
+                    "text": "在读研究生，导师是王老师"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "t10",
+                    "text": "关于你 · 11月4日",
+                    "variant": "caption"
+                  },
+                  {
+                    "children": [
+                      "t9",
+                      "t10"
+                    ],
+                    "component": "Column",
+                    "id": "c11"
+                  },
+                  {
+                    "action": {
+                      "event": {
+                        "context": {
+                          "note": 24,
+                          "op": "reject"
+                        },
+                        "name": "mem_note"
+                      }
+                    },
+                    "child": "b12-label",
+                    "component": "Button",
+                    "id": "b12",
+                    "variant": "borderless"
+                  },
+                  {
+                    "children": [
+                      "b12-icon",
+                      "b12-text"
+                    ],
+                    "component": "Row",
+                    "id": "b12-label"
+                  },
+                  {
+                    "component": "Icon",
+                    "id": "b12-icon",
+                    "name": "x"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "b12-text",
+                    "text": "不对"
+                  },
+                  {
+                    "action": {
+                      "event": {
+                        "context": {
+                          "args": {
+                            "id": "24"
+                          },
+                          "page": "item"
+                        },
+                        "name": "agent.open_page"
+                      }
+                    },
+                    "child": "b13-label",
+                    "component": "Button",
+                    "id": "b13",
+                    "variant": "borderless"
+                  },
+                  {
+                    "children": [
+                      "b13-icon",
+                      "b13-text"
+                    ],
+                    "component": "Row",
+                    "id": "b13-label"
+                  },
+                  {
+                    "component": "Icon",
+                    "id": "b13-icon",
+                    "name": "eye"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "b13-text",
+                    "text": "看依据"
+                  },
+                  {
+                    "children": [
+                      "b12",
+                      "b13"
+                    ],
+                    "component": "Row",
+                    "id": "r14"
+                  },
+                  {
+                    "children": [
+                      "c11",
+                      "r14"
+                    ],
+                    "component": "Row",
+                    "id": "i15",
+                    "justify": "spaceBetween"
+                  }
+                ],
+                "surfaceId": "overview"
+              },
+              "version": "v0.9"
+            }
+          ],
+          "uri": "page/overview"
+        }
+      ],
+      "resultType": "complete"
+    }
+  },
+  "request": {
+    "id": 6,
+    "jsonrpc": "2.0",
+    "method": "resources/read",
+    "params": {
+      "_meta": {
+        "io.modelcontextprotocol/clientCapabilities": {
+          "experimental": {
+            "ai.luoke/a2ui": {
+              "features": [
+                "openPage",
+                "pageArgs",
+                "confirm",
+                "rowOpen",
+                "fieldSubmit"
+              ]
+            }
+          }
+        },
+        "io.modelcontextprotocol/clientInfo": {
+          "name": "luoke-agent",
+          "version": "fixtures"
+        },
+        "io.modelcontextprotocol/protocolVersion": "2026-07-28"
+      },
+      "uri": "page/overview"
+    }
+  }
+}

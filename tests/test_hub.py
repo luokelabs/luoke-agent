@@ -316,7 +316,7 @@ class RunnerHubTest(unittest.TestCase):
         self.hub.answers["/accessories"] = starting(5)
         self.refresh()
         self.assertEqual(self.runner.next_hub, self.now + 5, "照主控说的 retry_after")
-        self.assertEqual(self.agent.notices["hub"], "螺壳还没准备好，工具过一会儿列出来。")
+        self.assertEqual(self.agent.notices["hub"], "螺壳正在准备，应用稍后列出")
         self.assertIn("feed", [e for e, _ in self.events()], "那一句马上给窗口")
         self.hub.answers["/accessories"] = starting(None)
         self.refresh()
@@ -324,7 +324,7 @@ class RunnerHubTest(unittest.TestCase):
         self.runner.hub = os.path.join(self.dir, "gone.sock")      # 连不上
         self.refresh()
         self.assertEqual(self.runner.next_hub, self.now + 8)
-        self.assertEqual(self.agent.notices["hub"], "螺壳没在运行，暂时找不到工具。")
+        self.assertEqual(self.agent.notices["hub"], "螺壳未运行，暂时找不到应用")
         self.refresh()
         self.assertEqual(self.runner.next_hub, self.now + runner_mod.HUB_EVERY, "退避到平常的间隔为止")
         self.hub.answers["/accessories"] = starting(60)

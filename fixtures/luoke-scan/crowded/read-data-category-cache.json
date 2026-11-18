@@ -1,0 +1,271 @@
+{
+  "reply": {
+    "id": 1004,
+    "jsonrpc": "2.0",
+    "result": {
+      "contents": [
+        {
+          "mimeType": "application/json",
+          "text": {
+            "auto": "cache",
+            "bytes": 392167424,
+            "count": 7,
+            "facts": {
+              "apps": [],
+              "appsInstalled": 0,
+              "appsMissing": 0,
+              "groups": {
+                "tool-cache": 7
+              },
+              "password": 0,
+              "rebuilds": 7,
+              "tools": [
+                "Cargo",
+                "Composer",
+                "Go",
+                "Gradle",
+                "node-gyp",
+                "pip"
+              ],
+              "userFiles": "none"
+            },
+            "files": 7,
+            "id": "cache",
+            "items": [
+              {
+                "bytes": 62914560,
+                "facts": {
+                  "cache": "pip",
+                  "tool": "pip"
+                },
+                "finding": "cache.rebuildable.pip/000000000021",
+                "group": "tool-cache",
+                "key": "i9",
+                "options": [
+                  "remove",
+                  "keep",
+                  "ignore"
+                ],
+                "password": false,
+                "path": "~/Library/Caches/pip",
+                "paths": [
+                  "~/Library/Caches/pip"
+                ],
+                "pathsMore": 0,
+                "plan": "p-000000000008",
+                "reason": "rebuilds",
+                "rebuilds": true,
+                "restorable": false,
+                "reveal": "~/Library/Caches/pip",
+                "rule": "cache.rebuildable.pip",
+                "suggested": "remove",
+                "userFiles": "none"
+              },
+              {
+                "bytes": 56623104,
+                "facts": {
+                  "cache": "go-build",
+                  "tool": "Go"
+                },
+                "finding": "cache.rebuildable.go-build/000000000022",
+                "group": "tool-cache",
+                "key": "i10",
+                "options": [
+                  "remove",
+                  "keep",
+                  "ignore"
+                ],
+                "password": false,
+                "path": "~/Library/Caches/go-build",
+                "paths": [
+                  "~/Library/Caches/go-build"
+                ],
+                "pathsMore": 0,
+                "plan": "p-000000000008",
+                "reason": "rebuilds",
+                "rebuilds": true,
+                "restorable": false,
+                "reveal": "~/Library/Caches/go-build",
+                "rule": "cache.rebuildable.go-build",
+                "suggested": "remove",
+                "userFiles": "none"
+              },
+              {
+                "bytes": 55574528,
+                "facts": {
+                  "cache": "cargo-registry-cache",
+                  "tool": "Cargo"
+                },
+                "finding": "cache.rebuildable.cargo-registry-cache/000000000023",
+                "group": "tool-cache",
+                "key": "i11",
+                "options": [
+                  "remove",
+                  "keep",
+                  "ignore"
+                ],
+                "password": false,
+                "path": "~/.cargo/registry/cache",
+                "paths": [
+                  "~/.cargo/registry/cache"
+                ],
+                "pathsMore": 0,
+                "plan": "p-000000000008",
+                "reason": "rebuilds",
+                "rebuilds": true,
+                "restorable": false,
+                "reveal": "~/.cargo/registry/cache",
+                "rule": "cache.rebuildable.cargo-registry-cache",
+                "suggested": "remove",
+                "userFiles": "none"
+              },
+              {
+                "bytes": 55574528,
+                "facts": {
+                  "cache": "gradle-caches",
+                  "tool": "Gradle"
+                },
+                "finding": "cache.rebuildable.gradle-caches/000000000024",
+                "group": "tool-cache",
+                "key": "i12",
+                "options": [
+                  "remove",
+                  "keep",
+                  "ignore"
+                ],
+                "password": false,
+                "path": "~/.gradle/caches",
+                "paths": [
+                  "~/.gradle/caches"
+                ],
+                "pathsMore": 0,
+                "plan": "p-000000000008",
+                "reason": "rebuilds",
+                "rebuilds": true,
+                "restorable": false,
+                "reveal": "~/.gradle/caches",
+                "rule": "cache.rebuildable.gradle-caches",
+                "suggested": "remove",
+                "userFiles": "none"
+              },
+              {
+                "bytes": 54525952,
+                "facts": {
+                  "cache": "composer",
+                  "tool": "Composer"
+                },
+                "finding": "cache.rebuildable.composer/000000000025",
+                "group": "tool-cache",
+                "key": "i13",
+                "options": [
+                  "remove",
+                  "keep",
+                  "ignore"
+                ],
+                "password": false,
+                "path": "~/Library/Caches/composer",
+                "paths": [
+                  "~/Library/Caches/composer"
+                ],
+                "pathsMore": 0,
+                "plan": "p-000000000008",
+                "reason": "rebuilds",
+                "rebuilds": true,
+                "restorable": false,
+                "reveal": "~/Library/Caches/composer",
+                "rule": "cache.rebuildable.composer",
+                "suggested": "remove",
+                "userFiles": "none"
+              },
+              {
+                "bytes": 53477376,
+                "facts": {
+                  "cache": "gradle-wrapper",
+                  "tool": "Gradle"
+                },
+                "finding": "cache.rebuildable.gradle-wrapper/000000000026",
+                "group": "tool-cache",
+                "key": "i14",
+                "options": [
+                  "remove",
+                  "keep",
+                  "ignore"
+                ],
+                "password": false,
+                "path": "~/.gradle/wrapper/dists",
+                "paths": [
+                  "~/.gradle/wrapper/dists"
+                ],
+                "pathsMore": 0,
+                "plan": "p-000000000008",
+                "reason": "rebuilds",
+                "rebuilds": true,
+                "restorable": false,
+                "reveal": "~/.gradle/wrapper/dists",
+                "rule": "cache.rebuildable.gradle-wrapper",
+                "suggested": "remove",
+                "userFiles": "none"
+              },
+              {
+                "bytes": 53477376,
+                "facts": {
+                  "cache": "node-gyp",
+                  "tool": "node-gyp"
+                },
+                "finding": "cache.rebuildable.node-gyp/000000000027",
+                "group": "tool-cache",
+                "key": "i15",
+                "options": [
+                  "remove",
+                  "keep",
+                  "ignore"
+                ],
+                "password": false,
+                "path": "~/Library/Caches/node-gyp",
+                "paths": [
+                  "~/Library/Caches/node-gyp"
+                ],
+                "pathsMore": 0,
+                "plan": "p-000000000008",
+                "reason": "rebuilds",
+                "rebuilds": true,
+                "restorable": false,
+                "reveal": "~/Library/Caches/node-gyp",
+                "rule": "cache.rebuildable.node-gyp",
+                "suggested": "remove",
+                "userFiles": "none"
+              }
+            ],
+            "known": true,
+            "more": 0,
+            "scanned": {
+              "finished": "2026-10-20T12:00:00Z",
+              "started": "2026-10-20T12:00:00Z"
+            },
+            "schema": 1,
+            "suggested": 7,
+            "suggestedBytes": 392167424
+          },
+          "uri": "data/category?id=cache"
+        }
+      ],
+      "resultType": "complete"
+    }
+  },
+  "request": {
+    "id": 1004,
+    "jsonrpc": "2.0",
+    "method": "resources/read",
+    "params": {
+      "_meta": {
+        "io.modelcontextprotocol/clientCapabilities": {},
+        "io.modelcontextprotocol/clientInfo": {
+          "name": "luoke-agent",
+          "version": "fixtures"
+        },
+        "io.modelcontextprotocol/protocolVersion": "2026-07-28"
+      },
+      "uri": "data/category?id=cache"
+    }
+  }
+}

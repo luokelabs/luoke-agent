@@ -73,6 +73,28 @@
                   }
                 ],
                 "created": "2026-10-20T12:00:00Z",
+                "data": {
+                  "cleans": [],
+                  "decide": {
+                    "bytes": 0,
+                    "caches": 0,
+                    "cleaned": 1,
+                    "freed": 62914560,
+                    "offerAuto": true,
+                    "plan": null,
+                    "rest": 7,
+                    "skipped": {
+                      "fda": 0,
+                      "other": 0,
+                      "virusDb": 0
+                    },
+                    "toLook": 7,
+                    "trash": 0
+                  },
+                  "failed": [],
+                  "moreCleans": 0,
+                  "type": "round"
+                },
                 "deadline": null,
                 "expires": "2026-10-23T12:00:00Z",
                 "id": "round/2026-10-20T12:00:00Z",

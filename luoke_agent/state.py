@@ -54,7 +54,11 @@ DEFAULTS: Dict[str, Any] = {
     "brief_minutes": 60,
     "quiet": {"start": "22:00", "end": "08:00"},   # 免打扰时段，用户能改、能关（None）
     "paused_until": None,       # 暂停提醒到什么时候（时间戳）；菜单栏图标的「暂停提醒一小时」
-    "modes": {},                # 每类怎么说：now / brief / window / off；没写的按急不急
+    "classes": {"urgent": "now", "decide": "brief", "done": "brief"},
+                                # 三类事各怎么提醒（设计规范 §18.7，2026-11-13 负责人定：急事、要你决定、替你做了）：
+                                # now 马上提醒 / brief 放进简报 / off 不提醒（照旧在窗口里）
+    "brief_time": None,         # 每天早上那份简报几点（HH:MM）；None 是免打扰结束时，没设免打扰是 08:00
+    "modes": {},                # 逐类设置：now / brief / window / off；没写的照它属于的那一类（classes）
     "away_seconds": 180,        # 空闲多久算不在 Mac 前
     "ignore_limit": 3,          # 连着几次没理就只放窗口
 }
@@ -74,7 +78,9 @@ class State:
             self.db.executescript(SCHEMA)
 
     def close(self) -> None:
-        self.db.close()
+        # 带着锁关：别的线程正在查就等它查完。查到一半连接被关掉，解释器会崩；关了以后再用是普通的报错
+        with self._lock:
+            self.db.close()
 
     # 事项
 
@@ -82,6 +88,35 @@ class State:
         with self._lock:
             row = self.db.execute("SELECT * FROM items WHERE key=?", (key,)).fetchone()
         return dict(row) if row else None
+
+    def history(self, before: Optional[float], source: Optional[str], limit: int) -> List[dict]:
+        """右边栏的「历史」：螺壳做过的事，就是用户点了、工具做了的事项，加上工具自己做了的（auto-done，还开着也算），从新到旧。
+        放下了、过期了、撤回了的不算（螺壳什么都没做）。
+        多取一条，调用的看有没有更多。agent 自己的提示（以后少说……）不算。带上存下的事项（标题、做了什么那一句）。
+        只读现有的表，不加列"""
+        # 工具自己做了的，时刻是第一次报上来的时候：它后来被工具收走（过零点）、被用户撤销的时刻不是做的时刻
+        # （负责人 11-16：自动处理的一律写 00:00）
+        at = "CASE WHEN i.kind = 'auto-done' THEN i.first_seen ELSE COALESCE(i.done_at, i.first_seen) END"
+        sql = (f"SELECT i.*, {at} AS at, c.item AS content, c.sid AS sid FROM items i"
+               " LEFT JOIN contents c ON c.key = i.key"
+               " WHERE ((i.status = 'done' AND i.outcome = 'answered') OR i.kind = 'auto-done') AND i.source != 'agent'")
+        args: list = []
+        if before is not None:
+            sql += f" AND {at} < ?"
+            args.append(before)
+        if source:
+            sql += " AND i.source = ?"
+            args.append(source)
+        sql += " ORDER BY at DESC LIMIT ?"
+        args.append(limit + 1)
+        with self._lock:
+            rows = [dict(r) for r in self.db.execute(sql, args)]
+        for r in rows:
+            try:
+                r["content"] = json.loads(r["content"]) if r["content"] else None
+            except ValueError:
+                r["content"] = None
+        return rows
 
     def remember(self, key: str, source: str, kind: str, urgency: str, now: float) -> dict:
         """第一次见到就记下（排着）；见过的更新急不急，返回记下的那条。"""
@@ -137,6 +172,11 @@ class State:
         with self._lock, self.db:
             self.db.execute("UPDATE items SET status=CASE WHEN notified_at IS NULL THEN 'queued' ELSE 'notified' END,"
                             " outcome=NULL, done_at=NULL WHERE key=? AND status='gone' AND outcome='withdrawn'", (key,))
+
+    def reopen(self, key: str) -> None:
+        """做完以后撤销了、来源又把这一件列了出来：回到看过、还没答（不改表，只改这一行的状态）。说过的不再说。"""
+        with self._lock, self.db:
+            self.db.execute("UPDATE items SET status='seen', outcome=NULL, done_at=NULL WHERE key=? AND status='done'", (key,))
 
     def forget_old(self, before: float) -> None:
         """答完、撤回很久的不用留着。"""

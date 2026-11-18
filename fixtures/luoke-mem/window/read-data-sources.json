@@ -1,0 +1,81 @@
+{
+  "reply": {
+    "id": 20,
+    "jsonrpc": "2.0",
+    "result": {
+      "contents": [
+        {
+          "mimeType": "application/json",
+          "text": {
+            "items": [
+              {
+                "last": "2026-11-05 20:45:00",
+                "notes": 0,
+                "on": true,
+                "records": 5,
+                "stopped_at": null,
+                "tool": "luoke-ime",
+                "topics": [
+                  {
+                    "records": 5,
+                    "topic": "ime-commit"
+                  }
+                ]
+              },
+              {
+                "last": "2026-11-05 20:45:00",
+                "notes": 6,
+                "on": true,
+                "records": 14,
+                "stopped_at": null,
+                "tool": "luoke-mail",
+                "topics": [
+                  {
+                    "records": 10,
+                    "topic": "sent-mail"
+                  },
+                  {
+                    "records": 4,
+                    "topic": "mail-contact"
+                  }
+                ]
+              }
+            ],
+            "ready": true,
+            "v": 1
+          },
+          "uri": "data/sources"
+        }
+      ],
+      "resultType": "complete"
+    }
+  },
+  "request": {
+    "id": 20,
+    "jsonrpc": "2.0",
+    "method": "resources/read",
+    "params": {
+      "_meta": {
+        "io.modelcontextprotocol/clientCapabilities": {
+          "experimental": {
+            "ai.luoke/a2ui": {
+              "features": [
+                "openPage",
+                "pageArgs",
+                "confirm",
+                "rowOpen",
+                "fieldSubmit"
+              ]
+            }
+          }
+        },
+        "io.modelcontextprotocol/clientInfo": {
+          "name": "luoke-agent",
+          "version": "fixtures"
+        },
+        "io.modelcontextprotocol/protocolVersion": "2026-07-28"
+      },
+      "uri": "data/sources"
+    }
+  }
+}

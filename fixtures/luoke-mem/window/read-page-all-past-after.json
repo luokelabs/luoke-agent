@@ -1,0 +1,291 @@
+{
+  "reply": {
+    "id": 45,
+    "jsonrpc": "2.0",
+    "result": {
+      "contents": [
+        {
+          "mimeType": "application/json",
+          "text": [
+            {
+              "createSurface": {
+                "catalogId": "ai.luoke/a2ui/agent/1",
+                "surfaceId": "all"
+              },
+              "version": "v0.9"
+            },
+            {
+              "updateComponents": {
+                "components": [
+                  {
+                    "children": [
+                      "r8",
+                      "f-q",
+                      "r10",
+                      "t11"
+                    ],
+                    "component": "Column",
+                    "id": "root"
+                  },
+                  {
+                    "action": {
+                      "event": {
+                        "context": {
+                          "page": "all"
+                        },
+                        "name": "agent.open_page"
+                      }
+                    },
+                    "child": "b1-text",
+                    "component": "Button",
+                    "id": "b1",
+                    "variant": "borderless"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "b1-text",
+                    "text": "全部"
+                  },
+                  {
+                    "action": {
+                      "event": {
+                        "context": {
+                          "args": {
+                            "view": "pending"
+                          },
+                          "page": "all"
+                        },
+                        "name": "agent.open_page"
+                      }
+                    },
+                    "child": "b2-text",
+                    "component": "Button",
+                    "id": "b2",
+                    "variant": "borderless"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "b2-text",
+                    "text": "待确认"
+                  },
+                  {
+                    "action": {
+                      "event": {
+                        "context": {
+                          "args": {
+                            "kind": "fact"
+                          },
+                          "page": "all"
+                        },
+                        "name": "agent.open_page"
+                      }
+                    },
+                    "child": "b3-text",
+                    "component": "Button",
+                    "id": "b3",
+                    "variant": "borderless"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "b3-text",
+                    "text": "关于你"
+                  },
+                  {
+                    "action": {
+                      "event": {
+                        "context": {
+                          "args": {
+                            "kind": "interest"
+                          },
+                          "page": "all"
+                        },
+                        "name": "agent.open_page"
+                      }
+                    },
+                    "child": "b4-text",
+                    "component": "Button",
+                    "id": "b4",
+                    "variant": "borderless"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "b4-text",
+                    "text": "关注的话题"
+                  },
+                  {
+                    "action": {
+                      "event": {
+                        "context": {
+                          "args": {
+                            "kind": "term"
+                          },
+                          "page": "all"
+                        },
+                        "name": "agent.open_page"
+                      }
+                    },
+                    "child": "b5-text",
+                    "component": "Button",
+                    "id": "b5",
+                    "variant": "borderless"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "b5-text",
+                    "text": "常用说法"
+                  },
+                  {
+                    "action": {
+                      "event": {
+                        "context": {
+                          "args": {
+                            "kind": "taste"
+                          },
+                          "page": "all"
+                        },
+                        "name": "agent.open_page"
+                      }
+                    },
+                    "child": "b6-text",
+                    "component": "Button",
+                    "id": "b6",
+                    "variant": "borderless"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "b6-text",
+                    "text": "精选的口味"
+                  },
+                  {
+                    "action": {
+                      "event": {
+                        "context": {
+                          "args": {
+                            "view": "rejected"
+                          },
+                          "page": "all"
+                        },
+                        "name": "agent.open_page"
+                      }
+                    },
+                    "child": "b7-text",
+                    "component": "Button",
+                    "id": "b7",
+                    "variant": "borderless"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "b7-text",
+                    "text": "说过不对的"
+                  },
+                  {
+                    "children": [
+                      "b1",
+                      "b2",
+                      "b3",
+                      "b4",
+                      "b5",
+                      "b6",
+                      "b7"
+                    ],
+                    "component": "Row",
+                    "id": "r8"
+                  },
+                  {
+                    "component": "TextField",
+                    "id": "f-q",
+                    "label": "搜索",
+                    "submit": "b9",
+                    "value": {
+                      "path": "/fields/q"
+                    }
+                  },
+                  {
+                    "action": {
+                      "event": {
+                        "context": {
+                          "args": {
+                            "q": {
+                              "path": "/fields/q"
+                            },
+                            "view": "past"
+                          },
+                          "page": "all"
+                        },
+                        "name": "agent.open_page"
+                      }
+                    },
+                    "child": "b9-text",
+                    "component": "Button",
+                    "id": "b9"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "b9-text",
+                    "text": "搜索"
+                  },
+                  {
+                    "children": [
+                      "b9"
+                    ],
+                    "component": "Row",
+                    "id": "r10"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "t11",
+                    "text": "这里还没有。"
+                  }
+                ],
+                "surfaceId": "all"
+              },
+              "version": "v0.9"
+            },
+            {
+              "updateDataModel": {
+                "path": "/",
+                "surfaceId": "all",
+                "value": {
+                  "fields": {
+                    "q": ""
+                  }
+                }
+              },
+              "version": "v0.9"
+            }
+          ],
+          "uri": "page/all?view=past"
+        }
+      ],
+      "resultType": "complete"
+    }
+  },
+  "request": {
+    "id": 45,
+    "jsonrpc": "2.0",
+    "method": "resources/read",
+    "params": {
+      "_meta": {
+        "io.modelcontextprotocol/clientCapabilities": {
+          "experimental": {
+            "ai.luoke/a2ui": {
+              "features": [
+                "openPage",
+                "pageArgs",
+                "confirm",
+                "rowOpen",
+                "fieldSubmit"
+              ]
+            }
+          }
+        },
+        "io.modelcontextprotocol/clientInfo": {
+          "name": "luoke-agent",
+          "version": "fixtures"
+        },
+        "io.modelcontextprotocol/protocolVersion": "2026-07-28"
+      },
+      "uri": "page/all?view=past"
+    }
+  }
+}

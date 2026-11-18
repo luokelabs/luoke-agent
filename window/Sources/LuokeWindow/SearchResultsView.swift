@@ -56,7 +56,7 @@ struct SearchResults: View {
     private var filters: some View {
         HStack(spacing: 6) {
             chip("全部", answer.hits.count, on: model.searchKind == nil) { model.filterSearch(nil) }
-            ForEach(answer.groups) { g in
+            ForEach(answer.allGroups) { g in
                 chip(g.label, g.hits.count, on: model.searchKind == g.id) { model.filterSearch(g.id) }
             }
             Spacer(minLength: 0)
@@ -74,7 +74,7 @@ struct SearchResults: View {
             .padding(.horizontal, 9).frame(height: 24)
             .background(Capsule().fill(on ? p.primary : p.tint))
         }
-        .buttonStyle(.plain)
+        .buttonStyle(.plainPointer)
         .accessibilityLabel("\(label) \(n) 条")
         .accessibilityAddTraits(on ? .isSelected : [])
     }
@@ -84,9 +84,28 @@ struct SearchResults: View {
     private var list: some View {
         let previewing = model.searchSelected != nil
         return VStack(alignment: .leading, spacing: 18) {
-            ForEach(SearchLayout.visible(answer.groups, filter: model.searchKind)) { g in
+            // 顶上「最相关」：各应用很对得上的，每个应用最多两条（工具协议 §1b）
+            if model.searchKind == nil && !answer.top.isEmpty {
+                VStack(alignment: .leading, spacing: 8) {
+                    HStack(spacing: 6) {
+                        LKIcon("sparkles", size: 14).foregroundStyle(p.mutedFg)
+                        Text("最相关").font(LKFont.ui(LKType.small, .semibold)).foregroundStyle(p.fg)
+                        Spacer(minLength: 0)
+                    }
+                    .padding(.horizontal, 2)
+                    VStack(alignment: .leading, spacing: 2) {
+                        ForEach(answer.top) { h in
+                            SearchRow(model: model, hit: h, icon: HitGroup.icon(h.kind), mail: h.kind == "mail").id(h.id)
+                        }
+                    }
+                }
+            }
+            ForEach(SearchLayout.visible(model.searchKind == nil ? answer.groups : answer.allGroups, filter: model.searchKind)) { g in
                 let shown = SearchLayout.shown(g, filtered: model.searchKind != nil, previewing: previewing,
                                                selected: model.searchSelected)
+                if g.quiet && model.searchKind == nil {
+                    quietLine(g)
+                } else {
                 VStack(alignment: .leading, spacing: 8) {
                     header(g, more: g.hits.count - shown.count)
                     if g.grid {
@@ -96,6 +115,7 @@ struct SearchResults: View {
                     } else {
                         rows(shown, icon: g.icon)
                     }
+                }
                 }
             }
             // 只给卡片的工具：照旧画它的卡片
@@ -107,6 +127,22 @@ struct SearchResults: View {
         }
         .padding(14)
         .frame(maxWidth: .infinity, alignment: .leading)
+    }
+
+    /// 一条都不是很对得上的那一组：一行「邮件里还有 3 封提到『护照』 ›」，点了只看这一组
+    private func quietLine(_ g: HitGroup) -> some View {
+        Button { model.filterSearch(g.id) } label: {
+            HStack(spacing: 6) {
+                LKIcon(g.icon, size: 14)
+                Text("\(g.label)里还有 \(g.hits.count) \(g.id == "mail" ? "封" : "个")提到「\(model.searchQuery)」")
+                LKIcon("chevron-right", size: 12)
+                Spacer(minLength: 0)
+            }
+            .font(LKFont.ui(Self.name)).foregroundStyle(p.mutedFg)
+            .padding(.horizontal, 2)
+            .contentShape(Rectangle())
+        }
+        .buttonStyle(.plainPointer)
     }
 
     private func header(_ g: HitGroup, more: Int) -> some View {
@@ -123,7 +159,7 @@ struct SearchResults: View {
                     }
                     .font(LKFont.ui(Self.name)).foregroundStyle(p.mutedFg)
                 }
-                .buttonStyle(.plain)
+                .buttonStyle(.plainPointer)
             }
         }
         .padding(.horizontal, 2)
@@ -156,7 +192,7 @@ struct SearchResults: View {
                     }
                 }
                 .padding(.vertical, 8).padding(.horizontal, 4)
-                .background(RoundedRectangle(cornerRadius: LKRadius.control, style: .continuous).fill(p.tint))
+                .background(RoundedRectangle(cornerRadius: p.controlRadius, style: .continuous).fill(p.tint))
             }
         }
     }
@@ -216,10 +252,10 @@ struct SearchCell: View {
                 Text(hit.folders ?? " ").font(LKFont.ui(SearchResults.small)).foregroundStyle(p.mutedFg).lineLimit(1)
             }
             .padding(5)
-            .background(RoundedRectangle(cornerRadius: LKRadius.control, style: .continuous).fill(on ? p.infoSoft : .clear))
+            .background(RoundedRectangle(cornerRadius: p.controlRadius, style: .continuous).fill(on ? p.infoSoft : .clear))
             .contentShape(Rectangle())
         }
-        .buttonStyle(.plain)
+        .buttonStyle(.plainPointer)
         .frame(minWidth: 0, maxWidth: .infinity)     // 一行几格一样宽，不看名字长短
         .accessibilityLabel([hit.title, hit.line, hit.folders].compactMap { $0 }.joined(separator: "，"))
         .accessibilityAddTraits(on ? .isSelected : [])
@@ -263,7 +299,7 @@ struct SearchRow: View {
             .background(RoundedRectangle(cornerRadius: LKRadius.small, style: .continuous).fill(on ? p.infoSoft : .clear))
             .contentShape(Rectangle())
         }
-        .buttonStyle(.plain)
+        .buttonStyle(.plainPointer)
         .accessibilityAddTraits(on ? .isSelected : [])
     }
 }
@@ -286,7 +322,7 @@ struct SearchThumb: View {
     var body: some View {
         let image = WindowModel.thumbKey(hit).flatMap { model.searchThumbs[$0] }
         let fit = hit.kind == "pdf" || hit.kind == "sheet"
-        RoundedRectangle(cornerRadius: LKRadius.control, style: .continuous).fill(p.muted)
+        RoundedRectangle(cornerRadius: p.controlRadius, style: .continuous).fill(p.muted)
             .aspectRatio(4 / 3, contentMode: .fit)
             .frame(minWidth: 0, maxWidth: .infinity)
             .overlay {
@@ -300,6 +336,20 @@ struct SearchThumb: View {
                     LKIcon(HitGroup.known[HitGroup.key(hit.kind)]?.icon ?? "file", size: 22).foregroundStyle(p.mutedFg.opacity(0.6))
                 }
             }
+            .overlay {
+                if hit.kind == "video", image != nil {          // 视频：封面中间一个播放标
+                    Image(systemName: "play.fill").font(.system(size: 13)).foregroundStyle(.white)
+                        .frame(width: 34, height: 34).background(Circle().fill(.black.opacity(0.45)))
+                }
+            }
+            .overlay(alignment: .bottomTrailing) {
+                if hit.kind == "video", let clock = hit.clock {
+                    Text(clock).font(LKFont.ui(SearchResults.small, .semibold)).monospacedDigit().foregroundStyle(.white).lineLimit(1)
+                        .padding(.horizontal, 5).padding(.vertical, 2)
+                        .background(RoundedRectangle(cornerRadius: LKRadius.small, style: .continuous).fill(.black.opacity(0.55)))
+                        .padding(6)
+                }
+            }
             .overlay(alignment: .bottomLeading) {
                 if badge, let line = hit.line {
                     Text(Self.badge(line)).font(LKFont.ui(SearchResults.small, .semibold)).foregroundStyle(p.primaryFg).lineLimit(1)
@@ -308,8 +358,8 @@ struct SearchThumb: View {
                         .padding(6)
                 }
             }
-            .clipShape(RoundedRectangle(cornerRadius: LKRadius.control, style: .continuous))
-            .overlay(RoundedRectangle(cornerRadius: LKRadius.control, style: .continuous).strokeBorder(p.border, lineWidth: 1))
+            .clipShape(RoundedRectangle(cornerRadius: p.controlRadius, style: .continuous))
+            .overlay(RoundedRectangle(cornerRadius: p.controlRadius, style: .continuous).strokeBorder(p.border, lineWidth: 1))
             .onAppear { model.loadThumb(hit) }
             .accessibilityHidden(true)
     }
@@ -323,7 +373,11 @@ struct SearchPreview: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
-            if hit.thumb != nil {
+            if hit.kind == "video" {                // 视频：点封面就是打开；没有封面也留着这一格，画视频的图标
+                Button { model.openHit(hit) } label: { SearchThumb(model: model, hit: hit, badge: true) }
+                    .buttonStyle(.plainPointer)
+                    .accessibilityLabel("打开")
+            } else if hit.thumb != nil {
                 SearchThumb(model: model, hit: hit, badge: true)
             }
             VStack(alignment: .leading, spacing: 3) {
@@ -333,7 +387,8 @@ struct SearchPreview: View {
                 } else if let f = hit.folders {
                     Text(f).font(LKFont.ui(SearchResults.name)).foregroundStyle(p.mutedFg)
                 }
-                let meta = [hit.kindLabel ?? HitGroup.known[HitGroup.key(hit.kind)]?.label, hit.day(full: true),
+                let long = hit.kind == "video" || hit.kind == "audio" ? hit.clock : nil
+                let meta = [hit.kindLabel ?? HitGroup.known[HitGroup.key(hit.kind)]?.label, long, hit.day(full: true),
                             hit.kind == "mail" ? hit.source : hit.line].compactMap { $0 }
                 if !meta.isEmpty {
                     Text(meta.joined(separator: " · ")).font(LKFont.ui(SearchResults.name)).foregroundStyle(p.mutedFg)

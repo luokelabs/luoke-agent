@@ -7,8 +7,11 @@
         {
           "mimeType": "application/json",
           "text": {
-            "count": 4,
-            "text": "记下了 0 条，有 4 条猜测等你确认。"
+            "count": 2,
+            "kept": 0,
+            "pending": 4,
+            "state": "quiet",
+            "text": "最近没有新了解到的。"
           },
           "uri": "summary"
         }

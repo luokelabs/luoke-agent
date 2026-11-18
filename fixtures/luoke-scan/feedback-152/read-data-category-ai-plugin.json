@@ -1,0 +1,302 @@
+{
+  "reply": {
+    "id": 1009,
+    "jsonrpc": "2.0",
+    "result": {
+      "contents": [
+        {
+          "mimeType": "application/json",
+          "text": {
+            "auto": null,
+            "bytes": 0,
+            "count": 7,
+            "facts": {
+              "apps": [],
+              "appsInstalled": 0,
+              "appsMissing": 0,
+              "groups": {
+                "chat-template": 4,
+                "skill": 3
+              },
+              "password": 0,
+              "rebuilds": 0,
+              "tools": [
+                "Hugging Face"
+              ],
+              "userFiles": "none"
+            },
+            "files": 7,
+            "id": "ai-plugin",
+            "items": [
+              {
+                "bytes": null,
+                "facts": {
+                  "agent": "Claude Code",
+                  "kinds": [
+                    "download-exec",
+                    "escalation"
+                  ],
+                  "scope": "personal",
+                  "skill": "claude-automation-recommender"
+                },
+                "finding": "skill.download-exec/000000000013",
+                "group": "skill",
+                "key": "i2",
+                "options": [
+                  "trash",
+                  "keep",
+                  "ignore"
+                ],
+                "password": false,
+                "path": "~/.claude/skills/claude-automation-recommender",
+                "paths": [
+                  "~/.claude/skills/claude-automation-recommender"
+                ],
+                "pathsMore": 0,
+                "plan": "p-000000000008",
+                "reason": "download-exec",
+                "rebuilds": false,
+                "restorable": true,
+                "reveal": "~/.claude/skills/claude-automation-recommender",
+                "rule": "skill.download-exec",
+                "suggested": "trash",
+                "userFiles": "none"
+              },
+              {
+                "bytes": null,
+                "facts": {
+                  "agent": "Claude Code",
+                  "kinds": [
+                    "download-exec",
+                    "escalation"
+                  ],
+                  "scope": "personal",
+                  "skill": "cloudflare"
+                },
+                "finding": "skill.download-exec/000000000014",
+                "group": "skill",
+                "key": "i3",
+                "options": [
+                  "trash",
+                  "keep",
+                  "ignore"
+                ],
+                "password": false,
+                "path": "~/.claude/skills/cloudflare",
+                "paths": [
+                  "~/.claude/skills/cloudflare"
+                ],
+                "pathsMore": 0,
+                "plan": "p-000000000008",
+                "reason": "download-exec",
+                "rebuilds": false,
+                "restorable": true,
+                "reveal": "~/.claude/skills/cloudflare",
+                "rule": "skill.download-exec",
+                "suggested": "trash",
+                "userFiles": "none"
+              },
+              {
+                "bytes": null,
+                "facts": {
+                  "agent": "Claude Code",
+                  "kinds": [
+                    "download-exec",
+                    "escalation"
+                  ],
+                  "scope": "personal",
+                  "skill": "example-command"
+                },
+                "finding": "skill.download-exec/000000000015",
+                "group": "skill",
+                "key": "i4",
+                "options": [
+                  "trash",
+                  "keep",
+                  "ignore"
+                ],
+                "password": false,
+                "path": "~/.claude/skills/example-command",
+                "paths": [
+                  "~/.claude/skills/example-command"
+                ],
+                "pathsMore": 0,
+                "plan": "p-000000000008",
+                "reason": "download-exec",
+                "rebuilds": false,
+                "restorable": true,
+                "reveal": "~/.claude/skills/example-command",
+                "rule": "skill.download-exec",
+                "suggested": "trash",
+                "userFiles": "none"
+              },
+              {
+                "bytes": null,
+                "facts": {
+                  "kinds": [
+                    "exfil",
+                    "conceal"
+                  ],
+                  "model": "example/MiniCPM-V-4_6",
+                  "template": "~/.cache/huggingface/hub/models--example--MiniCPM-V-4_6/snapshots/rev1/tokenizer_config.json",
+                  "tool": "Hugging Face"
+                },
+                "finding": "model.chat-template/000000000009",
+                "group": "chat-template",
+                "key": "i5",
+                "options": [
+                  "trash",
+                  "keep",
+                  "ignore"
+                ],
+                "password": false,
+                "path": "~/.cache/huggingface/hub/models--example--MiniCPM-V-4_6",
+                "paths": [
+                  "~/.cache/huggingface/hub/models--example--MiniCPM-V-4_6"
+                ],
+                "pathsMore": 0,
+                "plan": "p-000000000008",
+                "reason": "template-extra",
+                "rebuilds": false,
+                "restorable": true,
+                "reveal": "~/.cache/huggingface/hub/models--example--MiniCPM-V-4_6",
+                "rule": "model.chat-template",
+                "suggested": "trash",
+                "userFiles": "none"
+              },
+              {
+                "bytes": null,
+                "facts": {
+                  "kinds": [
+                    "exfil",
+                    "conceal"
+                  ],
+                  "model": "example/Qwen3.5-0.8B-Base",
+                  "template": "~/.cache/huggingface/hub/models--example--Qwen3.5-0.8B-Base/snapshots/rev1/tokenizer_config.json",
+                  "tool": "Hugging Face"
+                },
+                "finding": "model.chat-template/000000000010",
+                "group": "chat-template",
+                "key": "i6",
+                "options": [
+                  "trash",
+                  "keep",
+                  "ignore"
+                ],
+                "password": false,
+                "path": "~/.cache/huggingface/hub/models--example--Qwen3.5-0.8B-Base",
+                "paths": [
+                  "~/.cache/huggingface/hub/models--example--Qwen3.5-0.8B-Base"
+                ],
+                "pathsMore": 0,
+                "plan": "p-000000000008",
+                "reason": "template-extra",
+                "rebuilds": false,
+                "restorable": true,
+                "reveal": "~/.cache/huggingface/hub/models--example--Qwen3.5-0.8B-Base",
+                "rule": "model.chat-template",
+                "suggested": "trash",
+                "userFiles": "none"
+              },
+              {
+                "bytes": null,
+                "facts": {
+                  "kinds": [
+                    "exfil",
+                    "conceal"
+                  ],
+                  "model": "example/Qwen3.5-2B-Base",
+                  "template": "~/.cache/huggingface/hub/models--example--Qwen3.5-2B-Base/snapshots/rev1/tokenizer_config.json",
+                  "tool": "Hugging Face"
+                },
+                "finding": "model.chat-template/000000000011",
+                "group": "chat-template",
+                "key": "i7",
+                "options": [
+                  "trash",
+                  "keep",
+                  "ignore"
+                ],
+                "password": false,
+                "path": "~/.cache/huggingface/hub/models--example--Qwen3.5-2B-Base",
+                "paths": [
+                  "~/.cache/huggingface/hub/models--example--Qwen3.5-2B-Base"
+                ],
+                "pathsMore": 0,
+                "plan": "p-000000000008",
+                "reason": "template-extra",
+                "rebuilds": false,
+                "restorable": true,
+                "reveal": "~/.cache/huggingface/hub/models--example--Qwen3.5-2B-Base",
+                "rule": "model.chat-template",
+                "suggested": "trash",
+                "userFiles": "none"
+              },
+              {
+                "bytes": null,
+                "facts": {
+                  "kinds": [
+                    "exfil",
+                    "conceal"
+                  ],
+                  "model": "example/Qwen3.5-4B-MLX-4bit",
+                  "template": "~/.cache/huggingface/hub/models--example--Qwen3.5-4B-MLX-4bit/snapshots/rev1/tokenizer_config.json",
+                  "tool": "Hugging Face"
+                },
+                "finding": "model.chat-template/000000000012",
+                "group": "chat-template",
+                "key": "i8",
+                "options": [
+                  "trash",
+                  "keep",
+                  "ignore"
+                ],
+                "password": false,
+                "path": "~/.cache/huggingface/hub/models--example--Qwen3.5-4B-MLX-4bit",
+                "paths": [
+                  "~/.cache/huggingface/hub/models--example--Qwen3.5-4B-MLX-4bit"
+                ],
+                "pathsMore": 0,
+                "plan": "p-000000000008",
+                "reason": "template-extra",
+                "rebuilds": false,
+                "restorable": true,
+                "reveal": "~/.cache/huggingface/hub/models--example--Qwen3.5-4B-MLX-4bit",
+                "rule": "model.chat-template",
+                "suggested": "trash",
+                "userFiles": "none"
+              }
+            ],
+            "known": true,
+            "more": 0,
+            "scanned": {
+              "finished": "2026-10-20T12:00:00Z",
+              "started": "2026-10-20T12:00:00Z"
+            },
+            "schema": 1,
+            "suggested": 7,
+            "suggestedBytes": 0
+          },
+          "uri": "data/category?id=ai-plugin"
+        }
+      ],
+      "resultType": "complete"
+    }
+  },
+  "request": {
+    "id": 1009,
+    "jsonrpc": "2.0",
+    "method": "resources/read",
+    "params": {
+      "_meta": {
+        "io.modelcontextprotocol/clientCapabilities": {},
+        "io.modelcontextprotocol/clientInfo": {
+          "name": "luoke-agent",
+          "version": "fixtures"
+        },
+        "io.modelcontextprotocol/protocolVersion": "2026-07-28"
+      },
+      "uri": "data/category?id=ai-plugin"
+    }
+  }
+}

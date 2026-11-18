@@ -1,0 +1,290 @@
+{
+  "reply": {
+    "id": 64,
+    "jsonrpc": "2.0",
+    "result": {
+      "contents": [
+        {
+          "mimeType": "application/json",
+          "text": [
+            {
+              "createSurface": {
+                "catalogId": "ai.luoke/a2ui/agent/1",
+                "surfaceId": "settings"
+              },
+              "version": "v0.9"
+            },
+            {
+              "updateComponents": {
+                "components": [
+                  {
+                    "children": [
+                      "t1",
+                      "i9",
+                      "d10",
+                      "t11",
+                      "t12",
+                      "t13",
+                      "d14",
+                      "t15",
+                      "t16",
+                      "t17",
+                      "t18",
+                      "r20"
+                    ],
+                    "component": "Column",
+                    "id": "root"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "t1",
+                    "text": "各应用",
+                    "variant": "caption"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "t2",
+                    "text": "邮件助手"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "t3",
+                    "text": "从发出的邮件、写信给谁里学。",
+                    "variant": "caption"
+                  },
+                  {
+                    "children": [
+                      "t2",
+                      "t3"
+                    ],
+                    "component": "Column",
+                    "id": "c4"
+                  },
+                  {
+                    "action": {
+                      "event": {
+                        "context": {
+                          "args": {
+                            "tool": "luoke-mail"
+                          },
+                          "page": "settings"
+                        },
+                        "name": "agent.open_page"
+                      }
+                    },
+                    "child": "b5-label",
+                    "component": "Button",
+                    "id": "b5",
+                    "variant": "borderless"
+                  },
+                  {
+                    "children": [
+                      "b5-icon",
+                      "b5-text"
+                    ],
+                    "component": "Row",
+                    "id": "b5-label"
+                  },
+                  {
+                    "component": "Icon",
+                    "id": "b5-icon",
+                    "name": "eye"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "b5-text",
+                    "text": "看记了什么"
+                  },
+                  {
+                    "action": {
+                      "event": {
+                        "context": {
+                          "args": {
+                            "forget": "1",
+                            "tool": "luoke-mail"
+                          },
+                          "page": "settings"
+                        },
+                        "name": "agent.open_page"
+                      }
+                    },
+                    "child": "b6-label",
+                    "component": "Button",
+                    "id": "b6",
+                    "variant": "borderless"
+                  },
+                  {
+                    "children": [
+                      "b6-icon",
+                      "b6-text"
+                    ],
+                    "component": "Row",
+                    "id": "b6-label"
+                  },
+                  {
+                    "component": "Icon",
+                    "id": "b6-icon",
+                    "name": "trash-2"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "b6-text",
+                    "text": "忘掉邮件助手写的…"
+                  },
+                  {
+                    "action": {
+                      "event": {
+                        "context": {
+                          "on": false,
+                          "tool": "luoke-mail"
+                        },
+                        "name": "mem_learn"
+                      }
+                    },
+                    "child": "b7-text",
+                    "component": "Button",
+                    "id": "b7",
+                    "on": true,
+                    "variant": "switch"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "b7-text",
+                    "text": "从邮件助手学"
+                  },
+                  {
+                    "children": [
+                      "b5",
+                      "b6",
+                      "b7"
+                    ],
+                    "component": "Row",
+                    "id": "r8"
+                  },
+                  {
+                    "children": [
+                      "c4",
+                      "r8"
+                    ],
+                    "component": "Row",
+                    "id": "i9",
+                    "justify": "spaceBetween"
+                  },
+                  {
+                    "component": "Divider",
+                    "id": "d10"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "t11",
+                    "text": "整理",
+                    "variant": "caption"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "t12",
+                    "text": "还没有整理过。下次在你不用电脑时。"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "t13",
+                    "text": "还没有归纳过打的字，会在你不用电脑时进行。",
+                    "variant": "caption"
+                  },
+                  {
+                    "component": "Divider",
+                    "id": "d14"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "t15",
+                    "text": "数据",
+                    "variant": "caption"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "t16",
+                    "text": "记住的事 21 条"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "t17",
+                    "text": "输入法词条 5 条"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "t18",
+                    "text": "清空整份记忆：所有应用写的和记忆归纳的都删掉，找不回来。",
+                    "variant": "caption"
+                  },
+                  {
+                    "action": {
+                      "event": {
+                        "context": {
+                          "confirm": "清空"
+                        },
+                        "name": "mem_forget_all"
+                      }
+                    },
+                    "child": "b19-text",
+                    "component": "Button",
+                    "confirm": {
+                      "label": "清空",
+                      "text": "记住的事 21 条、输入法词条 5 条和各应用写的记录都删掉，找不回来。",
+                      "title": "清空整份记忆？"
+                    },
+                    "id": "b19"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "b19-text",
+                    "text": "清空整份记忆"
+                  },
+                  {
+                    "children": [
+                      "b19"
+                    ],
+                    "component": "Row",
+                    "id": "r20"
+                  }
+                ],
+                "surfaceId": "settings"
+              },
+              "version": "v0.9"
+            }
+          ],
+          "uri": "page/settings"
+        }
+      ],
+      "resultType": "complete"
+    }
+  },
+  "request": {
+    "id": 64,
+    "jsonrpc": "2.0",
+    "method": "resources/read",
+    "params": {
+      "_meta": {
+        "io.modelcontextprotocol/clientCapabilities": {
+          "experimental": {
+            "ai.luoke/a2ui": {
+              "features": [
+                "openPage",
+                "pageArgs",
+                "confirm",
+                "rowOpen",
+                "fieldSubmit"
+              ]
+            }
+          }
+        },
+        "io.modelcontextprotocol/clientInfo": {
+          "name": "luoke-agent",
+          "version": "fixtures"
+        },
+        "io.modelcontextprotocol/protocolVersion": "2026-07-28"
+      },
+      "uri": "page/settings"
+    }
+  }
+}

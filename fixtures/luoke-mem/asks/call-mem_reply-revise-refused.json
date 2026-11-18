@@ -1,6 +1,6 @@
 {
   "reply": {
-    "id": 12,
+    "id": 32,
     "jsonrpc": "2.0",
     "result": {
       "content": [
@@ -12,12 +12,13 @@
       "isError": true,
       "resultType": "complete",
       "structuredContent": {
-        "code": "invalid"
+        "code": "invalid",
+        "reason": "secret"
       }
     }
   },
   "request": {
-    "id": 12,
+    "id": 32,
     "jsonrpc": "2.0",
     "method": "tools/call",
     "params": {

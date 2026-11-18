@@ -1,6 +1,6 @@
 {
   "reply": {
-    "id": 12,
+    "id": 24,
     "jsonrpc": "2.0",
     "result": {
       "content": [
@@ -10,21 +10,38 @@
         }
       ],
       "isError": false,
-      "resultType": "complete"
+      "resultType": "complete",
+      "structuredContent": {
+        "name": "林晓",
+        "person": 4,
+        "result": "forget"
+      }
     }
   },
   "request": {
-    "id": 12,
+    "id": 24,
     "jsonrpc": "2.0",
     "method": "tools/call",
     "params": {
       "_meta": {
         "ai.luoke/user-action": {
           "at": "2026-11-06T10:06:00+08:00",
-          "componentId": "b16",
+          "componentId": "b24",
           "surfaceId": "people"
         },
-        "io.modelcontextprotocol/clientCapabilities": {},
+        "io.modelcontextprotocol/clientCapabilities": {
+          "experimental": {
+            "ai.luoke/a2ui": {
+              "features": [
+                "openPage",
+                "pageArgs",
+                "confirm",
+                "rowOpen",
+                "fieldSubmit"
+              ]
+            }
+          }
+        },
         "io.modelcontextprotocol/clientInfo": {
           "name": "luoke-agent",
           "version": "fixtures"
@@ -33,7 +50,7 @@
       },
       "arguments": {
         "op": "forget",
-        "person": 3,
+        "person": 4,
         "sure": true
       },
       "name": "mem_person"

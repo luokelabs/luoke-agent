@@ -41,6 +41,14 @@
             "version": "v0.9"
           }
         ],
+        "data": {
+          "back": 25,
+          "before": 0,
+          "left": 0,
+          "notes": [],
+          "round": null,
+          "type": "restored"
+        },
         "done": true
       }
     }

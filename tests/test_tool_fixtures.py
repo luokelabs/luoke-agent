@@ -20,7 +20,7 @@ import sys
 import time
 import unittest
 
-from luoke_agent import a2ui, replay_tool
+from luoke_agent import apppages, a2ui, replay_tool
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SCENARIOS = replay_tool.scenarios(os.path.join(ROOT, "fixtures"))
@@ -29,6 +29,12 @@ SCENARIOS = replay_tool.scenarios(os.path.join(ROOT, "fixtures"))
 # 一样了测试不过，提醒从这里删掉。
 KNOWN: dict = {
     # (场景, 录音文件): 为什么对不上、告诉谁了
+}
+
+
+# 工具录的卡片现在由核心照原始数据换成了自己拼的那一件（apppages 的 `items`）：录的按钮不在了，不点
+REPLACED = {
+    ("luoke-mail/auto-done", "call-mail_undo-card.json"),    # 邮件「已自动处理」照 data/today 拼，撤销走 mail_undo_step
 }
 
 
@@ -79,11 +85,18 @@ class ToolFixturesTest(unittest.TestCase):
             with contextlib.redirect_stderr(io.StringIO()):
                 s.start()
                 for rec in s.replay.writes():
+                    page = ((rec["request"]["params"].get("_meta") or {}).get("ai.luoke/user-action") or {}).get("surfaceId")
+                    if page and apppages.builds(s.source, page) is not None:
+                        continue        # 工具旧页上的点按：这一页现在由核心照原始数据拼（ADR 0028），录的按钮不在了
+                    if (name(sc), rec["file"]) in REPLACED:
+                        continue
                     with self.subTest(f"{name(sc)} {rec['file']}"):
                         before = len(s.replay.served)
                         r = s.tap_recorded(rec)
                         sent = [x for x in s.replay.served[before:] if x["request"].get("method") == "tools/call"
                                 and replay_tool.is_write(x["request"])]
+                        if not sent and r.get("text") == "此按钮已失效" and apppages.cards(s.source) is not None:
+                            continue    # 这张卡片现在由核心照原始数据拼（apppages 的 `card`），工具录的按钮不在了
                         if (name(sc), rec["file"]) in KNOWN:
                             same = len(sent) == 1 and replay_tool.comparable(sent[0]["request"]) == \
                                 replay_tool.comparable(rec["request"])
@@ -109,7 +122,8 @@ class ToolFixturesTest(unittest.TestCase):
             with contextlib.redirect_stderr(io.StringIO()):
                 s.run()
                 s.snapshot()            # 每一页都取一遍：页上的按钮也点得到
-            pages = {p["id"] for p in s.source.service["pages"]}
+            # 工具登记的页，加上核心照它的原始数据拼的页（ADR 0028，apppages）
+            pages = {p["id"] for p in apppages.pages(s.source, s.source.service["pages"])}
             shown = [(sid, surface) for sid, (_key, surface) in s.agent.surfaces.items()] + \
                     [(sid, surface) for sid, (_app, _page, surface) in s.agent.pages.items()]
             for sid, surface in shown:
@@ -126,7 +140,8 @@ class ToolFixturesTest(unittest.TestCase):
                         self.assertFalse(r.get("error"), r.get("text"))
                         self.assertIn(ctx.get("page"), pages, "开的是这个工具登记的页")
                         args = ctx.get("args") or {}
-                        want = {"app": s.app, "page": ctx["page"]}
+                        # 应用自己的旧页换成核心拼的那一页（apppages.alias：邮件的旧设置、规则、清扫）
+                        want = {"app": s.app, "page": apppages.alias(s.source, ctx["page"])}
                         if args:
                             if all(isinstance(v, str) for v in args.values()):
                                 want["args"] = args

@@ -1,0 +1,334 @@
+{
+  "reply": {
+    "id": 9,
+    "jsonrpc": "2.0",
+    "result": {
+      "contents": [
+        {
+          "mimeType": "application/json",
+          "text": [
+            {
+              "createSurface": {
+                "catalogId": "ai.luoke/a2ui/agent/1",
+                "surfaceId": "settings"
+              },
+              "version": "v0.9"
+            },
+            {
+              "updateComponents": {
+                "components": [
+                  {
+                    "children": [
+                      "t1",
+                      "k-sure",
+                      "t2",
+                      "t3",
+                      "r6",
+                      "t7",
+                      "t8",
+                      "r11",
+                      "d12",
+                      "t13",
+                      "t14",
+                      "t15",
+                      "d16",
+                      "t17",
+                      "t18",
+                      "t19",
+                      "t20",
+                      "f-clear",
+                      "r22"
+                    ],
+                    "component": "Column",
+                    "id": "root"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "t1",
+                    "text": "各应用",
+                    "variant": "caption"
+                  },
+                  {
+                    "component": "CheckBox",
+                    "id": "k-sure",
+                    "label": "我知道删了找不回来",
+                    "value": {
+                      "path": "/checks/sure"
+                    }
+                  },
+                  {
+                    "component": "Text",
+                    "id": "t2",
+                    "text": "螺壳输入法"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "t3",
+                    "text": "从打的字里学。",
+                    "variant": "caption"
+                  },
+                  {
+                    "action": {
+                      "event": {
+                        "context": {
+                          "sure": {
+                            "path": "/checks/sure"
+                          },
+                          "tool": "luoke-ime"
+                        },
+                        "name": "mem_forget_tool"
+                      }
+                    },
+                    "child": "b4-label",
+                    "component": "Button",
+                    "id": "b4",
+                    "variant": "borderless"
+                  },
+                  {
+                    "children": [
+                      "b4-icon",
+                      "b4-text"
+                    ],
+                    "component": "Row",
+                    "id": "b4-label"
+                  },
+                  {
+                    "component": "Icon",
+                    "id": "b4-icon",
+                    "name": "trash-2"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "b4-text",
+                    "text": "忘掉螺壳输入法写的"
+                  },
+                  {
+                    "action": {
+                      "event": {
+                        "context": {
+                          "on": false,
+                          "tool": "luoke-ime"
+                        },
+                        "name": "mem_learn"
+                      }
+                    },
+                    "child": "b5-text",
+                    "component": "Button",
+                    "id": "b5",
+                    "on": true,
+                    "variant": "switch"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "b5-text",
+                    "text": "从螺壳输入法学"
+                  },
+                  {
+                    "children": [
+                      "b4",
+                      "b5"
+                    ],
+                    "component": "Row",
+                    "id": "r6"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "t7",
+                    "text": "邮件助手"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "t8",
+                    "text": "从亲手处理的邮件里学。",
+                    "variant": "caption"
+                  },
+                  {
+                    "action": {
+                      "event": {
+                        "context": {
+                          "sure": {
+                            "path": "/checks/sure"
+                          },
+                          "tool": "luoke-mail"
+                        },
+                        "name": "mem_forget_tool"
+                      }
+                    },
+                    "child": "b9-label",
+                    "component": "Button",
+                    "id": "b9",
+                    "variant": "borderless"
+                  },
+                  {
+                    "children": [
+                      "b9-icon",
+                      "b9-text"
+                    ],
+                    "component": "Row",
+                    "id": "b9-label"
+                  },
+                  {
+                    "component": "Icon",
+                    "id": "b9-icon",
+                    "name": "trash-2"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "b9-text",
+                    "text": "忘掉邮件助手写的"
+                  },
+                  {
+                    "action": {
+                      "event": {
+                        "context": {
+                          "on": false,
+                          "tool": "luoke-mail"
+                        },
+                        "name": "mem_learn"
+                      }
+                    },
+                    "child": "b10-text",
+                    "component": "Button",
+                    "id": "b10",
+                    "on": true,
+                    "variant": "switch"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "b10-text",
+                    "text": "从邮件助手学"
+                  },
+                  {
+                    "children": [
+                      "b9",
+                      "b10"
+                    ],
+                    "component": "Row",
+                    "id": "r11"
+                  },
+                  {
+                    "component": "Divider",
+                    "id": "d12"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "t13",
+                    "text": "整理",
+                    "variant": "caption"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "t14",
+                    "text": "还没有整理过。下次在你不用电脑时。"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "t15",
+                    "text": "还没有归纳过打的字，会在你不用电脑时进行。",
+                    "variant": "caption"
+                  },
+                  {
+                    "component": "Divider",
+                    "id": "d16"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "t17",
+                    "text": "数据",
+                    "variant": "caption"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "t18",
+                    "text": "记住的事 0 条"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "t19",
+                    "text": "输入法词条 0 条"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "t20",
+                    "text": "清空整份记忆：所有应用写的和记忆归纳的都删掉，找不回来。要清空，在下面输入「清空」。",
+                    "variant": "caption"
+                  },
+                  {
+                    "component": "TextField",
+                    "id": "f-clear",
+                    "label": "输入「清空」",
+                    "value": {
+                      "path": "/fields/clear"
+                    }
+                  },
+                  {
+                    "action": {
+                      "event": {
+                        "context": {
+                          "confirm": {
+                            "path": "/fields/clear"
+                          }
+                        },
+                        "name": "mem_forget_all"
+                      }
+                    },
+                    "child": "b21-text",
+                    "component": "Button",
+                    "id": "b21"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "b21-text",
+                    "text": "清空整份记忆"
+                  },
+                  {
+                    "children": [
+                      "b21"
+                    ],
+                    "component": "Row",
+                    "id": "r22"
+                  }
+                ],
+                "surfaceId": "settings"
+              },
+              "version": "v0.9"
+            },
+            {
+              "updateDataModel": {
+                "path": "/",
+                "surfaceId": "settings",
+                "value": {
+                  "checks": {
+                    "sure": false
+                  },
+                  "fields": {
+                    "clear": ""
+                  }
+                }
+              },
+              "version": "v0.9"
+            }
+          ],
+          "uri": "page/settings"
+        }
+      ],
+      "resultType": "complete"
+    }
+  },
+  "request": {
+    "id": 9,
+    "jsonrpc": "2.0",
+    "method": "resources/read",
+    "params": {
+      "_meta": {
+        "io.modelcontextprotocol/clientCapabilities": {},
+        "io.modelcontextprotocol/clientInfo": {
+          "name": "luoke-agent",
+          "version": "fixtures"
+        },
+        "io.modelcontextprotocol/protocolVersion": "2026-07-28"
+      },
+      "uri": "page/settings"
+    }
+  }
+}

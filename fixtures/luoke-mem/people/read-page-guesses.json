@@ -1,6 +1,6 @@
 {
   "reply": {
-    "id": 7,
+    "id": 12,
     "jsonrpc": "2.0",
     "result": {
       "contents": [
@@ -19,112 +19,145 @@
                 "components": [
                   {
                     "children": [
-                      "h1",
-                      "t2",
-                      "t3",
-                      "t4",
-                      "r7",
-                      "r9"
+                      "r4",
+                      "f-q",
+                      "r6",
+                      "t7"
                     ],
                     "component": "Column",
                     "id": "root"
                   },
                   {
-                    "component": "Text",
-                    "id": "h1",
-                    "text": "猜测",
-                    "variant": "h4"
+                    "action": {
+                      "event": {
+                        "context": {
+                          "page": "all"
+                        },
+                        "name": "agent.open_page"
+                      }
+                    },
+                    "child": "b1-text",
+                    "component": "Button",
+                    "id": "b1",
+                    "variant": "borderless"
                   },
                   {
                     "component": "Text",
-                    "id": "t2",
-                    "text": "猜测不拿来用；你点「对」，螺壳的工具才会用它。点「不对」，以后不再提。",
-                    "variant": "caption"
-                  },
-                  {
-                    "component": "Text",
-                    "id": "t3",
-                    "text": "上级：Mira"
-                  },
-                  {
-                    "component": "Text",
-                    "id": "t4",
-                    "text": "关于你 · 依据 1 条 · 11月5日",
-                    "variant": "caption"
+                    "id": "b1-text",
+                    "text": "全部"
                   },
                   {
                     "action": {
                       "event": {
                         "context": {
-                          "note": 3,
-                          "op": "confirm"
+                          "args": {
+                            "kind": "fact"
+                          },
+                          "page": "all"
                         },
-                        "name": "mem_note"
+                        "name": "agent.open_page"
+                      }
+                    },
+                    "child": "b2-text",
+                    "component": "Button",
+                    "id": "b2",
+                    "variant": "borderless"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "b2-text",
+                    "text": "关于你"
+                  },
+                  {
+                    "action": {
+                      "event": {
+                        "context": {
+                          "args": {
+                            "kind": "term"
+                          },
+                          "page": "all"
+                        },
+                        "name": "agent.open_page"
+                      }
+                    },
+                    "child": "b3-text",
+                    "component": "Button",
+                    "id": "b3",
+                    "variant": "borderless"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "b3-text",
+                    "text": "常用说法"
+                  },
+                  {
+                    "children": [
+                      "b1",
+                      "b2",
+                      "b3"
+                    ],
+                    "component": "Row",
+                    "id": "r4"
+                  },
+                  {
+                    "component": "TextField",
+                    "id": "f-q",
+                    "label": "搜索",
+                    "submit": "b5",
+                    "value": {
+                      "path": "/fields/q"
+                    }
+                  },
+                  {
+                    "action": {
+                      "event": {
+                        "context": {
+                          "args": {
+                            "q": {
+                              "path": "/fields/q"
+                            },
+                            "view": "pending"
+                          },
+                          "page": "all"
+                        },
+                        "name": "agent.open_page"
                       }
                     },
                     "child": "b5-text",
                     "component": "Button",
-                    "id": "b5",
-                    "variant": "borderless"
+                    "id": "b5"
                   },
                   {
                     "component": "Text",
                     "id": "b5-text",
-                    "text": "对"
-                  },
-                  {
-                    "action": {
-                      "event": {
-                        "context": {
-                          "note": 3,
-                          "op": "reject"
-                        },
-                        "name": "mem_note"
-                      }
-                    },
-                    "child": "b6-text",
-                    "component": "Button",
-                    "id": "b6",
-                    "variant": "borderless"
-                  },
-                  {
-                    "component": "Text",
-                    "id": "b6-text",
-                    "text": "不对"
+                    "text": "搜索"
                   },
                   {
                     "children": [
-                      "b5",
-                      "b6"
+                      "b5"
                     ],
                     "component": "Row",
-                    "id": "r7"
-                  },
-                  {
-                    "action": {
-                      "event": {
-                        "context": {},
-                        "name": "mem_open"
-                      }
-                    },
-                    "child": "b8-text",
-                    "component": "Button",
-                    "id": "b8"
+                    "id": "r6"
                   },
                   {
                     "component": "Text",
-                    "id": "b8-text",
-                    "text": "在整份记忆里看依据"
-                  },
-                  {
-                    "children": [
-                      "b8"
-                    ],
-                    "component": "Row",
-                    "id": "r9"
+                    "id": "t7",
+                    "text": "这里还没有。"
                   }
                 ],
                 "surfaceId": "guesses"
+              },
+              "version": "v0.9"
+            },
+            {
+              "updateDataModel": {
+                "path": "/",
+                "surfaceId": "guesses",
+                "value": {
+                  "fields": {
+                    "q": ""
+                  }
+                }
               },
               "version": "v0.9"
             }
@@ -136,12 +169,24 @@
     }
   },
   "request": {
-    "id": 7,
+    "id": 12,
     "jsonrpc": "2.0",
     "method": "resources/read",
     "params": {
       "_meta": {
-        "io.modelcontextprotocol/clientCapabilities": {},
+        "io.modelcontextprotocol/clientCapabilities": {
+          "experimental": {
+            "ai.luoke/a2ui": {
+              "features": [
+                "openPage",
+                "pageArgs",
+                "confirm",
+                "rowOpen",
+                "fieldSubmit"
+              ]
+            }
+          }
+        },
         "io.modelcontextprotocol/clientInfo": {
           "name": "luoke-agent",
           "version": "fixtures"

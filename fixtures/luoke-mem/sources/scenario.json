@@ -4,6 +4,7 @@
     "resources/read": "contents[0].text 解开成了 JSON 值；线上是 JSON 文字"
   },
   "produced": {
+    "features": [],
     "mcp": "python3 -m luoke_mem --path <假记忆> mcp --clock <那一步的时钟>：一个请求一个进程",
     "seed": [
       "邮件助手记了三封发出的邮件，螺壳输入法两段打字，螺壳扫描一次清理；用户自己写了一条「在读研究生」"
@@ -11,7 +12,7 @@
     "tz": "Asia/Shanghai",
     "user_action_at": "点按时的 at 是那一步的时钟，按 Asia/Shanghai 写"
   },
-  "situation": "邮件助手、输入法、扫描都往记忆里写过东西。用户在「各应用写的」页上忘掉扫描写的，又想清空整份记忆但输错了字。",
+  "situation": "邮件助手、输入法、扫描都往记忆里写过东西。用户在「设置」里忘掉扫描写的，又想清空整份记忆但输错了字。",
   "steps": [
     {
       "clock": "2026-11-06T10:00:00",
@@ -45,6 +46,31 @@
     },
     {
       "clock": "2026-11-06T10:00:00",
+      "do": "打开应用页的「all」",
+      "file": "read-page-all.json"
+    },
+    {
+      "clock": "2026-11-06T10:00:00",
+      "do": "打开应用页的「people」",
+      "file": "read-page-people.json"
+    },
+    {
+      "clock": "2026-11-06T10:00:00",
+      "do": "打开应用页的「settings」",
+      "file": "read-page-settings.json"
+    },
+    {
+      "clock": "2026-11-06T10:00:00",
+      "do": "打开应用页的「item」",
+      "file": "read-page-item.json"
+    },
+    {
+      "clock": "2026-11-06T10:00:00",
+      "do": "打开应用页的「asks」",
+      "file": "read-page-asks.json"
+    },
+    {
+      "clock": "2026-11-06T10:00:00",
       "do": "打开应用页的「guesses」",
       "file": "read-page-guesses.json"
     },
@@ -55,13 +81,48 @@
     },
     {
       "clock": "2026-11-06T10:00:00",
-      "do": "打开应用页的「people」",
-      "file": "read-page-people.json"
+      "do": "打开应用页的「sources」",
+      "file": "read-page-sources.json"
     },
     {
       "clock": "2026-11-06T10:00:00",
-      "do": "打开应用页的「sources」",
-      "file": "read-page-sources.json"
+      "do": "读原始数据 data/recent",
+      "file": "read-data-recent.json"
+    },
+    {
+      "clock": "2026-11-06T10:00:00",
+      "do": "读原始数据 data/helped",
+      "file": "read-data-helped.json"
+    },
+    {
+      "clock": "2026-11-06T10:00:00",
+      "do": "读原始数据 data/asks",
+      "file": "read-data-asks.json"
+    },
+    {
+      "clock": "2026-11-06T10:00:00",
+      "do": "读原始数据 data/notes",
+      "file": "read-data-notes.json"
+    },
+    {
+      "clock": "2026-11-06T10:00:00",
+      "do": "读原始数据 data/people",
+      "file": "read-data-people.json"
+    },
+    {
+      "clock": "2026-11-06T10:00:00",
+      "do": "读原始数据 data/sources",
+      "file": "read-data-sources.json"
+    },
+    {
+      "clock": "2026-11-06T10:00:00",
+      "do": "读原始数据 data/data",
+      "file": "read-data-data.json"
+    },
+    {
+      "clock": "2026-11-06T10:05:30",
+      "do": "原始数据：忘掉螺壳扫描写的之前先试算会删多少",
+      "file": "read-data-forget.json"
     },
     {
       "clock": "2026-11-06T10:05:00",
@@ -75,8 +136,8 @@
     },
     {
       "clock": "2026-11-06T10:06:00",
-      "do": "窗口重新读「各应用写的」",
-      "file": "read-page-sources-after-forget.json"
+      "do": "窗口重新读「设置」",
+      "file": "read-page-settings-after-forget.json"
     },
     {
       "clock": "2026-11-06T10:06:00",
@@ -90,5 +151,5 @@
     }
   ],
   "title": "几个应用写过记忆",
-  "window": "「各应用写的」：三个应用各一行和「忘掉…写的」按钮，上面一个「我知道删了找不回来」的勾选框；底下清空整份记忆的输入框和按钮。忘掉扫描以后它那一行没了。"
+  "window": "「设置」：「各应用」三个应用各一行（名字、「从……里学。」、「忘掉…写的」），旧窗口上面一个「我知道删了找不回来」的勾选框；「整理」上次整理和上次归纳打的字；「数据」记住的事、输入法词条各几条，底下清空整份记忆的输入框和按钮。忘掉扫描以后它那一行没了。"
 }

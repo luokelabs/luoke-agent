@@ -46,75 +46,110 @@ final class HostTests: XCTestCase {
         XCTAssertEqual(m.page, .today, "模型是本体的窗口：主窗口留在原来那页")
         m.go(.prefs, tab: "alerts")
         XCTAssertEqual(m.page, .prefs)
-        XCTAssertEqual(m.prefsTab, .alerts)
+        XCTAssertEqual(m.prefsTab, .general, "提醒并进了「通用」")
         m.selectPrefsTab(.privacy)
-        XCTAssertEqual(m.prefsTab, .alerts, "隐私也是本体的")
-        m.selectPrefsTab(.permissions)
-        XCTAssertEqual(m.prefsTab, .permissions, "权限是 agent 的页，照旧切过去")
+        XCTAssertEqual(m.prefsTab, .privacy, "隐私与权限里有窗口自己的权限：整个标签不交出去")
         m.go(.apps)
         XCTAssertEqual(m.page, .prefs)
         m.upgrade(.mail)
-        XCTAssertEqual(h.calls, ["model", "privacy", "apps", "upgrade luoke-mail"])
+        XCTAssertEqual(h.calls, ["model", "apps", "upgrade luoke-mail"])
         XCTAssertTrue(m.prefsTabOpensElsewhere(.model))
-        XCTAssertTrue(m.prefsTabOpensElsewhere(.privacy))
-        XCTAssertFalse(m.prefsTabOpensElsewhere(.alerts))
+        XCTAssertFalse(m.prefsTabOpensElsewhere(.privacy))
+        XCTAssertFalse(m.prefsTabOpensElsewhere(.general))
+        XCTAssertNil(m.settingsData, "本体没给数据：不画示例的")
         m.perform(.go(.prefs, "model"))
         XCTAssertEqual(h.calls.last, "model", "「前往 → 模型」和侧栏底部的模型名走同一条")
     }
 
-    /// 本体给了模型、隐私的界面（11-09 负责人定）：画在窗口的设置里，不再另弹窗口；添加应用、升级照旧交给本体
-    final class EmbeddingHost: WindowHost {
+    /// 本体给的是数据（§16）：窗口画自己的「应用管理」，动作交给本体，卸载不在窗口里另弹确认
+    final class SnapshotHost: WindowHost {
         var calls: [String] = []
-        func settingsContent(_ tab: PrefsTab) -> AnyView? {
-            tab == .model || tab == .privacy ? AnyView(Text("本体的\(tab.title)")) : nil
-        }
+        var apps = HostApps(rows: [
+            HostAppRow(id: "luoke-mail", tool: .mail, tagline: "守着收件箱", version: "0.18.11", state: .installed, actions: [.disable, .rollback(to: "0.18.10"), .uninstall]),
+            HostAppRow(id: "luoke-ime", tool: .ime, tagline: "越用越懂你说话的方式", version: "0.1.20", state: .unavailable(reason: "内存不够这一档"), bundled: true),
+            HostAppRow(id: "luoke-search", tool: .search, tagline: "答案带出处", version: "0.4.2", state: .working(label: "正在下载", progress: 0.4)),
+        ], notice: HostAppsNotice(text: "输入法已重新启动", ok: true, action: (label: "打开键盘设置", app: "luoke-ime", action: .openKeyboardSettings)))
+        func appsSnapshot() -> HostApps? { apps }
+        func openAddApps() { calls.append("apps") }
         func openModelSettings() { calls.append("model") }
         func openPrivacySettings() { calls.append("privacy") }
+        func upgrade(app: String) { calls.append("upgrade \(app)") }
+        func perform(app: String, action: HostAppAction) { calls.append("\(app) \(action.title)") }
+        func install(app: String) { calls.append("install \(app)") }
+    }
+
+    /// 本体给了设置的数据（界面接口 §16）：三个标签都画在窗口里，改了一项、点了动作都交给本体
+    final class SettingsDataHost: WindowHost {
+        var calls: [String] = []
+        var settings = Sample.hostSettings
+        func settingsSnapshot() -> HostSettings? { settings }
+        func apply(_ change: HostSettingChange) { calls.append("\(change)") }
+        func checkForUpdates() { calls.append("check") }
+        func uninstallLuoke() { calls.append("uninstall") }
+        func exportDiagnostics() { calls.append("export") }
         func openAddApps() { calls.append("apps") }
+        func openModelSettings() { calls.append("model") }
+        func openPrivacySettings() { calls.append("privacy") }
         func upgrade(app: String) { calls.append("upgrade \(app)") }
     }
 
-    func testHostSettingsAreDrawnInTheWindow() {
+    func testHostSettingsDataDrivesTheSettingsPage() {
         let m = Sample.model()
-        let h = EmbeddingHost()
+        let h = SettingsDataHost()
         m.host = h
         m.go(.prefs, tab: "model")
-        XCTAssertEqual(m.page, .prefs, "模型画在设置里")
-        XCTAssertEqual(m.prefsTab, .model)
-        m.selectPrefsTab(.privacy)
-        XCTAssertEqual(m.prefsTab, .privacy)
-        m.perform(.go(.prefs, "model"))
-        XCTAssertEqual(m.prefsTab, .model, "「前往 → 模型」、侧栏底部的模型名也停在设置里")
-        XCTAssertFalse(m.prefsTabOpensElsewhere(.model), "标签上不画「在别处打开」")
-        XCTAssertFalse(m.prefsTabOpensElsewhere(.privacy))
-        m.go(.apps)
-        XCTAssertEqual(h.calls, ["apps"], "只有添加应用交出去")
-        XCTAssertNil(OldHost().settingsContent(.model), "老本体没给界面：照旧打开它的窗口")
+        XCTAssertEqual([m.page, m.prefsTab] as [AnyHashable], [Page.prefs, PrefsTab.model], "有数据就画在窗口里")
+        XCTAssertFalse(m.prefsTabOpensElsewhere(.model))
+        XCTAssertEqual(m.hostSettingsTab, .general, "能耗、登录时启动、更新在「通用」")
+        m.applySetting(.powerMode(.quiet))
+        m.applySetting(.tier("plus"))
+        m.settingsAction(.checkUpdates)
+        m.settingsAction(.upgrade)
+        m.settingsAction(.export)
+        m.settingsAction(.uninstall)
+        XCTAssertEqual(h.calls, ["powerMode(LuokeWindow.HostPowerMode.quiet)", "tier(\"plus\")", "check", "upgrade luoke-core", "export", "uninstall"])
+        h.settings.general.powerMode = .quiet
+        m.hostSettingsChanged()
+        XCTAssertEqual(m.settingsData?.general.powerMode, .quiet, "本体说变了，窗口重新取")
     }
 
-    /// 本体也给了应用目录：「添加应用」画在主窗口里；升级先翻到这一页，再交本体在那一行里升
-    final class AppsHost: WindowHost {
-        var calls: [String] = []
-        func appsContent() -> AnyView? { AnyView(Text("本体的应用目录")) }
-        func openModelSettings() { calls.append("model") }
-        func openPrivacySettings() { calls.append("privacy") }
-        func openAddApps() { calls.append("apps") }
-        func upgrade(app: String) { calls.append("upgrade \(app)") }
-    }
-
-    func testHostAppsAreDrawnInTheWindow() {
+    func testSampleSettingsChangeInTheWindow() {
         let m = Sample.model()
-        let h = AppsHost()
+        XCTAssertNotNil(m.settingsData, "没接本体：用示例")
+        m.applySetting(.batteryMode(.noLargeModel))
+        m.applySetting(.tier("plus"))
+        XCTAssertEqual(m.settingsData?.general.batteryMode, .noLargeModel)
+        XCTAssertEqual(m.settingsData?.models.tiers[1].state, .switching(progress: 0))
+        m.settingsDialog = .advanced
+        XCTAssertEqual(m.settingsDialog?.title, "高级（本机接口）")
+        XCTAssertEqual(ModelsTab.gb(0.5), "512 MB")
+        XCTAssertEqual(ModelsTab.gb(5.6), "5.6 GB")
+        XCTAssertEqual(ModelsTab.gb(27.8), "28 GB")
+    }
+
+    func testHostAppSnapshotDrivesTheAppsPage() {
+        let m = Sample.model()
+        let h = SnapshotHost()
         m.host = h
         m.go(.apps)
-        XCTAssertEqual(m.page, .apps, "添加应用画在主窗口里")
-        m.perform(.go(.apps, nil))
-        XCTAssertEqual(m.page, .apps, "菜单的「添加应用…」也停在窗口里")
-        m.go(.today)
-        m.upgrade(.mail)
-        XCTAssertEqual(m.page, .apps, "升级翻到「添加应用」页")
-        XCTAssertEqual(h.calls, ["upgrade luoke-mail"], "不打开本体的窗口")
-        XCTAssertNil(OldHost().appsContent(), "老本体没给界面：照旧打开它的窗口")
+        XCTAssertEqual(m.page, .apps, "有数据就停在窗口里，不打开本体的窗口")
+        XCTAssertEqual(h.calls, [])
+        XCTAssertEqual(m.appRows.map(\.id), ["luoke-mail", "luoke-ime", "luoke-search"])
+        XCTAssertFalse(m.confirmsUninstallHere, "卸载走本体的确认页")
+        let mail = m.appRows[0]
+        XCTAssertTrue(mail.canUninstall)
+        XCTAssertEqual(mail.moreActions, [.disable, .rollback(to: "0.18.10"), .uninstall], "都收进「更多」，卸载在最后")
+        XCTAssertFalse(m.appRows[1].canUninstall, "随螺壳装的不显示卸载")
+        let off = HostAppRow(id: "luoke-scan", tool: .scan, tagline: "", version: "0.1.0", state: .disabled, actions: [.enable, .uninstall])
+        XCTAssertTrue(off.enableOnRow)
+        XCTAssertEqual(off.moreActions, [.uninstall], "停用了的：「开启」在行上，不进「更多」；卸载照旧在「更多」里")
+        m.perform(.uninstall, on: mail)
+        m.perform(.rollback(to: "0.18.10"), on: mail)
+        m.perform(.openKeyboardSettings, onApp: "luoke-ime")
+        XCTAssertEqual(h.calls, ["luoke-mail 卸载", "luoke-mail 回退到 0.18.10", "luoke-ime 打开键盘设置"])
+        h.apps.rows[0].version = "0.18.12"
+        m.hostAppsChanged()
+        XCTAssertEqual(m.appRows[0].version, "0.18.12", "本体说数据变了，窗口重新取")
     }
 
     func testNoHostMeansTheWindowDrawsThePages() {

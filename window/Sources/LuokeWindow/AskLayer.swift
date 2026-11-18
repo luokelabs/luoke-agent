@@ -36,7 +36,7 @@ struct Pill: View {
                 LKIcon("sparkle", size: 16).foregroundStyle(p.mutedFg)
                 if let chip = chipText {
                     Text(chip).font(LKFont.ui(LKType.caption)).padding(.horizontal, 8).frame(height: 26)
-                        .background(RoundedRectangle(cornerRadius: LKRadius.control, style: .continuous).fill(p.muted))
+                        .background(RoundedRectangle(cornerRadius: p.controlRadius, style: .continuous).fill(p.muted))
                 }
                 Text(model.askOpen ? (model.answer?.question ?? "") : (model.page == .chat ? "接着问…" : "搜索，或者问螺壳"))
                     .foregroundStyle(model.askOpen ? p.fg : p.mutedFg)
@@ -44,7 +44,7 @@ struct Pill: View {
                 Spacer(minLength: 8)
                 Kbd(text: "⌘K")
                 LKIcon("arrow-up", size: 14).foregroundStyle(p.mutedFg)
-                    .frame(width: 30, height: 30).background(RoundedRectangle(cornerRadius: LKRadius.control, style: .continuous).fill(p.muted))
+                    .frame(width: 30, height: 30).background(RoundedRectangle(cornerRadius: p.controlRadius, style: .continuous).fill(p.muted))
             }
             .padding(EdgeInsets(top: 6, leading: 14, bottom: 6, trailing: 6))
             .frame(maxWidth: 640, minHeight: 48, maxHeight: 48)   // 最小窗口里内容区比 640 窄：跟着收
@@ -53,7 +53,7 @@ struct Pill: View {
             .shadow(color: .black.opacity(0.1), radius: 12, y: 6)
             .contentShape(Rectangle())
         }
-        .buttonStyle(.plain)
+        .buttonStyle(.plainPointer)
         .keyboardShortcut("k", modifiers: .command)
         .accessibilityLabel("搜索，或者问螺壳")
     }

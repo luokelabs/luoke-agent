@@ -81,7 +81,7 @@ class ServeTest(unittest.TestCase):
         r = cli._post(self.home, "/action", {"surfaceId": sid, "sourceComponentId": yes,
                                              "context": {"ask": 12345, "choice": "no"}})
         self.assertFalse(r["error"], "写死的值只认卡片上的：界面送来的 12345、no 不算")
-        self.assertEqual(r["text"], "记下了：对。")
+        self.assertEqual(r["text"], "已确认")
 
     def test_presence_window_status(self):
         self.assertEqual(cli._post(self.home, "/presence", {"idle": 1}), {})
@@ -117,6 +117,26 @@ class ServeTest(unittest.TestCase):
         self.assertEqual(cli._post(self.home, "/settings", {"brief": "on_open"})["brief"], "on_open")
         self.assertIn("error", cli._post(self.home, "/settings", {"brief": "hourly"}))
         self.assertEqual(self.agent.settings()["brief"], "on_open")
+
+    def test_activity_over_the_socket(self):
+        c = cli._Conn(cli.ui_socket(self.home))
+        try:
+            c.request("GET", "/activity?limit=5")
+            r = c.getresponse()
+            self.assertEqual(r.status, 200)
+            data = json.loads(r.read())
+        finally:
+            c.close()
+        self.assertEqual(set(data), {"rows", "more"})
+        for bad in ("/activity?limit=0", "/activity?limit=x", "/activity?before=yesterday"):
+            c = cli._Conn(cli.ui_socket(self.home))
+            try:
+                c.request("GET", bad)
+                r = c.getresponse()
+                r.read()
+                self.assertEqual(r.status, 400, bad)
+            finally:
+                c.close()
 
     def _button(self, s: a2ui.Surface, event: str) -> str:
         return next(c for c in a2ui._reachable(s.components) if s.components[c].get("component") == "Button"

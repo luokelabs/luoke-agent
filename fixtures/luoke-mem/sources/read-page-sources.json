@@ -1,6 +1,6 @@
 {
   "reply": {
-    "id": 10,
+    "id": 14,
     "jsonrpc": "2.0",
     "result": {
       "contents": [
@@ -19,34 +19,36 @@
                 "components": [
                   {
                     "children": [
-                      "h1",
-                      "t2",
+                      "t1",
                       "k-sure",
+                      "t2",
                       "t3",
-                      "r5",
-                      "t6",
-                      "r8",
-                      "t9",
+                      "r6",
+                      "t7",
+                      "t8",
                       "r11",
                       "t12",
-                      "d13",
-                      "t14",
+                      "t13",
+                      "r16",
+                      "d17",
+                      "t18",
+                      "t19",
+                      "t20",
+                      "d21",
+                      "t22",
+                      "t23",
+                      "t24",
+                      "t25",
                       "f-clear",
-                      "r16"
+                      "r27"
                     ],
                     "component": "Column",
                     "id": "root"
                   },
                   {
                     "component": "Text",
-                    "id": "h1",
-                    "text": "各应用写的",
-                    "variant": "h4"
-                  },
-                  {
-                    "component": "Text",
-                    "id": "t2",
-                    "text": "忘掉某个应用写的：它的记录、它归纳的、只靠它的记录得出的理解都删掉；你确认过、否定过、改过的留下。删了找不回来。",
+                    "id": "t1",
+                    "text": "各应用",
                     "variant": "caption"
                   },
                   {
@@ -59,8 +61,14 @@
                   },
                   {
                     "component": "Text",
+                    "id": "t2",
+                    "text": "螺壳输入法"
+                  },
+                  {
+                    "component": "Text",
                     "id": "t3",
-                    "text": "螺壳输入法：记录 2 条，理解 0 条"
+                    "text": "从打的字里学。",
+                    "variant": "caption"
                   },
                   {
                     "action": {
@@ -74,10 +82,23 @@
                         "name": "mem_forget_tool"
                       }
                     },
-                    "child": "b4-text",
+                    "child": "b4-label",
                     "component": "Button",
                     "id": "b4",
                     "variant": "borderless"
+                  },
+                  {
+                    "children": [
+                      "b4-icon",
+                      "b4-text"
+                    ],
+                    "component": "Row",
+                    "id": "b4-label"
+                  },
+                  {
+                    "component": "Icon",
+                    "id": "b4-icon",
+                    "name": "trash-2"
                   },
                   {
                     "component": "Text",
@@ -85,16 +106,44 @@
                     "text": "忘掉螺壳输入法写的"
                   },
                   {
-                    "children": [
-                      "b4"
-                    ],
-                    "component": "Row",
-                    "id": "r5"
+                    "action": {
+                      "event": {
+                        "context": {
+                          "on": false,
+                          "tool": "luoke-ime"
+                        },
+                        "name": "mem_learn"
+                      }
+                    },
+                    "child": "b5-text",
+                    "component": "Button",
+                    "id": "b5",
+                    "on": true,
+                    "variant": "switch"
                   },
                   {
                     "component": "Text",
-                    "id": "t6",
-                    "text": "邮件助手：记录 3 条，理解 0 条"
+                    "id": "b5-text",
+                    "text": "从螺壳输入法学"
+                  },
+                  {
+                    "children": [
+                      "b4",
+                      "b5"
+                    ],
+                    "component": "Row",
+                    "id": "r6"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "t7",
+                    "text": "邮件助手"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "t8",
+                    "text": "从发出的邮件里学。",
+                    "variant": "caption"
                   },
                   {
                     "action": {
@@ -108,27 +157,68 @@
                         "name": "mem_forget_tool"
                       }
                     },
-                    "child": "b7-text",
+                    "child": "b9-label",
                     "component": "Button",
-                    "id": "b7",
+                    "id": "b9",
                     "variant": "borderless"
                   },
                   {
+                    "children": [
+                      "b9-icon",
+                      "b9-text"
+                    ],
+                    "component": "Row",
+                    "id": "b9-label"
+                  },
+                  {
+                    "component": "Icon",
+                    "id": "b9-icon",
+                    "name": "trash-2"
+                  },
+                  {
                     "component": "Text",
-                    "id": "b7-text",
+                    "id": "b9-text",
                     "text": "忘掉邮件助手写的"
                   },
                   {
-                    "children": [
-                      "b7"
-                    ],
-                    "component": "Row",
-                    "id": "r8"
+                    "action": {
+                      "event": {
+                        "context": {
+                          "on": false,
+                          "tool": "luoke-mail"
+                        },
+                        "name": "mem_learn"
+                      }
+                    },
+                    "child": "b10-text",
+                    "component": "Button",
+                    "id": "b10",
+                    "on": true,
+                    "variant": "switch"
                   },
                   {
                     "component": "Text",
-                    "id": "t9",
-                    "text": "螺壳扫描：记录 1 条，理解 0 条"
+                    "id": "b10-text",
+                    "text": "从邮件助手学"
+                  },
+                  {
+                    "children": [
+                      "b9",
+                      "b10"
+                    ],
+                    "component": "Row",
+                    "id": "r11"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "t12",
+                    "text": "螺壳扫描"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "t13",
+                    "text": "从扫描后清掉的里学。",
+                    "variant": "caption"
                   },
                   {
                     "action": {
@@ -142,36 +232,102 @@
                         "name": "mem_forget_tool"
                       }
                     },
-                    "child": "b10-text",
+                    "child": "b14-label",
                     "component": "Button",
-                    "id": "b10",
+                    "id": "b14",
                     "variant": "borderless"
                   },
                   {
+                    "children": [
+                      "b14-icon",
+                      "b14-text"
+                    ],
+                    "component": "Row",
+                    "id": "b14-label"
+                  },
+                  {
+                    "component": "Icon",
+                    "id": "b14-icon",
+                    "name": "trash-2"
+                  },
+                  {
                     "component": "Text",
-                    "id": "b10-text",
+                    "id": "b14-text",
                     "text": "忘掉螺壳扫描写的"
                   },
                   {
-                    "children": [
-                      "b10"
-                    ],
-                    "component": "Row",
-                    "id": "r11"
+                    "action": {
+                      "event": {
+                        "context": {
+                          "on": false,
+                          "tool": "luoke-scan"
+                        },
+                        "name": "mem_learn"
+                      }
+                    },
+                    "child": "b15-text",
+                    "component": "Button",
+                    "id": "b15",
+                    "on": true,
+                    "variant": "switch"
                   },
                   {
                     "component": "Text",
-                    "id": "t12",
-                    "text": "你说的和记忆归纳的：理解 1 条（在「记下的」里一条条删，或者清空整份记忆）",
+                    "id": "b15-text",
+                    "text": "从螺壳扫描学"
+                  },
+                  {
+                    "children": [
+                      "b14",
+                      "b15"
+                    ],
+                    "component": "Row",
+                    "id": "r16"
+                  },
+                  {
+                    "component": "Divider",
+                    "id": "d17"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "t18",
+                    "text": "整理",
+                    "variant": "caption"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "t19",
+                    "text": "还没有整理过。下次在你不用电脑时。"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "t20",
+                    "text": "还没有归纳过打的字，会在你不用电脑时进行。",
                     "variant": "caption"
                   },
                   {
                     "component": "Divider",
-                    "id": "d13"
+                    "id": "d21"
                   },
                   {
                     "component": "Text",
-                    "id": "t14",
+                    "id": "t22",
+                    "text": "数据",
+                    "variant": "caption"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "t23",
+                    "text": "记住的事 1 条"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "t24",
+                    "text": "输入法词条 0 条"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "t25",
                     "text": "清空整份记忆：所有应用写的和记忆归纳的都删掉，找不回来。要清空，在下面输入「清空」。",
                     "variant": "caption"
                   },
@@ -194,21 +350,21 @@
                         "name": "mem_forget_all"
                       }
                     },
-                    "child": "b15-text",
+                    "child": "b26-text",
                     "component": "Button",
-                    "id": "b15"
+                    "id": "b26"
                   },
                   {
                     "component": "Text",
-                    "id": "b15-text",
+                    "id": "b26-text",
                     "text": "清空整份记忆"
                   },
                   {
                     "children": [
-                      "b15"
+                      "b26"
                     ],
                     "component": "Row",
-                    "id": "r16"
+                    "id": "r27"
                   }
                 ],
                 "surfaceId": "sources"
@@ -238,7 +394,7 @@
     }
   },
   "request": {
-    "id": 10,
+    "id": 14,
     "jsonrpc": "2.0",
     "method": "resources/read",
     "params": {

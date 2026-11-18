@@ -5,6 +5,25 @@ import LuokeA2UICore
 /// 示例数据：和原型（docs/主窗口原型.html）里的一样。演示窗口、截图、测试都用它；接上 agent 核心以后只给它们用。
 @MainActor
 public enum Sample {
+    /// 「设置」里本体管的那几块（没接本体时用；数字照 beta0 配方的模型）
+    public static let hostSettings = HostSettings(
+        general: HostGeneral(loginItem: .on, currentVersion: "0.9.3", latestVersion: nil,
+                             lastChecked: Date(timeIntervalSince1970: 1_794_000_000), powerMode: .balanced, batteryMode: .light, autoCheck: true),
+        models: HostModels(
+            tiers: [
+                HostTier(id: "standard", title: "省空间", model: "Qwen3.5-9B · 4-bit", sizeGB: 5.6, state: .inUse, kind: .lighter),
+                HostTier(id: "plus", title: "完整", model: "Gemma 4 26B · 8-bit", sizeGB: 27.8, state: .available(needGB: 27.8), kind: .full),
+            ],
+            catalog: [
+                HostModelRow(name: "Qwen3.5-9B", purpose: "大模型（省空间）", params: "9B", quant: "4-bit", sizeGB: 5.6, base: .lighter),
+                HostModelRow(name: "EmbeddingGemma 2", purpose: "", params: "0.3B", quant: "bf16", sizeGB: 1.4, accessories: ["luoke-search"]),
+                HostModelRow(name: "Qwen3.5-0.8B Base", purpose: "", params: "0.8B", quant: "4-bit", sizeGB: 0.5, accessories: ["luoke-ime"]),
+            ],
+            advanced: HostLocalAPI(enabled: false, address: "127.0.0.1", port: 11435, models: ["qwen3.5-9b-4bit"], hasKey: true)),
+        privacy: HostPrivacy(dataLine: "所有数据都在这台 Mac 上，螺壳不上传任何内容。",
+                             systemChecks: [HostSystemCheck(name: "完全磁盘访问", ok: true), HostSystemCheck(name: "通知", ok: true),
+                                            HostSystemCheck(name: "辅助功能", ok: false, detail: "输入法要用")]))
+
     /// 一张卡片的一组 A2UI 消息
     static func messages(_ id: String, _ components: [JSONValue], data: JSONValue = .object([:])) -> [JSONValue] {
         [
@@ -43,15 +62,15 @@ public enum Sample {
     }
 
     /// 手写的示意：一张 n 封的方案卡片，排法照邮件助手的 plan_card（标题；每封一个选择框、一行说明；按钮）。
-    /// 截「一件件处理」在小窗口里放不下、中间滚动的样子用
+    /// 截「逐件处理」在小窗口里放不下、中间滚动的样子用
     static func longPlanCard(_ n: Int = 8) -> TodayCard {
         let who = ["王老师 · 答辩时间确认", "房东 · 续租合同", "物业 · 停水通知", "银行 · 本月账单", "快递 · 已签收",
                    "同学 · 周六聚餐", "期刊 · 审稿意见", "学校 · 选课提醒", "医院 · 体检报告", "航空 · 行程变更"]
-        let options: JSONValue = .array([("archive", "归档"), ("reply", "写草稿"), ("keep", "先不动")].map {
+        let options: JSONValue = .array([("archive", "归档"), ("reply", "写草稿"), ("keep", "暂不处理")].map {
             .object(["value": .string($0.0), "label": .string($0.1)])
         })
         var kids = ["h"]
-        var comps: [JSONValue] = [text("h", "这 \(n) 封要你处理", "h4")]
+        var comps: [JSONValue] = [text("h", "\(n) 封待处理邮件", "h4")]
         for i in 0..<n {
             kids += ["c\(i)", "t\(i)"]
             comps.append(.object(["id": .string("c\(i)"), "component": .string("ChoicePicker"), "label": .string(who[i % who.count]),
@@ -143,10 +162,10 @@ public enum Sample {
           + button("b2", "不对", "luoke_mem_reply", ["choice": .string("no")]))
         out += surface("agent/less-1", [
             node("root", "Column", ["t", "acts"]),
-            text("t", "「订阅精选」你最近都没看，以后只放在这里，不再提醒。"),
+            text("t", "「订阅精选」近期未查看，已改为仅在此处列出，不再提醒"),
             node("acts", "Row", ["b1", "b2"]),
-        ] + button("b1", "还是提醒我", "agent.remind", ["category": .string("luoke-mail:digest")])
-          + button("b2", "好", "agent.dismiss"))
+        ] + button("b1", "继续提醒", "agent.remind", ["category": .string("luoke-mail:digest")])
+          + button("b2", "确定", "agent.dismiss"))
         func card(_ id: String, _ app: String, _ kind: String, _ section: String, _ title: String, _ t: JSONValue) -> JSONValue {
             .object(["id": .string(id), "app": .string(app), "kind": .string(kind), "section": .string(section),
                      "title": .string(title), "time": t])
@@ -156,7 +175,7 @@ public enum Sample {
             card("luoke-mail/sus-1", "luoke-mail", "suspicious", "urgent", "可疑邮件：冒充招商银行", at(9, 41)),
             card("luoke-mail/new-1", "luoke-mail", "new-mail", "decide", "4 封新邮件", at(9, 2)),
             card("memory/ask-7", "memory", "ask", "decide", "在准备硕士答辩？", at(8, 15)),
-            card("agent/less-1", "agent", "less", "later", "以后少提醒「订阅精选」", at(7, 50)),
+            card("agent/less-1", "agent", "less", "later", "已减少提醒：「订阅精选」", at(7, 50)),
         ]
         if openURL {
             var go = button("b1", "加入日程", "agent.open_url",
@@ -217,7 +236,7 @@ public enum Sample {
                          "mode": .string("now"), "default": .string("now")]),
                 .object(["id": .string("luoke-mail:digest"), "app": .string("luoke-mail"), "label": .string("订阅精选"),
                          "mode": .string("window"), "default": .string("brief")]),
-                .object(["id": .string("memory:ask"), "app": .string("memory"), "label": .string("记忆想问的"),
+                .object(["id": .string("memory:ask"), "app": .string("memory"), "label": .string("记忆的待确认事项"),
                          "mode": .string("brief"), "default": .string("brief")]),
             ]),
         ])
@@ -227,7 +246,7 @@ public enum Sample {
 
     /// 和核心的 `GET /apps` 一样的答复：邮件助手（手写，有自己的界面），螺壳扫描（场景样例接上真核心得来的；
     /// 清单里没有 `service.ui`，没有自己的界面）
-    public static func agentApps(scan: String = ToolSample.defaultScan, mail: String? = nil) -> Data {
+    public static func agentApps(scan: String = ToolSample.defaultScan, mail: String? = nil, mem: String? = nil, search: String? = nil) -> Data {
         func refs(_ r: [(String, String)]) -> JSONValue {
             .array(r.map { .object(["id": .string($0.0), "title": .string($0.1)]) })
         }
@@ -239,14 +258,18 @@ public enum Sample {
                      "needs": .array(needs.map { .string($0) })])
         }
         let mailApps = mail.flatMap { ToolSample.load("luoke-mail", $0) }?.apps
-            ?? [app("luoke-mail", 2, "2 件等你处理", [("overview", "概览"), ("rules", "规则")], [("accounts", "账号")], needs: [])]
-        return JSONValue.object(["apps": .array(mailApps + (ToolSample.load("luoke-scan", scan)?.apps ?? []))]).serialized()
+            ?? [app("luoke-mail", 2, "2 件待处理", [("overview", "概览"), ("rules", "规则")], [("accounts", "账号")], needs: [])]
+        let memApps = mem.flatMap { ToolSample.load("luoke-mem", $0) }?.apps ?? []
+        let searchApps = search.flatMap { ToolSample.load("luoke-search", $0) }?.apps ?? []
+        return JSONValue.object(["apps": .array(mailApps + (ToolSample.load("luoke-scan", scan)?.apps ?? []) + memApps + searchApps)]).serialized()
     }
 
     /// 和核心的 `GET /apps/<id>/pages/<页>` 一样的答复（`{"messages": [...]}`）；没有这一页是 nil。
     /// 螺壳扫描的页是场景样例接上真核心得来的。
     public static func agentPage(_ app: String, _ page: String, scan: String = ToolSample.defaultScan,
-                                 mail: String? = nil) -> Data? {
+                                 mail: String? = nil, mem: String? = nil, search: String? = nil) -> Data? {
+        if app == "luoke-mem", let s = mem.flatMap({ ToolSample.load(app, $0) }) { return s.pages[page]?.serialized() }
+        if app == "luoke-search", let s = search.flatMap({ ToolSample.load(app, $0) }) { return s.pages[page]?.serialized() }
         if app == "luoke-scan" { return ToolSample.load(app, scan)?.pages[page]?.serialized() }
         if app == "luoke-mail", let s = mail.flatMap({ ToolSample.load(app, $0) }) { return s.pages[page]?.serialized() }
         let sid = AgentFeed.pageKey(app, page)
@@ -256,7 +279,7 @@ public enum Sample {
             comps = [
                 node("root", "Column", ["h", "t", "acts"]),
                 text("h", "邮件助手", "h4"),
-                text("t", "2 件等你处理"),
+                text("t", "2 件待处理"),
                 node("acts", "Row", ["b1"]),
             ] + button("b1", "以后不用点就归档", "mail_auto", ["on": .bool(true)])
         default:
@@ -293,12 +316,16 @@ public enum Sample {
     }
 
     /// 把上面三样像核心答的一样交给窗口（截图「螺壳扫描 · 接上核心」「设置 · 权限 · 接上核心」用）
-    public static func applyAgentApps(_ feed: AgentFeed, scan: String = ToolSample.defaultScan, mail: String? = nil) {
-        if let v = try? JSONValue.parse(agentApps(scan: scan, mail: mail)) { feed.applyApps(v) }
+    public static func applyAgentApps(_ feed: AgentFeed, scan: String = ToolSample.defaultScan, mail: String? = nil, mem: String? = nil,
+                                      search: String? = nil) {
+        if let v = try? JSONValue.parse(agentApps(scan: scan, mail: mail, mem: mem, search: search)) { feed.applyApps(v) }
         let scanPages = ToolSample.load("luoke-scan", scan)?.pageIDs ?? []
         let mailPages = mail.flatMap { ToolSample.load("luoke-mail", $0) }?.pageIDs ?? ["overview"]
-        for (app, page) in mailPages.map({ ("luoke-mail", $0) }) + scanPages.map({ ("luoke-scan", $0) }) {
-            if let d = agentPage(app, page, scan: scan, mail: mail) { feed.applyPage(app: app, page: page, status: 200, body: d) }
+        let memPages = mem.flatMap { ToolSample.load("luoke-mem", $0) }?.pageIDs ?? []
+        let searchPages = search.flatMap { ToolSample.load("luoke-search", $0) }?.pageIDs ?? []
+        for (app, page) in mailPages.map({ ("luoke-mail", $0) }) + scanPages.map({ ("luoke-scan", $0) }) + memPages.map({ ("luoke-mem", $0) })
+            + searchPages.map({ ("luoke-search", $0) }) {
+            if let d = agentPage(app, page, scan: scan, mail: mail, mem: mem, search: search) { feed.applyPage(app: app, page: page, status: 200, body: d) }
         }
         if let v = try? JSONValue.parse(agentPermissions(scan: scan, mail: mail)) { feed.applyPermissions(v) }
     }
@@ -333,23 +360,24 @@ public enum Sample {
     public static func model(defaults: UserDefaults? = nil) -> WindowModel {
         let m = WindowModel(defaults: defaults)
         m.onCardAction = { handle($0, $1, $2, $3) }
+        m.machineLoad = MachineLoad(ram: 0.62, gpu: 0.18)     // 截图里右上角圆环、右边栏顶上的样子
         m.urgent = [UrgentItem(id: "spam", tool: .mail, title: "可疑邮件：冒充招商银行", time: "09:41",
                                primary: "移到垃圾邮件", primarySymbol: "trash", secondary: "不是可疑")]
         m.cards = cards()
         m.done = [
-            DoneRow(id: "d1", tool: .scan, text: "清掉 6.4 GB", time: "09:12", undoLabel: "放回"),
+            DoneRow(id: "d1", tool: .scan, text: "清掉 6.4 GB", time: "09:12", undoLabel: "恢复"),
             DoneRow(id: "d2", tool: .mail, text: "归档 7 · 加标签 2", time: "08:30", undoLabel: "撤销"),
         ]
         m.quiet = [
-            QuietRow(id: "upd-mail", tool: .mail, text: "邮件助手可以升级到 0.18.12", sub: "螺壳来装，你点了才升", action: "升级"),
+            QuietRow(id: "upd-mail", tool: .mail, text: "邮件助手可以升级到 0.18.12", sub: "由螺壳安装，确认后升级", action: "升级"),
             QuietRow(id: "digest", tool: .mail, text: "订阅精选 3 篇"),
         ]
         m.activity = [
             ActivityRow(id: "a0", day: "今天", time: "09:41", tool: .mail, auto: true, text: "发现一封冒充招商银行的邮件，放进了「急事」", mark: .urgent),
-            ActivityRow(id: "a1", day: "今天", time: "09:12", tool: .scan, auto: true, text: "清掉 6.4 GB", undoLabel: "放回"),
+            ActivityRow(id: "a1", day: "今天", time: "09:12", tool: .scan, auto: true, text: "清掉 6.4 GB", undoLabel: "恢复"),
             ActivityRow(id: "a2", day: "今天", time: "08:30", tool: .mail, auto: true, text: "归档 7 · 加标签 2", undoLabel: "撤销"),
             ActivityRow(id: "a3", day: "今天", time: "08:05", tool: .mem, auto: false, text: "在准备答辩：对"),
-            ActivityRow(id: "a4", day: "昨天", time: "21:04", tool: .scan, auto: false, text: "3 个安装包 → 废纸篓", undoLabel: "放回"),
+            ActivityRow(id: "a4", day: "昨天", time: "21:04", tool: .scan, auto: false, text: "3 个安装包 → 废纸篓", undoLabel: "恢复"),
             ActivityRow(id: "a5", day: "昨天", time: "20:00", tool: .mail, auto: true, text: "每日复查 · 12 封"),
             ActivityRow(id: "a6", day: "昨天", time: "14:22", tool: .scan, auto: false, text: "放回下载里的重复文件"),
         ]
@@ -370,15 +398,15 @@ public enum Sample {
         m.appPages = [
             .mail: AppPageData(
                 tabs: [("overview", "概览", false), ("log", "操作记录", false)],   // 应用自己界面的页不画成标签（agent#62）
-                stats: [.init(key: "今天处理", value: "12"), .init(key: "要你回", value: "2"), .init(key: "自动归档", value: "7")],
-                listTitle: "要你回",
+                stats: [.init(key: "今天处理", value: "12"), .init(key: "待回复", value: "2"), .init(key: "自动归档", value: "7")],
+                listTitle: "待回复",
                 lines: [.init(id: "m1", title: "王老师 · 答辩时间", badge: "周五", action: "起草"),
                         .init(id: "m2", title: "房东 · 续租合同", action: "起草")],
                 latest: false),
             .scan: AppPageData(
                 tabs: [("overview", "概览", false), ("log", "清理记录", false)],
-                stats: [.init(key: "这周清掉", value: "6.4 GB"), .init(key: "要你决定", value: "26.6 GB"), .init(key: "可用", value: "38 GB")],
-                listTitle: "要你决定",
+                stats: [.init(key: "这周清掉", value: "6.4 GB"), .init(key: "待处理", value: "26.6 GB"), .init(key: "可用", value: "38 GB")],
+                listTitle: "待处理",
                 lines: [.init(id: "s1", title: "AI 模型和对话记录", meta: "15.5 GB"),
                         .init(id: "s2", title: "很久没打开的大文件", meta: "6.3 GB"),
                         .init(id: "s3", title: "很久没改的项目", meta: "4.8 GB")],
@@ -410,7 +438,7 @@ public enum Sample {
             KindSetting(id: "security", tool: .scan, title: "安全问题", level: .now),
             KindSetting(id: "sorted", tool: .mail, title: "新邮件分拣好了", level: .brief),
             KindSetting(id: "cleaned", tool: .scan, title: "清理结果", level: .brief),
-            KindSetting(id: "asks", tool: .mem, title: "记忆想问你的", level: .brief),
+            KindSetting(id: "asks", tool: .mem, title: "记忆的待确认事项", level: .brief),
         ]
         m.permissions = [
             PermissionRow(id: "calendar", owner: .core, title: "日历", state: .waiting),
@@ -421,11 +449,11 @@ public enum Sample {
         m.delegates = [
             DelegateRow(id: "autoclean", tool: .scan, title: "不用点就清 4 类", on: true),
             DelegateRow(id: "archive", tool: .mail, title: "按习惯归档促销邮件", on: true),
-            DelegateRow(id: "confirm", tool: .mail, title: "替你回确认类邮件", on: false),
+            DelegateRow(id: "confirm", tool: .mail, title: "自动回复确认类邮件", on: false),
         ]
         m.eachTime = [
             EachTimeRow(id: "admin", tool: .scan, title: "删系统目录里的东西", why: "每次都要输入 Mac 的密码"),
-            EachTimeRow(id: "send", tool: .mail, title: "以你的名义发信", why: "每次都要你点"),
+            EachTimeRow(id: "send", tool: .mail, title: "以你的名义发信", why: "每次需手动确认"),
         ]
         m.tiers = [
             ModelTier(id: "16", title: "16 GB 档", model: "Qwen3.5-9B", size: "10 GB"),

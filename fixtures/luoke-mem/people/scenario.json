@@ -4,16 +4,23 @@
     "resources/read": "contents[0].text 解开成了 JSON 值；线上是 JSON 文字"
   },
   "produced": {
+    "features": [
+      "openPage",
+      "pageArgs",
+      "confirm",
+      "rowOpen",
+      "fieldSubmit"
+    ],
     "mcp": "python3 -m luoke_mem --path <假记忆> mcp --clock <那一步的时钟>：一个请求一个进程",
     "seed": [
       "邮件助手从用户发出的邮件里记下三条关于别人的事：「同事：王磊（wanglei@corp.example）」「合作方：Wang Lei（同一个地址）」两条各凭两封信（10月28日、11月5日），「上级：Mira」只凭一封",
-      "记忆反刍时把同一个地址的两条并成一个人「王磊」（比较确定，他的名字成了常用说法，给语音当热词），Mira 只有一封信，是猜测",
+      "记忆反刍时把同一个地址的两条并成一个人「王磊」（比较确定，他的名字成了常用说法，给语音当热词），Mira 只有一封信，是猜测；还有一封信说到「客户：Mira Chen」，记忆拿不准和 Mira 是不是同一个人，问一句",
       "邮件助手还记了用户每月写信给谁（mail-contact）：王磊 9、10 月共 15 封，林晓 9、10 月共 5 封；林晓只出现在写信记录里，写过两个月，也算一个人；写给王磊的信的标题里两次提到用户的常用说法「主控」"
     ],
     "tz": "Asia/Shanghai",
     "user_action_at": "点按时的 at 是那一步的时钟，按 Asia/Shanghai 写"
   },
-  "situation": "用户发出的邮件里写到几个人：同一个地址写过两种叫法，记忆把它们并成一个人；另一个人只出现在一封信里；还有一个人只在每月的写信记录里。用户打开应用页的「人」，忘掉其中一个。",
+  "situation": "用户发出的邮件里写到几个人：同一个地址写过两种叫法，记忆把它们并成一个人；另一个人只出现在一封信里，还有一封信里的「Mira Chen」记忆拿不准是不是他，问一句；还有一个人只在每月的写信记录里。用户打开「人物」，点进其中一个，忘掉；再在「是同一个人吗」的卡片上点「是」。",
   "steps": [
     {
       "clock": "2026-11-06T10:00:00",
@@ -47,6 +54,31 @@
     },
     {
       "clock": "2026-11-06T10:00:00",
+      "do": "打开应用页的「all」",
+      "file": "read-page-all.json"
+    },
+    {
+      "clock": "2026-11-06T10:00:00",
+      "do": "打开应用页的「people」",
+      "file": "read-page-people.json"
+    },
+    {
+      "clock": "2026-11-06T10:00:00",
+      "do": "打开应用页的「settings」",
+      "file": "read-page-settings.json"
+    },
+    {
+      "clock": "2026-11-06T10:00:00",
+      "do": "打开应用页的「item」",
+      "file": "read-page-item.json"
+    },
+    {
+      "clock": "2026-11-06T10:00:00",
+      "do": "打开应用页的「asks」",
+      "file": "read-page-asks.json"
+    },
+    {
+      "clock": "2026-11-06T10:00:00",
       "do": "打开应用页的「guesses」",
       "file": "read-page-guesses.json"
     },
@@ -57,30 +89,85 @@
     },
     {
       "clock": "2026-11-06T10:00:00",
-      "do": "打开应用页的「people」",
-      "file": "read-page-people.json"
-    },
-    {
-      "clock": "2026-11-06T10:00:00",
       "do": "打开应用页的「sources」",
       "file": "read-page-sources.json"
     },
     {
+      "clock": "2026-11-06T10:00:00",
+      "do": "读原始数据 data/recent",
+      "file": "read-data-recent.json"
+    },
+    {
+      "clock": "2026-11-06T10:00:00",
+      "do": "读原始数据 data/helped",
+      "file": "read-data-helped.json"
+    },
+    {
+      "clock": "2026-11-06T10:00:00",
+      "do": "读原始数据 data/asks",
+      "file": "read-data-asks.json"
+    },
+    {
+      "clock": "2026-11-06T10:00:00",
+      "do": "读原始数据 data/notes",
+      "file": "read-data-notes.json"
+    },
+    {
+      "clock": "2026-11-06T10:00:00",
+      "do": "读原始数据 data/people",
+      "file": "read-data-people.json"
+    },
+    {
+      "clock": "2026-11-06T10:00:00",
+      "do": "读原始数据 data/sources",
+      "file": "read-data-sources.json"
+    },
+    {
+      "clock": "2026-11-06T10:00:00",
+      "do": "读原始数据 data/data",
+      "file": "read-data-data.json"
+    },
+    {
+      "clock": "2026-11-06T10:00:00",
+      "do": "读原始数据 data/ask?id=1（卡片、概览上的一件）",
+      "file": "read-data-ask-1.json"
+    },
+    {
       "clock": "2026-11-06T10:05:00",
-      "do": "没勾「我知道删了找不回来」就点林晓的「忘掉」：不删",
-      "file": "call-mem_person-forget-unsure.json"
+      "do": "「人物」上点林晓那一行",
+      "file": "read-page-people-lin.json"
     },
     {
       "clock": "2026-11-06T10:06:00",
-      "do": "勾上再点",
+      "do": "点「忘掉」（窗口先弹确认，用户点了确定）",
       "file": "call-mem_person-forget.json"
     },
     {
       "clock": "2026-11-06T10:06:00",
-      "do": "窗口重新读「人」",
+      "do": "窗口回到「人物」",
       "file": "read-page-people-after-forget.json"
+    },
+    {
+      "clock": "2026-11-06T10:06:00",
+      "do": "原始数据：王磊这个人",
+      "file": "read-data-person.json"
+    },
+    {
+      "clock": "2026-11-06T10:06:00",
+      "do": "原始数据：「Mira Chen」和「Mira」是同一个人吗",
+      "file": "read-data-ask-same-person.json"
+    },
+    {
+      "clock": "2026-11-06T10:07:00",
+      "do": "「Mira Chen」和「Mira」是同一个人吗？的卡片上点「是」：并成一个人",
+      "file": "call-mem_reply-same-person.json"
+    },
+    {
+      "clock": "2026-11-06T10:07:00",
+      "do": "「人物」：两个 Mira 并成一个，上级、客户都在这一行",
+      "file": "read-page-people-after-same.json"
     }
   ],
   "title": "记忆认出的人",
-  "window": "「人」页三个人：「王磊」（同事、合作方 · 也叫 Wang Lei、wanglei@corp.example · 最近一次 2026年10月，2 个月共 15 封 · 常谈 主控）、「Mira」（上级 · 猜测）、「林晓」（最近一次 2026年10月，2 个月共 5 封）；每人一行「不是一个人」「忘掉」，上面一个「我知道删了找不回来」的勾选框。改名、并成一个、拆开在整份记忆里做。忘掉林晓以后那一行没了。"
+  "window": "「人物」页三个人，每人一行名字和一句话（关系加最有依据的一条；什么都不知道时写怎么写信给他），点一行（「详细」）进这个人；列表上没有别的按钮。这个人的页上改名、并成一个、拆开、「不是一个人」「忘掉」（`sure: true` 加 `confirm`，窗口先弹确认）。忘掉林晓以后那一行没了。outbox 里一张「「Mira」和「Mira Chen」是同一个人吗？」（是 / 不是 / 以后再说，依据写各自的关系），概览「想跟你确认」里也有；点「是」以后两个 Mira 并成一行。"
 }

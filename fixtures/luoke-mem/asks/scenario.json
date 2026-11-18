@@ -4,6 +4,7 @@
     "resources/read": "contents[0].text 解开成了 JSON 值；线上是 JSON 文字"
   },
   "produced": {
+    "features": [],
     "mcp": "python3 -m luoke_mem --path <假记忆> mcp --clock <那一步的时钟>：一个请求一个进程",
     "seed": [
       "螺壳输入法记了三段打字，邮件助手记了一次亲手归档某商城的促销邮件",
@@ -12,7 +13,7 @@
     "tz": "Asia/Shanghai",
     "user_action_at": "点按时的 at 是那一步的时钟，按 Asia/Shanghai 写"
   },
-  "situation": "记忆在空闲时想好了要问的（每天最多几个，记忆定）：三条猜测各一个问题、一条处理习惯的建议、一个自己想知道的带选项的问题。agent 把它们放进「今天」，用户一张张答。",
+  "situation": "记忆在空闲时想好了要问的（每天合起来最多三件，记忆定）：三条猜测各一个问题、一条处理习惯的建议、一个自己想知道的带选项的问题。agent 把它们放进「今天」，用户一张张答。",
   "steps": [
     {
       "clock": "2026-11-06T10:00:00",
@@ -46,6 +47,31 @@
     },
     {
       "clock": "2026-11-06T10:00:00",
+      "do": "打开应用页的「all」",
+      "file": "read-page-all.json"
+    },
+    {
+      "clock": "2026-11-06T10:00:00",
+      "do": "打开应用页的「people」",
+      "file": "read-page-people.json"
+    },
+    {
+      "clock": "2026-11-06T10:00:00",
+      "do": "打开应用页的「settings」",
+      "file": "read-page-settings.json"
+    },
+    {
+      "clock": "2026-11-06T10:00:00",
+      "do": "打开应用页的「item」",
+      "file": "read-page-item.json"
+    },
+    {
+      "clock": "2026-11-06T10:00:00",
+      "do": "打开应用页的「asks」",
+      "file": "read-page-asks.json"
+    },
+    {
+      "clock": "2026-11-06T10:00:00",
       "do": "打开应用页的「guesses」",
       "file": "read-page-guesses.json"
     },
@@ -56,13 +82,88 @@
     },
     {
       "clock": "2026-11-06T10:00:00",
-      "do": "打开应用页的「people」",
-      "file": "read-page-people.json"
+      "do": "打开应用页的「sources」",
+      "file": "read-page-sources.json"
     },
     {
       "clock": "2026-11-06T10:00:00",
-      "do": "打开应用页的「sources」",
-      "file": "read-page-sources.json"
+      "do": "读原始数据 data/recent",
+      "file": "read-data-recent.json"
+    },
+    {
+      "clock": "2026-11-06T10:00:00",
+      "do": "读原始数据 data/helped",
+      "file": "read-data-helped.json"
+    },
+    {
+      "clock": "2026-11-06T10:00:00",
+      "do": "读原始数据 data/asks",
+      "file": "read-data-asks.json"
+    },
+    {
+      "clock": "2026-11-06T10:00:00",
+      "do": "读原始数据 data/notes",
+      "file": "read-data-notes.json"
+    },
+    {
+      "clock": "2026-11-06T10:00:00",
+      "do": "读原始数据 data/people",
+      "file": "read-data-people.json"
+    },
+    {
+      "clock": "2026-11-06T10:00:00",
+      "do": "读原始数据 data/sources",
+      "file": "read-data-sources.json"
+    },
+    {
+      "clock": "2026-11-06T10:00:00",
+      "do": "读原始数据 data/data",
+      "file": "read-data-data.json"
+    },
+    {
+      "clock": "2026-11-06T10:00:00",
+      "do": "读原始数据 data/ask?id=3（卡片、概览上的一件）",
+      "file": "read-data-ask-3.json"
+    },
+    {
+      "clock": "2026-11-06T10:00:00",
+      "do": "读原始数据 data/ask?id=2（卡片、概览上的一件）",
+      "file": "read-data-ask-2.json"
+    },
+    {
+      "clock": "2026-11-06T10:00:00",
+      "do": "读原始数据 data/ask?id=1（卡片、概览上的一件）",
+      "file": "read-data-ask-1.json"
+    },
+    {
+      "clock": "2026-11-06T10:00:00",
+      "do": "读原始数据 data/ask?id=4（卡片、概览上的一件）",
+      "file": "read-data-ask-4.json"
+    },
+    {
+      "clock": "2026-11-06T10:00:00",
+      "do": "读原始数据 data/ask?id=5（卡片、概览上的一件）",
+      "file": "read-data-ask-5.json"
+    },
+    {
+      "clock": "2026-11-06T10:00:00",
+      "do": "原始数据：今天卡片上的一件，「本地大模型」对吗",
+      "file": "read-data-ask-interest.json"
+    },
+    {
+      "clock": "2026-11-06T10:00:00",
+      "do": "原始数据：今天卡片上的一件，「在读博士」对吗",
+      "file": "read-data-ask-fact.json"
+    },
+    {
+      "clock": "2026-11-06T10:00:00",
+      "do": "原始数据：今天卡片上的一件，处理习惯的建议",
+      "file": "read-data-ask-habit.json"
+    },
+    {
+      "clock": "2026-11-06T10:00:00",
+      "do": "原始数据：今天卡片上的一件，记忆自己的问题（论文方向）",
+      "file": "read-data-ask-own.json"
     },
     {
       "clock": "2026-11-06T10:05:00",
@@ -106,10 +207,10 @@
     },
     {
       "clock": "2026-11-06T10:11:00",
-      "do": "「记下的」：答过的那几条",
-      "file": "read-page-kept-after.json"
+      "do": "「全部记忆」：答过的那几条",
+      "file": "read-page-all-after.json"
     }
   ],
   "title": "记忆想问的事和建议",
-  "window": "「今天」里五张记忆的卡片：三张「记忆想问你」（输入框、对 / 不对 / 以前是，现在不是 / 按我改的 / 以后再说 / 在螺壳记忆里看）、一张「记忆有个建议」（好 / 不用 / 别再提 / 在螺壳记忆里看）、一张带选项的问题（选一个、交回 / 以后再说）。带验证码的改法被拒时卡片留着、上面一句话；其余答完换成一句话的结果。"
+  "window": "「今天」里五张记忆的卡片：三张「记忆想问你」（输入框、对 / 不对 / 以前是，现在不是 / 按我改的 / 以后再说 / 在螺壳记忆里看）、一张「记忆有个建议」（好 / 不用 / 别再提 / 在螺壳记忆里看）、一张带选项的问题（选一个、交回 / 以后再说）。概览「想跟你确认」只列最值得问的三件。带验证码的改法被拒时卡片留着、上面一句话；其余答完换成一句话的结果。"
 }

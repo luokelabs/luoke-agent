@@ -1,6 +1,6 @@
 {
   "reply": {
-    "id": 15,
+    "id": 26,
     "jsonrpc": "2.0",
     "result": {
       "contents": [
@@ -8,7 +8,16 @@
           "mimeType": "application/json",
           "text": {
             "count": 0,
-            "text": "记下了 3 条。"
+            "kept": 3,
+            "pending": 0,
+            "recent": {
+              "formed_at": "2026-11-05 20:45:00",
+              "id": 3,
+              "kind": "fact",
+              "text": "在读研究生，导师是王老师"
+            },
+            "state": "recent",
+            "text": "最近了解到：在读研究生，导师是王老师"
           },
           "uri": "summary"
         }
@@ -17,7 +26,7 @@
     }
   },
   "request": {
-    "id": 15,
+    "id": 26,
     "jsonrpc": "2.0",
     "method": "resources/read",
     "params": {

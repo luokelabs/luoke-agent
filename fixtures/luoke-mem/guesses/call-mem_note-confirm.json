@@ -1,6 +1,6 @@
 {
   "reply": {
-    "id": 11,
+    "id": 22,
     "jsonrpc": "2.0",
     "result": {
       "content": [
@@ -10,19 +10,23 @@
         }
       ],
       "isError": false,
-      "resultType": "complete"
+      "resultType": "complete",
+      "structuredContent": {
+        "note": 1,
+        "result": "confirm"
+      }
     }
   },
   "request": {
-    "id": 11,
+    "id": 22,
     "jsonrpc": "2.0",
     "method": "tools/call",
     "params": {
       "_meta": {
         "ai.luoke/user-action": {
           "at": "2026-11-06T10:05:00+08:00",
-          "componentId": "b10",
-          "surfaceId": "guesses"
+          "componentId": "b14",
+          "surfaceId": "all"
         },
         "io.modelcontextprotocol/clientCapabilities": {},
         "io.modelcontextprotocol/clientInfo": {

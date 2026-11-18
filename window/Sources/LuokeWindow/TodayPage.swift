@@ -3,8 +3,10 @@ import LuokeA2UI
 import LuokeA2UICore
 import SwiftUI
 
-/// 「今天」的几段，从上到下：急事、替你做了的（每件一行，最多三行）、要你决定、顺便看看
-enum TodaySection: Hashable { case urgent, done, decide, later }
+/// 「今天」的几段，从上到下：急事（最上面，红色的卡片，不写段标题）、已自动处理（每件一行，最多三行）、
+/// 待确认（同一个应用的叠在一起，最多先摆三叠；原来「顺便看看」的不急的接在后面，不另起一段）。
+/// 负责人 11-13：不要「顺便看看」这一段，急事换个颜色放最上面，下面自然铺开
+enum TodaySection: Hashable { case urgent, done, decide }
 
 extension WindowModel {
     /// 有东西的段，按显示顺序；空的段整个不出现（要你决定是空的时候画一句「今天没什么要你操心的」）
@@ -13,12 +15,11 @@ extension WindowModel {
         if !urgent.isEmpty { s.append(.urgent) }
         if !done.isEmpty { s.append(.done) }
         s.append(.decide)
-        if !quiet.isEmpty { s.append(.later) }
         return s
     }
 }
 
-/// 「今天」：标准的卡片、紧凑的表，或者「一件件处理」
+/// 「今天」：标准的卡片、紧凑的表，或者「逐件处理」
 struct TodayPage: View {
     @ObservedObject var model: WindowModel
     @Namespace private var ns
@@ -31,6 +32,11 @@ struct TodayPage: View {
     static let doneLimitRail = 6
     /// 急事先列几叠（相近的放成一叠，见 `TodayStack`）：一个工具一下报几十件时，「要你决定」还在第一屏（#51）
     static let urgentLimit = 3
+    /// 「待确认」先摆几叠（一叠是相近的几张，见 `TodayStack`）：每天最多先问三件，多的先攒着（2026-11-12 定）。
+    /// 急事不受这个限制；「逐件处理」能一次走完所有的
+    static let askLimit = 3
+    /// 「待确认」那一张下面最多画几个小点
+    static let deckDots = 8
 
     static func visibleUrgent(_ items: [UrgentItem], all: Bool) -> (stacks: [[UrgentItem]], more: Int) {
         let stacks = TodayStack.spread(TodayStack.urgent(items))
@@ -40,9 +46,9 @@ struct TodayPage: View {
 
     /// 简报里点到的卡片收在一叠里（不是露出来的第一张）：要展开的那一叠的编号；露着的是 nil
     static func stackToOpen(for id: String, in cards: [TodayCard]) -> String? {
-        guard let stack = TodayStack.spread(TodayStack.cards(cards)).first(where: { $0.contains { $0.id == id } }),
+        guard let stack = TodayStack.spread(TodayStack.byApp(cards), min: TodayStack.appMin).first(where: { $0.contains { $0.id == id } }),
               stack.count > 1, stack[0].id != id else { return nil }
-        return "c:" + TodayStack.key(stack[0].tool, stack[0].kind, stack[0].title)
+        return "c:" + TodayStack.appKey(stack[0].tool)
     }
 
     static func doneRows(deciding: Bool, railed: Bool) -> Int {
@@ -55,12 +61,18 @@ struct TodayPage: View {
         return (Array(rows.prefix(limit)), rows.count - limit)
     }
 
-    /// 卡片上的「撤销」「放回」：核心认撤销也只认写着这两个字的按钮（a2ui._reachable）
+    /// 「今天」（标准密度）每一件左边应用图标的大小：卡片、已自动处理的一行、稍后查看的一行都是它
+    static let iconSize: CGFloat = 28
+
+    /// 认作撤销的按钮上的字：和核心一样（agent.py `UNDO_LABELS`）。「放回」是扫描自己那张卡片上的写法
+    static let undoLabels: Set<String> = ["撤销", "恢复", "放回"]
+
+    /// 卡片上的「撤销」「恢复」：核心认撤销也只认写着这几个字的按钮（a2ui._reachable）
     static func undoButton(in s: Surface) -> (id: String, label: String, context: JSONValue)? {
         for id in s.reachable() {
             guard let c = s.components[id], c["component"]?.string == "Button",
                   let child = c["child"]?.string, let label = s.components[child]?["text"]?.string,
-                  label == "撤销" || label == "放回", !s.opensURL(id), let a = try? s.action(id) else { continue }
+                  TodayPage.undoLabels.contains(label), !s.opensURL(id), let a = try? s.action(id) else { continue }
             return (id, label, a.context)
         }
         return nil
@@ -100,7 +112,7 @@ extension View {
         background(GeometryReader { g in Color.clear.preference(key: IconFrames.self, value: [key: g.frame(in: .named(TodayStandard.space))]) })
     }
 
-    /// 第一张卡片的底：进「一件件处理」时长成面板
+    /// 第一张卡片的底：进「逐件处理」时长成面板
     @ViewBuilder func lkHero(_ ns: Namespace.ID?) -> some View {
         if let ns { matchedGeometryEffect(id: "focus-surface", in: ns) } else { self }
     }
@@ -144,6 +156,8 @@ struct TodayStandard: View {
     @Environment(\.lkLayout) private var layout
     /// 点了「还有 n 件」
     @State private var allDone = false
+    /// 「待确认」那一张现在摆的是第几件
+    @State private var deckIndex = 0
     /// 展开了的那几叠「要你决定」（相近的卡片放成一叠，见 `TodayStack`）；急事的在 `model.urgentOpenStacks`
     @State private var openStacks: Set<String> = []
 
@@ -236,15 +250,13 @@ struct TodayStandard: View {
             && model.briefNote == nil && model.urgent.isEmpty && !model.cards.isEmpty
     }
 
-    /// 标题下面、各段上面：连不上螺壳、核心的几句、简报
+    /// 标题下面、各段上面：连不上螺壳、核心的几句、它的一句话
     @ViewBuilder private func top(_ proxy: ScrollViewProxy) -> some View {
         if !model.coreReachable { offlineNote.lkEnter(0) }
         // 核心的几句（某个应用没在运行……）放在标题下面、和「连不上螺壳」同一个位置：下面少了谁的事，先说
         notices.lkEnter(0)
-        if let note = model.briefNote {
-            BriefNoteView(note: note, model: model) { jump(to: $0, proxy: proxy) }
-                .transition(.opacity.animation(Motion.enter(Motion.briefClose, reduce: reduce)))
-        }
+        // 简报不单列一项，是它那一句话的内容（定稿原型：标题下面只有吉祥物和气泡这一块；负责人 11-18）
+        TodayHello(model: model) { jump(to: $0, proxy: proxy) }.lkEnter(0)
     }
 
     /// 几段按顺序画。from：前面已经有几段（侧栏的接着主栏错开升上来）
@@ -255,40 +267,41 @@ struct TodayStandard: View {
             case .urgent: urgentBlock(i)
             case .done: doneBlock(i, railed: railed)
             case .decide: decideBlock(i)
-            case .later: laterBlock(i)
             }
         }
     }
 
     private var header: some View {
-        PageHeader(title: "今天", note: model.dateLine) {
+        PageHeader(title: "今天", note: model.dateLine)
+    }
+
+    /// 「待确认」那一段标题右端的「逐件处理」：它处理的就是这一段里的事（右上角只留窗口顶上那一粒）
+    @ViewBuilder private var focusButton: some View {
+        if !model.cards.isEmpty {
             Button { model.enterFocus() } label: {
                 HStack(spacing: LKSpace.x1 + 2) {
-                    Text("一件件处理")
-                    if !model.cards.isEmpty { LKCount(value: model.cards.count, delay: Motion.counterAt).foregroundStyle(p.mutedFg) }
+                    Text("逐件处理")
+                    LKCount(value: model.cards.count, delay: Motion.counterAt).foregroundStyle(p.mutedFg)
                 }
             }
             .buttonStyle(LKButtonStyle())
-            .disabled(model.cards.isEmpty)
-            .help(model.cards.isEmpty ? "现在没有要你决定的事" : "「要你决定」的 \(model.cards.count) 件一次只摆一件：⏎ 答，↓ 跳过，Esc 回来（急事在上面直接处理）")
+            .help("待确认的 \(model.cards.count) 件逐件显示：⏎ 回答，↓ 跳过，Esc 返回（急事在上方直接处理）")
         }
     }
 
     /// 螺壳没响应：下面的卡片是上次拿到的。窗口每 2 秒自己重连，所以不放「再试一次」；按钮照常能点，做不成会提示。
     /// 第二行说对用户的影响，不描述界面自己会怎样（「点了会提示你」）
     private var offlineNote: some View {
-        let seen = model.lastSeen.map { "，下面是 \(model.seenText($0)) 的内容" } ?? ""
-        return ErrorNote(text: "\(WindowModel.offlineShort)\(seen)。",
-                         detail: model.offlineLong ? WindowModel.offlineAdvice : "这些卡片可能已经过时，现在点按钮办不成。")
+        let seen = model.lastSeen.map { "，以下为 \(model.seenText($0)) 的内容" } ?? ""
+        return ErrorNote(text: "\(WindowModel.offlineShort)\(seen)",
+                         detail: model.offlineLong ? WindowModel.offlineAdvice : "这些卡片可能已过时，当前无法执行操作")
             .lkCard()
             .padding(.bottom, LKSpace.x4)
     }
 
-    /// 急事：段标题「急事 N」，下面是白底的卡片（#65：和别的卡片一样，只有工具写成 danger 的按钮是浅红底红字）
+    /// 急事：放在最上面，不写段标题，卡片是浅红底、红边（负责人 11-13：急事换个颜色强调，放最上面）
     @ViewBuilder private func urgentBlock(_ i: Int) -> some View {
-        // 和「要你决定 N」一样数件数：一叠里几件就算几件，收在「还有 N 件急事」里的也算
-        LKSection(title: "急事", count: TodayPage.urgentCount(model.urgent), countDelay: Motion.counterAt).lkEnter(1 + i * 2)
-        urgentCards.lkEnter(2 + i * 2)
+        urgentCards.lkEnter(1 + i * 2).padding(.bottom, LKSpace.x2)
     }
 
     private var urgentCards: some View {
@@ -298,7 +311,7 @@ struct TodayStandard: View {
                 let key = TodayStack.key(stack[0].tool, stack[0].kind, stack[0].title)   // 按这一叠是哪一类记：处理掉第一张也不自己收起
                 let open = model.urgentOpenStacks.contains(key)
                 ForEach(open ? stack : [stack[0]]) { u in
-                    UrgentBanner(item: u, model: model).stackEdge(open || stack.count == 1 ? 0 : stack.count - 1, tint: nil)
+                    UrgentBanner(item: u, model: model).stackEdge(open || stack.count == 1 ? 0 : stack.count - 1, tint: p.danger)
                         .id("urgent:\(u.id)")   // 菜单栏里点了这一叠滚到这里
                 }
                 if stack.count > 1 {
@@ -324,8 +337,8 @@ struct TodayStandard: View {
                     .frame(minHeight: LKHeight.row)
                     .contentShape(Rectangle())
                 }
-                .buttonStyle(.plain)
-                .background(RoundedRectangle(cornerRadius: LKRadius.card, style: .continuous).fill(p.danger.opacity(p.dark ? 0.16 : 0.07)))
+                .buttonStyle(.plainPointer)
+                .background(RoundedRectangle(cornerRadius: p.cardRadius, style: .continuous).fill(p.danger.opacity(p.dark ? 0.16 : 0.07)))
             }
         }
     }
@@ -333,7 +346,7 @@ struct TodayStandard: View {
     @ViewBuilder private func doneBlock(_ i: Int, railed: Bool) -> some View {
         let rows = DoneRow.merged(model.done)   // 同一组的合成一行（工具协议 §4 `doneGroup`）
         let shown = TodayPage.visibleDone(rows, all: allDone, deciding: !model.cards.isEmpty, railed: railed)
-        LKSection(title: "已经替你做了", count: rows.count, countDelay: Motion.counterAt).lkEnter(1 + i * 2)
+        LKSection(title: "已自动处理", count: rows.count, countDelay: Motion.counterAt).lkEnter(1 + i * 2)
         VStack(spacing: 0) {
             ForEach(Array(shown.rows.enumerated()), id: \.element.id) { n, d in
                 let fresh = moving && !known.done.contains(d.id)
@@ -354,99 +367,139 @@ struct TodayStandard: View {
                     .frame(minHeight: LKHeight.row)
                     .contentShape(Rectangle())
                 }
-                .buttonStyle(.plain)
+                .buttonStyle(.plainPointer)
                 .padding(.horizontal, LKSpace.x5)
                 .overlay(alignment: .top) { Rectangle().fill(p.border).frame(height: 1).padding(.horizontal, LKSpace.x5) }
             }
         }
+        .clipShape(RoundedRectangle(cornerRadius: p.cardRadius, style: .continuous))     // 行悬停时的底照卡片的圆角裁（先裁再画卡片底，阴影不被裁掉）
         .background(CardSurface())
         .lkEnter(2 + i * 2)
     }
 
     @ViewBuilder private func decideBlock(_ i: Int) -> some View {
-        // 没有的时候不写 0：数据还没到时 0 读着像「没事」，空的时候下面那句已经说了
-        // 空的时候：整页只剩这一段（在准备、今天没事）才画状态那一句或插画，也不写段标题（会读成「急事不会来」、和那句重复）。
-        // 页上还有别的段（有急事、有做了的）时整段不画：插画和「今天没什么要你操心的」会和上面的急事打架
+        // 「待确认」只有一张卡片，一件件来（负责人 11-13：逐件处理本身就是一张卡片，不另放按钮、「按类处理」，也不摆一排数）。
+        // 空的时候：整页只剩这一段（在准备、今天没事）才画状态那一句或插画；页上还有急事、做了的、稍后查看的时候不画
         let alone = model.cards.isEmpty && model.urgent.isEmpty && model.done.isEmpty && model.quiet.isEmpty
         if !model.cards.isEmpty {
-            LKSection(title: "要你决定", count: model.cards.count, countDelay: Motion.counterAt).lkEnter(1 + i * 2)
+            LKSection(title: "待确认")
+                .lkEnter(1 + i * 2)
                 .id(BriefNoteView.decideTarget)   // 简报里点「等」滚到这里
-            let picks = model.categoriesToPick
-            if !picks.isEmpty { CategoryPicks(model: model, picks: picks).lkEnter(2 + i * 2) }
-        }
-        if model.cards.isEmpty && !alone {
-            EmptyView()
-        } else if model.cards.isEmpty && model.waitingForFeed && model.coreReachable {   // 连不上时顶上那张卡说清楚了，不再一直写「正在准备…」
+            askDeck.lkEnter(2 + i * 2)
+        } else if alone && model.waitingForFeed && model.coreReachable {   // 连不上时顶上那张卡说清楚了，不再一直写「正在准备…」
             // 核心的第一份数据还没到（刚打开、模型在准备）：说在准备，别像什么都没有
             HStack(alignment: .top, spacing: LKSpace.x3) {
                 LKBreathing().padding(.top, 5)
                 VStack(alignment: .leading, spacing: 2) {
-                    Text("正在准备…").font(LKFont.ui(LKType.body))
-                    Text(model.engineReady ? "在问各个应用今天有什么事，马上就好。" : "螺壳在准备，好了以后这里会列出今天的事。")
+                    Text("正在准备").font(LKFont.ui(LKType.body))
+                    Text(model.engineReady ? "正在读取各应用的事项" : "螺壳正在准备，完成后在此列出今天的事项")
                         .font(LKFont.ui(LKType.small)).foregroundStyle(p.mutedFg)
                 }
             }
             .padding(.vertical, LKSpace.x3)
             .lkEnter(2 + i * 2)
-        } else if model.cards.isEmpty {
+        } else if alone {
             HStack(spacing: LKSpace.x4) {
                 Mascot(width: 56)
-                Text("今天没什么要你操心的。").font(LKFont.ui(LKType.body)).foregroundStyle(p.mutedFg)
+                Text("今天没有待处理的事项").font(LKFont.ui(LKType.body)).foregroundStyle(p.mutedFg)
             }
             .padding(.vertical, LKSpace.x3)
             .lkEnter(2 + i * 2)
-        } else {
-            VStack(spacing: LKSpace.x3) {
-                ForEach(TodayStack.spread(TodayStack.cards(model.cards)), id: \.first!.id) { stack in
-                    let key = "c:" + TodayStack.key(stack[0].tool, stack[0].kind, stack[0].title)
-                    let open = openStacks.contains(key)
-                    ForEach(open ? stack : [stack[0]]) { c in
-                        let hero = heroReady && !reduce && c.id == model.cards.first?.id
-                        let back = moving && !known.cards.contains(c.id)
-                        CardFrame(card: c, model: model, iconHidden: back || hidden.contains("card:\(c.id)"), hero: hero ? ns : nil)
-                            .overlay {
-                                if let r = ring, r.id == c.id { CardRing().id(r.token) }
-                            }
-                            .stackEdge(open || stack.count == 1 ? 0 : stack.count - 1, tint: nil)
-                            .id("card:\(c.id)")
-                            .transition(.asymmetric(insertion: Motion.cardBack(reduce: reduce || snapshot),
-                                                    removal: Motion.cardLeave(reduce: reduce || snapshot)))
-                    }
-                    if stack.count > 1 {
-                        StackToggle(more: stack.count - 1, unit: TodayStack.unit(stack[0].tool), open: open, tint: nil,
-                                    what: stack[0].title.flatMap { TodayStack.what($0, stack.count - 1, unit: TodayStack.unit(stack[0].tool)) }) { toggle(key) }
-                            .padding(.top, -8).padding(.bottom, 8)   // 贴着上面那一摞，离下一张远一点
-                    }
-                }
-            }
-            .lkEnter(2 + i * 2)
+        }
+        // 不急的：有空的时候看看（负责人 11-13：咖啡杯，不写「攒着、之后再问你」）
+        if !model.quiet.isEmpty {
+            LKSection(title: "稍后查看", icon: "coffee").lkEnter(3 + i * 2)
+            quietCards.lkEnter(4 + i * 2)
         }
     }
 
-    @ViewBuilder private func laterBlock(_ i: Int) -> some View {
-        LKSection(title: "顺便看看", count: model.quiet.count).lkEnter(1 + i * 2)
-        // 工具写的卡片一张一张分开（一个邮箱一张，里面分几块）；窗口自己的行（有新版本这类）照旧合在一组里
+    /// 「待确认」那一张：一次只摆一件，后面压着的露出一两层边；下面一排小点（一件一个，现在这件是实心的，点了跳到那件）
+    /// 和「下一件」。答完一件，下一件自己上来
+    @ViewBuilder private var askDeck: some View {
+        let cards = model.cards
+        let n = min(deckIndex, cards.count - 1)
+        let c = cards[n]
+        VStack(spacing: LKSpace.x2) {
+            let hero = heroReady && !reduce && n == 0
+            let back = moving && !known.cards.contains(c.id)
+            CardFrame(card: c, model: model, iconHidden: back || hidden.contains("card:\(c.id)"), hero: hero ? ns : nil)
+                .overlay {
+                    if let r = ring, r.id == c.id { CardRing().id(r.token) }
+                }
+                .stackEdge(min(cards.count - 1, 2), tint: nil)
+                .id("card:\(c.id)")
+                .transition(.asymmetric(insertion: Motion.cardBack(reduce: reduce || snapshot),
+                                        removal: Motion.cardLeave(reduce: reduce || snapshot)))
+            if cards.count > 1 {
+                // 左边「上一件」、中间一排小点（一件一个，现在这件实心，点了跳过去）、右边「下一件」（负责人 11-13）
+                ZStack {
+                    HStack(spacing: 6) {
+                        ForEach(Array(cards.prefix(TodayPage.deckDots).enumerated()), id: \.element.id) { k, card in
+                            Button { withAnimation(Motion.enter(Motion.reflow, reduce: reduce)) { deckIndex = k } } label: {
+                                Circle().fill(k == n ? p.fg.opacity(0.7) : p.mutedFg.opacity(0.28)).frame(width: 6, height: 6)
+                                    .padding(3).contentShape(Rectangle())
+                            }
+                            .buttonStyle(.plainPointer)
+                            .accessibilityLabel("第 \(k + 1) 件")
+                        }
+                    }
+                    HStack(spacing: LKSpace.x2) {
+                        Button {
+                            withAnimation(Motion.enter(Motion.reflow, reduce: reduce)) { deckIndex = (n + cards.count - 1) % cards.count }
+                        } label: {
+                            HStack(spacing: 2) { LKIcon("chevron-left", size: 13); Text("上一件") }
+                        }
+                        .buttonStyle(LKButtonStyle(kind: .text, size: .small))
+                        .help("返回上一件")
+                        Spacer(minLength: 0)
+                        Button {
+                            withAnimation(Motion.enter(Motion.reflow, reduce: reduce)) { deckIndex = (n + 1) % cards.count }
+                        } label: {
+                            HStack(spacing: 2) { Text("下一件"); LKIcon("chevron-right", size: 13) }
+                        }
+                        .buttonStyle(LKButtonStyle(kind: .text, size: .small))
+                        .help("跳过，查看下一件")
+                    }
+                }
+                .padding(.horizontal, LKSpace.x2)
+            }
+        }
+    }
+
+    /// 原来「顺便看看」的（不急的：邮件每个邮箱「几封可以整理」、有新版本）：不另起一段，接在「待确认」后面。
+    /// 同一个应用的合成一张卡片（一个邮箱一块，中间一条线；负责人 11-13）；窗口自己的行（有新版本这类）照旧合在一组里
+    @ViewBuilder private var quietCards: some View {
         let cardsRows = model.quiet.filter { $0.surface != nil }
         let plain = model.quiet.filter { $0.surface == nil }
         VStack(spacing: LKSpace.x3) {
-            ForEach(cardsRows) { q in
-                if let s = q.surface {
-                    // 和别的卡片同一个图标列（28）、同样的内边距：正文起点、右边线都对齐
-                    HStack(alignment: .top, spacing: LKSpace.x3) {
-                        AppIcon(tool: q.tool, size: 28)
-                        SurfaceView(model: s) { cid, _, ctx in model.tapSurface(q.id, componentId: cid, context: ctx) }
-                            .padding(.top, LKSpace.x1)
+            ForEach(TodayStack.group(cardsRows) { $0.tool.name }, id: \.first!.id) { rows in
+                // 和别的卡片同一个图标列（28）、同样的内边距：正文起点、右边线都对齐
+                HStack(alignment: .top, spacing: LKSpace.x3) {
+                    AppIcon(tool: rows[0].tool, size: TodayPage.iconSize)
+                    VStack(alignment: .leading, spacing: LKSpace.x3) {
+                        ForEach(Array(rows.enumerated()), id: \.element.id) { n, q in
+                            // 两个邮箱之间：通到卡片两边的一条线，上下多留一截（负责人 11-16：不同邮箱的分隔不够明显）
+                            if n > 0 {
+                                Rectangle().fill(p.border).frame(height: 1)
+                                    .padding(.leading, -(LKInsets.card.leading + 28 + LKSpace.x3)).padding(.trailing, -LKInsets.card.trailing)
+                                    .padding(.vertical, LKSpace.x3)
+                            }
+                            if let s = q.surface {
+                                SurfaceView(model: s) { cid, _, ctx in model.tapSurface(q.id, componentId: cid, context: ctx) }
+                            }
+                        }
                     }
-                    .padding(LKInsets.card)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .background(CardSurface())
+                    .padding(.top, LKSpace.x1)
                 }
+                .padding(LKInsets.card)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .background(CardSurface())
             }
             if !plain.isEmpty {
                 LKGroup {
                     ForEach(Array(plain.enumerated()), id: \.element.id) { n, q in
                         HStack(spacing: LKSpace.x3) {
-                            AppIcon(tool: q.tool, size: 20)
+                            AppIcon(tool: q.tool, size: TodayPage.iconSize)
                             VStack(alignment: .leading, spacing: 2) {
                                 Text(q.text)
                                 if let s = q.sub { Text(s).font(LKFont.ui(LKType.small)).foregroundStyle(p.mutedFg) }
@@ -456,7 +509,7 @@ struct TodayStandard: View {
                                 Button(a) { model.upgrade(q.tool) }.buttonStyle(LKButtonStyle())
                             } else {
                                 Button { model.show("这里会打开\(q.tool.name)自己的窗口") } label: { LKIcon("chevron-right") }
-                                    .buttonStyle(LKButtonStyle(kind: .text)).accessibilityLabel("看看")
+                                    .buttonStyle(LKButtonStyle(kind: .text)).accessibilityLabel("查看")
                             }
                         }
                         .lkRow(first: n == 0)
@@ -464,20 +517,17 @@ struct TodayStandard: View {
                 }
             }
         }
-        .lkEnter(2 + i * 2)
     }
 
     @ViewBuilder private var notices: some View {
-        let notices = (model.hostNotice.map { [$0] } ?? []) + model.notices
-        if !notices.isEmpty || model.notificationsNotAsked {
-            // 核心的几句和出错卡一样的画法：提示图标 + 正文色的一句。核心自己会再去读那个应用，回来了这句就没了，所以不放按钮
-            VStack(alignment: .leading, spacing: LKSpace.x2) {
-                ForEach(notices, id: \.self) { n in ErrorNote(text: n) }
-                if model.notificationsNotAsked {
-                    HStack(spacing: LKSpace.x2) {
-                        Text("通知还没打开，简报和急事到不了你。").font(LKFont.ui(LKType.small)).foregroundStyle(p.mutedFg)
-                        Button("打开通知") { model.host?.askNotifications() }.buttonStyle(LKButtonStyle())
-                    }
+        let notices = model.shownNotices
+        if !notices.isEmpty {
+            // 一条一行：提示图标 + 一句话 + 右边一个按钮（负责人 11-16）；行和行之间一条线
+            VStack(alignment: .leading, spacing: 0) {
+                ForEach(Array(notices.enumerated()), id: \.element.id) { i, n in
+                    NoticeLine(row: n, action: model.noticeAction(n))
+                        .padding(.vertical, LKSpace.x2)
+                        .overlay(alignment: .top) { if i > 0 { Rectangle().fill(p.border).frame(height: 1) } }
                 }
             }
             .lkCard()
@@ -492,14 +542,10 @@ struct TodayStandard: View {
             withAnimation(Motion.enter(Motion.reflow, reduce: reduce)) { proxy.scrollTo(id, anchor: .top) }
             return
         }
-        guard model.cards.contains(where: { $0.id == id }) else { return }
-        // 收在一叠里的那张没画出来：先展开那一叠，下一拍再滚过去（不然点了没反应）
-        if let key = TodayPage.stackToOpen(for: id, in: model.cards) {
-            openStacks.insert(key)
-            DispatchQueue.main.async { withAnimation(Motion.enter(Motion.reflow, reduce: reduce)) { proxy.scrollTo("card:\(id)", anchor: .center) } }
-        } else {
-            withAnimation(Motion.enter(Motion.reflow, reduce: reduce)) { proxy.scrollTo("card:\(id)", anchor: .center) }
-        }
+        guard let k = model.cards.firstIndex(where: { $0.id == id }) else { return }
+        // 「待确认」一次只摆一件：先换到那一件，下一拍再滚过去
+        deckIndex = k
+        DispatchQueue.main.async { withAnimation(Motion.enter(Motion.reflow, reduce: reduce)) { proxy.scrollTo("card:\(id)", anchor: .center) } }
         let token = (ring?.token ?? 0) + 1
         DispatchQueue.main.asyncAfter(deadline: .now() + (reduce ? 0 : Motion.reflow)) { ring = (id, token) }
         DispatchQueue.main.asyncAfter(deadline: .now() + (reduce ? 0 : Motion.reflow) + Motion.ring) {
@@ -591,7 +637,7 @@ struct CardRing: View {
     @State private var shown = false
 
     var body: some View {
-        RoundedRectangle(cornerRadius: LKRadius.card + 3, style: .continuous)
+        RoundedRectangle(cornerRadius: p.cardRadius + 3, style: .continuous)
             .strokeBorder(p.brandText.opacity(0.45), lineWidth: 3)
             .padding(-3)
             .opacity(shown ? 1 : 0)
@@ -607,48 +653,14 @@ struct CardRing: View {
 
 // MARK: 简报
 
-/// 「今天」最上面的简报：替你做了的、急事、要你决定的（点了跳到那张卡片）
-struct BriefNoteView: View {
+/// 简报那段话怎么写：替你做了的、急事、要你决定的（点了跳到那张卡片）。画在吉祥物的气泡里（`TodayHello`）
+enum BriefNoteView {
     /// `jump` 收到它就是跳到「要你决定」那一段（简报里的「等」）
     static let decideTarget = "section:decide"
-    let note: BriefNote
-    @ObservedObject var model: WindowModel
-    let jump: (String) -> Void
-    @Environment(\.lk) private var p
-    @Environment(\.lkSnapshot) private var snapshot
-    @Environment(\.accessibilityReduceMotion) private var reduce
-
-    var body: some View {
-        VStack(alignment: .leading, spacing: LKSpace.x1 + 2) {
-            HStack(spacing: LKSpace.x2) {
-                BrandBadge(size: 16)
-                Text("\(note.title) · \(note.time)").font(LKFont.ui(LKType.caption)).foregroundStyle(p.mutedFg)
-                Spacer(minLength: 0)
-                Button("收起") { model.closeBrief() }.buttonStyle(LKButtonStyle(kind: .text, size: .small))
-            }
-            .lkAppear(!snapshot, Motion.enter(Motion.briefHead, delay: Motion.briefHeadAt, reduce: reduce))
-            Text(Self.text(note, open: Set(model.cards.map(\.id)), p: p))
-                .font(LKFont.ui(LKType.lead))
-                .lineSpacing(LKSpace.x1 + 2)
-                .tint(p.fg)
-                .lineLimit(Self.maxLines)   // 写法已经按两行挑过（`text`），这里兜底
-                .fixedSize(horizontal: false, vertical: true)
-                .environment(\.openURL, OpenURLAction { url in
-                    if url.host == "decide" { jump(BriefNoteView.decideTarget) }   // 「等」：跳到「要你决定」
-                    else if let i = Int(url.lastPathComponent), note.pending.indices.contains(i) { jump(note.pending[i].id) }
-                    return .handled
-                })
-                .lkAppear(!snapshot, dy: 10, Motion.soft(Motion.brief, delay: Motion.briefAt, reduce: reduce))
-        }
-        .padding(.bottom, LKSpace.x5)
-        .accessibilityElement(children: .contain)
-        .accessibilityLabel(note.title)
-    }
-
     /// 简报那段话最多几行（#51：要决定的有 40 件时整段占掉半屏）
     static let maxLines = 2
-    /// 按这么宽量几行：最窄的时候（860 的窗口、侧栏展开）「今天」那一栏放字的宽度
-    static let measureWidth: CGFloat = 590
+    /// 按这么宽量几行：最窄的时候（860 的窗口、侧栏展开）「今天」那一栏 590 宽，去掉吉祥物（64 加间距 8）和气泡左右的边距（各 16）
+    static let measureWidth: CGFloat = 486
     /// 要你决定的先列几件，后面写「等」（点了跳到「要你决定」）
     static let pendingListed = 3
 
@@ -764,9 +776,11 @@ struct DoneLine: View {
 
     /// 展开有没有用：工具的答复比这一行多出东西（别的字、别的按钮、要填的）才能展开；只有这一句加「撤销」的不画 ›
     private var expandable: Bool {
-        guard row.members.count <= 1, let s = row.surface else { return false }
+        // 合成的一行（几个邮箱的）：展开看每个邮箱各做了什么（负责人 11-13：自动处理了要看得到处理了啥）
+        if row.members.count > 1 { return row.members.contains { $0.surface != nil } }
+        guard let s = row.surface else { return false }
         let d = SurfaceDigest(s.surface)
-        return !d.detail.isEmpty || d.hasInputs || d.actions.contains { $0.label != "撤销" && $0.label != "放回" }
+        return !d.detail.isEmpty || d.hasInputs || d.actions.contains { !TodayPage.undoLabels.contains($0.label) }
     }
 
     @State private var hover = false
@@ -774,10 +788,10 @@ struct DoneLine: View {
     var body: some View {
         VStack(alignment: .leading, spacing: LKSpace.x3) {
             HStack(spacing: LKSpace.x3) {
-                AppIcon(tool: row.tool, size: 20)
+                // 和「稍后查看」「待确认」的卡片一样大（28；负责人 11-17：两个区域的图标不一样大，以卡片的为准）
+                AppIcon(tool: row.tool, size: TodayPage.iconSize)
                     .opacity(iconHidden ? 0 : 1)
                     .lkIconFrame("done:\(row.id)")
-                    .frame(width: 28)   // 和卡片同一个 28pt 图标列：字从卡片正文的起点开始
                 // 一行的字不带句号（工具答的那句常以「。」结尾）：这一段统一，› 跟在字后面读成一个能点开的整体
                 Text(row.text.hasSuffix("。") ? String(row.text.dropLast()) : row.text).lineLimit(1).truncationMode(.tail)
                     .strikethrough(row.undone).foregroundStyle(row.undone ? p.mutedFg : p.fg)
@@ -790,7 +804,7 @@ struct DoneLine: View {
                         .accessibilityHidden(true)
                 }
                 Spacer(minLength: LKSpace.x2)
-                // 「撤销」是「一句话 + 按钮」里的按钮：次要按钮，贴内容的右边线；时间在最右边的日期列，和上下卡片的日期对齐
+                // 「撤销」是「一句话 + 按钮」里的按钮：次要按钮，贴内容的右边线
                 Group {
                     if row.members.count > 1, let first = row.members.compactMap({ $0.surface.flatMap { TodayPage.undoButton(in: $0.surface) } }).first {
                         // 合成的一行：一次撤销，把合进来的每一张卡片的撤销都点
@@ -813,20 +827,31 @@ struct DoneLine: View {
                     }
                 }
                 .lkAppear(fresh, dx: -6, part(2))
-                Text(row.time).font(LKFont.ui(LKType.caption)).foregroundStyle(p.mutedFg).monospacedDigit().fixedSize()
-                    .frame(minWidth: 54, alignment: .trailing)
-                    .lkAppear(fresh, dx: -6, part(1))
+                // 不写时间（负责人 11-14：按钮挨着时间别扭，做完的是什么时候不要紧）：要看什么时候做的去右边栏的「历史」
             }
             .frame(minHeight: LKHeight.row)
             .contentShape(Rectangle())
-            .background {   // 能展开的行：悬停时整行浅一档，看得出整行能点
+            .background {   // 能展开的行：悬停时整行浅一档，看得出整行能点；铺满这一行（卡片的圆角把它裁齐），不另画一个圆角块
                 if hover && expandable {
-                    RoundedRectangle(cornerRadius: LKRadius.control, style: .continuous).fill(p.tint).padding(.horizontal, -LKSpace.x2)
+                    Rectangle().fill(p.tint).padding(.horizontal, -LKSpace.x5)
                 }
             }
             .onHover { hover = $0 }
+            .modifier(PointerIf(on: expandable))
             .onTapGesture { if expandable { toggle() } }
-            if open && expandable, let s = row.surface {
+            if open && expandable && row.members.count > 1 {
+                // 一个邮箱一块：上面写是哪个邮箱，下面是那张卡片（做了哪几封，每封能单独撤销）
+                VStack(alignment: .leading, spacing: LKSpace.x3) {
+                    ForEach(row.members.filter { $0.surface != nil }) { m in
+                        VStack(alignment: .leading, spacing: LKSpace.x1) {
+                            if let b = m.group?.badge { LKBadge(text: b, kind: .info).lineLimit(1).fixedSize() }
+                            SurfaceView(model: m.surface!) { cid, _, ctx in model.tapSurface(m.id, componentId: cid, context: ctx) }
+                        }
+                    }
+                }
+                .padding(.leading, 40)
+                .padding(.bottom, LKSpace.x3)
+            } else if open && expandable, let s = row.surface {
                 SurfaceView(model: s) { cid, _, ctx in model.tapSurface(row.id, componentId: cid, context: ctx) }
                     .padding(.leading, 40)
                     .padding(.bottom, LKSpace.x3)
@@ -881,7 +906,14 @@ struct UrgentBanner: View {
         }
         .padding(LKInsets.card)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .background { CardSurface() }
+        // 急事的卡片浅红底、一圈淡红边，和别的卡片一眼分得开（负责人 11-13）
+        .background {
+            ZStack {
+                CardSurface()
+                RoundedRectangle(cornerRadius: p.cardRadius, style: .continuous).fill(p.danger.opacity(p.dark ? 0.14 : 0.06))
+            }
+        }
+        .overlay { RoundedRectangle(cornerRadius: p.cardRadius, style: .continuous).strokeBorder(p.danger.opacity(p.dark ? 0.45 : 0.32), lineWidth: 1) }
         .accessibilityElement(children: .contain)
         .accessibilityLabel("急事：\(item.title)")
     }
@@ -895,7 +927,7 @@ struct CardFrame: View {
     let card: TodayCard
     @ObservedObject var model: WindowModel
     var iconHidden = false
-    /// 第一张：进「一件件处理」时长成面板
+    /// 第一张：进「逐件处理」时长成面板
     var hero: Namespace.ID? = nil
     @Environment(\.lk) private var p
 
@@ -923,7 +955,7 @@ struct CardFrame: View {
 
 // MARK: 卡片里有什么
 
-/// 从一张卡片里取出标题、其余的字、按钮（紧凑的表、简报、一件件处理用）
+/// 从一张卡片里取出标题、其余的字、按钮（紧凑的表、简报、逐件处理用）
 struct SurfaceDigest {
     struct Action: Identifiable, Equatable {
         let id: String
@@ -957,6 +989,7 @@ struct SurfaceDigest {
             guard type == "Button" else { continue }
             labels.formUnion(s.buttonParts(id))
             if s.opensURL(id), s.openSite(id) == nil { continue }
+            if !s.buttonCountAllows(id) { continue }   // §4 countLabel：数出 0 项的按钮不画
             let label = s.buttonLabel(id).text
             if !label.isEmpty {
                 actions.append(Action(id: id, label: label, variant: c["variant"]?.string, site: s.openSite(id)))
@@ -977,7 +1010,7 @@ struct SurfaceDigest {
     }
 }
 
-/// 卡片外面另画的一个按钮（紧凑的表、一件件处理）：这张卡片在处理一次点按时灰掉；打开网页的，网站写在按钮后面
+/// 卡片外面另画的一个按钮（紧凑的表、逐件处理）：这张卡片在处理一次点按时灰掉；打开网页的，网站写在按钮后面
 struct DigestButton: View {
     let action: SurfaceDigest.Action
     @ObservedObject var surface: SurfaceModel
@@ -1002,7 +1035,7 @@ struct DisabledWhileBusy: ViewModifier {
 }
 
 /// 一叠下面那一行：「还有 7 封」展开、「收起」
-/// 「要你决定」段标题下面的「按类处理」：不止一件的那几类，每类一块（应用图标、名字、件数），点了进「一件件处理」只走这一类
+/// 「要你决定」段标题下面的「按类处理」：不止一件的那几类，每类一块（应用图标、名字、件数），点了进「逐件处理」只走这一类
 struct CategoryPicks: View {
     @ObservedObject var model: WindowModel
     let picks: [DecideCategory]
@@ -1019,7 +1052,7 @@ struct CategoryPicks: View {
                         LKCount(value: c.ids.count).foregroundStyle(p.mutedFg)
                     }
                     .help("「\(c.name)」的 \(c.ids.count) 件一次只摆一件：⏎ 答，↓ 跳过，Esc 回来")
-                    .accessibilityLabel("一件件处理「\(c.name)」的 \(c.ids.count) 件")
+                    .accessibilityLabel("逐件处理「\(c.name)」的 \(c.ids.count) 件")
                 }
             }
         }
@@ -1050,7 +1083,7 @@ struct StackToggle: View {
             .frame(minHeight: 30)
             .contentShape(Rectangle())
         }
-        .buttonStyle(.plain)
+        .buttonStyle(.plainPointer)
         .accessibilityLabel(open ? "收起" : "展开另外 \(more) \(unit)")
     }
 }
@@ -1088,4 +1121,108 @@ private struct StackEdge: ViewModifier {
 extension TodayPage {
     /// 「急事 N」的 N：急事的件数，不是叠数（和「要你决定」一样）
     static func urgentCount(_ urgent: [UrgentItem]) -> Int { urgent.count }
+}
+
+
+/// 「今天」最上面它的一句话（界面规范 §14：说现在最值得说的一件事；§15 小精灵开口的几类）。宁缺毋滥：
+/// 下面各段已经写着的事不说（负责人 11-15：「有 3 件事想听你一句话」信息量是 0；11-16：替你做了什么也一样）。
+/// 点了简报的通知进来，它说的就是简报，到离开「今天」为止：核心让模型写的那一段话（`briefWords`）；
+/// 没有时照模板拼（替你做了的、急事、待确认的前几件，能点）；
+/// 平时先说急事，没有急事说核心定的那一句（模型从今天的事里挑一件说，带一点性格；负责人 11-18：用页上已有的事打趣，
+/// 不是照搬下面的字）；没有话时只画吉祥物，不出气泡
+struct TodayHello: View {
+    @ObservedObject var model: WindowModel
+    /// 简报里点了一件：跳到那张卡片
+    var jump: (String) -> Void = { _ in }
+    @Environment(\.lk) private var p
+
+    /// 简报（有的话气泡里说它，不说 `line`）
+    var brief: BriefNote? { model.coreReachable ? model.briefNote : nil }
+
+    var line: String? {
+        guard model.coreReachable else { return nil }
+        // 先说急事；没有急事才说核心定的那一句（今天的事）
+        return Self.line(urgent: model.urgent, done: model.done, now: model.now()) ?? model.helloLine
+    }
+
+    static func line(urgent: [UrgentItem], done: [DoneRow], now: Date) -> String? {
+        if let u = urgent.first {
+            return urgent.count == 1 ? "有件急事要你看：\(u.title)" : "有 \(urgent.count) 件急事，先看这件：\(u.title)"
+        }
+        // 替你做了什么不再说：下面「已自动处理」写着同一件事（负责人 11-15、11-16：说的和下面那一行是同一件，信息量是 0）。
+        // 没有急事就不出气泡，只有吉祥物；从记忆里找话轻轻调侃的那一句（界面规范 §15）要核心用模型写，接上以后在这里说
+        return nil
+    }
+
+    /// 「已自动处理 1 封（a@x.com）」→「自动处理了 1 封」：去掉「已」和括号里的邮箱，句尾不加句号
+    static func report(_ text: String) -> String {
+        var t = text.replacingOccurrences(of: #"（[^（）]*@[^（）]*）"#, with: "", options: .regularExpression)
+        t = t.trimmingCharacters(in: CharacterSet(charactersIn: "。 "))
+        if t.hasPrefix("已") { t.removeFirst() }
+        return t
+    }
+
+    /// 「10:42」→「上午」；不是今天的（「昨天 20:10」）照写「昨天」
+    static func when(_ time: String, now: Date) -> String {
+        if time.hasPrefix("昨天") { return "昨天" }
+        guard let h = Int(time.split(separator: ":").first ?? "") else { return "" }
+        switch h {
+        case 0..<6: return "夜里"
+        case 6..<12: return "上午"
+        case 12..<18: return "下午"
+        default: return "晚上"
+        }
+    }
+
+    /// 页上有东西（不是「今天没什么要你操心的」那一屏，它自己画着吉祥物）
+    private var hasContent: Bool {
+        model.coreReachable && !(model.urgent.isEmpty && model.cards.isEmpty && model.done.isEmpty && model.quiet.isEmpty)
+    }
+
+    var body: some View {
+        if brief != nil || line != nil || hasContent {
+            HStack(alignment: .bottom, spacing: LKSpace.x2) {
+                Mascot(width: 64).scaleEffect(x: -1, y: 1)     // 左右翻过来，脸朝着它说的话（负责人 11-14）
+                if let note = brief, let words = model.briefWords {
+                    // 简报那一段话是核心让模型写的（负责人 11-18）；没有（没接模型、还没写好）才照模板拼
+                    Text(words)
+                        .font(LKFont.ui(LKType.lead))
+                        .lineSpacing(LKSpace.x1 + 2)
+                        .fixedSize(horizontal: false, vertical: true)
+                        .padding(.horizontal, LKSpace.x4).padding(.vertical, LKSpace.x3)
+                        .background(RoundedRectangle(cornerRadius: 18, style: .continuous).fill(p.card)
+                            .shadow(color: p.shadow.opacity(p.dark ? 0 : 0.06), radius: 1, y: 1))
+                        .padding(.bottom, LKSpace.x2)
+                        .accessibilityLabel(note.title + "：" + words)
+                } else if let note = brief {
+                    Text(BriefNoteView.text(note, open: Set(model.cards.map(\.id)), p: p))
+                        .font(LKFont.ui(LKType.lead))
+                        .lineSpacing(LKSpace.x1 + 2)
+                        .tint(p.fg)
+                        .lineLimit(BriefNoteView.maxLines)   // 写法已经按两行挑过（`text`），这里兜底
+                        .fixedSize(horizontal: false, vertical: true)
+                        .environment(\.openURL, OpenURLAction { url in
+                            if url.host == "decide" { jump(BriefNoteView.decideTarget) }   // 「等」：跳到待确认那一段
+                            else if let i = Int(url.lastPathComponent), note.pending.indices.contains(i) { jump(note.pending[i].id) }
+                            return .handled
+                        })
+                        .padding(.horizontal, LKSpace.x4).padding(.vertical, LKSpace.x3)
+                        .background(RoundedRectangle(cornerRadius: 18, style: .continuous).fill(p.card)
+                            .shadow(color: p.shadow.opacity(p.dark ? 0 : 0.06), radius: 1, y: 1))
+                        .padding(.bottom, LKSpace.x2)
+                        .accessibilityLabel(note.title)
+                } else if let line {
+                    Text(line)
+                        .font(LKFont.ui(LKType.lead))
+                        .padding(.horizontal, LKSpace.x4).padding(.vertical, LKSpace.x3)
+                        .background(RoundedRectangle(cornerRadius: 18, style: .continuous).fill(p.card)
+                            .shadow(color: p.shadow.opacity(p.dark ? 0 : 0.06), radius: 1, y: 1))
+                        .padding(.bottom, LKSpace.x2)
+                }
+                Spacer(minLength: 0)
+            }
+            .padding(.bottom, LKSpace.x2)
+            .accessibilityElement(children: brief == nil ? .combine : .contain)
+        }
+    }
 }

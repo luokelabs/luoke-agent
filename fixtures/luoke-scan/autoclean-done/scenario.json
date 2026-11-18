@@ -81,6 +81,31 @@
       "file": "read-page-cleaned.json"
     },
     {
+      "clock": "2026-10-20T12:01:00Z",
+      "do": "读扫描页的数据 data/overview",
+      "file": "read-data-overview.json"
+    },
+    {
+      "clock": "2026-10-20T12:01:00Z",
+      "do": "读清理记录的数据 data/history",
+      "file": "read-data-history.json"
+    },
+    {
+      "clock": "2026-10-20T12:01:00Z",
+      "do": "读设置的数据 data/settings",
+      "file": "read-data-settings.json"
+    },
+    {
+      "clock": "2026-10-20T12:01:00Z",
+      "do": "读一类的详情 data/category?id=temp",
+      "file": "read-data-category-temp.json"
+    },
+    {
+      "clock": "2026-10-20T12:01:00Z",
+      "do": "读一类的详情 data/category?id=project",
+      "file": "read-data-category-project.json"
+    },
+    {
       "clock": "2026-10-20T12:10:00Z",
       "do": "用户在自动清的卡片上点「放回」（整批放回，放回过的那几类以后先问）",
       "file": "call-scan_restore.json"

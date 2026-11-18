@@ -23,7 +23,7 @@ ACCESSORY = "fake-mail"
 MAILBOX = "me@example.com"
 
 ACTION_TEXT = {"archive": "归档", "trash": "移到垃圾箱", "spam": "移到垃圾邮件", "star": "加星标",
-               "draft": "写好草稿", "keep": "先不动"}
+               "draft": "写好草稿", "keep": "暂不处理"}
 
 # 清单 capabilities 里的 service、permissions（协议 §1a）：测试和开发时交给 ToolSource
 SERVICE = {
@@ -37,8 +37,8 @@ PERMISSIONS = [
      "facts": ["读邮件 app 存在本机的邮件", "结果不出这台 Mac"], "without": "degrade"},
     {"id": "contacts", "kind": "system", "tcc": "AddressBook", "title": "读通讯录", "request": "mail_request_contacts"},
     {"id": "mailbox", "kind": "account", "title": "邮箱", "page": "accounts", "remove": "mail_disconnect"},
-    {"id": "auto", "kind": "delegate", "title": "促销邮件不用点就归档", "on": "mail_auto"},
-    {"id": "send", "kind": "each-time", "title": "以你的名义发信"},
+    {"id": "auto", "kind": "delegate", "title": "自动归档促销邮件", "on": "mail_auto"},
+    {"id": "send", "kind": "each-time", "title": "以用户名义发信"},
 ]
 
 
@@ -88,11 +88,11 @@ class FakeMail:
         with self.lock:
             need = [
                 (self._mail("王老师", "答辩时间确认", "问你下周哪天方便答辩，周五前回"),
-                 [("draft", "写草稿"), ("star", "待跟进"), ("keep", "先不动")], "draft"),
+                 [("draft", "写草稿"), ("star", "待跟进"), ("keep", "暂不处理")], "draft"),
                 (self._mail("房东李先生", "续租合同", "发来明年的续租合同，请看过后签字"),
-                 [("star", "待跟进"), ("archive", "归档"), ("keep", "先不动")], "star"),
+                 [("star", "待跟进"), ("archive", "归档"), ("keep", "暂不处理")], "star"),
                 (self._mail("某某航空", "行程单：11 月 2 日 上海—成都", "11 月 2 日 08:30 起飞"),
-                 [("archive", "归档"), ("star", "待跟进"), ("keep", "先不动")], "archive"),
+                 [("archive", "归档"), ("star", "待跟进"), ("keep", "暂不处理")], "archive"),
             ]
             rest = [self._mail(s, t) for s, t in (("某某周刊", "本周精选"), ("某某银行", "积分活动"),
                                                   ("某某商城", "双十一预告"), ("某某论坛", "你关注的话题有新回复"))]
@@ -116,17 +116,17 @@ class FakeMail:
         if rest:
             entries["rest"] = {"mails": list(rest), "allowed": ["archive", "keep"]}
             rows.append({"key": "rest", "label": f"另外 {len(rest)} 封通知和推广",
-                         "options": [("archive", "照建议归档"), ("keep", "先不动")], "selected": "archive"})
+                         "options": [("archive", "照建议归档"), ("keep", "暂不处理")], "selected": "archive"})
         self.plans[plan_id] = {"item": item_id, "entries": entries}
         heads = "；".join(f"{self.mails[mid]['sender']}：{self.mails[mid]['subject']}" for mid, _, _ in need[:2])
         self.items[item_id] = {
             "id": item_id, "kind": "new-mail", "urgency": "normal", "deadline": None, "expires": None,
             "created": time.strftime("%Y-%m-%dT%H:%M:%S%z"),
-            "why_now": f"刚到了 {len(need)} 封要你处理的",
+            "why_now": f"新到 {len(need)} 封待处理邮件",
             "title": f"{len(need) + len(rest)} 封新邮件，{len(need)} 封要处理",
             "summary": heads + (f"；另外 {len(rest)} 封打算归档。" if rest else "。"),
             "_plan": plan_id, "_rows": rows,
-            "_title": f"这 {len(need)} 封要你看，其余打算归档",
+            "_title": f"{len(need)} 封待查看，其余拟归档",
         }
 
     def _add_suspicious(self, mid: str) -> None:
@@ -138,12 +138,12 @@ class FakeMail:
         self.items[item_id] = {
             "id": item_id, "kind": "suspicious", "urgency": "urgent", "deadline": None, "expires": None,
             "created": time.strftime("%Y-%m-%dT%H:%M:%S%z"),
-            "why_now": "像是钓鱼邮件，别点里面的链接",
+            "why_now": "疑似钓鱼邮件，请勿点击其中的链接",
             "title": "一封可疑邮件",
             "summary": f"{m['sender']}：{m['subject']}",
             "_plan": plan_id,
             "_rows": [{"key": mid, "label": f"{m['sender']}：{m['subject']}", "detail": m["summary"],
-                       "options": [("spam", "移到垃圾邮件"), ("keep", "先不动")], "selected": "spam"}],
+                       "options": [("spam", "移到垃圾邮件"), ("keep", "暂不处理")], "selected": "spam"}],
             "_title": "这封像是钓鱼邮件",
         }
 
@@ -151,13 +151,13 @@ class FakeMail:
         """用到才要（协议 §1a）：在 outbox 报一件 needs-access。"""
         item_id = f"needs-access/{permission}"
         card = cards.Card(f"access-{permission}")
-        card.text(f"要用到「{permission}」这项权限，得先有你的允许。")
+        card.text(f"要用到「{permission}」权限，需先允许")
         card.buttons(cards.button("打开设置", "mail_open_settings", primary=True))
         with self.lock:
             self.items[item_id] = {
                 "id": item_id, "kind": "needs-access", "urgency": "low", "permission": permission,
                 "deadline": None, "expires": None, "created": time.strftime("%Y-%m-%dT%H:%M:%S%z"),
-                "why_now": "要用到了", "title": "需要你允许", "summary": "给了以后能多做一些。",
+                "why_now": "要用到了", "title": "需要允许权限", "summary": "允许后可使用更多功能",
                 "_card": card.messages(),
             }
         return item_id
@@ -172,14 +172,14 @@ class FakeMail:
                 pub["card"] = it.get("_card") or cards.plan_card(
                     it["_plan"], it["_title"], it["_rows"], apply_event="mail_apply_plan", plan_id=it["_plan"],
                     apply_label="按选的处理",
-                    extra_buttons=[cards.button("在邮件助手里看", "mail_open", {"plan_id": it["_plan"]})])
+                    extra_buttons=[cards.button("在邮件助手中查看", "mail_open", {"plan_id": it["_plan"]})])
                 out.append(pub)
             return {"items": out}
 
     def summary(self) -> dict:
         with self.lock:
             n = sum(1 for it in self.items.values() if it["kind"] != "needs-access")
-        return {"count": n, "text": f"{n} 件等你处理" if n else "没有要你处理的"}
+        return {"count": n, "text": f"{n} 件待处理" if n else "无待处理邮件"}
 
     def permission_states(self) -> dict:
         with self.lock:
@@ -195,9 +195,9 @@ class FakeMail:
             if page_id == "overview":
                 n = len(self.items)
                 card.heading("邮件助手")
-                card.text(f"{n} 件等你处理" if n else "没有要你处理的")
-                card.text("促销邮件：" + ("不用点就归档" if self.auto else "先问你"), caption=True)
-                card.buttons(cards.button("以后先问我" if self.auto else "以后不用点就归档", "mail_auto", {"on": not self.auto}),
+                card.text(f"{n} 件待处理" if n else "无待处理邮件")
+                card.text("促销邮件：" + ("自动归档" if self.auto else "每次询问"), caption=True)
+                card.buttons(cards.button("改为每次询问" if self.auto else "改为自动归档", "mail_auto", {"on": not self.auto}),
                              cards.button("打开设置", "mail_open_settings"),
                              cards.open_url_button("帮助", "https://help.example.com/mail"))
             else:
@@ -225,7 +225,7 @@ class FakeMail:
         self._record(meta)
         with self.lock:
             self.auto = on
-        text = "好，以后促销邮件不用点就归档，每次都告诉你。" if on else "好，以后促销邮件都先问你。"
+        text = "已设为自动归档促销邮件，每次在「今天」中列出" if on else "已设为每次询问"
         surface = (meta.get(USER_ACTION) or {}).get("surfaceId")
         return {"text": text, "card": cards.result_card(surface, text)} if isinstance(surface, str) else {"text": text}
 
@@ -233,7 +233,7 @@ class FakeMail:
         self._record(meta)
         with self.lock:
             self.contacts = "granted"           # 假装系统弹了框、用户点了允许
-        return {"text": "（假工具）系统问过了，你允许了读通讯录。"}
+        return {"text": "（假工具）系统已询问，已允许读取通讯录"}
 
     def disconnect(self, args: dict, meta: dict) -> dict:
         self._record(meta)
@@ -308,7 +308,7 @@ class FakeMail:
             exec_id = f"exec-{next(self._ids)}"
             self.executions[exec_id] = undo
         parts = [f"{ACTION_TEXT[a]} {n} 封" for a, n in done.items()]
-        text = ("已" + "、".join(parts) + "。") if parts else "都先不动。"
+        text = ("已" + "、".join(parts) + "。") if parts else "都暂不处理。"
         if missing:
             text += f"有 {missing} 封已经不在收件箱里，没动它们。"
         card = cards.result_card(plan_id, text, undo_event="mail_undo" if undo else None,
@@ -390,7 +390,7 @@ class FakeMail:
         s.tool("mail_undo", self.undo, title="撤销刚才的处理", read_only=False,
                input_schema={"type": "object", "required": ["execution_id"],
                              "properties": {"execution_id": {"type": "string"}}})
-        s.tool("mail_open", self.open_mail, title="在邮件助手里看",
+        s.tool("mail_open", self.open_mail, title="在邮件助手中查看",
                input_schema={"type": "object", "properties": {"plan_id": {"type": "string"}}})
         s.tool("mail_open_settings", self.open_settings, title="打开邮件助手的设置")
         # 协议 §1a
@@ -407,7 +407,7 @@ class FakeMail:
             s.resource(f"thumb/{i}", lambda ref=f"thumb/{i}": self.thumb(ref), name="缩略图", mime_type="image/png")
         s.tool("mail_ui_open", self.ui_open, title="打开邮件助手的窗口",
                input_schema={"type": "object", "properties": {"page": {"type": "string"}}})
-        s.tool("mail_auto", self.set_auto, title="开或关促销邮件不用点就归档", read_only=False,
+        s.tool("mail_auto", self.set_auto, title="开关：自动归档促销邮件", read_only=False,
                input_schema={"type": "object", "required": ["on"], "properties": {"on": {"type": "boolean"}}})
         s.tool("mail_request_contacts", self.request_contacts, title="请系统给读通讯录的权限", read_only=False)
         s.tool("mail_disconnect", self.disconnect, title="移除邮箱", read_only=False)

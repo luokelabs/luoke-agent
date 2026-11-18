@@ -1,0 +1,79 @@
+{
+  "reply": {
+    "id": 11,
+    "jsonrpc": "2.0",
+    "result": {
+      "contents": [
+        {
+          "mimeType": "application/json",
+          "text": [
+            {
+              "createSurface": {
+                "catalogId": "ai.luoke/a2ui/agent/1",
+                "surfaceId": "asks"
+              },
+              "version": "v0.9"
+            },
+            {
+              "updateComponents": {
+                "components": [
+                  {
+                    "children": [
+                      "t1",
+                      "t2",
+                      "d3",
+                      "t4"
+                    ],
+                    "component": "Column",
+                    "id": "root"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "t1",
+                    "text": "记忆想问你的事和给你的建议，会在「今天」里一件件问你。不想现在答的点「归档」：不算回答，记忆也不会自己再问；想答了，在下面「已归档」里点「放回」，它回到「今天」。",
+                    "variant": "caption"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "t2",
+                    "text": "现在没有想问你的。"
+                  },
+                  {
+                    "component": "Divider",
+                    "id": "d3"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "t4",
+                    "text": "还没有归档的。",
+                    "variant": "caption"
+                  }
+                ],
+                "surfaceId": "asks"
+              },
+              "version": "v0.9"
+            }
+          ],
+          "uri": "page/asks"
+        }
+      ],
+      "resultType": "complete"
+    }
+  },
+  "request": {
+    "id": 11,
+    "jsonrpc": "2.0",
+    "method": "resources/read",
+    "params": {
+      "_meta": {
+        "io.modelcontextprotocol/clientCapabilities": {},
+        "io.modelcontextprotocol/clientInfo": {
+          "name": "luoke-agent",
+          "version": "fixtures"
+        },
+        "io.modelcontextprotocol/protocolVersion": "2026-07-28"
+      },
+      "uri": "page/asks"
+    }
+  }
+}

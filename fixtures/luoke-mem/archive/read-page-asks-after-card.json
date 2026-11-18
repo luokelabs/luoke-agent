@@ -1,0 +1,232 @@
+{
+  "reply": {
+    "id": 26,
+    "jsonrpc": "2.0",
+    "result": {
+      "contents": [
+        {
+          "mimeType": "application/json",
+          "text": [
+            {
+              "createSurface": {
+                "catalogId": "ai.luoke/a2ui/agent/1",
+                "surfaceId": "asks"
+              },
+              "version": "v0.9"
+            },
+            {
+              "updateComponents": {
+                "components": [
+                  {
+                    "children": [
+                      "t1",
+                      "t2",
+                      "t3",
+                      "r5",
+                      "t6",
+                      "t7",
+                      "r9",
+                      "r11",
+                      "d12",
+                      "t13",
+                      "t14",
+                      "t15",
+                      "r17"
+                    ],
+                    "component": "Column",
+                    "id": "root"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "t1",
+                    "text": "记忆想问你的事和给你的建议，会在「今天」里一件件问你。不想现在答的点「归档」：不算回答，记忆也不会自己再问；想答了，在下面「已归档」里点「放回」，它回到「今天」。",
+                    "variant": "caption"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "t2",
+                    "text": "「本地大模型」，对吗？"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "t3",
+                    "text": "想问你 · 11月5日提出",
+                    "variant": "caption"
+                  },
+                  {
+                    "action": {
+                      "event": {
+                        "context": {
+                          "asks": [
+                            1
+                          ],
+                          "op": "archive"
+                        },
+                        "name": "mem_archive"
+                      }
+                    },
+                    "child": "b4-text",
+                    "component": "Button",
+                    "id": "b4",
+                    "variant": "borderless"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "b4-text",
+                    "text": "归档"
+                  },
+                  {
+                    "children": [
+                      "b4"
+                    ],
+                    "component": "Row",
+                    "id": "r5"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "t6",
+                    "text": "以后某商城的促销邮件都归档？"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "t7",
+                    "text": "建议 · 11月5日提出",
+                    "variant": "caption"
+                  },
+                  {
+                    "action": {
+                      "event": {
+                        "context": {
+                          "asks": [
+                            3
+                          ],
+                          "op": "archive"
+                        },
+                        "name": "mem_archive"
+                      }
+                    },
+                    "child": "b8-text",
+                    "component": "Button",
+                    "id": "b8",
+                    "variant": "borderless"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "b8-text",
+                    "text": "归档"
+                  },
+                  {
+                    "children": [
+                      "b8"
+                    ],
+                    "component": "Row",
+                    "id": "r9"
+                  },
+                  {
+                    "action": {
+                      "event": {
+                        "context": {
+                          "asks": [
+                            1,
+                            3
+                          ],
+                          "op": "archive"
+                        },
+                        "name": "mem_archive"
+                      }
+                    },
+                    "child": "b10-text",
+                    "component": "Button",
+                    "id": "b10"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "b10-text",
+                    "text": "全部归档（2 件）"
+                  },
+                  {
+                    "children": [
+                      "b10"
+                    ],
+                    "component": "Row",
+                    "id": "r11"
+                  },
+                  {
+                    "component": "Divider",
+                    "id": "d12"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "t13",
+                    "text": "已归档 1 件",
+                    "variant": "caption"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "t14",
+                    "text": "「爬山」，对吗？"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "t15",
+                    "text": "想问你 · 11月6日归档",
+                    "variant": "caption"
+                  },
+                  {
+                    "action": {
+                      "event": {
+                        "context": {
+                          "asks": [
+                            2
+                          ],
+                          "op": "back"
+                        },
+                        "name": "mem_archive"
+                      }
+                    },
+                    "child": "b16-text",
+                    "component": "Button",
+                    "id": "b16",
+                    "variant": "borderless"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "b16-text",
+                    "text": "放回"
+                  },
+                  {
+                    "children": [
+                      "b16"
+                    ],
+                    "component": "Row",
+                    "id": "r17"
+                  }
+                ],
+                "surfaceId": "asks"
+              },
+              "version": "v0.9"
+            }
+          ],
+          "uri": "page/asks"
+        }
+      ],
+      "resultType": "complete"
+    }
+  },
+  "request": {
+    "id": 26,
+    "jsonrpc": "2.0",
+    "method": "resources/read",
+    "params": {
+      "_meta": {
+        "io.modelcontextprotocol/clientCapabilities": {},
+        "io.modelcontextprotocol/clientInfo": {
+          "name": "luoke-agent",
+          "version": "fixtures"
+        },
+        "io.modelcontextprotocol/protocolVersion": "2026-07-28"
+      },
+      "uri": "page/asks"
+    }
+  }
+}

@@ -5,7 +5,7 @@ import PackageDescription
 
 let package = Package(
     name: "LuokeA2UI",
-    platforms: [.macOS(.v14), .iOS(.v17)],
+    platforms: [.macOS("26.2"), .iOS(.v17)],
     products: [
         .library(name: "LuokeA2UICore", targets: ["LuokeA2UICore"]),
         .library(name: "LuokeA2UI", targets: ["LuokeA2UI"]),

@@ -19,27 +19,32 @@
                 "components": [
                   {
                     "children": [
-                      "h1",
+                      "t1",
                       "t2",
                       "d3",
                       "t4",
                       "t5",
                       "t6",
-                      "r8"
+                      "r10",
+                      "t11",
+                      "t12",
+                      "c-reply5",
+                      "r15",
+                      "r17"
                     ],
                     "component": "Column",
                     "id": "root"
                   },
                   {
                     "component": "Text",
-                    "id": "h1",
-                    "text": "概览",
-                    "variant": "h4"
+                    "id": "t1",
+                    "text": "最近了解到的",
+                    "variant": "caption"
                   },
                   {
                     "component": "Text",
                     "id": "t2",
-                    "text": "记下了 0 条，有 4 条猜测等你确认。"
+                    "text": "最近没有新了解到的。"
                   },
                   {
                     "component": "Divider",
@@ -48,18 +53,169 @@
                   {
                     "component": "Text",
                     "id": "t4",
-                    "text": "最近 14 天各应用记下的",
+                    "text": "想跟你确认",
                     "variant": "caption"
                   },
                   {
                     "component": "Text",
                     "id": "t5",
-                    "text": "螺壳输入法：3 条"
+                    "text": "以后某商城的促销邮件都归档？"
                   },
                   {
                     "component": "Text",
                     "id": "t6",
-                    "text": "邮件助手：1 条"
+                    "text": "这个月你亲手归档了 6 封某商城的促销。",
+                    "variant": "caption"
+                  },
+                  {
+                    "action": {
+                      "event": {
+                        "context": {
+                          "ask": 4,
+                          "choice": "useful"
+                        },
+                        "name": "mem_reply"
+                      }
+                    },
+                    "child": "b7-text",
+                    "component": "Button",
+                    "id": "b7",
+                    "variant": "primary"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "b7-text",
+                    "text": "好"
+                  },
+                  {
+                    "action": {
+                      "event": {
+                        "context": {
+                          "ask": 4,
+                          "choice": "useless"
+                        },
+                        "name": "mem_reply"
+                      }
+                    },
+                    "child": "b8-text",
+                    "component": "Button",
+                    "id": "b8"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "b8-text",
+                    "text": "不用"
+                  },
+                  {
+                    "action": {
+                      "event": {
+                        "context": {
+                          "ask": 4,
+                          "choice": "never"
+                        },
+                        "name": "mem_reply"
+                      }
+                    },
+                    "child": "b9-text",
+                    "component": "Button",
+                    "id": "b9"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "b9-text",
+                    "text": "别再提"
+                  },
+                  {
+                    "children": [
+                      "b7",
+                      "b8",
+                      "b9"
+                    ],
+                    "component": "Row",
+                    "id": "r10"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "t11",
+                    "text": "你的论文主要是哪个方向？"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "t12",
+                    "text": "邮件里常提到论文，知道方向以后挑精选更准。",
+                    "variant": "caption"
+                  },
+                  {
+                    "component": "ChoicePicker",
+                    "id": "c-reply5",
+                    "label": "选一个",
+                    "options": [
+                      {
+                        "label": "机器学习",
+                        "value": "机器学习"
+                      },
+                      {
+                        "label": "系统",
+                        "value": "系统"
+                      },
+                      {
+                        "label": "别的",
+                        "value": "别的"
+                      }
+                    ],
+                    "value": {
+                      "path": "/choices/reply5"
+                    }
+                  },
+                  {
+                    "action": {
+                      "event": {
+                        "context": {
+                          "ask": 5,
+                          "choice": "answer",
+                          "text": {
+                            "path": "/choices/reply5"
+                          }
+                        },
+                        "name": "mem_reply"
+                      }
+                    },
+                    "child": "b13-text",
+                    "component": "Button",
+                    "id": "b13",
+                    "variant": "primary"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "b13-text",
+                    "text": "交回"
+                  },
+                  {
+                    "action": {
+                      "event": {
+                        "context": {
+                          "ask": 5,
+                          "choice": "later"
+                        },
+                        "name": "mem_reply"
+                      }
+                    },
+                    "child": "b14-text",
+                    "component": "Button",
+                    "id": "b14"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "b14-text",
+                    "text": "以后再说"
+                  },
+                  {
+                    "children": [
+                      "b13",
+                      "b14"
+                    ],
+                    "component": "Row",
+                    "id": "r15"
                   },
                   {
                     "action": {
@@ -68,24 +224,38 @@
                         "name": "mem_open"
                       }
                     },
-                    "child": "b7-text",
+                    "child": "b16-text",
                     "component": "Button",
-                    "id": "b7"
+                    "id": "b16"
                   },
                   {
                     "component": "Text",
-                    "id": "b7-text",
+                    "id": "b16-text",
                     "text": "打开整份记忆"
                   },
                   {
                     "children": [
-                      "b7"
+                      "b16"
                     ],
                     "component": "Row",
-                    "id": "r8"
+                    "id": "r17"
                   }
                 ],
                 "surfaceId": "overview"
+              },
+              "version": "v0.9"
+            },
+            {
+              "updateDataModel": {
+                "path": "/",
+                "surfaceId": "overview",
+                "value": {
+                  "choices": {
+                    "reply5": [
+                      "机器学习"
+                    ]
+                  }
+                }
               },
               "version": "v0.9"
             }

@@ -1,0 +1,190 @@
+{
+  "reply": {
+    "id": 7,
+    "jsonrpc": "2.0",
+    "result": {
+      "contents": [
+        {
+          "mimeType": "application/json",
+          "text": [
+            {
+              "createSurface": {
+                "catalogId": "ai.luoke/a2ui/agent/1",
+                "surfaceId": "all"
+              },
+              "version": "v0.9"
+            },
+            {
+              "updateComponents": {
+                "components": [
+                  {
+                    "children": [
+                      "k-sure",
+                      "t1",
+                      "t2",
+                      "r5",
+                      "r7"
+                    ],
+                    "component": "Column",
+                    "id": "root"
+                  },
+                  {
+                    "component": "CheckBox",
+                    "id": "k-sure",
+                    "label": "我知道删了找不回来",
+                    "value": {
+                      "path": "/checks/sure"
+                    }
+                  },
+                  {
+                    "component": "Text",
+                    "id": "t1",
+                    "text": "在读研究生"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "t2",
+                    "text": "关于你 · 11月1日",
+                    "variant": "caption"
+                  },
+                  {
+                    "action": {
+                      "event": {
+                        "context": {
+                          "note": 1,
+                          "op": "reject"
+                        },
+                        "name": "mem_note"
+                      }
+                    },
+                    "child": "b3-label",
+                    "component": "Button",
+                    "id": "b3",
+                    "variant": "borderless"
+                  },
+                  {
+                    "children": [
+                      "b3-icon",
+                      "b3-text"
+                    ],
+                    "component": "Row",
+                    "id": "b3-label"
+                  },
+                  {
+                    "component": "Icon",
+                    "id": "b3-icon",
+                    "name": "x"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "b3-text",
+                    "text": "不对"
+                  },
+                  {
+                    "action": {
+                      "event": {
+                        "context": {
+                          "note": 1,
+                          "op": "forget",
+                          "sure": {
+                            "path": "/checks/sure"
+                          }
+                        },
+                        "name": "mem_note"
+                      }
+                    },
+                    "child": "b4-label",
+                    "component": "Button",
+                    "id": "b4",
+                    "variant": "borderless"
+                  },
+                  {
+                    "children": [
+                      "b4-icon",
+                      "b4-text"
+                    ],
+                    "component": "Row",
+                    "id": "b4-label"
+                  },
+                  {
+                    "component": "Icon",
+                    "id": "b4-icon",
+                    "name": "trash-2"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "b4-text",
+                    "text": "忘掉"
+                  },
+                  {
+                    "children": [
+                      "b3",
+                      "b4"
+                    ],
+                    "component": "Row",
+                    "id": "r5"
+                  },
+                  {
+                    "action": {
+                      "event": {
+                        "context": {},
+                        "name": "mem_open"
+                      }
+                    },
+                    "child": "b6-text",
+                    "component": "Button",
+                    "id": "b6"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "b6-text",
+                    "text": "打开整份记忆"
+                  },
+                  {
+                    "children": [
+                      "b6"
+                    ],
+                    "component": "Row",
+                    "id": "r7"
+                  }
+                ],
+                "surfaceId": "all"
+              },
+              "version": "v0.9"
+            },
+            {
+              "updateDataModel": {
+                "path": "/",
+                "surfaceId": "all",
+                "value": {
+                  "checks": {
+                    "sure": false
+                  }
+                }
+              },
+              "version": "v0.9"
+            }
+          ],
+          "uri": "page/all"
+        }
+      ],
+      "resultType": "complete"
+    }
+  },
+  "request": {
+    "id": 7,
+    "jsonrpc": "2.0",
+    "method": "resources/read",
+    "params": {
+      "_meta": {
+        "io.modelcontextprotocol/clientCapabilities": {},
+        "io.modelcontextprotocol/clientInfo": {
+          "name": "luoke-agent",
+          "version": "fixtures"
+        },
+        "io.modelcontextprotocol/protocolVersion": "2026-07-28"
+      },
+      "uri": "page/all"
+    }
+  }
+}

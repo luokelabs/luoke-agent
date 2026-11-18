@@ -1,0 +1,134 @@
+{
+  "reply": {
+    "id": 22,
+    "jsonrpc": "2.0",
+    "result": {
+      "contents": [
+        {
+          "mimeType": "application/json",
+          "text": {
+            "affects": [
+              {
+                "tool": "luoke-mem",
+                "use": "merge_people"
+              }
+            ],
+            "answer": {
+              "type": "yes_no"
+            },
+            "basis": "name_inside",
+            "cites": [
+              {
+                "happened_at": "2026-11-05 20:45:00",
+                "id": 6,
+                "kind": "statement",
+                "recorded_at": "2026-11-05 20:45:00",
+                "sensitive": null,
+                "speaker": "user",
+                "text": "客户：Mira Chen",
+                "tool": "luoke-mail",
+                "topic": "sent-mail"
+              },
+              {
+                "happened_at": "2026-11-05 20:45:00",
+                "id": 5,
+                "kind": "statement",
+                "recorded_at": "2026-11-05 20:45:00",
+                "sensitive": null,
+                "speaker": "user",
+                "text": "上级：Mira",
+                "tool": "luoke-mail",
+                "topic": "sent-mail"
+              }
+            ],
+            "cites_total": 2,
+            "created_at": "2026-11-05 21:00:00",
+            "expires_at": "2026-11-19 21:00:00",
+            "facts": {},
+            "found": true,
+            "id": 1,
+            "kind": "question",
+            "people": [
+              {
+                "addresses": [],
+                "by": {
+                  "name": "mira"
+                },
+                "entity": 2,
+                "name": "Mira",
+                "relations": [
+                  "上级"
+                ]
+              },
+              {
+                "addresses": [],
+                "by": {
+                  "name": "mira chen"
+                },
+                "entity": 3,
+                "name": "Mira Chen",
+                "relations": [
+                  "客户"
+                ]
+              }
+            ],
+            "rank": 2,
+            "ready": true,
+            "replies": [
+              {
+                "choice": "answer",
+                "text": "是"
+              },
+              {
+                "choice": "answer",
+                "text": "不是"
+              },
+              {
+                "choice": "later"
+              },
+              {
+                "choice": "archive"
+              }
+            ],
+            "status": "open",
+            "text": "「Mira」和「Mira Chen」是同一个人吗？",
+            "type": "same_person",
+            "v": 1,
+            "why": "两个称呼，一个里带着另一个。",
+            "write": []
+          },
+          "uri": "data/ask?id=1"
+        }
+      ],
+      "resultType": "complete"
+    }
+  },
+  "request": {
+    "id": 22,
+    "jsonrpc": "2.0",
+    "method": "resources/read",
+    "params": {
+      "_meta": {
+        "io.modelcontextprotocol/clientCapabilities": {
+          "experimental": {
+            "ai.luoke/a2ui": {
+              "features": [
+                "openPage",
+                "pageArgs",
+                "confirm",
+                "rowOpen",
+                "fieldSubmit"
+              ]
+            }
+          }
+        },
+        "io.modelcontextprotocol/clientInfo": {
+          "name": "luoke-agent",
+          "version": "fixtures"
+        },
+        "io.modelcontextprotocol/protocolVersion": "2026-07-28"
+      },
+      "uri": "data/ask?id=1"
+    }
+  }
+}

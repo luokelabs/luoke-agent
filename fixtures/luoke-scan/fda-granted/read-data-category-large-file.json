@@ -1,0 +1,89 @@
+{
+  "reply": {
+    "id": 1011,
+    "jsonrpc": "2.0",
+    "result": {
+      "contents": [
+        {
+          "mimeType": "application/json",
+          "text": {
+            "auto": null,
+            "bytes": 41943040,
+            "count": 1,
+            "facts": {
+              "apps": [],
+              "appsInstalled": 0,
+              "appsMissing": 0,
+              "groups": {
+                "large-file": 1
+              },
+              "password": 0,
+              "rebuilds": 0,
+              "tools": [],
+              "userFiles": "yes"
+            },
+            "files": 1,
+            "id": "large-file",
+            "items": [
+              {
+                "bytes": 41943040,
+                "facts": {
+                  "lastOpened": "2025-09-15"
+                },
+                "finding": "stale.large-file/000000000012",
+                "group": "large-file",
+                "key": "i5",
+                "options": [
+                  "trash",
+                  "keep",
+                  "ignore"
+                ],
+                "password": false,
+                "path": "~/Downloads/会议录像 2023 全年合集.mov",
+                "paths": [
+                  "~/Downloads/会议录像 2023 全年合集.mov"
+                ],
+                "pathsMore": 0,
+                "plan": "p-000000000011",
+                "reason": "not-opened",
+                "rebuilds": false,
+                "restorable": true,
+                "reveal": "~/Downloads/会议录像 2023 全年合集.mov",
+                "rule": "stale.large-file",
+                "suggested": "keep",
+                "userFiles": "yes"
+              }
+            ],
+            "known": true,
+            "more": 0,
+            "scanned": {
+              "finished": "2026-10-20T14:00:00Z",
+              "started": "2026-10-20T14:00:00Z"
+            },
+            "schema": 1,
+            "suggested": 0,
+            "suggestedBytes": 0
+          },
+          "uri": "data/category?id=large-file"
+        }
+      ],
+      "resultType": "complete"
+    }
+  },
+  "request": {
+    "id": 1011,
+    "jsonrpc": "2.0",
+    "method": "resources/read",
+    "params": {
+      "_meta": {
+        "io.modelcontextprotocol/clientCapabilities": {},
+        "io.modelcontextprotocol/clientInfo": {
+          "name": "luoke-agent",
+          "version": "fixtures"
+        },
+        "io.modelcontextprotocol/protocolVersion": "2026-07-28"
+      },
+      "uri": "data/category?id=large-file"
+    }
+  }
+}

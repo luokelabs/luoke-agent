@@ -121,6 +121,33 @@
                   }
                 ],
                 "created": "2026-10-20T12:00:00Z",
+                "data": {
+                  "cleans": [],
+                  "decide": {
+                    "bytes": 62914560,
+                    "caches": 1,
+                    "cleaned": 0,
+                    "freed": 0,
+                    "offerAuto": true,
+                    "plan": {
+                      "caches": [
+                        "i1"
+                      ],
+                      "id": "p-000000000002"
+                    },
+                    "rest": 7,
+                    "skipped": {
+                      "fda": 0,
+                      "other": 0,
+                      "virusDb": 0
+                    },
+                    "toLook": 7,
+                    "trash": 1
+                  },
+                  "failed": [],
+                  "moreCleans": 0,
+                  "type": "round"
+                },
                 "deadline": null,
                 "expires": "2026-10-23T12:00:00Z",
                 "id": "round/2026-10-20T12:00:00Z",

@@ -1,0 +1,186 @@
+{
+  "reply": {
+    "id": 34,
+    "jsonrpc": "2.0",
+    "result": {
+      "contents": [
+        {
+          "mimeType": "application/json",
+          "text": [
+            {
+              "createSurface": {
+                "catalogId": "ai.luoke/a2ui/agent/1",
+                "surfaceId": "item"
+              },
+              "version": "v0.9"
+            },
+            {
+              "updateComponents": {
+                "components": [
+                  {
+                    "children": [
+                      "t1",
+                      "t2",
+                      "t3",
+                      "t4",
+                      "r6",
+                      "d7",
+                      "t8",
+                      "t9",
+                      "t10",
+                      "t11",
+                      "t12",
+                      "r14"
+                    ],
+                    "component": "Column",
+                    "id": "root"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "t1",
+                    "text": "本地大模型"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "t2",
+                    "text": "关注的话题 · 已被取代 · 10月30日 · 依据 2 条",
+                    "variant": "caption"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "t3",
+                    "text": "理由：打字里谈到",
+                    "variant": "caption"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "t4",
+                    "text": "已经改成了「本地部署的大模型」",
+                    "variant": "caption"
+                  },
+                  {
+                    "action": {
+                      "event": {
+                        "context": {
+                          "args": {
+                            "id": "33"
+                          },
+                          "page": "item"
+                        },
+                        "name": "agent.open_page"
+                      }
+                    },
+                    "child": "b5-text",
+                    "component": "Button",
+                    "id": "b5"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "b5-text",
+                    "text": "看改好的"
+                  },
+                  {
+                    "children": [
+                      "b5"
+                    ],
+                    "component": "Row",
+                    "id": "r6"
+                  },
+                  {
+                    "component": "Divider",
+                    "id": "d7"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "t8",
+                    "text": "依据 2 条",
+                    "variant": "caption"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "t9",
+                    "text": "看了一篇讲大模型蒸馏的文章"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "t10",
+                    "text": "你说的 · 螺壳输入法 · 10月30日 09:30",
+                    "variant": "caption"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "t11",
+                    "text": "本地大模型的量化到底掉多少点"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "t12",
+                    "text": "你说的 · 螺壳输入法 · 10月27日 21:10",
+                    "variant": "caption"
+                  },
+                  {
+                    "action": {
+                      "event": {
+                        "context": {
+                          "page": "all"
+                        },
+                        "name": "agent.open_page"
+                      }
+                    },
+                    "child": "b13-text",
+                    "component": "Button",
+                    "id": "b13"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "b13-text",
+                    "text": "回到「全部记忆」"
+                  },
+                  {
+                    "children": [
+                      "b13"
+                    ],
+                    "component": "Row",
+                    "id": "r14"
+                  }
+                ],
+                "surfaceId": "item"
+              },
+              "version": "v0.9"
+            }
+          ],
+          "uri": "page/item?id=1"
+        }
+      ],
+      "resultType": "complete"
+    }
+  },
+  "request": {
+    "id": 34,
+    "jsonrpc": "2.0",
+    "method": "resources/read",
+    "params": {
+      "_meta": {
+        "io.modelcontextprotocol/clientCapabilities": {
+          "experimental": {
+            "ai.luoke/a2ui": {
+              "features": [
+                "openPage",
+                "pageArgs",
+                "confirm",
+                "rowOpen",
+                "fieldSubmit"
+              ]
+            }
+          }
+        },
+        "io.modelcontextprotocol/clientInfo": {
+          "name": "luoke-agent",
+          "version": "fixtures"
+        },
+        "io.modelcontextprotocol/protocolVersion": "2026-07-28"
+      },
+      "uri": "page/item?id=1"
+    }
+  }
+}

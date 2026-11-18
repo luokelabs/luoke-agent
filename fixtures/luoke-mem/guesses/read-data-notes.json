@@ -1,0 +1,115 @@
+{
+  "reply": {
+    "id": 18,
+    "jsonrpc": "2.0",
+    "result": {
+      "contents": [
+        {
+          "mimeType": "application/json",
+          "text": {
+            "counts": {
+              "all": 3,
+              "dislike": 0,
+              "fact": 1,
+              "interest": 2,
+              "past": 0,
+              "pending": 2,
+              "preference": 0,
+              "rejected": 0,
+              "taste": 0,
+              "term": 1
+            },
+            "filter": "all",
+            "items": [
+              {
+                "cites": 2,
+                "confidence": "likely",
+                "decided_at": null,
+                "entity": null,
+                "formed_at": "2026-11-05 20:45:00",
+                "fresh": "2026-11-05 20:45:00",
+                "id": 3,
+                "kind": "fact",
+                "origin": "inferred",
+                "pending": false,
+                "sources": [
+                  "luoke-mail"
+                ],
+                "status": "active",
+                "text": "在读研究生，导师是王老师",
+                "topic": "学业",
+                "why_data": {
+                  "code": "sent_mail",
+                  "waiting": false
+                }
+              },
+              {
+                "cites": 2,
+                "confidence": "guess",
+                "decided_at": null,
+                "entity": null,
+                "formed_at": "2026-11-03 09:30:00",
+                "fresh": "2026-11-05 20:45:00",
+                "id": 2,
+                "kind": "interest",
+                "origin": "inferred",
+                "pending": true,
+                "sources": [
+                  "luoke-ime"
+                ],
+                "status": "proposed",
+                "text": "爬山",
+                "topic": null,
+                "why_data": null
+              },
+              {
+                "cites": 2,
+                "confidence": "guess",
+                "decided_at": null,
+                "entity": null,
+                "formed_at": "2026-10-28 21:10:00",
+                "fresh": "2026-11-05 20:45:00",
+                "id": 1,
+                "kind": "interest",
+                "origin": "inferred",
+                "pending": true,
+                "sources": [
+                  "luoke-ime"
+                ],
+                "status": "proposed",
+                "text": "本地大模型",
+                "topic": null,
+                "why_data": null
+              }
+            ],
+            "page": 1,
+            "pages": 1,
+            "q": "",
+            "ready": true,
+            "total": 3,
+            "v": 1,
+            "waiting": 0
+          },
+          "uri": "data/notes"
+        }
+      ],
+      "resultType": "complete"
+    }
+  },
+  "request": {
+    "id": 18,
+    "jsonrpc": "2.0",
+    "method": "resources/read",
+    "params": {
+      "_meta": {
+        "io.modelcontextprotocol/clientCapabilities": {},
+        "io.modelcontextprotocol/clientInfo": {
+          "name": "luoke-agent",
+          "version": "fixtures"
+        },
+        "io.modelcontextprotocol/protocolVersion": "2026-07-28"
+      },
+      "uri": "data/notes"
+    }
+  }
+}

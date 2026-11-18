@@ -1,0 +1,94 @@
+{
+  "reply": {
+    "id": 1006,
+    "jsonrpc": "2.0",
+    "result": {
+      "contents": [
+        {
+          "mimeType": "application/json",
+          "text": {
+            "auto": null,
+            "bytes": 2097152,
+            "count": 1,
+            "facts": {
+              "apps": [
+                "io.example.stillused"
+              ],
+              "appsInstalled": 0,
+              "appsMissing": 1,
+              "groups": {
+                "app-data": 1
+              },
+              "password": 0,
+              "rebuilds": 0,
+              "tools": [],
+              "userFiles": "maybe"
+            },
+            "files": 1,
+            "id": "leftover",
+            "items": [
+              {
+                "app": "io.example.stillused",
+                "appInstalled": false,
+                "bytes": 2097152,
+                "facts": {
+                  "bundleId": "io.example.stillused",
+                  "places": 1
+                },
+                "finding": "leftover.app-data/000000000009",
+                "group": "app-data",
+                "key": "i2",
+                "options": [
+                  "trash",
+                  "keep",
+                  "ignore"
+                ],
+                "password": false,
+                "path": "~/Library/Caches/io.example.stillused",
+                "paths": [
+                  "~/Library/Caches/io.example.stillused"
+                ],
+                "pathsMore": 0,
+                "plan": "p-000000000002",
+                "reason": "app-removed",
+                "rebuilds": false,
+                "restorable": true,
+                "reveal": "~/Library/Caches/io.example.stillused",
+                "rule": "leftover.app-data",
+                "suggested": "keep",
+                "userFiles": "maybe"
+              }
+            ],
+            "known": true,
+            "more": 0,
+            "scanned": {
+              "finished": "2026-10-20T12:00:00Z",
+              "started": "2026-10-20T12:00:00Z"
+            },
+            "schema": 1,
+            "suggested": 0,
+            "suggestedBytes": 0
+          },
+          "uri": "data/category?id=leftover"
+        }
+      ],
+      "resultType": "complete"
+    }
+  },
+  "request": {
+    "id": 1006,
+    "jsonrpc": "2.0",
+    "method": "resources/read",
+    "params": {
+      "_meta": {
+        "io.modelcontextprotocol/clientCapabilities": {},
+        "io.modelcontextprotocol/clientInfo": {
+          "name": "luoke-agent",
+          "version": "fixtures"
+        },
+        "io.modelcontextprotocol/protocolVersion": "2026-07-28"
+      },
+      "uri": "data/category?id=leftover"
+    }
+  }
+}

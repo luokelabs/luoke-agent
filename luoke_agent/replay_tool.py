@@ -265,9 +265,11 @@ class Session:
         self.source = ToolSource(f["accessory"], where, name=f["name"], reports=f["reports"],
                                  socket_dirs=dirs, home=f.get("home"),
                                  service=f["service"], permissions=f["permissions"], opener=opener)
+        self.source.data = f.get("data") or []
         self.clock = Clock(self.replay.start_clock)
         self.state = State(os.path.join(base, "agent"))
         self.agent = Agent(self.state, [self.source], clock=self.clock, url_opener=lambda u: None)
+        self.agent.repoll_after_tap = False      # 照录的顺序一步一步读，不在点完以后自己另读一遍
 
     def start(self) -> "Session":
         """核心起来：读一遍工具，螺壳.app 报它自己的权限。"""
@@ -321,11 +323,43 @@ class Session:
             if item is not None and item.source == self.app and tool_surface_id(item.card) == ua["surfaceId"]:
                 sid = s
         if sid is None and any(p["id"] == ua["surfaceId"] for p in self.source.service["pages"]):
-            self.agent.page(self.app, ua["surfaceId"])
+            # 页能带参数（§4 pageArgs）：照录音里这次点按之前最后一次读这一页时带的参数打开（人物页的「林晓」）
+            self.agent.page(self.app, ua["surfaceId"], self._page_args_before(rec, ua["surfaceId"]))
             sid = f"{self.app}/page/{ua['surfaceId']}"
         if sid is None:
             return {"text": f"核心交给窗口的东西里没有 {ua['surfaceId']}", "error": True}
-        return self.agent.tap(sid, ua["componentId"], params.get("arguments") or {})
+        return self.agent.tap(sid, self._button(sid, ua["componentId"], params), params.get("arguments") or {})
+
+    def _button(self, sid: str, recorded: str, params: dict) -> str:
+        """要点的那个按钮的编号。录的是工具自己那张卡片上的编号；核心照 `data` 重画过的卡片（顶层 ADR 0028）编号不一样，
+        这时找同一个动作、按钮上写死的参数和录的一样的那个按钮；找不到就照录的编号（核心会说按钮已失效）"""
+        surface = self.agent.surfaces.get(sid, (None, None))[1]
+        comps = getattr(surface, "components", None) or {}
+        if comps:       # 只看现在画着的：换过的卡片，旧的组件还留在表里，点不到
+            from . import a2ui
+            shown = set(a2ui._reachable(comps))
+            comps = {cid: c for cid, c in comps.items() if cid in shown}
+        same = [(cid, c) for cid, c in comps.items() if c.get("component") == "Button"
+                and ((c.get("action") or {}).get("event") or {}).get("name") == params.get("name")]
+        if any(cid == recorded for cid, _ in same):
+            return recorded         # 录的编号在这张卡片上，也是这个动作的按钮：就是它
+        exact = [cid for cid, c in same if c["action"]["event"].get("context") == (params.get("arguments") or {})]
+        return exact[0] if exact else recorded
+
+    def _page_args_before(self, rec: dict, page: str) -> Optional[Dict[str, str]]:
+        """录音里 `rec` 之前最后一次读 `page/<page>` 带的参数；没带参数读过、或没读过是 None。"""
+        from urllib.parse import parse_qsl, urlsplit
+        args: Optional[Dict[str, str]] = None
+        for r in self.replay.records:
+            if r is rec:
+                break
+            req = r["request"]
+            if req.get("method") != "resources/read":
+                continue
+            u = urlsplit(str((req.get("params") or {}).get("uri") or ""))
+            if u.path == f"page/{page}":
+                args = dict(parse_qsl(u.query)) or None
+        return args
 
     def close(self) -> None:
         self.replay.close()
@@ -338,7 +372,7 @@ class Session:
 
 def comparable(request: dict) -> dict:
     """比两条请求时不看的：JSON-RPC 的 id、clientInfo 的版本（样例里写 fixtures）、clientCapabilities（核心认的卡片写法，
-    样例录的时候是什么都行）。"""
+    样例录的时候是什么都行）、点的按钮在卡片上的编号。"""
     r = copy.deepcopy(request)
     r.pop("id", None)
     meta = (r.get("params") or {}).get("_meta") or {}
@@ -346,6 +380,11 @@ def comparable(request: dict) -> dict:
     if isinstance(info, dict):
         info.pop("version", None)
     meta.pop("io.modelcontextprotocol/clientCapabilities", None)
+    ua = meta.get(USER_ACTION)
+    if isinstance(ua, dict):
+        # 按钮在卡片上的编号：核心照 `data` 重画的卡片（顶层 ADR 0028）编号是核心自己的，和工具那张的不一样；
+        # 是哪张卡片（surfaceId）、发了什么参数照旧比
+        ua.pop("componentId", None)
     return r
 
 

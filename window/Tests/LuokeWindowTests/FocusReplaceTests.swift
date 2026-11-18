@@ -3,7 +3,7 @@ import LuokeA2UICore
 import XCTest
 @testable import LuokeWindow
 
-/// 一件件处理时工具换掉、收走卡片，照核心真发事件的顺序喂 `AgentFeed`：先删旧卡片（`deleteSurface`），
+/// 逐件处理时工具换掉、收走卡片，照核心真发事件的顺序喂 `AgentFeed`：先删旧卡片（`deleteSurface`），
 /// 再发新卡片的 a2ui，最后发 `feed`。只给 `m.cards` 赋值的测试（`BehaviourTests`）绕过了中间那几下
 @MainActor
 final class FocusReplaceTests: XCTestCase {

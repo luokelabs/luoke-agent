@@ -1,0 +1,40 @@
+{
+  "reply": {
+    "id": 19,
+    "jsonrpc": "2.0",
+    "result": {
+      "contents": [
+        {
+          "mimeType": "application/json",
+          "text": {
+            "items": [],
+            "page": 1,
+            "pages": 1,
+            "q": "",
+            "ready": true,
+            "total": 0,
+            "v": 1
+          },
+          "uri": "data/people"
+        }
+      ],
+      "resultType": "complete"
+    }
+  },
+  "request": {
+    "id": 19,
+    "jsonrpc": "2.0",
+    "method": "resources/read",
+    "params": {
+      "_meta": {
+        "io.modelcontextprotocol/clientCapabilities": {},
+        "io.modelcontextprotocol/clientInfo": {
+          "name": "luoke-agent",
+          "version": "fixtures"
+        },
+        "io.modelcontextprotocol/protocolVersion": "2026-07-28"
+      },
+      "uri": "data/people"
+    }
+  }
+}

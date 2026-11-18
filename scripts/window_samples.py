@@ -14,6 +14,7 @@ from __future__ import annotations
 
 import argparse
 import contextlib
+import datetime
 import io
 import json
 import os
@@ -54,7 +55,20 @@ def manifest_version(scenario_dir: str) -> str:
         return ""
 
 
-def sample(scenario_dir: str) -> dict:
+def sample(scenario_dir: str, tries: int = 3) -> dict:
+    """一个场景接上真核心得来的样例。偶尔有一页读成「没在运行」（503：核心读页面时没连上回放的工具，原因还没找到，
+    几十次里一次），样例就和上次的不一样：这种重来一遍，几次都这样才照实写下"""
+    for n in range(tries):
+        out = _sample(scenario_dir)
+        flaky = any(isinstance(p, dict) and p.get("status") == 503 for p in out.get("pages", {}).values()) or \
+            any(a.get("running") is False for a in (out.get("apps") or {}).get("apps", []))   # 同一回事：这一下没连上回放的工具
+        if not flaky:
+            return out
+        sys.stderr.write(f"{os.path.basename(scenario_dir)}：有一页读成没在运行，重来（第 {n + 1} 次）\n")
+    return out
+
+
+def _sample(scenario_dir: str) -> dict:
     tool_dir = os.path.dirname(scenario_dir)
     tool, name = os.path.basename(tool_dir), os.path.basename(scenario_dir)
     log = io.StringIO()
@@ -118,6 +132,67 @@ def build() -> dict:
     for sc in replay_tool.scenarios(FIXTURES):
         tool, name = os.path.basename(os.path.dirname(sc)), os.path.basename(sc)
         out[os.path.join(tool, name + ".json")] = render(sample(sc))
+    out.update(page_previews(out))
+    return out
+
+
+def page_previews(samples: dict) -> dict:
+    """核心照原始数据拼的页（ADR 0028，luoke_agent/apppages）还没有应用录的样例时，用 fixtures/apppages 里照接口草案手写的数据
+    拼出来看：拿一个录好的场景当底，标签和搬过来的页换成核心拼的"""
+    from luoke_agent import a2ui, apppages
+    from luoke_agent.apppages import clock
+    # 钉住「现在」：页上写「今天」「昨天」、扫描算「本周」，不钉的话过一天示例就和重新生成的对不上
+    clock.NOW = SAMPLE_NOW
+    try:
+        return _page_previews(samples, a2ui, apppages)
+    finally:
+        clock.NOW = None
+
+
+# 拼示例页时的「现在」：照手写的原始数据那一天（fixtures/apppages 里的时间都在这之前）
+SAMPLE_NOW = datetime.datetime(2026, 11, 13, 12, 0)
+
+
+def _page_previews(samples: dict, a2ui, apppages) -> dict:
+    out = {}
+    base_dir = os.path.join(ROOT, "fixtures", "apppages")
+    for tool in sorted(os.listdir(base_dir)) if os.path.isdir(base_dir) else []:
+        mod = apppages.BUILDERS.get(tool)
+        for f in sorted(os.listdir(os.path.join(base_dir, tool))):
+            if mod is None or not f.endswith(".json"):
+                continue
+            with open(os.path.join(base_dir, tool, f), encoding="utf-8") as fh:
+                spec = json.load(fh)
+            if "base" not in spec:
+                continue        # 只给测试用的原始数据（记忆的 data/ask），不拼成窗口的示例
+            base = spec["base"] if "/" in spec["base"] else f"{tool}/{spec['base']}"
+            d = json.loads(samples[base + ".json"])
+            data = spec["data"]
+            if not base.startswith(tool + "/"):
+                # 应用自己还没有录好的场景（螺壳搜索）：借别的应用的场景当底，只留应用清单里这一个应用和核心拼的页
+                d.update(app=tool, events=[], replies=[], asked=[], version=spec.get("version", ""), title=spec["_about"][:40])
+                d["apps"] = {"apps": [dict({"id": tool, "needs": [], "pages": [], "running": True, "ui": None,
+                                            "summary": {"count": 0, "text": ""}}, **spec.get("app", {}))]}
+                d["pages"] = {}
+
+            class Src:
+                source = tool
+
+            src = Src()
+            src.data = [k.split("?")[0][len("data/"):] for k in data if k.startswith("data/")]
+            d["apps"]["apps"][0]["pages"] = apppages.pages(src, d["apps"]["apps"][0]["pages"])
+            for page in sorted(mod.BUILT):
+                msgs = mod.build(page, dict(spec.get("args", {}).get(page, {})), lambda u: data[u])
+                a2ui.build(msgs, page=True)        # 画不了就停：拼的页要过校验
+                sid = f"{tool}/page/{page}"
+                for m in msgs:
+                    for body in m.values():
+                        if isinstance(body, dict) and "surfaceId" in body:
+                            body["surfaceId"] = sid
+                d["pages"][page] = {"messages": msgs}
+            d["_about"] = f"scripts/window_samples.py 用 fixtures/apppages/{tool}/{f} 照原始数据拼的页（{spec['_about']}），不要手改"
+            d["scenario"] = f[:-5]
+            out[os.path.join(tool, f)] = render(d)
     return out
 
 

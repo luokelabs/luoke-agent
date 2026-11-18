@@ -1,0 +1,90 @@
+{
+  "reply": {
+    "id": 1008,
+    "jsonrpc": "2.0",
+    "result": {
+      "contents": [
+        {
+          "mimeType": "application/json",
+          "text": {
+            "auto": null,
+            "bytes": 147456,
+            "count": 1,
+            "facts": {
+              "apps": [],
+              "appsInstalled": 0,
+              "appsMissing": 0,
+              "groups": {
+                "project": 1
+              },
+              "password": 0,
+              "rebuilds": 0,
+              "tools": [],
+              "userFiles": "maybe"
+            },
+            "files": 1,
+            "id": "project",
+            "items": [
+              {
+                "bytes": 147456,
+                "facts": {
+                  "lastCommit": "2025-09-15",
+                  "repos": 1
+                },
+                "finding": "stale.project/000000000011",
+                "group": "project",
+                "key": "i5",
+                "options": [
+                  "trash",
+                  "keep",
+                  "ignore"
+                ],
+                "password": false,
+                "path": "~/Projects/old-pushed",
+                "paths": [
+                  "~/Projects/old-pushed"
+                ],
+                "pathsMore": 0,
+                "plan": "p-000000000002",
+                "reason": "pushed",
+                "rebuilds": false,
+                "restorable": true,
+                "reveal": "~/Projects/old-pushed",
+                "rule": "stale.project",
+                "suggested": "keep",
+                "userFiles": "maybe"
+              }
+            ],
+            "known": true,
+            "more": 0,
+            "scanned": {
+              "finished": "2026-10-20T12:00:00Z",
+              "started": "2026-10-20T12:00:00Z"
+            },
+            "schema": 1,
+            "suggested": 0,
+            "suggestedBytes": 0
+          },
+          "uri": "data/category?id=project"
+        }
+      ],
+      "resultType": "complete"
+    }
+  },
+  "request": {
+    "id": 1008,
+    "jsonrpc": "2.0",
+    "method": "resources/read",
+    "params": {
+      "_meta": {
+        "io.modelcontextprotocol/clientCapabilities": {},
+        "io.modelcontextprotocol/clientInfo": {
+          "name": "luoke-agent",
+          "version": "fixtures"
+        },
+        "io.modelcontextprotocol/protocolVersion": "2026-07-28"
+      },
+      "uri": "data/category?id=project"
+    }
+  }
+}

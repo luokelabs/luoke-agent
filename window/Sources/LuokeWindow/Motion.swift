@@ -126,7 +126,7 @@ struct FlyingIcon: View, Animatable {
 private struct EntranceKey: EnvironmentKey { static let defaultValue = Entrance.none }
 
 extension EnvironmentValues {
-    /// 这一页是怎么来的：换页、从「一件件处理」回来时各块错开着升上来
+    /// 这一页是怎么来的：换页、从「逐件处理」回来时各块错开着升上来
     var lkEntrance: Entrance {
         get { self[EntranceKey.self] }
         set { self[EntranceKey.self] = newValue }
@@ -158,7 +158,7 @@ private struct EnterBlock: ViewModifier {
     }
 }
 
-/// 出现时淡入、从 rise pt 处移过来（简报、新的一行、一件件处理的每一块）。fresh 是 false 就直接在原位
+/// 出现时淡入、从 rise pt 处移过来（简报、新的一行、逐件处理的每一块）。fresh 是 false 就直接在原位
 struct AppearIn: ViewModifier {
     let fresh: Bool
     var dx: CGFloat = 0

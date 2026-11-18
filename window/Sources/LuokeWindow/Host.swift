@@ -16,7 +16,6 @@ public struct HostPage {
     public let title: String
     public let style: Style
     public let content: AnyView
-
     public init(id: String, title: String, style: Style = .page, content: AnyView) {
         self.id = id
         self.title = title
@@ -29,6 +28,43 @@ public struct HostPage {
     public static let lightsInset: CGFloat = WindowControls.lightsCenterY + WindowControls.height / 2 + LKSpace.x3
 }
 
+/// 本体要在侧栏左下角说的一件事（`WindowModel.sidebarNotice`）。平时没有；有事才给，只给最要紧的一件
+public struct SidebarNotice {
+    public enum Kind: Sendable { case update, paused, downloading, error }
+    public let id: String
+    public let kind: Kind
+    /// 一句短话，四五个字：「有新版本」「已暂停」「模型在下载」
+    public let text: String
+    /// 为什么、怎么办，一两句话（「正在用电池，后台先不做。想让它在电池上也做，在「设置 · 通用」里改。」）。
+    /// 给了，点那一小块先弹出这段话和一个按钮；不给就直接去 `open`
+    public let detail: String?
+    /// 弹出的话下面那个按钮写什么；不给是「去设置里改」
+    public let actionLabel: String?
+    /// 点了做什么（打开升级、去设置……）；不给就去「设置 · 通用」
+    public let open: (@MainActor () -> Void)?
+
+    public init(id: String, kind: Kind, text: String, detail: String? = nil, actionLabel: String? = nil,
+                open: (@MainActor () -> Void)? = nil) {
+        self.id = id
+        self.kind = kind
+        self.text = text
+        self.detail = detail
+        self.actionLabel = actionLabel
+        self.open = open
+    }
+}
+
+/// 左下角实际画的那一件：灯、短话、悬停的话、点了做什么
+public struct SidebarNews {
+    let light: LKLight.State
+    public let text: String
+    let help: String
+    /// 点了先弹出的说明（为什么、怎么办）；没有就直接 `open`
+    var detail: String? = nil
+    var actionLabel: String = "去设置里改"
+    let open: @MainActor () -> Void
+}
+
 private struct HostTopInsetKey: EnvironmentKey { static let defaultValue: CGFloat = 0 }
 
 extension EnvironmentValues {
@@ -39,27 +75,40 @@ extension EnvironmentValues {
     }
 }
 
-/// 螺壳.app（本体）接进主窗口的事（luoke-core#68）：主窗口画 agent 的页（今天、应用页、「设置 · 提醒」「设置 · 权限」），
-/// 模型、隐私、添加应用、升级归本体。螺壳只有一个窗口（11-10 定）：本体的界面都画在主窗口里——设置的模型、隐私
-/// （`settingsContent`）、添加应用（`appsContent`），别的（检查更新、卸载、删除数据、开启搜索、要权限、首次设置、升级）经
-/// `WindowModel.present(_:)`（`HostPage`）。老的本体没给界面时才打开它自己的窗口。本体实现这个协议，设到 `WindowModel.host`；
-/// 没设时窗口自己画这几页（示例）。
+/// 螺壳.app（本体）接进主窗口的事（luoke-core#68）：主窗口画 agent 的页（今天、应用页、设置），模型、隐私、应用管理、升级的
+/// 数据和动作归本体。螺壳只有一个窗口（11-10 定）：应用管理、设置由窗口照本体给的数据画（`appsSnapshot`、`settingsSnapshot`，
+/// 界面接口 §16），别的（检查更新、卸载、删除数据、开启搜索、要权限、首次设置、升级）经 `WindowModel.present(_:)`（`HostPage`）。
+/// 本体没给数据时才打开它自己的窗口。本体实现这个协议，设到 `WindowModel.host`；没设时窗口自己画这几页（示例）。
 @MainActor
 public protocol WindowHost: AnyObject {
-    /// 「设置」里模型、隐私这两个标签的内容：本体自己的设置界面，画在窗口的设置里（11-09 负责人定，不再另弹窗口）。
-    /// nil 就照旧打开本体的窗口（`openModelSettings`、`openPrivacySettings`）
-    func settingsContent(_ tab: PrefsTab) -> AnyView?
-    /// 「设置 · 模型」、侧栏底部的模型名、「前往 → 模型」：本体没给界面时打开它的窗口
+    /// 「设置 · 模型」、「前往 → 模型」：本体没给设置的数据时打开它的窗口
     func openModelSettings()
-    /// 「设置 · 隐私」
+    /// 设置里的动作在没给数据时打开的本体窗口（导出诊断信息、卸载螺壳的默认实现）
     func openPrivacySettings()
-    /// 「添加应用」页的内容：本体的应用目录（装、升级、开启、停用、换回上一版），画在主窗口的「添加应用」页里。
-    /// nil 就照旧打开本体的窗口（`openAddApps`）
-    func appsContent() -> AnyView?
     /// 「添加应用」（侧栏、「前往」菜单、应用页）：本体没给界面时打开它的窗口
     func openAddApps()
-    /// 某个应用的「升级」：配件标识（luoke-mail……）。本体给了 `appsContent` 时窗口先翻到「添加应用」页再调它
+    /// 某个应用的「升级」：配件标识（luoke-mail……）。本体给了 `appsSnapshot` 时窗口先翻到「应用管理」页再调它
     func upgrade(app: String)
+    /// 某个应用的「卸载」（应用管理页上那个图标，用户已在窗口里确认过）：配件标识。没实现就打开本体自己的应用界面（`openAddApps`）
+    func uninstall(app: String)
+    /// 本体给的「应用管理」数据（docs/界面接口.md §16）。nil：打开本体自己的窗口（`openAddApps`）
+    func appsSnapshot() -> HostApps?
+    /// 「应用管理」页上用户点了装（本体照旧走自己的装法）
+    func install(app: String)
+    /// 一个应用的动作：开启、停用、回到上一版、重新启动、删除数据、卸载（会删东西的由本体自己的确认页走）
+    func perform(app: String, action: HostAppAction)
+    /// 本体给的「设置」数据（通用、模型、隐私与权限里本体管的那几块）。nil：「模型」打开本体自己的窗口（`openModelSettings`）
+    func settingsSnapshot() -> HostSettings?
+    /// 用户在设置里改了一项
+    func apply(_ change: HostSettingChange)
+    /// 设置里的动作：重试下载、复制和换本机接口的密钥、打开记忆、检查更新、导出诊断信息、卸载螺壳（本体自己的确认页）
+    func retryDownloads()
+    func copyLocalAPIKey()
+    func rotateLocalAPIKey()
+    func openMemory()
+    func checkForUpdates()
+    func exportDiagnostics()
+    func uninstallLuoke()
     /// 用户点了要螺壳名下的一项系统权限（权限页的按钮、`needs-access` 卡片的按钮）：本体开自己的窗口问用户，再去问系统。
     /// `app` 是配件标识，`id` 是权限 id（`fda`）。给没给由本体经 `reportHostPermissions` 报。
     func askPermission(app: String, id: String)
@@ -76,11 +125,25 @@ public protocol WindowHost: AnyObject {
     func hostPageCanLeave(_ id: String) -> Bool
     /// 用户离开了这一屏。本体自己 `dismissHost` 收起的不调
     func hostPageClosed(_ id: String)
+    /// 用户在一个应用的页上点了一下（按钮、键盘的回车都算），窗口这就交给核心：`app` 是配件标识，`page` 是页名。
+    /// 本体用它认「这一下是在哪个应用的页上」：工具经别的路要本体弹框（例如搜索页的「添加」要选文件夹）时，只认紧跟在它自己页上的点按
+    func appPageTapped(app: String, page: String)
 }
 
 extension WindowHost {
-    public func settingsContent(_ tab: PrefsTab) -> AnyView? { nil }
-    public func appsContent() -> AnyView? { nil }
+    public func uninstall(app: String) { openAddApps() }
+    public func appsSnapshot() -> HostApps? { nil }
+    public func install(app: String) { openAddApps() }
+    public func perform(app: String, action: HostAppAction) { openAddApps() }
+    public func settingsSnapshot() -> HostSettings? { nil }
+    public func apply(_ change: HostSettingChange) { openModelSettings() }
+    public func retryDownloads() { openModelSettings() }
+    public func copyLocalAPIKey() { openModelSettings() }
+    public func rotateLocalAPIKey() { openModelSettings() }
+    public func openMemory() {}
+    public func checkForUpdates() { openModelSettings() }
+    public func exportDiagnostics() { openPrivacySettings() }
+    public func uninstallLuoke() { openPrivacySettings() }
     public func askPermission(app: String, id: String) {}
     public func askPermission(app: String, id: String, ready: @escaping @MainActor () -> Void) { askPermission(app: app, id: id) }
     public func askSystem(id: String) {}
@@ -88,6 +151,7 @@ extension WindowHost {
     public func askNotifications() {}
     public func hostPageCanLeave(_ id: String) -> Bool { true }
     public func hostPageClosed(_ id: String) {}
+    public func appPageTapped(app: String, page: String) {}
 }
 
 extension ToolIcon {

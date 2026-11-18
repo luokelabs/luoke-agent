@@ -14,7 +14,7 @@ enum LKLayout: Equatable {
     /// 比这窄是 narrow
     static let narrowBelow: CGFloat = 760
     /// 到这么宽是 wide（主栏、侧栏、两边边距放得下，还剩点空）
-    static let wideFrom: CGFloat = 1200
+    static let wideFrom: CGFloat = 1280      // 一栏 860 + 侧栏 380 + 中间 32 = 1272
 
     /// 内容区的宽只由窗口和侧栏定，不随怎么排而变，所以不会在两档之间来回跳，不用留回差
     init(width: CGFloat) {
@@ -24,8 +24,9 @@ enum LKLayout: Equatable {
 
 /// 各页那一栏的尺寸
 enum LKColumn {
-    /// 一栏最宽多少（连两边边距）：今天、应用页、设置……都一样，底部的搜索框和它对齐
-    static let width: CGFloat = 700
+    /// 一栏最宽多少（连两边边距）：今天、应用页、设置……都一样，底部的搜索框和它对齐。
+    /// 860（负责人 11-14：700 太窄，平常的宽度两边大片空白）
+    static let width: CGFloat = 860
     /// 侧栏多宽
     static let rail: CGFloat = 380
     /// 主栏和侧栏中间空多少
@@ -36,6 +37,8 @@ enum LKColumn {
     static var railShift: CGFloat { (gap + rail) / 2 }
     /// 紧凑的「今天」那张表最宽多少
     static let table: CGFloat = 1080
+    /// 「添加应用」那一栏最宽多少（连两边边距，`LKInsets.page`）：照对照稿，1004 宽的窗口里两列卡片一共 720，不收成上面 700 的一栏
+    static let apps: CGFloat = 720 + LKInsets.page.leading + LKInsets.page.trailing
 }
 
 private struct LayoutKey: EnvironmentKey { static let defaultValue = LKLayout.regular }
@@ -50,7 +53,7 @@ extension EnvironmentValues {
 
 extension LKInsets {
     /// 窄的时候那一栏两边各留多少
-    static let columnNarrow = EdgeInsets(top: LKSpace.x7, leading: LKSpace.x6, bottom: column.bottom, trailing: LKSpace.x6)
+    static let columnNarrow = EdgeInsets(top: column.top, leading: LKSpace.x6, bottom: column.bottom, trailing: LKSpace.x6)
 }
 
 /// 宽窗口里的两栏：主栏占剩下的（700 一栏减去边距的那么宽），侧栏固定宽，顶对齐，跟着页面一起滚
@@ -70,7 +73,7 @@ struct RailSplit<Main: View, Rail: View>: View {
 
 extension WindowModel {
     /// 这一页在这一档里有没有侧栏。页和底部的搜索框都照它，搜索框才跟得上主栏。
-    /// 「今天」（标准，不在一件件处理）：有「已经替你做了」；
+    /// 「今天」（标准，不在逐件处理）：有「已经替你做了」；
     /// 接上核心的应用页：第一页（下面有「这个应用」），或者工具在这一页写了 `"placement": "aside"` 的段
     func hasRail(_ layout: LKLayout) -> Bool {
         guard layout == .wide, focus == nil else { return false }

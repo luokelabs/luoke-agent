@@ -20,12 +20,12 @@ VENDOR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))
 
 CITES_SHOWN = 3                      # 卡片上直接给几条依据原文（顶层 ADR 0013）
 CITE_CHARS = 120
-CHANGED = "这条已经变了（可能已经生效，或者在别处答过了）。"
-NOT_KEPT = "记忆不保存密码、验证码和证件号码，改一下再点。"
-SAID = {"yes": "记下了：对。", "no": "记下了：不对，以后不再提。", "past": "记下了：以前是，现在不是。", "revise": "改好了。", "later": "好，过几天再问。",
-        "answer": "记下了。", "useful": "好。", "useless": "好，这阵子不再提。", "never": "好，不再提这个。",
-        "archive": "归档了：不算回答，也不会自己再问。"}
-CANT_ARCHIVE = "这一版的螺壳记忆还不能归档，先不答就行。"
+CHANGED = "此条已变更（可能已生效，或已在别处回答）"
+NOT_KEPT = "记忆不保存密码、验证码和证件号码，请修改后重试"
+SAID = {"yes": "已确认", "no": "已否定，不再询问", "past": "已标记为过去的情况", "revise": "已按修改保存", "later": "将在数日后再次询问",
+        "answer": "已记录", "useful": "已记录", "useless": "近期不再询问", "never": "不再询问",
+        "archive": "已归档，不计为回答，不再询问"}
+CANT_ARCHIVE = "当前版本的螺壳记忆不支持归档"
 
 
 _from_hub: Optional[str] = None    # 主控带的那份 luoke_mem 所在的目录（use_hub_luoke_mem 设）
@@ -88,7 +88,7 @@ class MemorySource:
         self.state = state
         self.opener = opener or memory_ui_opener(path)
         lm = load_luoke_mem()
-        self.labels = {"memory:question": "记忆想问的事", "memory:suggestion": "记忆的建议"}
+        self.labels = {"memory:question": "记忆的待确认事项", "memory:suggestion": "记忆的建议"}
         self.kind_names = dict(lm.KIND_NAMES)              # 类别和工具的显示名只有一份，在 luoke_mem（0.15.4）
         self.names = dict(lm.TOOL_NAMES, **(names or {}))
         self.status = "missing"   # missing 还没有记忆 / ok / too_new 记忆比自带的库新 / error
@@ -108,6 +108,15 @@ class MemorySource:
             return None
         self.status = "ok"
         return self._mem
+
+    def understandings(self) -> Optional[List[dict]]:
+        """记忆里在用的理解（很可能、确定），新的在前：[{"id", "kind", "text", "sensitive", "status"}]。
+        读不到是 None。吉祥物的那一句从这里挑（`hello.py`；敏感的由它拿掉）"""
+        mem = self._open()
+        if mem is None:
+            return None
+        return [{"id": n["id"], "kind": n["kind"], "text": n["text"], "sensitive": n.get("sensitive") or "",
+                 "status": n.get("status") or "active"} for n in mem.notes()]
 
     def close(self) -> None:
         if self._mem is not None:
@@ -196,7 +205,7 @@ class MemorySource:
         urgency = a.get("urgency") if a.get("urgency") in ("urgent", "normal", "low") else "low"
         return Item(key=f"memory/ask/{aid}", source="memory", kind=a["kind"], urgency=urgency,
                     title=("记忆想问：" if question else "记忆建议：") + a["text"][:100], summary=a.get("why") or "",
-                    why_now=a.get("why") or "不急，有空看看", card=card.messages(), created=a.get("created_at"),
+                    why_now=a.get("why") or "不急，可稍后查看", card=card.messages(), created=a.get("created_at"),
                     expires=a.get("expires_at"), extra={"ask": aid, "note": note, "archive": archivable})
 
     # 交回
@@ -230,16 +239,16 @@ class MemorySource:
                 if choice == "archive" and not hasattr(mem, "archive"):   # 画卡片以后换成了更早的记忆
                     return {"text": CANT_ARCHIVE, "error": True}
                 if choice in ("revise", "answer") and not text:
-                    return {"text": "先在上面写好。", "error": True}
+                    return {"text": "请先填写内容", "error": True}
                 try:
                     self._reply(mem, item, choice, text)
                 except ValueError:
                     if choice == "later" and not item.extra.get("note"):   # 主控带的 luoke_mem 0.23.4 以前不收
-                        return {"text": "这个问题现在还不能往后放，先不答就行。", "error": True}
+                        return {"text": "此问题暂不支持稍后再问", "error": True}
                     if choice in ("revise", "answer") and any(a["id"] == item.extra["ask"] for a in mem.asks(status=["open"])):
                         return {"text": NOT_KEPT, "error": True}   # 记忆不收这句话，问题还开着：卡片留着改
                     raise
-                text = SAID.get(choice, "记下了。")
+                text = SAID.get(choice, "已记录")
             else:
                 return {"text": "不认识这个按钮。", "error": True}
         except ValueError:

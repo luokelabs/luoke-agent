@@ -1,0 +1,529 @@
+{
+ "_about": "scripts/window_samples.py 用 fixtures/apppages/luoke-search/built.json 照原始数据拼的页（luoke-search PR #123（claude/search-data-resources）docs/应用页样例.md 录的 data/…：检索范围、权限取自「1. 选好了、都读完了」，最近搜过的取自「2. 搜」之后；索引在建（progress 0.62）是照 docs/窗口接口.md 的字段写的（样例里没录到 building），搜索合了、录了在建的样例以后换掉），不要手改",
+ "app": "luoke-search",
+ "apps": {
+  "apps": [
+   {
+    "id": "luoke-search",
+    "needs": [],
+    "pages": [
+     {
+      "id": "overview",
+      "title": "概览"
+     }
+    ],
+    "running": true,
+    "summary": {
+     "count": 0,
+     "text": "在建索引"
+    },
+    "ui": null
+   }
+  ]
+ },
+ "asked": [],
+ "clock": "2026-10-20T12:00:00Z",
+ "events": [],
+ "host": {
+  "fda": "granted"
+ },
+ "pages": {
+  "overview": {
+   "messages": [
+    {
+     "createSurface": {
+      "catalogId": "ai.luoke/a2ui/agent/1",
+      "surfaceId": "luoke-search/page/overview"
+     },
+     "version": "v0.9"
+    },
+    {
+     "updateComponents": {
+      "components": [
+       {
+        "children": [
+         "t1",
+         "r6",
+         "t7",
+         "l19",
+         "t20",
+         "l31",
+         "t32",
+         "c39"
+        ],
+        "component": "Column",
+        "id": "root"
+       },
+       {
+        "component": "Text",
+        "id": "t1",
+        "text": "最近搜索",
+        "variant": "caption"
+       },
+       {
+        "action": {
+         "event": {
+          "context": {
+           "clear_recent": true
+          },
+          "name": "search_settings_apply"
+         }
+        },
+        "child": "b2-text",
+        "component": "Button",
+        "confirm": {
+         "label": "清除",
+         "text": "仅清除搜索记录，不影响索引。",
+         "title": "清除最近搜索？"
+        },
+        "id": "b2",
+        "variant": "borderless"
+       },
+       {
+        "component": "Text",
+        "id": "b2-text",
+        "text": "清除"
+       },
+       {
+        "action": {
+         "event": {
+          "context": {
+           "q": "客户名单"
+          },
+          "name": "agent.search"
+         }
+        },
+        "child": "b3-text",
+        "component": "Button",
+        "id": "b3"
+       },
+       {
+        "component": "Text",
+        "id": "b3-text",
+        "text": "客户名单"
+       },
+       {
+        "action": {
+         "event": {
+          "context": {
+           "q": "团队版怎么收费"
+          },
+          "name": "agent.search"
+         }
+        },
+        "child": "b4-text",
+        "component": "Button",
+        "id": "b4"
+       },
+       {
+        "component": "Text",
+        "id": "b4-text",
+        "text": "团队版怎么收费"
+       },
+       {
+        "children": [
+         "b3",
+         "b4"
+        ],
+        "component": "Row",
+        "id": "r5"
+       },
+       {
+        "children": [
+         "r5",
+         "b2"
+        ],
+        "component": "Row",
+        "id": "r6",
+        "justify": "spaceBetween"
+       },
+       {
+        "component": "Text",
+        "id": "t7",
+        "text": "检索范围",
+        "variant": "caption"
+       },
+       {
+        "action": {
+         "event": {
+          "context": {
+           "remove_folder": "1509788188ff"
+          },
+          "name": "search_settings_apply"
+         }
+        },
+        "child": "b8-row",
+        "component": "Button",
+        "confirm": {
+         "label": "移除",
+         "text": "移出后不再搜索其中的文件，可随时重新添加。",
+         "title": "将「office」移出检索范围？"
+        },
+        "id": "b8",
+        "variant": "borderless"
+       },
+       {
+        "component": "Icon",
+        "id": "b8-icon",
+        "name": "x"
+       },
+       {
+        "component": "Text",
+        "id": "b8-text",
+        "text": "移除"
+       },
+       {
+        "children": [
+         "b8-icon",
+         "b8-text"
+        ],
+        "component": "Row",
+        "id": "b8-row"
+       },
+       {
+        "component": "Text",
+        "id": "t9",
+        "text": "office"
+       },
+       {
+        "component": "Text",
+        "id": "t10",
+        "text": "~/样例/office",
+        "variant": "caption"
+       },
+       {
+        "children": [
+         "t9",
+         "t10"
+        ],
+        "component": "Column",
+        "id": "c11"
+       },
+       {
+        "children": [
+         "b8"
+        ],
+        "component": "Row",
+        "id": "r12"
+       },
+       {
+        "children": [
+         "c11",
+         "r12"
+        ],
+        "component": "Row",
+        "id": "r13",
+        "justify": "spaceBetween"
+       },
+       {
+        "action": {
+         "event": {
+          "context": {
+           "add_folder": true
+          },
+          "name": "search_settings_apply"
+         }
+        },
+        "child": "b14-text",
+        "component": "Button",
+        "id": "b14"
+       },
+       {
+        "component": "Text",
+        "id": "b14-text",
+        "text": "选择"
+       },
+       {
+        "component": "Text",
+        "id": "t15",
+        "text": "添加文件夹"
+       },
+       {
+        "children": [
+         "t15"
+        ],
+        "component": "Column",
+        "id": "c16"
+       },
+       {
+        "children": [
+         "b14"
+        ],
+        "component": "Row",
+        "id": "r17"
+       },
+       {
+        "children": [
+         "c16",
+         "r17"
+        ],
+        "component": "Row",
+        "id": "r18",
+        "justify": "spaceBetween"
+       },
+       {
+        "children": [
+         "r13",
+         "r18"
+        ],
+        "component": "List",
+        "id": "l19"
+       },
+       {
+        "component": "Text",
+        "id": "t20",
+        "text": "权限",
+        "variant": "caption"
+       },
+       {
+        "action": {
+         "event": {
+          "context": {
+           "files": false
+          },
+          "name": "search_settings_apply"
+         }
+        },
+        "child": "b21-text",
+        "component": "Button",
+        "id": "b21",
+        "on": true,
+        "variant": "switch"
+       },
+       {
+        "component": "Text",
+        "id": "b21-text",
+        "text": "文件"
+       },
+       {
+        "component": "Text",
+        "id": "t22",
+        "text": "文件",
+        "variant": "strong"
+       },
+       {
+        "children": [
+         "t22"
+        ],
+        "component": "Column",
+        "id": "c23"
+       },
+       {
+        "children": [
+         "b21"
+        ],
+        "component": "Row",
+        "id": "r24"
+       },
+       {
+        "children": [
+         "c23",
+         "r24"
+        ],
+        "component": "Row",
+        "id": "r25",
+        "justify": "spaceBetween"
+       },
+       {
+        "action": {
+         "event": {
+          "context": {
+           "photos": true
+          },
+          "name": "search_settings_apply"
+         }
+        },
+        "child": "b26-text",
+        "component": "Button",
+        "id": "b26",
+        "on": false,
+        "variant": "switch"
+       },
+       {
+        "component": "Text",
+        "id": "b26-text",
+        "text": "照片"
+       },
+       {
+        "component": "Text",
+        "id": "t27",
+        "text": "照片",
+        "variant": "strong"
+       },
+       {
+        "children": [
+         "t27"
+        ],
+        "component": "Column",
+        "id": "c28"
+       },
+       {
+        "children": [
+         "b26"
+        ],
+        "component": "Row",
+        "id": "r29"
+       },
+       {
+        "children": [
+         "c28",
+         "r29"
+        ],
+        "component": "Row",
+        "id": "r30",
+        "justify": "spaceBetween"
+       },
+       {
+        "children": [
+         "r25",
+         "r30"
+        ],
+        "component": "List",
+        "id": "l31"
+       },
+       {
+        "component": "Text",
+        "id": "t32",
+        "text": "建立索引",
+        "variant": "caption"
+       },
+       {
+        "action": {
+         "event": {
+          "context": {
+           "mode": {
+            "path": "/choices/mode/0"
+           }
+          },
+          "name": "search_settings_apply"
+         }
+        },
+        "child": "b33-text",
+        "component": "Button",
+        "id": "b33"
+       },
+       {
+        "component": "Text",
+        "id": "b33-text",
+        "text": "切换方式"
+       },
+       {
+        "component": "ChoicePicker",
+        "id": "k34",
+        "options": [
+         {
+          "label": "自动",
+          "value": "auto"
+         },
+         {
+          "label": "手动",
+          "value": "manual"
+         }
+        ],
+        "submit": "b33",
+        "value": {
+         "path": "/choices/mode"
+        }
+       },
+       {
+        "component": "Text",
+        "id": "t35",
+        "text": "方式",
+        "variant": "strong"
+       },
+       {
+        "component": "Text",
+        "id": "t36",
+        "text": "正在建立索引 62%",
+        "variant": "caption"
+       },
+       {
+        "children": [
+         "t35",
+         "t36"
+        ],
+        "component": "Column",
+        "id": "c37"
+       },
+       {
+        "children": [
+         "c37",
+         "k34"
+        ],
+        "component": "Row",
+        "id": "r38",
+        "justify": "spaceBetween"
+       },
+       {
+        "children": [
+         "r38"
+        ],
+        "component": "Column",
+        "id": "c39"
+       }
+      ],
+      "surfaceId": "luoke-search/page/overview"
+     },
+     "version": "v0.9"
+    },
+    {
+     "updateDataModel": {
+      "path": "/",
+      "surfaceId": "luoke-search/page/overview",
+      "value": {
+       "choices": {
+        "mode": [
+         "auto"
+        ]
+       }
+      }
+     },
+     "version": "v0.9"
+    }
+   ]
+  }
+ },
+ "permissions": {
+  "rows": [
+   {
+    "app": "luoke-scan",
+    "can": [
+     "settings"
+    ],
+    "facts": [
+     "看文件名、大小、修改时间",
+     "重复文件、散落的密钥、AI 的 skill 和说明文件在本机读内容",
+     "结果不出这台 Mac"
+    ],
+    "id": "fda",
+    "kind": "system",
+    "owner": "luoke",
+    "state": "granted",
+    "tcc": "SystemPolicyAllFiles",
+    "title": "完全磁盘访问",
+    "without": "degrade"
+   },
+   {
+    "app": "luoke-scan",
+    "can": [
+     "on"
+    ],
+    "id": "auto",
+    "kind": "delegate",
+    "state": "off",
+    "title": "自动清理 4 类文件"
+   },
+   {
+    "app": "luoke-scan",
+    "id": "admin",
+    "kind": "each-time",
+    "state": "ask",
+    "title": "删除系统目录中的项目（需输入 Mac 密码）"
+   }
+  ]
+ },
+ "replies": [],
+ "scenario": "built",
+ "title": "luoke-search PR #123（claude/search-data-",
+ "version": ""
+}

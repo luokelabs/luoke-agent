@@ -1,0 +1,190 @@
+{
+  "reply": {
+    "id": 4,
+    "jsonrpc": "2.0",
+    "result": {
+      "contents": [
+        {
+          "mimeType": "application/json",
+          "text": {
+            "items": [
+              {
+                "card": [
+                  {
+                    "createSurface": {
+                      "catalogId": "ai.luoke/a2ui/agent/1",
+                      "surfaceId": "round-000000000001"
+                    },
+                    "version": "v0.9"
+                  },
+                  {
+                    "updateComponents": {
+                      "components": [
+                        {
+                          "children": [
+                            "h1",
+                            "t2",
+                            "r5"
+                          ],
+                          "component": "Column",
+                          "id": "root"
+                        },
+                        {
+                          "component": "Text",
+                          "id": "h1",
+                          "text": "能清出 181.5 MB",
+                          "variant": "h4"
+                        },
+                        {
+                          "component": "Text",
+                          "id": "t2",
+                          "text": "会重建的缓存 1 项，不用你选；另外 9 项在「螺壳扫描」里等你看。",
+                          "variant": "caption"
+                        },
+                        {
+                          "action": {
+                            "event": {
+                              "context": {
+                                "choices": {
+                                  "i2": [
+                                    "remove"
+                                  ]
+                                },
+                                "plan_id": "p-000000000002"
+                              },
+                              "name": "scan_apply"
+                            }
+                          },
+                          "child": "b3-text",
+                          "component": "Button",
+                          "id": "b3",
+                          "variant": "primary"
+                        },
+                        {
+                          "component": "Text",
+                          "id": "b3-text",
+                          "text": "清理 1 项缓存"
+                        },
+                        {
+                          "action": {
+                            "event": {
+                              "context": {
+                                "on": true
+                              },
+                              "name": "scan_autoclean"
+                            }
+                          },
+                          "child": "b4-text",
+                          "component": "Button",
+                          "id": "b4"
+                        },
+                        {
+                          "component": "Text",
+                          "id": "b4-text",
+                          "text": "打开自动清理"
+                        },
+                        {
+                          "children": [
+                            "b3",
+                            "b4"
+                          ],
+                          "component": "Row",
+                          "id": "r5"
+                        }
+                      ],
+                      "surfaceId": "round-000000000001"
+                    },
+                    "version": "v0.9"
+                  },
+                  {
+                    "updateDataModel": {
+                      "path": "/",
+                      "surfaceId": "round-000000000001",
+                      "value": {
+                        "choices": {
+                          "i0": [
+                            "keep"
+                          ],
+                          "i1": [
+                            "keep"
+                          ],
+                          "i2": [
+                            "keep"
+                          ],
+                          "i3": [
+                            "keep"
+                          ],
+                          "i4": [
+                            "keep"
+                          ],
+                          "i5": [
+                            "keep"
+                          ]
+                        }
+                      }
+                    },
+                    "version": "v0.9"
+                  }
+                ],
+                "created": "2026-10-20T12:00:00Z",
+                "data": {
+                  "cleans": [],
+                  "decide": {
+                    "bytes": 181489664,
+                    "caches": 1,
+                    "cleaned": 0,
+                    "freed": 0,
+                    "offerAuto": true,
+                    "plan": {
+                      "caches": [
+                        "i2"
+                      ],
+                      "id": "p-000000000002"
+                    },
+                    "rest": 9,
+                    "skipped": {
+                      "fda": 0,
+                      "other": 0,
+                      "virusDb": 0
+                    },
+                    "toLook": 9,
+                    "trash": 4
+                  },
+                  "failed": [],
+                  "moreCleans": 0,
+                  "type": "round"
+                },
+                "deadline": null,
+                "expires": "2026-10-23T12:00:00Z",
+                "id": "round/2026-10-20T12:00:00Z",
+                "kind": "findings",
+                "summary": "会重建的缓存 1 项，不用你选；另外 9 项在「螺壳扫描」里等你看。",
+                "title": "能清出 181.5 MB，另外 9 项等你处理",
+                "urgency": "low",
+                "why_now": "扫描刚查完一轮"
+              }
+            ]
+          },
+          "uri": "luoke://luoke-scan/outbox"
+        }
+      ],
+      "resultType": "complete"
+    }
+  },
+  "request": {
+    "id": 4,
+    "jsonrpc": "2.0",
+    "method": "resources/read",
+    "params": {
+      "_meta": {
+        "io.modelcontextprotocol/clientCapabilities": {},
+        "io.modelcontextprotocol/clientInfo": {
+          "name": "luoke-agent",
+          "version": "fixtures"
+        },
+        "io.modelcontextprotocol/protocolVersion": "2026-07-28"
+      },
+      "uri": "luoke://luoke-scan/outbox"
+    }
+  }
+}

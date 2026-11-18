@@ -110,6 +110,16 @@
                   }
                 ],
                 "created": "2026-10-20T12:00:00Z",
+                "data": {
+                  "finding": "malware.clamav/000000000003",
+                  "name": "eicar-test.com",
+                  "place": "downloads",
+                  "plan": {
+                    "id": "p-000000000002",
+                    "key": "i0"
+                  },
+                  "type": "malware"
+                },
                 "deadline": null,
                 "expires": null,
                 "id": "security/malware.clamav/000000000003",
@@ -221,6 +231,16 @@
                   }
                 ],
                 "created": "2026-10-20T12:00:00Z",
+                "data": {
+                  "finding": "malware.yara.luoke_fake_password_dialog/000000000006",
+                  "name": "update.scpt",
+                  "place": "downloads",
+                  "plan": {
+                    "id": "p-000000000005",
+                    "key": "i0"
+                  },
+                  "type": "malware"
+                },
                 "deadline": null,
                 "expires": null,
                 "id": "security/malware.yara.luoke_fake_password_dialog/000000000006",
@@ -394,6 +414,38 @@
                   }
                 ],
                 "created": "2026-10-20T12:00:00Z",
+                "data": {
+                  "cleans": [],
+                  "decide": {
+                    "bytes": 349175808,
+                    "caches": 6,
+                    "cleaned": 0,
+                    "freed": 0,
+                    "offerAuto": true,
+                    "plan": {
+                      "caches": [
+                        "i5",
+                        "i6",
+                        "i7",
+                        "i8",
+                        "i9",
+                        "i10"
+                      ],
+                      "id": "p-000000000008"
+                    },
+                    "rest": 14,
+                    "skipped": {
+                      "fda": 0,
+                      "other": 0,
+                      "virusDb": 0
+                    },
+                    "toLook": 16,
+                    "trash": 7
+                  },
+                  "failed": [],
+                  "moreCleans": 0,
+                  "type": "round"
+                },
                 "deadline": null,
                 "expires": "2026-10-23T12:00:00Z",
                 "id": "round/2026-10-20T12:00:00Z",

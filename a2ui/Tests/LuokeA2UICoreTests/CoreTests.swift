@@ -76,6 +76,32 @@ final class CoreTests: XCTestCase {
         XCTAssertFalse(validate(try page(layout: "cards"), page: true).isEmpty)
     }
 
+    /// 根下面一列一列、每列以 h4 开头的页（输入法的设置页）：一列一张卡片，小标题提到卡片外面；页底只有说明的一列不进卡片
+    func testColumnsThatStartWithAHeadingAreDrawnAsTitledCards() throws {
+        let msgs = try JSONValue.parse(Data(#"""
+        [{"version":"v0.9","createSurface":{"surfaceId":"s","catalogId":"ai.luoke/a2ui/agent/1"}},
+         {"version":"v0.9","updateComponents":{"surfaceId":"s","components":[
+           {"id":"root","component":"Column","children":["a","b","c"]},
+           {"id":"a","component":"Column","children":["at","ax","ar"]},
+           {"id":"at","component":"Text","text":"输入方式","variant":"h4"},
+           {"id":"ax","component":"Text","text":"输入方案"},
+           {"id":"ar","component":"Row","children":["ab"]},
+           {"id":"ab","component":"Text","text":"全拼"},
+           {"id":"b","component":"Column","children":["bd","bt","bx"]},
+           {"id":"bd","component":"Divider"},
+           {"id":"bt","component":"Text","text":"模糊音","variant":"h4"},
+           {"id":"bx","component":"Text","text":"开启后同时给出拼法相近的字","variant":"caption"},
+           {"id":"c","component":"Column","children":["cd","cx"]},
+           {"id":"cd","component":"Divider"},
+           {"id":"cx","component":"Text","text":"已学词语在各应用页里看","variant":"caption"}]}}]
+        """#.utf8)).array!
+        let s = try Surface.build(msgs, page: true)
+        XCTAssertEqual(s.headedBlocks(), [
+            .card("a", title: SectionTitle(icon: nil, text: .string("输入方式"), count: nil), skip: 1),
+            .card("b", title: SectionTitle(icon: nil, text: .string("模糊音"), count: nil), skip: 2),
+            .bare("cx")])
+    }
+
     /// 画成开关的按钮还是按钮：点了发原来的动作，`on` 只管画
     func testSwitchButtonSendsItsAction() throws {
         let msgs = try JSONValue.parse(Data("""
@@ -136,11 +162,49 @@ final class CoreTests: XCTestCase {
         s.data = try s.data.setting("/choices/i1", to: .array([.string("trash")]))
         XCTAssertEqual(s.buttonLabel("go").text, "移到废纸篓 2 项")
         s.data = try s.data.setting("/choices", to: .object(["i0": .array([.string("keep")])]))
-        XCTAssertEqual(s.buttonCount("go"), 0, "0 项：界面把按钮灰掉")
+        XCTAssertEqual(s.buttonCount("go"), 0, "0 项：界面不画这个按钮")
         XCTAssertNil(s.buttonCount("other"))
         XCTAssertEqual(s.buttonLabel("other").text, "{n} 不换")
         XCTAssertFalse(s.buttonCountAllows("go"))
         XCTAssertTrue(s.buttonCountAllows("other"), "没写 count 的照常能点")
+    }
+
+    /// §4 countLabel（2026-11-11 起）：数出 0 项、也没选 also 里的值的按钮不画；一行里都是这种按钮的，整行不画；选了一项又画
+    func testZeroCountButtonDrawsNothing() throws {
+        var s = try Surface.build(try JSONValue.parse(#"""
+        [{"version": "v0.9", "createSurface": {"surfaceId": "s", "catalogId": "ai.luoke/a2ui/agent/1"}},
+         {"version": "v0.9", "updateComponents": {"surfaceId": "s", "components": [
+           {"id": "root", "component": "Column", "children": ["pick", "row", "both"]},
+           {"id": "pick", "component": "ChoicePicker", "label": "安装包", "value": {"path": "/choices/i0"},
+            "options": [{"value": "trash", "label": "移到废纸篓"}, {"value": "keep", "label": "先不动"}, {"value": "ignore", "label": "以后别提"}]},
+           {"id": "row", "component": "Row", "children": ["go"]},
+           {"id": "go", "component": "Button", "child": "t1",
+            "count": {"path": "/choices", "value": "trash", "also": ["ignore"], "alsoLabel": "按上面的选择处理"},
+            "action": {"event": {"name": "scan_apply", "context": {"choices": {"path": "/choices"}}}}},
+           {"id": "t1", "component": "Text", "text": "移到废纸篓 {n} 项"},
+           {"id": "both", "component": "Row", "children": ["go2", "other"]},
+           {"id": "go2", "component": "Button", "child": "t2", "count": {"path": "/choices", "value": "trash"},
+            "action": {"event": {"name": "scan_apply", "context": {"choices": {"path": "/choices"}}}}},
+           {"id": "t2", "component": "Text", "text": "移到废纸篓 {n} 项"},
+           {"id": "other", "component": "Button", "child": "t3", "action": {"event": {"name": "x", "context": {}}}},
+           {"id": "t3", "component": "Text", "text": "现在查一下"}]}},
+         {"version": "v0.9", "updateDataModel": {"surfaceId": "s", "path": "/", "value": {"choices": {"i0": ["keep"]}}}}]
+        """#).array!)
+        XCTAssertTrue(s.drawsNothing("go"))
+        XCTAssertTrue(s.drawsNothing("row"), "一行里只有它：整行不画")
+        XCTAssertTrue(s.drawsNothing("go2"))
+        XCTAssertFalse(s.drawsNothing("both"), "旁边还有别的按钮：这一行照画")
+        XCTAssertFalse(s.drawsNothing("other"))
+        XCTAssertFalse(s.drawsNothing("pick"))
+        XCTAssertFalse(s.drawsNothing("root"), "根不算")
+        s.data = try s.data.setting("/choices/i0", to: .array([.string("trash")]))
+        XCTAssertFalse(s.drawsNothing("go"), "选了一项：又画")
+        XCTAssertFalse(s.drawsNothing("row"))
+        XCTAssertEqual(s.buttonLabel("go").text, "移到废纸篓 1 项")
+        s.data = try s.data.setting("/choices/i0", to: .array([.string("ignore")]))
+        XCTAssertFalse(s.drawsNothing("go"), "选了 also 里的值：照画，字换成 alsoLabel")
+        XCTAssertTrue(s.drawsNothing("go2"), "没写 also 的照样不画")
+        XCTAssertEqual(s.buttonLabel("go").text, "按上面的选择处理")
     }
 
     /// §4 countWeights：一项合了好几样时 {n} 按 weights 算；不写算 1；weights 里有、选择里没有的键不管；also 照旧
@@ -171,6 +235,32 @@ final class CoreTests: XCTestCase {
         XCTAssertEqual(s.buttonLabel("root").text, "按上面的选择清理")
     }
 
+    /// 选择框的样子（同一页重新取时认是不是同一个）：路径 → 标题、选项、写法；没画的、没绑路径的不算
+    func testChoiceShapes() throws {
+        let s = try Surface.build(try JSONValue.parse(#"""
+        [{"version": "v0.9", "createSurface": {"surfaceId": "s", "catalogId": "ai.luoke/a2ui/agent/1"}},
+         {"version": "v0.9", "updateComponents": {"surfaceId": "s", "components": [
+           {"id": "root", "component": "Column", "children": ["a", "b", "fixed"]},
+           {"id": "a", "component": "ChoicePicker", "label": "安装包（830 MB）", "value": {"path": "/choices/i1"},
+            "options": [{"value": "trash", "label": "移到废纸篓"}, {"value": "keep", "label": "先不动"}]},
+           {"id": "b", "component": "ChoicePicker", "label": "4 个 AI 插件", "value": {"path": "/choices/g-i3"},
+            "options": [{"value": "trash", "label": "移到废纸篓"}, {"value": "keep", "label": "先不动"}]},
+           {"id": "fixed", "component": "ChoicePicker", "label": "不绑路径", "value": ["keep"],
+            "options": [{"value": "keep", "label": "先不动"}]},
+           {"id": "unseen", "component": "ChoicePicker", "label": "没画", "value": {"path": "/choices/i9"},
+            "options": [{"value": "keep", "label": "先不动"}]}]}},
+         {"version": "v0.9", "updateDataModel": {"surfaceId": "s", "path": "/", "value": {"choices": {"i1": ["trash"], "g-i3": ["trash"], "i9": ["keep"]}}}}]
+        """#).array!)
+        let shapes = s.choiceShapes
+        XCTAssertEqual(Set(shapes.keys), ["/choices/i1", "/choices/g-i3"])
+        XCTAssertEqual(shapes["/choices/i1"]?.label, .string("安装包（830 MB）"))
+        XCTAssertNotEqual(shapes["/choices/i1"], shapes["/choices/g-i3"])
+        let a = try XCTUnwrap(shapes["/choices/i1"])
+        XCTAssertTrue(a.allows(.array([.string("keep")])))
+        XCTAssertFalse(a.allows(.array([.string("ignore")])), "不在选项里")
+        XCTAssertFalse(a.allows(.string("keep")), "不是数组")
+    }
+
     /// §4 countAlso：选了 also 里的值（以后别提、换成克隆）时按钮能点、字换成 alsoLabel；{n} 照样只数 value
     func testCountAlsoLetsOtherChoicesThrough() throws {
         var s = try Surface.build(try JSONValue.parse(#"""
@@ -192,7 +282,7 @@ final class CoreTests: XCTestCase {
         XCTAssertTrue(s.buttonCountAllows("root"))
         XCTAssertEqual(s.buttonLabel("root").text, "按上面的选择清理（移到废纸篓 1 项）", "混着选：alsoLabel，{n} 只数移到废纸篓的")
         try pick("keep", "keep")
-        XCTAssertFalse(s.buttonCountAllows("root"), "都先不动：0 项灰掉")
+        XCTAssertFalse(s.buttonCountAllows("root"), "都先不动：0 项不画")
         XCTAssertEqual(s.buttonLabel("root").text, "移到废纸篓 0 项")
         try pick("trash", "trash")
         XCTAssertTrue(s.buttonCountAllows("root"))

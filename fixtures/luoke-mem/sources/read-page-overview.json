@@ -19,66 +19,23 @@
                 "components": [
                   {
                     "children": [
-                      "h1",
+                      "t1",
                       "t2",
-                      "t3",
-                      "d4",
-                      "t5",
-                      "t6",
-                      "t7",
-                      "t8",
-                      "t9",
-                      "r11"
+                      "r4"
                     ],
                     "component": "Column",
                     "id": "root"
                   },
                   {
                     "component": "Text",
-                    "id": "h1",
-                    "text": "概览",
-                    "variant": "h4"
+                    "id": "t1",
+                    "text": "最近了解到的",
+                    "variant": "caption"
                   },
                   {
                     "component": "Text",
                     "id": "t2",
-                    "text": "记下了 1 条。"
-                  },
-                  {
-                    "component": "Text",
-                    "id": "t3",
-                    "text": "关于你 1",
-                    "variant": "caption"
-                  },
-                  {
-                    "component": "Divider",
-                    "id": "d4"
-                  },
-                  {
-                    "component": "Text",
-                    "id": "t5",
-                    "text": "最近 14 天各应用记下的",
-                    "variant": "caption"
-                  },
-                  {
-                    "component": "Text",
-                    "id": "t6",
-                    "text": "邮件助手：3 条"
-                  },
-                  {
-                    "component": "Text",
-                    "id": "t7",
-                    "text": "螺壳输入法：2 条"
-                  },
-                  {
-                    "component": "Text",
-                    "id": "t8",
-                    "text": "螺壳记忆：1 条"
-                  },
-                  {
-                    "component": "Text",
-                    "id": "t9",
-                    "text": "螺壳扫描：1 条"
+                    "text": "最近没有新了解到的。"
                   },
                   {
                     "action": {
@@ -87,21 +44,21 @@
                         "name": "mem_open"
                       }
                     },
-                    "child": "b10-text",
+                    "child": "b3-text",
                     "component": "Button",
-                    "id": "b10"
+                    "id": "b3"
                   },
                   {
                     "component": "Text",
-                    "id": "b10-text",
+                    "id": "b3-text",
                     "text": "打开整份记忆"
                   },
                   {
                     "children": [
-                      "b10"
+                      "b3"
                     ],
                     "component": "Row",
-                    "id": "r11"
+                    "id": "r4"
                   }
                 ],
                 "surfaceId": "overview"

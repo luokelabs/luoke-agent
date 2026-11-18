@@ -1,0 +1,168 @@
+{
+  "id": "data-actions",
+  "normalised": {
+    "$TMPDIR": "假目录的临时目录（$FIXTURE/tmp）",
+    "000000000001…": "由路径、随机数算出的 12 位编号，按在本场景里出现的先后编号",
+    "resources/read": "contents[0].text 解开成了 JSON 值；线上是 JSON 文字",
+    "~": "假用户目录（$FIXTURE/home）",
+    "~/.Trash": "假目录的废纸篓（$FIXTURE/Trash）"
+  },
+  "produced": {
+    "changes": [
+      "pip 的缓存长到 60 MB",
+      "删掉了 ~/Downloads/eicar-test.com",
+      "删掉了 ~/Downloads/update.scpt",
+      "删掉了 ~/Library/LaunchAgents/io.example.gone.plist",
+      "删掉了 ~/Library/Application Support/io.example.removed",
+      "删掉了 ~/Library/Preferences/io.example.removed.plist",
+      "删掉了 ~/Library/Group Containers/ABCDE12345.io.example.removed",
+      "删掉了 ~/Library/Containers/ABCDE12345.io.example.removed",
+      "加了装好了的应用的安装包、文稿里也有一份的下载、21 个 Puppeteer 临时文件夹（都是 20 天前来的）"
+    ],
+    "fixture": [
+      "blackbox/fx.py 造的假目录：blackbox/cases/base.py 的 `build`（照单元测试的 Fixture.build 摆），fakes.json 是 `fx.standard_fakes`（和单元测试的 Fixture.Fakes.standard 一样），另加一块 494 GB、还剩 182 GB 的硬盘",
+      "luoke-scan update --data $FIXTURE/data --tool-dir $FIXTURE/tools --force（假的 freshclam，daily 27000，库文件的时间 2026-10-20T01:00:00Z）",
+      "luoke-scan scan --fixture $FIXTURE --clock 2026-10-17T12:00:00Z（3 天前查过一轮：pip 的缓存还是空的）"
+    ],
+    "mcp": "luoke-scan mcp --fixture $FIXTURE --clock <那一步的时钟>：一个请求一个进程，标准输入一条 JSON-RPC，标准输出是答复",
+    "tz": "Asia/Shanghai",
+    "user_action_at": "点按时的 at 是那一步的时钟，按 Asia/Shanghai 写"
+  },
+  "situation": "基础假目录去掉报毒的、坏了的、删了的应用的数据，再加三类不用点就清的（装好了的应用的安装包、文稿里也有一份的下载、21 个 Puppeteer 临时文件夹），自动清关着。查完一轮，agent 照 data/… 拼扫描页（顶层 ADR 0028）：用户在「临时文件夹」这一类里取消最大的一项、把其余的移到废纸篓；「重复文件」这一类点「这一类以后别再问」；再在清理记录里把那一批放回。",
+  "steps": [
+    {
+      "clock": "2026-10-20T12:00:00Z",
+      "do": "查一轮（agent 叫的那种，只读、不自动清）：luoke-scan scan --fixture $FIXTURE --clock 2026-10-20T12:00:00Z --for-agent"
+    },
+    {
+      "clock": "2026-10-20T12:00:00Z",
+      "do": "server/discover",
+      "file": "server-discover.json"
+    },
+    {
+      "clock": "2026-10-20T12:00:00Z",
+      "do": "列工具（agent 认 readOnlyHint）",
+      "file": "tools-list.json"
+    },
+    {
+      "clock": "2026-10-20T12:00:00Z",
+      "do": "列资源",
+      "file": "resources-list.json"
+    },
+    {
+      "clock": "2026-10-20T12:00:00Z",
+      "do": "读 outbox（每分钟一次）",
+      "file": "read-outbox.json"
+    },
+    {
+      "clock": "2026-10-20T12:00:00Z",
+      "do": "读概览（侧栏的计数和一句话）",
+      "file": "read-summary.json"
+    },
+    {
+      "clock": "2026-10-20T12:00:00Z",
+      "do": "读权限的状态",
+      "file": "read-permissions.json"
+    },
+    {
+      "clock": "2026-10-20T12:00:00Z",
+      "do": "读基础页 page/overview",
+      "file": "read-page-overview.json"
+    },
+    {
+      "clock": "2026-10-20T12:00:00Z",
+      "do": "读基础页 page/mac",
+      "file": "read-page-mac.json"
+    },
+    {
+      "clock": "2026-10-20T12:00:00Z",
+      "do": "读基础页 page/cleaned",
+      "file": "read-page-cleaned.json"
+    },
+    {
+      "clock": "2026-10-20T12:00:00Z",
+      "do": "读扫描页的数据 data/overview",
+      "file": "read-data-overview.json"
+    },
+    {
+      "clock": "2026-10-20T12:00:00Z",
+      "do": "读清理记录的数据 data/history",
+      "file": "read-data-history.json"
+    },
+    {
+      "clock": "2026-10-20T12:00:00Z",
+      "do": "读设置的数据 data/settings",
+      "file": "read-data-settings.json"
+    },
+    {
+      "clock": "2026-10-20T12:00:00Z",
+      "do": "读一类的详情 data/category?id=cache",
+      "file": "read-data-category-cache.json"
+    },
+    {
+      "clock": "2026-10-20T12:00:00Z",
+      "do": "读一类的详情 data/category?id=installer",
+      "file": "read-data-category-installer.json"
+    },
+    {
+      "clock": "2026-10-20T12:00:00Z",
+      "do": "读一类的详情 data/category?id=duplicate",
+      "file": "read-data-category-duplicate.json"
+    },
+    {
+      "clock": "2026-10-20T12:00:00Z",
+      "do": "读一类的详情 data/category?id=temp",
+      "file": "read-data-category-temp.json"
+    },
+    {
+      "clock": "2026-10-20T12:00:00Z",
+      "do": "读一类的详情 data/category?id=project",
+      "file": "read-data-category-project.json"
+    },
+    {
+      "clock": "2026-10-20T12:05:00Z",
+      "do": "用户在「临时文件夹」这一类的详情里取消了最大的一项，点「把选中的移到废纸篓」：scan_apply 的 plan_id 和 choices 的键取自 data/category 每一项的 plan、key",
+      "file": "call-scan_apply-selected.json"
+    },
+    {
+      "clock": "2026-10-20T12:05:00Z",
+      "do": "点完再读这一类：移走的不再列",
+      "file": "read-data-category-temp-after-apply.json"
+    },
+    {
+      "clock": "2026-10-20T12:05:00Z",
+      "do": "点完读清理记录的数据：多了这一批",
+      "file": "read-data-history-after-apply.json"
+    },
+    {
+      "clock": "2026-10-20T12:06:00Z",
+      "do": "用户在「重复文件」这一类的详情里点「这一类以后别再问」：这一类的每一项都选 ignore",
+      "file": "call-scan_apply-ignore.json"
+    },
+    {
+      "clock": "2026-10-20T12:06:00Z",
+      "do": "点完读设置的数据：以后别提的列在 ignored 里",
+      "file": "read-data-settings-after-ignore.json"
+    },
+    {
+      "clock": "2026-10-20T12:06:00Z",
+      "do": "再读扫描页的数据",
+      "file": "read-data-overview-after.json"
+    },
+    {
+      "clock": "2026-10-20T12:10:00Z",
+      "do": "用户在清理记录里点那一批的「放回」：scan_restore 的 id 取自 data/history 的 batch",
+      "file": "call-scan_restore.json"
+    },
+    {
+      "clock": "2026-10-20T12:10:00Z",
+      "do": "放回以后再读清理记录的数据",
+      "file": "read-data-history-after-restore.json"
+    }
+  ],
+  "title": "agent 自己拼扫描页：只读数据，照数据点按",
+  "window": [
+    "扫描页由 agent 照 `data/overview` 拼：`reclaimable` 每一类一行（`id`、`bytes`、`count`、`facts`），点一行读 `data/category?id=<类>`，逐个文件带 `path`、`bytes`、`reason`、`facts`。",
+    "「把选中的移到废纸篓」是 `scan_apply`：`plan_id` 是选中项的 `plan`，`choices` 是 `{<key>: [\"trash\"]}`，没选的不发（当作先不动）；「这一类以后别再问」是同一份方案里这一类每一项 `[\"ignore\"]`。放回是 `scan_restore`，`id` 是 `data/history` 一行的 `batch`。点完重读 `data/…`。"
+  ]
+}

@@ -1,0 +1,59 @@
+{
+  "reply": {
+    "id": 62,
+    "jsonrpc": "2.0",
+    "result": {
+      "content": [
+        {
+          "text": "忘掉了螺壳输入法写的：记录 6 条，理解 3 条。",
+          "type": "text"
+        }
+      ],
+      "isError": false,
+      "resultType": "complete",
+      "structuredContent": {
+        "notes": 3,
+        "records": 6,
+        "result": "forget_tool",
+        "tool": "luoke-ime"
+      }
+    }
+  },
+  "request": {
+    "id": 62,
+    "jsonrpc": "2.0",
+    "method": "tools/call",
+    "params": {
+      "_meta": {
+        "ai.luoke/user-action": {
+          "at": "2026-11-06T10:29:00+08:00",
+          "componentId": "b3",
+          "surfaceId": "settings"
+        },
+        "io.modelcontextprotocol/clientCapabilities": {
+          "experimental": {
+            "ai.luoke/a2ui": {
+              "features": [
+                "openPage",
+                "pageArgs",
+                "confirm",
+                "rowOpen",
+                "fieldSubmit"
+              ]
+            }
+          }
+        },
+        "io.modelcontextprotocol/clientInfo": {
+          "name": "luoke-agent",
+          "version": "fixtures"
+        },
+        "io.modelcontextprotocol/protocolVersion": "2026-07-28"
+      },
+      "arguments": {
+        "sure": true,
+        "tool": "luoke-ime"
+      },
+      "name": "mem_forget_tool"
+    }
+  }
+}

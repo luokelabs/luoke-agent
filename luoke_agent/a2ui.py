@@ -27,7 +27,9 @@ MAX_COMPONENTS = 200
 MAX_PAGE_COMPONENTS = 400        # 应用页（§1a page/<id>）的上限，核心认 bigPages（§4，2026-11-10）
 MAX_TEXT = 2000
 # agent 自己处理的动作（§5），工具的动作名不能以 agent. 开头
-AGENT_EVENTS = frozenset({"agent.open_url", "agent.open_page", "agent.dismiss", "agent.remind"})  # remind 只用在 agent 自己的卡片上
+# remind 只用在 agent 自己的卡片上；search（拿 `q` 去窗口底部的搜索里搜）只用在核心拼的页上（搜索的应用页）
+AGENT_EVENTS = frozenset({"agent.open_url", "agent.open_page", "agent.dismiss", "agent.remind", "agent.search",
+                          "agent.reveal"})
 # agent.open_page 的页 id：同清单里 service.pages 的 id（apps.ID），不带应用名，开的只能是出这张卡片的应用自己的页
 PAGE_ID = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$")
 # agent.open_page 的 args（§4 pageArgs）：最多 4 个键，键是小写字母开头的短名字，值不超过 200 字
@@ -43,13 +45,13 @@ MAX_FILE_NAME = 100
 FILE_TYPES = {"text/plain": ".txt", "text/csv": ".csv", "application/json": ".json", "text/markdown": ".md",
               "application/xml": ".xml"}
 # Icon 能用的名字（§4「图标」）：Lucide 的名字（窗口带着这些图），和以前的名字（照旧认，画成对应的 Lucide 图标）
-LUCIDE_ICONS = frozenset({"app-window", "archive", "brain", "calendar", "calendar-plus", "check", "chevron-down",
-                          "chevron-right", "circle-help", "circle-minus", "clock", "copy", "cpu", "eye", "file",
-                          "folder", "folder-open", "globe", "hard-drive", "inbox", "info", "key", "keyboard",
-                          "lightbulb", "link", "lock", "mail", "package", "pencil-line", "power", "puzzle",
-                          "refresh-cw", "reply", "settings", "shield-alert", "shield-check", "sparkles",
-                          "square-arrow-out-up-right", "star", "trash-2", "trending-up", "triangle-alert",
-                          "user", "x"})
+LUCIDE_ICONS = frozenset({"app-window", "archive", "bell-off", "brain", "calendar", "calendar-plus", "check",
+                          "chevron-down", "chevron-right", "circle-help", "circle-minus", "clock", "copy", "cpu",
+                          "eye", "file", "folder", "folder-open", "globe", "hard-drive", "history", "inbox", "info",
+                          "key", "keyboard", "lightbulb", "link", "lock", "mail", "mail-x", "package", "pencil-line",
+                          "power", "puzzle", "refresh-cw", "reply", "settings", "shield-alert", "shield-check",
+                          "sparkles", "square-arrow-out-up-right", "star", "thumbs-down", "thumbs-up", "trash-2",
+                          "trending-up", "triangle-alert", "undo-2", "user", "x"})
 ICON_ALIASES = {"warning": "triangle-alert", "close": "x", "trash": "trash-2", "person": "user", "memory": "brain",
                 "question": "circle-help", "open": "square-arrow-out-up-right"}
 ICONS = LUCIDE_ICONS | frozenset(ICON_ALIASES)
@@ -60,9 +62,10 @@ TONES = frozenset({"danger", "warning", "neutral"})
 A2UI_FEATURES = ("placement", "badge", "strong", "maxLines", "optionIcons", "collapsed", "lucide", "tooltip",
                  "doneGroup", "itemIcons", "countLabel", "openPage", "subtitle", "countAlso",
                  "countWeights", "pageArgs", "bigPages", "secureField", "pageRefresh", "saveFile",
-                 "neutralBadge", "chips", "pageSections")
+                 "neutralBadge", "chips", "pageSections", "confirm", "rowOpen", "fieldSubmit", "lucide2", "choiceSubmit", "headerPlacement")
 # 应用页里一段的位置（§4「宽窗口的侧栏」）：只有 aside，写在根 Column 下面一层的 Column 上
-PLACEMENTS = frozenset({"aside"})
+PLACEMENTS = frozenset({"aside", "header"})
+MAX_TOOLTIP = 200              # 选项的 tooltip（§4 choiceSubmit：切换邮箱时停在上面写地址）最多几个字
 # 应用页怎么排（§4 pageSections）：只有 sections（下面一层一段一张卡片），写在页的根 Column 上
 LAYOUTS = frozenset({"sections"})
 
@@ -413,6 +416,8 @@ class Surface:
                 _check_refresh(cid, self.components[cid], self.page, problems)
             if "layout" in self.components[cid]:
                 _check_layout(cid, self.components[cid], self.page, problems)
+            if "open" in self.components[cid] or "submit" in self.components[cid]:
+                _check_target(cid, self.components, problems)
         secure = self.secure_paths() if self.page else []
         if secure:      # 密码框的路径别处不能碰（§4 secureField）
             for cid in shown:
@@ -548,7 +553,8 @@ def _event_name(c: dict) -> Optional[str]:
 
 
 def _reachable(components: Dict[str, dict]) -> List[str]:
-    """从 root 走得到的组件编号，按走到的顺序；遇到环不会死循环。"""
+    """从 root 走得到的组件编号，按走到的顺序；遇到环不会死循环。输入框、选择写了 `submit`（§4 fieldSubmit、choiceSubmit）的，
+    它指的按钮也算走得到：那个按钮不用另外摆进页里（窗口也不画它）。"""
     seen: List[str] = []
     marked = set()
     stack = ["root"]
@@ -558,6 +564,9 @@ def _reachable(components: Dict[str, dict]) -> List[str]:
             continue
         marked.add(cid)
         seen.append(cid)
+        sub = components[cid].get("submit")
+        if isinstance(sub, str) and components[cid].get("component") in ("TextField", "ChoicePicker"):
+            stack.append(sub)
         stack.extend(reversed(_child_ids(components[cid], [], cid)))
     return seen
 
@@ -679,9 +688,13 @@ def _check_open_page(cid: str, context: dict, problems: List[str]) -> None:
 
 
 def _check_placement(cid: str, c: dict, parent: Optional[str], root_is_column: bool, problems: List[str]) -> None:
-    """`placement`：宽窗口里应用页的这一段放进侧栏（§4）。值只有 aside，只能写在根 Column 下面一层的 Column 上。"""
+    """`placement`（§4）：aside 是宽窗口里应用页的这一段放进侧栏，只能写在根 Column 下面一层的 Column 上；
+    header（§4 headerPlacement）是这一样画在应用页标题那一行的右边（邮件助手切换邮箱），只能写在根 Column 下面一层。"""
     if not isinstance(c.get("placement"), str) or c["placement"] not in PLACEMENTS:
         problems.append(f"组件 {cid}：placement 只能是 " + "、".join(sorted(PLACEMENTS)))
+    elif c["placement"] == "header":
+        if parent != "root" or not root_is_column:
+            problems.append(f"组件 {cid}：placement header 只能写在根 Column 下面一层")
     elif c.get("component") != "Column" or parent != "root" or not root_is_column:
         problems.append(f"组件 {cid}：placement 只能写在根 Column 下面一层的 Column 上")
 
@@ -726,6 +739,8 @@ def _check_props(cid: str, ctype: str, c: dict, data: dict, problems: List[str],
             problems.append(f"组件 {cid}：collapsed 超过 {MAX_TEXT} 字")
     elif ctype == "Button":
         text("tooltip", False)
+        if "confirm" in c:
+            _check_confirm(c["confirm"], cid, problems)
         action = c.get("action")
         event = action.get("event") if isinstance(action, dict) else None
         if not isinstance(event, dict) or not isinstance(event.get("name"), str) or not event["name"]:
@@ -776,6 +791,8 @@ def _check_props(cid: str, ctype: str, c: dict, data: dict, problems: List[str],
                     problems.append(f"组件 {cid}：每个选项要有 label")
                 if "icon" in o and o["icon"] not in ICONS:
                     problems.append(f"组件 {cid}：选项的图标名只能是 " + "、".join(sorted(ICONS)))
+                if "tooltip" in o and not (isinstance(o["tooltip"], str) and 0 < len(o["tooltip"]) <= MAX_TOOLTIP):
+                    problems.append(f"组件 {cid}：选项的 tooltip 要是不超过 {MAX_TOOLTIP} 字的文字")
         v = c.get("value")
         if is_binding(v):
             try:
@@ -820,6 +837,52 @@ def _check_props(cid: str, ctype: str, c: dict, data: dict, problems: List[str],
             problems.append(f"组件 {cid}：图标名只能是 " + "、".join(sorted(ICONS)))
 
 
+def _check_target(cid: str, components: Dict[str, dict], problems: List[str]) -> None:
+    """§4 rowOpen：`Row` 的 `open` 是这一行里（子孙里）一个按钮的编号，整行可点就是点它；
+    §4 fieldSubmit：`TextField` 的 `submit` 是这张卡片、这一页上一个按钮的编号，回车就是点它；
+    §4 choiceSubmit：`ChoicePicker` 的 `submit` 同样，选了就是点它（选的值先写进数据模型）。
+    指的按钮不能是打开网页的（点一行、按回车看不到会去哪个网站）。"""
+    c = components[cid]
+    ctype = c.get("component")
+    for key, owners in (("open", ("Row",)), ("submit", ("TextField", "ChoicePicker"))):
+        if key not in c:
+            continue
+        t = c[key]
+        if ctype not in owners:
+            problems.append(f"组件 {cid}：{key} 只能写在 " + " 或 ".join(owners) + " 上")
+            continue
+        inside = _subtree(components, cid) if key == "open" else set(components)
+        if not isinstance(t, str) or t not in inside or components[t].get("component") != "Button":
+            where = "这一行里" if key == "open" else "这里"
+            problems.append(f"组件 {cid}：{key} 要是{where}一个按钮的编号")
+        elif _event_name(components[t]) == "agent.open_url":
+            problems.append(f"组件 {cid}：{key} 指的按钮不能是打开网页的")
+
+
+def _subtree(components: Dict[str, dict], cid: str) -> set:
+    """`cid` 下面的组件（不含它自己）；遇到环不会死循环。"""
+    out: set = set()
+    stack = list(_child_ids(components[cid], [], cid))
+    while stack:
+        k = stack.pop()
+        if k in out or k not in components:
+            continue
+        out.add(k)
+        stack.extend(_child_ids(components[k], [], k))
+    return out
+
+
+def _check_confirm(v: Any, cid: str, problems: List[str]) -> None:
+    """按钮的 confirm（§4 confirm，2026-11-12 加）：点了先弹确认，用户再点一次才做。
+    `{"title": "忘掉这一条？", "text": "说明（可不写）", "label": "确认按钮的字（可不写，默认用按钮的字）"}`，都是写死的字。"""
+    if not (isinstance(v, dict) and "title" in v and set(v) <= {"title", "text", "label"}
+            and all(isinstance(v[k], str) and v[k] for k in v)):
+        problems.append(f"按钮 {cid}：confirm 要是 {{title, text, label}}（title 必写），都是不空的文字")
+        return
+    if any(len(v[k]) > MAX_TEXT for k in v):
+        problems.append(f"按钮 {cid}：confirm 里的字超过 {MAX_TEXT} 字")
+
+
 def _check_count(count: Any, cid: str, data: dict, problems: List[str]) -> None:
     """按钮的 count（§4 countLabel）：`{"path": 一组选择, "value": 数哪个}`，path 指向「键 → 选了的值的数组」。
     §4 countAlso：可以再带 `"also": [别的值]` 和 `"alsoLabel": "按钮的另一句字"`（两样一起写）。
@@ -854,7 +917,7 @@ def _check_count(count: Any, cid: str, data: dict, problems: List[str]) -> None:
 
 
 def count_chosen(data: Any, count: dict) -> int:
-    """count 现在数出几项：path 下每一项选了的值里有 value 的（窗口画按钮的字、0 项时按钮灰掉）。
+    """count 现在数出几项：path 下每一项选了的值里有 value 的（窗口画按钮的字、0 项时按钮不画）。
     §4 countWeights：写了 `weights` 的键按它算几样（不写算 1）；`weights` 里有、选择里没有的键不管。"""
     try:
         chosen = get_path(data, count["path"])
@@ -868,7 +931,7 @@ def count_chosen(data: Any, count: dict) -> int:
 
 def count_also(data: Any, count: dict) -> bool:
     """§4 countAlso：path 下有没有哪一项选了 `also` 里的值。有就是按钮能点、字换成 `alsoLabel`（`{n}` 照样只数 value），
-    没有照 countLabel（0 项时灰掉）。"""
+    没有照 countLabel（0 项时不画）。"""
     also = count.get("also") if isinstance(count, dict) else None
     if not isinstance(also, list):
         return False

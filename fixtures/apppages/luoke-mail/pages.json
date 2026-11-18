@@ -1,0 +1,1055 @@
+{
+ "_about": "照 luoke-mail docs/agent-data.md（agent-data 分支 9fa3ac7）的草案手写的原始数据，人名、邮件都是编的；邮件助手录了 data/… 的场景样例以后换掉",
+ "base": "suspicious",
+ "data": {
+  "data/accounts": {
+   "accounts": [
+    {
+     "id": "me@company.example",
+     "address": "me@company.example",
+     "name": "工作",
+     "provider": "gmail",
+     "own": false,
+     "last_sync": "2026-11-13 09:12:03",
+     "status": "ok",
+     "error": null
+    },
+    {
+     "id": "me@mail.example",
+     "address": "me@mail.example",
+     "name": "个人",
+     "provider": "qq",
+     "own": false,
+     "last_sync": "2026-11-13 09:10:00",
+     "status": "ok",
+     "error": null
+    }
+   ],
+   "demo": false,
+   "job": null
+  },
+  "data/today?account=all": {
+   "day": "2026-11-13",
+   "handled": [
+    {
+     "log_id": 812,
+     "account": "me@company.example",
+     "at": "2026-11-13 08:40:11",
+     "by": "habit",
+     "op": "archive",
+     "count": 9,
+     "senders": [
+      {
+       "name": "某快递",
+       "address": "noreply@post.example"
+      },
+      {
+       "name": "登录提醒",
+       "address": "no-reply@id.example"
+      },
+      {
+       "name": "系统通知",
+       "address": "notice@sys.example"
+      }
+     ],
+     "categories": [
+      "notice"
+     ],
+     "label": null,
+     "undoable": true,
+     "mails": [
+      {
+       "id": 5001,
+       "account": "me@company.example",
+       "from": {
+        "name": "某快递",
+        "address": "noreply@post.example"
+       },
+       "subject": "您的包裹已签收",
+       "date": "2026-11-13 08:30:00"
+      }
+     ]
+    },
+    {
+     "log_id": 813,
+     "account": "me@company.example",
+     "at": "2026-11-13 08:41:02",
+     "by": "habit",
+     "op": "flag",
+     "count": 2,
+     "senders": [
+      {
+       "name": "某银行",
+       "address": "bill@bank.example"
+      },
+      {
+       "name": "某运营商",
+       "address": "bill@tel.example"
+      }
+     ],
+     "categories": [
+      "bill"
+     ],
+     "label": null,
+     "undoable": true
+    }
+   ],
+   "picked": 3,
+   "decide": [
+    {
+     "id": 4021,
+     "account": "me@company.example",
+     "from": {
+      "name": "某航空",
+      "address": "notice@air.example"
+     },
+     "subject": "行程变更通知",
+     "summary_text": "起飞时间从 14:10 改到 16:40。",
+     "category": "travel",
+     "suspicious": false,
+     "due": null,
+     "late": null,
+     "ways": [
+      "flag",
+      "archive",
+      "skip"
+     ],
+     "suggested": "flag"
+    }
+   ],
+   "replies": 4
+  },
+  "data/inbox?account=all": {
+   "list": "reply",
+   "items": [
+    {
+     "id": 4019,
+     "account": "me@company.example",
+     "from": {
+      "name": "合作方 A",
+      "address": "a@partner.example"
+     },
+     "subject": "下周评审的时间",
+     "ask_text": "问你周三还是周四下午方便。",
+     "date": "2026-11-12 16:20:00",
+     "due": null,
+     "overdue": false,
+     "kind": "reply",
+     "action": "reply",
+     "priority": "high",
+     "suspicious": false,
+     "flagged": false,
+     "draft": false,
+     "open_url": null
+    },
+    {
+     "id": 4020,
+     "account": "me@company.example",
+     "from": {
+      "name": "同事 B",
+      "address": "b@company.example"
+     },
+     "subject": "报销单缺一张发票",
+     "ask_text": "请你补 10 月的打车发票。",
+     "date": "2026-11-12 11:02:00",
+     "due": null,
+     "overdue": false,
+     "kind": "reply",
+     "action": "reply",
+     "priority": "normal",
+     "suspicious": false,
+     "flagged": false,
+     "draft": false,
+     "open_url": null
+    },
+    {
+     "id": 4022,
+     "account": "me@mail.example",
+     "from": {
+      "name": "某平台客服",
+      "address": "help@svc.example"
+     },
+     "subject": "工单已更新",
+     "ask_text": "对方请你确认问题是否解决。",
+     "date": "2026-11-11 19:40:00",
+     "due": null,
+     "overdue": false,
+     "kind": "reply",
+     "action": "reply",
+     "priority": "normal",
+     "suspicious": false,
+     "flagged": false,
+     "draft": false,
+     "open_url": null
+    }
+   ],
+   "counts": {
+    "reply": 3,
+    "needs": 5,
+    "suspicious": 0,
+    "direct": 12,
+    "unsorted": 0,
+    "archived": 1
+   },
+   "more": false
+  },
+  "data/digest?account=all&range=today": {
+   "range": "today",
+   "items": [
+    {
+     "id": 77,
+     "account": "me@company.example",
+     "title": "本机模型剪枝的新做法",
+     "source": "某技术周报",
+     "summary_text": "讲怎么在不掉准确率的情况下把模型缩小一半。",
+     "why_text": "你最近在关注本机模型。",
+     "url": "https://news.example/a",
+     "host": "news.example",
+     "mail_url": null,
+     "date": "2026-11-13 08:00:00",
+     "feedback": null,
+     "opened": false,
+     "picked": true
+    },
+    {
+     "id": 78,
+     "account": "me@company.example",
+     "title": "macOS 新版里的输入法接口变化",
+     "source": "某开发者通讯",
+     "summary_text": "两处会影响第三方输入法的改动。",
+     "why_text": "和输入法有关。",
+     "url": "https://dev.example/b",
+     "host": "dev.example",
+     "mail_url": null,
+     "date": "2026-11-13 07:30:00",
+     "feedback": null,
+     "opened": false,
+     "picked": true
+    },
+    {
+     "id": 79,
+     "account": "me@mail.example",
+     "title": "一家小团队怎么做用户访谈",
+     "source": "某产品周报",
+     "summary_text": "五个问题的访谈提纲。",
+     "why_text": "你读过几篇用户研究。",
+     "url": "https://pm.example/c",
+     "host": "pm.example",
+     "mail_url": null,
+     "date": "2026-11-13 07:00:00",
+     "feedback": null,
+     "opened": false,
+     "picked": true
+    }
+   ],
+   "counts": {
+    "saved": 2,
+    "archived": 5,
+    "sources": 3
+   },
+   "months": [],
+   "reading": {
+    "queued": 0,
+    "read": 40,
+    "on": true,
+    "problem": null
+   },
+   "sources": [
+    {
+     "key": "list:weekly.news.example",
+     "account": "me@company.example",
+     "name": "周刊",
+     "origin": "user",
+     "added_at": "2026-10-02 09:00:00"
+    },
+    {
+     "key": "from:news@ai.example",
+     "account": "me@company.example",
+     "name": "AI 简讯",
+     "origin": "subscriptions",
+     "added_at": "2026-11-02 09:00:00"
+    }
+   ]
+  },
+  "data/clean?account=all": {
+   "archive": {
+    "scanned_at": "2026-11-09 20:10:00",
+    "days": 30,
+    "judged": 1180,
+    "total": 1211,
+    "judging": false,
+    "groups": [
+     {
+      "key": "notice|from:noreply@post.example",
+      "account": "me@company.example",
+      "kind": "notice",
+      "name": "半年前的快递和验证码通知",
+      "address": "noreply@post.example",
+      "count": 41,
+      "size": 820000,
+      "earliest": "2025-03-02 08:00:00",
+      "latest": "2026-05-10 19:00:00"
+     }
+    ]
+   },
+   "auto": null,
+   "subscriptions": {
+    "checked_at": "2026-11-10 21:00:00",
+    "days": 60,
+    "scanned": 1800,
+    "senders": [
+     {
+      "key": "list:promo.shop.example",
+      "account": "me@mail.example",
+      "name": "某电商促销",
+      "address": "news@shop.example",
+      "count": 40,
+      "per_week": 4.7,
+      "read": 0,
+      "last": "2026-11-12 10:00:00",
+      "one_click": true,
+      "unsubscribe_url": null,
+      "method": "one_click",
+      "group": "unsubscribe",
+      "decision": null,
+      "rule": null,
+      "still_sending": false,
+      "size": 900000,
+      "subjects": [
+       "双十一预热",
+       "会员日"
+      ],
+      "mailto": null,
+      "reply_keyword": null,
+      "suspicious": false
+     },
+     {
+      "key": "list:course.example",
+      "account": "me@mail.example",
+      "name": "某课程平台",
+      "address": "news@course.example",
+      "count": 17,
+      "per_week": 2.0,
+      "read": 0,
+      "last": "2026-11-11 10:00:00",
+      "one_click": true,
+      "unsubscribe_url": null,
+      "method": "one_click",
+      "group": "unsubscribe",
+      "decision": null,
+      "rule": null,
+      "still_sending": false,
+      "size": 900000,
+      "subjects": [
+       "双十一预热",
+       "会员日"
+      ],
+      "mailto": null,
+      "reply_keyword": null,
+      "suspicious": false
+     },
+     {
+      "key": "list:club.example",
+      "account": "me@mail.example",
+      "name": "某会员通讯",
+      "address": "club@club.example",
+      "count": 8,
+      "per_week": 0.9,
+      "read": 1,
+      "last": "2026-11-02 10:00:00",
+      "one_click": true,
+      "unsubscribe_url": null,
+      "method": "one_click",
+      "group": "unsubscribe",
+      "decision": null,
+      "rule": null,
+      "still_sending": false,
+      "size": 900000,
+      "subjects": [
+       "双十一预热",
+       "会员日"
+      ],
+      "mailto": null,
+      "reply_keyword": null,
+      "suspicious": false
+     },
+     {
+      "key": "from:notice@forum.example",
+      "account": "me@mail.example",
+      "name": "某论坛",
+      "address": "notice@forum.example",
+      "count": 25,
+      "per_week": 2.9,
+      "read": 0,
+      "last": "2026-11-12 10:00:00",
+      "one_click": false,
+      "unsubscribe_url": null,
+      "method": "reply",
+      "mailto": null,
+      "reply_keyword": "TD",
+      "size": 3400000,
+      "subjects": [
+       "本周热帖"
+      ],
+      "suspicious": false,
+      "group": "no_way",
+      "decision": null,
+      "still_sending": false,
+      "rule": null
+     },
+     {
+      "key": "from:prize@lucky.example",
+      "account": "me@mail.example",
+      "name": "中奖通知",
+      "address": "prize@lucky.example",
+      "count": 6,
+      "per_week": 0.7,
+      "read": 0,
+      "last": "2026-11-10 10:00:00",
+      "one_click": false,
+      "unsubscribe_url": null,
+      "method": "body_link",
+      "mailto": null,
+      "reply_keyword": null,
+      "size": 120000,
+      "subjects": [
+       "恭喜你"
+      ],
+      "suspicious": true,
+      "group": "suspicious",
+      "decision": null,
+      "still_sending": false,
+      "rule": null
+     },
+     {
+      "key": "list:old.news.example",
+      "account": "me@company.example",
+      "name": "某旧周刊",
+      "address": "weekly@old.news.example",
+      "count": 9,
+      "per_week": 1.0,
+      "read": 0,
+      "last": "2026-11-13 08:00:00",
+      "one_click": true,
+      "unsubscribe_url": "https://old.news.example/u",
+      "method": "one_click",
+      "mailto": null,
+      "reply_keyword": null,
+      "size": 500000,
+      "subjects": [
+       "第 88 期"
+      ],
+      "suspicious": false,
+      "group": "handled",
+      "decision": {
+       "status": "unsubscribed",
+       "at": "2026-11-08 09:00:00"
+      },
+      "still_sending": true,
+      "rule": null
+     },
+     {
+      "key": "list:weekly.news.example",
+      "account": "me@company.example",
+      "name": "周刊",
+      "address": "weekly@news.example",
+      "count": 8,
+      "per_week": 1.0,
+      "read": 7,
+      "last": "2026-11-12 08:00:00",
+      "one_click": true,
+      "unsubscribe_url": null,
+      "method": "one_click",
+      "mailto": null,
+      "reply_keyword": null,
+      "size": 800000,
+      "subjects": [
+       "本地模型的新进展"
+      ],
+      "suspicious": false,
+      "group": "keep",
+      "decision": null,
+      "still_sending": false,
+      "rule": null
+     }
+    ]
+   }
+  },
+  "data/activity?account=all": {
+   "items": [
+    {
+     "log_id": 812,
+     "account": "me@company.example",
+     "at": "2026-11-13 08:45:11",
+     "by": "habit",
+     "op": "archive",
+     "count": 11,
+     "ops": {
+      "archive": 9,
+      "flag": 2
+     },
+     "ok": true,
+     "undoable": true,
+     "undone": false,
+     "mail": null
+    },
+    {
+     "log_id": 790,
+     "account": "me@company.example",
+     "at": "2026-11-12 20:10:00",
+     "by": "habit",
+     "op": "archive",
+     "count": 14,
+     "ops": {
+      "archive": 14
+     },
+     "ok": true,
+     "undoable": true,
+     "undone": false,
+     "mail": null
+    }
+   ],
+   "more": false,
+   "cursor": null
+  },
+  "data/settings": {
+   "rules": [
+    {
+     "id": 3,
+     "account": "me@company.example",
+     "kind": "list",
+     "value": "promo.shop.example",
+     "who": "某电商促销",
+     "action": "archive",
+     "hits": 12,
+     "created_at": "2026-10-01 10:00:00",
+     "exported_at": null
+    }
+   ],
+   "habits": [],
+   "auto": {
+    "enabled": true,
+    "every": 30,
+    "intervals": [
+     15,
+     30,
+     60,
+     120
+    ],
+    "last": {
+     "at": "2026-11-13 09:00:00",
+     "ok": true,
+     "text": "归档 3 封"
+    },
+    "notify": {
+     "authorization": "authorized"
+    },
+    "next_in_min": 12
+   },
+   "more": {}
+  },
+  "data/mail?account=me%40company.example&id=4019": {
+   "id": 4019,
+   "account": "me@company.example",
+   "from": {
+    "name": "合作方 A",
+    "address": "a@partner.example"
+   },
+   "to": [
+    "me@company.example"
+   ],
+   "date": "2026-11-12 16:20:00",
+   "subject": "下周评审的时间",
+   "body_text": "你好，下周的评审想约在周三或周四下午，你哪天方便？",
+   "truncated": false,
+   "attachments": [],
+   "ask_text": "问你周三还是周四下午方便。",
+   "draft_text": null,
+   "open_url": null,
+   "ways": [
+    "reply",
+    "archive",
+    "calendar"
+   ],
+   "cc": [
+    "boss@company.example"
+   ],
+   "events": [
+    {
+     "index": 0,
+     "title": "去程",
+     "date": "2026-12-20",
+     "start": "08:00",
+     "end": null,
+     "location": null,
+     "past": false,
+     "added": true
+    },
+    {
+     "index": 1,
+     "title": "回程",
+     "date": "2026-12-22",
+     "start": "15:30",
+     "end": "17:00",
+     "location": "机场",
+     "past": false,
+     "added": false
+    }
+   ]
+  },
+  "data/providers": {
+   "providers": [
+    {
+     "host": "imap.gmail.com",
+     "key": "gmail",
+     "links": [
+      {
+       "account": true,
+       "label": "两步验证",
+       "url": "https://myaccount.google.com/signinoptions/twosv"
+      },
+      {
+       "account": true,
+       "label": "应用专用密码",
+       "url": "https://myaccount.google.com/apppasswords"
+      }
+     ],
+     "name": "Gmail",
+     "notes": "Gmail 的 IMAP 一直开着，不用另外设置。",
+     "port": 993,
+     "secret_hint": "16 位字母，带不带空格都可以；不是 Google 账号的登录密码",
+     "secret_label": "应用专用密码",
+     "steps": [
+      "打开下方「两步验证」，确认已开启。没开的话按页面提示开启（需要手机）。",
+      "打开下方「应用专用密码」（可能要再输一次 Google 密码），在「应用名称」里填「螺壳邮件助手」，点击「创建」。",
+      "复制弹出的 16 位密码，粘贴到下方。密码只显示这一次，忘了可以再创建一个。"
+     ],
+     "trouble": [
+      "找不到「应用专用密码」：先开启两步验证。如果两步验证只用安全密钥、账号加入了「高级保护计划」，或者是公司、学校的账号，Google 不提供应用专用密码，这样的账号暂时无法连接。",
+      "浏览器里登录了多个 Google 账号：上面两个链接会打开你填写的这个地址的账号。创建前看一眼页面右上角的头像，确认是这个地址。",
+      "改过 Google 密码后，原来的应用专用密码全部失效，要重新创建一个，在「设置 → 邮箱」里换上。",
+      "提示 Google 拦下了登录：在浏览器里打开这个 Gmail，按提示确认是你本人，再回来重试。"
+     ]
+    },
+    {
+     "host": "imap.qq.com",
+     "key": "qq",
+     "links": [
+      {
+       "label": "打开 QQ 邮箱",
+       "url": "https://mail.qq.com"
+      },
+      {
+       "label": "QQ 邮箱官方说明",
+       "url": "https://help.mail.qq.com/detail/0/1087"
+      }
+     ],
+     "name": "QQ 邮箱",
+     "notes": "QQ 邮箱只能用授权码连接，QQ 密码不行。",
+     "port": 993,
+     "secret_hint": "16 位字母，不是 QQ 密码",
+     "secret_label": "授权码",
+     "steps": [
+      "在电脑浏览器登录 QQ 邮箱网页版，点击右上角头像旁的齿轮进入「设置」，选择「账号与安全」→「安全设置」（旧版界面在「设置」→「账户」）。",
+      "找到「POP3/IMAP/SMTP/Exchange/CardDAV/CalDAV 服务」，开启「IMAP/SMTP 服务」。已经开着的，点击「生成授权码」。",
+      "按页面提示验证身份（通常是用绑定的手机发一条短信，发完点击「我已发送」）。",
+      "在同一页的「收取选项」里，「收取 ___ 的邮件」选「全部」，并勾选「收取“我的文件夹”」：否则邮件助手看不到更早的邮件，也无法归档。",
+      "复制页面显示的 16 位授权码，粘贴到下方。关掉页面就看不到了，忘了可以再生成一个。"
+     ],
+     "trouble": [
+      "开启服务时要先给 QQ 账号绑定手机。",
+      "改过 QQ 密码或邮箱独立密码后，授权码会失效，要重新生成一个，在「设置 → 邮箱」里换上。",
+      "邮箱地址要填完整，例如 12345678@qq.com，不是只填 QQ 号。foxmail.com 的地址也选 QQ 邮箱。"
+     ]
+    },
+    {
+     "host": "imap.163.com",
+     "key": "163",
+     "links": [
+      {
+       "label": "打开 163 邮箱",
+       "url": "https://mail.163.com"
+      }
+     ],
+     "name": "网易 163 邮箱",
+     "notes": "网易邮箱只能用授权码连接，登录密码不行。",
+     "port": 993,
+     "secret_hint": "16 位字母，不是邮箱登录密码",
+     "secret_label": "授权码",
+     "steps": [
+      "在电脑浏览器登录 163 邮箱网页版，点击顶部「设置」，选择「POP3/SMTP/IMAP」。",
+      "在「IMAP/SMTP 服务」一行点击「开启」，在弹出的窗口里确认。同一页的「收取选项」默认是「收取最近30天邮件」，要整理更早的邮件，请选「收取全部邮件」。",
+      "按提示验证：用绑定的手机扫码发送短信（或照页面上的内容手动发送），发完点击「我已发送」。",
+      "复制页面显示的授权码，粘贴到下方。授权码只显示一次；以后需要新的，在同一页的授权密码管理里新增一个。"
+     ],
+     "trouble": [
+      "授权码如果标了有效期，到期后要新增一个，在「设置 → 邮箱」里换上。改过登录密码后也要换。",
+      "开启时提示先绑定手机：按页面提示绑定后再开启。"
+     ]
+    },
+    {
+     "host": "imap.126.com",
+     "key": "126",
+     "links": [
+      {
+       "label": "打开 126 邮箱",
+       "url": "https://mail.126.com"
+      }
+     ],
+     "name": "网易 126 邮箱",
+     "notes": "网易邮箱只能用授权码连接，登录密码不行。",
+     "port": 993,
+     "secret_hint": "16 位字母，不是邮箱登录密码",
+     "secret_label": "授权码",
+     "steps": [
+      "在电脑浏览器登录 126 邮箱网页版，点击顶部「设置」，选择「POP3/SMTP/IMAP」。",
+      "在「IMAP/SMTP 服务」一行点击「开启」，在弹出的窗口里确认。同一页的「收取选项」默认是「收取最近30天邮件」，要整理更早的邮件，请选「收取全部邮件」。",
+      "按提示验证：用绑定的手机扫码发送短信（或照页面上的内容手动发送），发完点击「我已发送」。",
+      "复制页面显示的授权码，粘贴到下方。授权码只显示一次；以后需要新的，在同一页的授权密码管理里新增一个。"
+     ],
+     "trouble": [
+      "授权码如果标了有效期，到期后要新增一个，在「设置 → 邮箱」里换上。改过登录密码后也要换。",
+      "开启时提示先绑定手机：按页面提示绑定后再开启。"
+     ]
+    },
+    {
+     "host": "",
+     "key": "custom",
+     "links": [],
+     "name": "其他邮箱（手动填写 IMAP）",
+     "notes": "未经测试的邮箱可能存在兼容性问题。",
+     "port": 993,
+     "secret_hint": "多数邮箱需要在网页版设置中单独生成",
+     "secret_label": "密码或授权码",
+     "steps": [
+      "在邮箱网页版设置中开启 IMAP，并生成第三方客户端密码或授权码。",
+      "在下方填写 IMAP 服务器地址和端口（通常为 993）。"
+     ],
+     "trouble": [
+      "服务器地址和端口在邮箱的帮助页面里找，通常写在「客户端设置」「IMAP」一节。",
+      "多数邮箱的第三方客户端要用单独生成的密码或授权码，登录密码不行。"
+     ]
+    }
+   ]
+  },
+  "data/old?account=me%40company.example": {
+   "account": "me@company.example",
+   "scope": "inbox",
+   "scanned_at": "2026-11-09 20:10:00",
+   "days": 30,
+   "stale": false,
+   "total": 1211,
+   "judged": 1180,
+   "size": 91200000,
+   "held": 37,
+   "judging": {
+    "on": true,
+    "running": false
+   },
+   "groups": [
+    {
+     "key": "notice|from:noreply@post.example",
+     "account": "me@company.example",
+     "kind": "notice",
+     "name": "半年前的快递和验证码通知",
+     "address": "noreply@post.example",
+     "count": 41,
+     "size": 5330000,
+     "unread": 20,
+     "earliest": "2023-01-02 08:00:00",
+     "latest": "2026-08-01 10:00:00",
+     "subjects": [
+      "第一封"
+     ],
+     "action": "archive",
+     "suggested": true,
+     "judged": true,
+     "kept": false
+    },
+    {
+     "key": "promotion|from:ad@store.example",
+     "account": "me@company.example",
+     "kind": "promotion",
+     "name": "某店",
+     "address": "ad@store.example",
+     "count": 310,
+     "size": 40300000,
+     "unread": 155,
+     "earliest": "2023-01-02 08:00:00",
+     "latest": "2026-08-01 10:00:00",
+     "subjects": [
+      "第一封"
+     ],
+     "action": "trash",
+     "suggested": true,
+     "judged": true,
+     "kept": false
+    },
+    {
+     "key": "promotion|from:ad2@store.example",
+     "account": "me@company.example",
+     "kind": "promotion",
+     "name": "另一家店",
+     "address": "ad2@store.example",
+     "count": 22,
+     "size": 2860000,
+     "unread": 11,
+     "earliest": "2023-01-02 08:00:00",
+     "latest": "2026-08-01 10:00:00",
+     "subjects": [
+      "第一封"
+     ],
+     "action": "trash",
+     "suggested": true,
+     "judged": true,
+     "kept": false
+    },
+    {
+     "key": "newsletter|from:a@b.example",
+     "account": "me@company.example",
+     "kind": "newsletter",
+     "name": "某通讯",
+     "address": "a@b.example",
+     "count": 12,
+     "size": 1560000,
+     "unread": 6,
+     "earliest": "2023-01-02 08:00:00",
+     "latest": "2026-08-01 10:00:00",
+     "subjects": [
+      "第一封"
+     ],
+     "action": "archive",
+     "suggested": false,
+     "judged": true,
+     "kept": false
+    },
+    {
+     "key": "pending|from:c@d.example",
+     "account": "me@company.example",
+     "kind": "pending",
+     "name": "还没看的",
+     "address": "c@d.example",
+     "count": 5,
+     "size": 650000,
+     "unread": 2,
+     "earliest": "2023-01-02 08:00:00",
+     "latest": "2026-08-01 10:00:00",
+     "subjects": [
+      "第一封"
+     ],
+     "action": "archive",
+     "suggested": false,
+     "judged": false,
+     "kept": false
+    },
+    {
+     "key": "promotion|from:e@f.example",
+     "account": "me@company.example",
+     "kind": "promotion",
+     "name": "留着的店",
+     "address": "e@f.example",
+     "count": 7,
+     "size": 910000,
+     "unread": 3,
+     "earliest": "2023-01-02 08:00:00",
+     "latest": "2026-08-01 10:00:00",
+     "subjects": [
+      "第一封"
+     ],
+     "action": "trash",
+     "suggested": false,
+     "judged": true,
+     "kept": true
+    }
+   ]
+  },
+  "data/old?account=me%40mail.example": {
+   "account": "me@mail.example",
+   "scope": "inbox",
+   "scanned_at": null,
+   "days": 30,
+   "stale": false,
+   "total": 0,
+   "judged": 0,
+   "size": 0,
+   "held": 0,
+   "judging": {
+    "on": false,
+    "running": false
+   },
+   "groups": []
+  },
+  "data/digest?account=all": {
+   "range": "week",
+   "items": [
+    {
+     "id": 77,
+     "account": "me@company.example",
+     "title": "本机模型剪枝的新做法",
+     "source": "某技术周报",
+     "summary_text": "讲怎么在不掉准确率的情况下把模型缩小一半。",
+     "why_text": "你最近在关注本机模型。",
+     "url": "https://news.example/a",
+     "host": "news.example",
+     "mail_url": null,
+     "date": "2026-11-13 08:00:00",
+     "feedback": null,
+     "opened": false,
+     "picked": true
+    },
+    {
+     "id": 78,
+     "account": "me@company.example",
+     "title": "macOS 新版里的输入法接口变化",
+     "source": "某开发者通讯",
+     "summary_text": "两处会影响第三方输入法的改动。",
+     "why_text": "和输入法有关。",
+     "url": "https://dev.example/b",
+     "host": "dev.example",
+     "mail_url": null,
+     "date": "2026-11-13 07:30:00",
+     "feedback": null,
+     "opened": false,
+     "picked": true
+    },
+    {
+     "id": 79,
+     "account": "me@mail.example",
+     "title": "一家小团队怎么做用户访谈",
+     "source": "某产品周报",
+     "summary_text": "五个问题的访谈提纲。",
+     "why_text": "你读过几篇用户研究。",
+     "url": "https://pm.example/c",
+     "host": "pm.example",
+     "mail_url": null,
+     "date": "2026-11-13 07:00:00",
+     "feedback": null,
+     "opened": false,
+     "picked": true
+    }
+   ],
+   "counts": {
+    "saved": 2,
+    "archived": 5,
+    "sources": 3
+   },
+   "months": [],
+   "reading": {
+    "queued": 0,
+    "read": 40,
+    "on": true,
+    "problem": null
+   },
+   "sources": [
+    {
+     "key": "list:weekly.news.example",
+     "account": "me@company.example",
+     "name": "周刊",
+     "origin": "user",
+     "added_at": "2026-10-02 09:00:00"
+    },
+    {
+     "key": "from:news@ai.example",
+     "account": "me@company.example",
+     "name": "AI 简讯",
+     "origin": "subscriptions",
+     "added_at": "2026-11-02 09:00:00"
+    }
+   ]
+  },
+  "data/sender?account=me%40mail.example&key=from%3Anotice%40forum.example": {
+   "key": "from:notice@forum.example",
+   "account": "me@mail.example",
+   "name": "某论坛",
+   "address": "notice@forum.example",
+   "count": 25,
+   "per_week": 2.9,
+   "read": 0,
+   "last": "2026-11-12 10:00:00",
+   "one_click": false,
+   "unsubscribe_url": null,
+   "method": "reply",
+   "mailto": null,
+   "reply_keyword": "TD",
+   "size": 3400000,
+   "subjects": [
+    "本周热帖"
+   ],
+   "suspicious": false,
+   "group": "no_way",
+   "decision": null,
+   "still_sending": false,
+   "rule": null,
+   "history": {
+    "count": 25,
+    "size": 3400000,
+    "purge_days": 30
+   },
+   "verdict": "unsubscribe",
+   "kind": "notification",
+   "domain": "forum.example"
+  },
+  "data/job?id=j1": {
+   "id": "j1",
+   "kind": "filter_preview",
+   "account": "me@company.example",
+   "scope": null,
+   "status": "done",
+   "stage": null,
+   "done": 1,
+   "total": 1,
+   "error": null,
+   "result": {
+    "rule": 3,
+    "checked": true,
+    "ways": [
+     {
+      "kind": "list",
+      "value": "promo.shop.example",
+      "count": 24,
+      "judged": 24,
+      "risky": 0,
+      "examples": [
+       "双十一预热",
+       "会员日"
+      ]
+     },
+     {
+      "kind": "domain",
+      "value": "shop.example",
+      "count": 40,
+      "judged": 30,
+      "risky": 3,
+      "examples": [
+       "订单已发货"
+      ]
+     }
+    ]
+   }
+  }
+ },
+ "args": {
+  "mail": {
+   "account": "me@company.example",
+   "id": "4019"
+  },
+  "piece": {
+   "id": "77",
+   "range": "today"
+  },
+  "sender": {
+   "account": "me@mail.example",
+   "key": "from:notice@forum.example"
+  },
+  "job": {
+   "id": "j1"
+  },
+  "subs": {
+   "group": "handled"
+  },
+  "old": {},
+  "done": {
+   "log_id": "812"
+  }
+ }
+}

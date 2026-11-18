@@ -21,13 +21,26 @@ enum SearchSample {
                   thumb: thumb ? "thumb/\(id)" : nil, actions: open(reveal: true))
     }
 
+    private static func video(_ id: String, _ path: String, seconds: Double, date: String) -> WindowHit {
+        var h = file(id, "video", "视频", path, date: date)
+        h.duration = seconds
+        return h
+    }
+
     private static func letter(_ id: String, to: String, from: String, _ subject: String, date: String, snippet: String) -> WindowHit {
         WindowHit(app: mail, hitID: id, kind: "mail", kindLabel: "邮件", title: subject, line: from, date: date + "T09:30:00+0800",
-                  snippet: snippet, source: to, actions: [HitAction(title: "在邮件助手里看", primary: true)])
+                  snippet: snippet, source: to, actions: [HitAction(title: "在邮件助手中查看", primary: true)])
     }
 
     /// 搜「发票」：PDF 5、邮件 3、图片 2、表格 1，各工具照自己的顺序
-    static let hits: [WindowHit] = [
+    /// 问的字在文件名、邮件主题里的标了 strong（工具协议 §1b：这条本身就很对得上），顶上「最相关」放它们
+    static let hits: [WindowHit] = raw.map { h in
+        var h = h
+        h.strong = h.title.contains("发票")
+        return h
+    }
+
+    private static let raw: [WindowHit] = [
         file("11-p3", "pdf", "PDF", "Documents/报销/2026 年 1 月差旅报销.pdf", line: "第 3 页", date: "2026-01-13",
              snippet: "…报销单 · 住宿费、交通费各一张电子发票，合计 1,286.00 元，请于 1 月 20 日前交财务…"),
         file("12-p1", "pdf", "PDF", "Downloads/发票开具说明.pdf", line: "第 1 页", date: "2026-10-02",
@@ -43,6 +56,7 @@ enum SearchSample {
         file("17-p2", "pdf", "PDF", "Documents/报销/酒店发票.pdf", line: "第 2 页", date: "2026-01-12",
              snippet: "住宿服务 发票代码 …"),
         file("18", "photo", "照片", "Downloads/票据/IMG_4021.HEIC", date: "2026-10-03", snippet: nil),
+        video("19", "Movies/报销系统操作演示.mov", seconds: 83, date: "2026-09-02"),
         letter("m1", to: "ming@harbor-tech.example", from: "某某出行", "您的行程电子发票已开具", date: "2026-10-03",
                snippet: "您 10 月 2 日的行程电子发票已开具，可在附件中查看。"),
         letter("m2", to: "ming@harbor-tech.example", from: "某某云", "10 月账单与发票", date: "2026-11-01",
@@ -75,7 +89,7 @@ enum SearchSample {
             case "pdf": out[key] = page(lines: h.hitID.count + 5)
             case "sheet": out[key] = sheet()
             case "screenshot": out[key] = screenshot()
-            case "photo": out[key] = photo()
+            case "photo", "video": out[key] = photo()
             default: break
             }
         }

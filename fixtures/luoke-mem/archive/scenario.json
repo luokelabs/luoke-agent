@@ -1,0 +1,186 @@
+{
+  "id": "archive",
+  "normalised": {
+    "resources/read": "contents[0].text 解开成了 JSON 值；线上是 JSON 文字"
+  },
+  "produced": {
+    "features": [],
+    "mcp": "python3 -m luoke_mem --path <假记忆> mcp --clock <那一步的时钟>：一个请求一个进程",
+    "seed": [
+      "螺壳输入法记了两段打字，邮件助手记了一次亲手归档某商城的促销邮件",
+      "两条猜测各有一个问题（「本地大模型」「爬山」），处理习惯「某商城的促销邮件归档」有一条建议；都在 11月5日 20:45 提出，11月19日 20:45 过期"
+    ],
+    "tz": "Asia/Shanghai",
+    "user_action_at": "点按时的 at 是那一步的时钟，按 Asia/Shanghai 写"
+  },
+  "situation": "记忆想问的事和建议在「今天」里攒了好几件，用户现在不想答：一张卡片上点「归档」，再到「归档的问题」页（设置里能去，旧窗口是标签）点「全部归档」。过了几天，又把其中一件放回去。",
+  "steps": [
+    {
+      "clock": "2026-11-06T10:00:00",
+      "do": "server/discover",
+      "file": "server-discover.json"
+    },
+    {
+      "clock": "2026-11-06T10:00:00",
+      "do": "列工具（agent 认 readOnlyHint）",
+      "file": "tools-list.json"
+    },
+    {
+      "clock": "2026-11-06T10:00:00",
+      "do": "列资源",
+      "file": "resources-list.json"
+    },
+    {
+      "clock": "2026-11-06T10:00:00",
+      "do": "读 outbox（每分钟一次）",
+      "file": "read-outbox.json"
+    },
+    {
+      "clock": "2026-11-06T10:00:00",
+      "do": "读概览（侧栏的计数和一句话）",
+      "file": "read-summary.json"
+    },
+    {
+      "clock": "2026-11-06T10:00:00",
+      "do": "打开应用页的「overview」",
+      "file": "read-page-overview.json"
+    },
+    {
+      "clock": "2026-11-06T10:00:00",
+      "do": "打开应用页的「all」",
+      "file": "read-page-all.json"
+    },
+    {
+      "clock": "2026-11-06T10:00:00",
+      "do": "打开应用页的「people」",
+      "file": "read-page-people.json"
+    },
+    {
+      "clock": "2026-11-06T10:00:00",
+      "do": "打开应用页的「settings」",
+      "file": "read-page-settings.json"
+    },
+    {
+      "clock": "2026-11-06T10:00:00",
+      "do": "打开应用页的「item」",
+      "file": "read-page-item.json"
+    },
+    {
+      "clock": "2026-11-06T10:00:00",
+      "do": "打开应用页的「asks」",
+      "file": "read-page-asks.json"
+    },
+    {
+      "clock": "2026-11-06T10:00:00",
+      "do": "打开应用页的「guesses」",
+      "file": "read-page-guesses.json"
+    },
+    {
+      "clock": "2026-11-06T10:00:00",
+      "do": "打开应用页的「kept」",
+      "file": "read-page-kept.json"
+    },
+    {
+      "clock": "2026-11-06T10:00:00",
+      "do": "打开应用页的「sources」",
+      "file": "read-page-sources.json"
+    },
+    {
+      "clock": "2026-11-06T10:00:00",
+      "do": "读原始数据 data/recent",
+      "file": "read-data-recent.json"
+    },
+    {
+      "clock": "2026-11-06T10:00:00",
+      "do": "读原始数据 data/helped",
+      "file": "read-data-helped.json"
+    },
+    {
+      "clock": "2026-11-06T10:00:00",
+      "do": "读原始数据 data/asks",
+      "file": "read-data-asks.json"
+    },
+    {
+      "clock": "2026-11-06T10:00:00",
+      "do": "读原始数据 data/notes",
+      "file": "read-data-notes.json"
+    },
+    {
+      "clock": "2026-11-06T10:00:00",
+      "do": "读原始数据 data/people",
+      "file": "read-data-people.json"
+    },
+    {
+      "clock": "2026-11-06T10:00:00",
+      "do": "读原始数据 data/sources",
+      "file": "read-data-sources.json"
+    },
+    {
+      "clock": "2026-11-06T10:00:00",
+      "do": "读原始数据 data/data",
+      "file": "read-data-data.json"
+    },
+    {
+      "clock": "2026-11-06T10:00:00",
+      "do": "读原始数据 data/ask?id=2（卡片、概览上的一件）",
+      "file": "read-data-ask-2.json"
+    },
+    {
+      "clock": "2026-11-06T10:00:00",
+      "do": "读原始数据 data/ask?id=1（卡片、概览上的一件）",
+      "file": "read-data-ask-1.json"
+    },
+    {
+      "clock": "2026-11-06T10:00:00",
+      "do": "读原始数据 data/ask?id=3（卡片、概览上的一件）",
+      "file": "read-data-ask-3.json"
+    },
+    {
+      "clock": "2026-11-06T10:05:00",
+      "do": "「爬山」的卡片上点「归档」：不答，收起来",
+      "file": "call-mem_reply-archive.json"
+    },
+    {
+      "clock": "2026-11-06T10:05:00",
+      "do": "打开「归档的问题」（旧窗口的标签）：两件还在问，一件已归档",
+      "file": "read-page-asks-after-card.json"
+    },
+    {
+      "clock": "2026-11-06T10:06:00",
+      "do": "点「全部归档（2 件）」",
+      "file": "call-mem_archive-all.json"
+    },
+    {
+      "clock": "2026-11-06T10:06:00",
+      "do": "再读 outbox：空了",
+      "file": "read-outbox-after-archive.json"
+    },
+    {
+      "clock": "2026-11-06T10:06:00",
+      "do": "窗口重新读这一页：三件都在「已归档」里",
+      "file": "read-page-asks-after-all.json"
+    },
+    {
+      "clock": "2026-11-06T10:06:00",
+      "do": "概览：没有要确认的了",
+      "file": "read-summary-after-archive.json"
+    },
+    {
+      "clock": "2026-11-09T09:00:00",
+      "do": "过了几天，在「已归档」里把「本地大模型」放回",
+      "file": "call-mem_archive-back.json"
+    },
+    {
+      "clock": "2026-11-09T09:00:00",
+      "do": "再读 outbox：它回来了，编号是新的，还剩归档时的那些天",
+      "file": "read-outbox-after-back.json"
+    },
+    {
+      "clock": "2026-11-09T09:00:00",
+      "do": "窗口重新读这一页",
+      "file": "read-page-asks-after-back.json"
+    }
+  ],
+  "title": "把记忆想问的归档",
+  "window": "每张记忆的卡片最后都有一个不带边框的「归档」；点了换成一句话的结果。「归档的问题」页上面是还在问的（每件一个「归档」，两件以上有「全部归档（N 件）」），下面是「已归档 N 件」（每件一个「放回」）。全部归档以后「今天」里没有记忆的卡片了，侧栏计数是 0。放回的那件以新的编号回到「今天」。"
+}

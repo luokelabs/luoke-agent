@@ -12,14 +12,15 @@ struct SearchLayer: View {
     @FocusState private var focused: Bool
     /// 结果面板加搜索框的高：面板出来时实底跟着往上延，后面的字整行淡掉，不在面板上沿露半截
     @State private var stackHeight: CGFloat = 0
+    /// 底部那一段多高：离底 18 + 框 48 + 上面渐隐 18
+    static let band: CGFloat = 84
 
     var body: some View {
         ZStack(alignment: .bottom) {
-            // 搜索框后面和上面一段是实底，往上渐隐：滚到下面的内容不会半截透出来
-            // 搜索框（48 高、离底 18）上沿再往上 20pt 都是实底，渐隐在实底之前就变成底色：上沿不会横切一行淡字
-            LinearGradient(stops: [.init(color: p.bg.opacity(0), location: 0), .init(color: p.bg.opacity(0.9), location: 0.12),
-                                   .init(color: p.bg, location: 0.22), .init(color: p.bg, location: 1)], startPoint: .top, endPoint: .bottom)
-                .frame(height: model.searchOpen ? max(112, stackHeight + 18 + 56) : 112)
+            // 搜索框后面是实底，上沿往上只渐隐 18（和离底一样，负责人 11-13：上面空得太多）：滚到下面的内容不会半截透出来
+            LinearGradient(stops: [.init(color: p.bg.opacity(0), location: 0), .init(color: p.bg.opacity(0.9), location: 0.15),
+                                   .init(color: p.bg, location: 0.215), .init(color: p.bg, location: 1)], startPoint: .top, endPoint: .bottom)
+                .frame(height: model.searchOpen ? max(Self.band, stackHeight + 18 + 18) : Self.band)
                 .allowsHitTesting(false)
             if model.searchOpen {
                 Color.black.opacity(p.dark ? 0.35 : 0.08)
@@ -39,6 +40,20 @@ struct SearchLayer: View {
             .padding(.bottom, 18)
         }
         .onChange(of: model.searchFocus) { focused = true }
+        // 窗口打开时系统把光标放进第一个输入框：不要（负责人 11-14），⌘K 或点了才进去
+        .onAppear {
+            // 窗口变成前台窗口时系统才放光标：等一下再拿掉
+            for t in [0.0, 0.3, 0.8] {
+                DispatchQueue.main.asyncAfter(deadline: .now() + t) { if focused { focused = false }; Self.dropAutoFocus() }
+            }
+        }
+    }
+
+    /// 窗口一打开就落在搜索框上的光标拿掉（只在它还没打字时）
+    static func dropAutoFocus() {
+        for w in NSApp.windows where w.isVisible {
+            if let tv = w.firstResponder as? NSTextView, tv.isFieldEditor, tv.string.isEmpty { w.makeFirstResponder(nil) }
+        }
     }
 
     /// 输入法正在拼：搜索框的 field editor 里有 marked text。看各窗口的 firstResponder，不只看 keyWindow
@@ -51,7 +66,7 @@ struct SearchLayer: View {
             Button { model.focusSearch() } label: {
                 LKIcon("search", size: 16).foregroundStyle(p.mutedFg)
             }
-            .buttonStyle(.plain)
+            .buttonStyle(.plainPointer)
             .keyboardShortcut("k", modifiers: .command)
             .accessibilityLabel("把光标放进搜索框")
             if snapshot {       // 系统输入框离屏画不出来

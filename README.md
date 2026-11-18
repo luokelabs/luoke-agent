@@ -32,7 +32,7 @@
 python3 -B -m unittest discover -s tests -t .
 ```
 
-渲染卡片的 Swift 包和主窗口（Swift 6，macOS 14 起）：
+渲染卡片的 Swift 包和主窗口（Swift 6，macOS 26.2 起）：
 
 ```bash
 swift test --package-path a2ui

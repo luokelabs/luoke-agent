@@ -1,5 +1,5 @@
 {
- "_about": "scripts/window_samples.py 用 fixtures/luoke-mem/asks（luoke-mem 403be74661c2）接上真核心生成的，不要手改",
+ "_about": "scripts/window_samples.py 用 fixtures/luoke-mem/asks（luoke-mem c60631bce12f）接上真核心生成的，不要手改",
  "app": "luoke-mem",
  "apps": {
   "apps": [
@@ -12,26 +12,54 @@
       "title": "概览"
      },
      {
-      "id": "guesses",
-      "title": "猜测"
-     },
-     {
-      "id": "kept",
-      "title": "记下的"
+      "id": "all",
+      "title": "全部记忆"
      },
      {
       "id": "people",
-      "title": "人"
+      "title": "人物"
      },
      {
+      "hidden": true,
+      "icon": "settings",
+      "id": "settings",
+      "title": "记忆设置"
+     },
+     {
+      "hidden": true,
+      "id": "item",
+      "title": "一条记忆"
+     },
+     {
+      "hidden": true,
+      "id": "person",
+      "title": "人物"
+     },
+     {
+      "hidden": true,
+      "id": "asks",
+      "title": "归档的问题"
+     },
+     {
+      "hidden": true,
+      "id": "guesses",
+      "title": "待确认"
+     },
+     {
+      "hidden": true,
+      "id": "kept",
+      "title": "全部记忆"
+     },
+     {
+      "hidden": true,
       "id": "sources",
-      "title": "各应用写的"
+      "title": "设置"
      }
     ],
     "running": true,
     "summary": {
-     "count": 4,
-     "text": "记下了 0 条，有 4 条猜测等你确认。"
+     "count": 2,
+     "text": "4 条待确认"
     },
     "ui": {
      "pages": []
@@ -40,11 +68,20 @@
   ]
  },
  "asked": [
+  "read-data-ask-3.json",
+  "read-data-ask-fact.json",
+  "read-data-ask-habit.json",
+  "read-data-ask-interest.json",
+  "read-data-ask-own.json",
+  "read-data-asks.json",
+  "read-data-notes.json",
+  "read-data-people.json",
+  "read-data-recent.json",
+  "read-data-sources.json",
   "read-outbox.json",
+  "read-page-asks.json",
   "read-page-guesses.json",
   "read-page-kept.json",
-  "read-page-overview.json",
-  "read-page-people.json",
   "read-page-sources.json",
   "read-summary.json",
   "tools-list.json"
@@ -68,38 +105,79 @@
      "components": [
       {
        "children": [
-        "h1",
+        "t1",
         "t2",
-        "t3",
-        "t4",
-        "t5",
-        "f-revise",
-        "r12"
+        "k4",
+        "l6"
        ],
        "component": "Column",
        "id": "root"
       },
       {
        "component": "Text",
-       "id": "h1",
-       "text": "记忆想问你",
-       "variant": "h4"
+       "id": "t1",
+       "text": "是否关注「爬山」？",
+       "variant": "strong"
       },
       {
        "component": "Text",
        "id": "t2",
-       "text": "「爬山」，对吗？"
-      },
-      {
-       "component": "Text",
-       "id": "t3",
-       "text": "打字里谈到爬香山，只有一天。确认后，邮件助手挑订阅精选时会优先这个话题。"
-      },
-      {
-       "component": "Text",
-       "id": "t4",
-       "text": "依据",
+       "text": "依据近期记录推断，确认后生效",
        "variant": "caption"
+      },
+      {
+       "action": {
+        "event": {
+         "context": {
+          "ask": 3,
+          "pick": {
+           "path": "/choices/a3"
+          },
+          "replies": {
+           "0": {
+            "choice": "yes"
+           },
+           "1": {
+            "choice": "no"
+           },
+           "2": {
+            "choice": "later"
+           }
+          }
+         },
+         "name": "mem_reply"
+        }
+       },
+       "child": "b3-text",
+       "component": "Button",
+       "id": "b3"
+      },
+      {
+       "component": "Text",
+       "id": "b3-text",
+       "text": "回答"
+      },
+      {
+       "component": "ChoicePicker",
+       "id": "k4",
+       "options": [
+        {
+         "label": "是",
+         "value": "0"
+        },
+        {
+         "label": "不是",
+         "value": "1"
+        },
+        {
+         "label": "稍后",
+         "value": "2"
+        }
+       ],
+       "submit": "b3",
+       "value": {
+        "path": "/choices/a3"
+       }
       },
       {
        "component": "Text",
@@ -108,141 +186,12 @@
        "variant": "caption"
       },
       {
-       "component": "TextField",
-       "id": "f-revise",
-       "label": "不太对的话，改成",
-       "value": {
-        "path": "/fields/revise"
-       }
-      },
-      {
-       "action": {
-        "event": {
-         "context": {
-          "ask": 3,
-          "choice": "yes"
-         },
-         "name": "mem_reply"
-        }
-       },
-       "child": "b6-text",
-       "component": "Button",
-       "id": "b6",
-       "variant": "primary"
-      },
-      {
-       "component": "Text",
-       "id": "b6-text",
-       "text": "对"
-      },
-      {
-       "action": {
-        "event": {
-         "context": {
-          "ask": 3,
-          "choice": "no"
-         },
-         "name": "mem_reply"
-        }
-       },
-       "child": "b7-text",
-       "component": "Button",
-       "id": "b7"
-      },
-      {
-       "component": "Text",
-       "id": "b7-text",
-       "text": "不对"
-      },
-      {
-       "action": {
-        "event": {
-         "context": {
-          "ask": 3,
-          "choice": "past"
-         },
-         "name": "mem_reply"
-        }
-       },
-       "child": "b8-text",
-       "component": "Button",
-       "id": "b8"
-      },
-      {
-       "component": "Text",
-       "id": "b8-text",
-       "text": "以前是，现在不是"
-      },
-      {
-       "action": {
-        "event": {
-         "context": {
-          "ask": 3,
-          "choice": "revise",
-          "text": {
-           "path": "/fields/revise"
-          }
-         },
-         "name": "mem_reply"
-        }
-       },
-       "child": "b9-text",
-       "component": "Button",
-       "id": "b9"
-      },
-      {
-       "component": "Text",
-       "id": "b9-text",
-       "text": "按我改的"
-      },
-      {
-       "action": {
-        "event": {
-         "context": {
-          "ask": 3,
-          "choice": "later"
-         },
-         "name": "mem_reply"
-        }
-       },
-       "child": "b10-text",
-       "component": "Button",
-       "id": "b10"
-      },
-      {
-       "component": "Text",
-       "id": "b10-text",
-       "text": "以后再说"
-      },
-      {
-       "action": {
-        "event": {
-         "context": {
-          "note": 3
-         },
-         "name": "mem_open"
-        }
-       },
-       "child": "b11-text",
-       "component": "Button",
-       "id": "b11"
-      },
-      {
-       "component": "Text",
-       "id": "b11-text",
-       "text": "在螺壳记忆里看"
-      },
-      {
        "children": [
-        "b6",
-        "b7",
-        "b8",
-        "b9",
-        "b10",
-        "b11"
+        "t5"
        ],
-       "component": "Row",
-       "id": "r12"
+       "collapsed": "依据 1 条",
+       "component": "List",
+       "id": "l6"
       }
      ],
      "surfaceId": "luoke-mem/ask-3"
@@ -257,8 +206,8 @@
      "path": "/",
      "surfaceId": "luoke-mem/ask-3",
      "value": {
-      "fields": {
-       "revise": ""
+      "choices": {
+       "a3": []
       }
      }
     },
@@ -282,38 +231,79 @@
      "components": [
       {
        "children": [
-        "h1",
+        "t1",
         "t2",
-        "t3",
-        "t4",
-        "t5",
-        "f-revise",
-        "r12"
+        "k4",
+        "l6"
        ],
        "component": "Column",
        "id": "root"
       },
       {
        "component": "Text",
-       "id": "h1",
-       "text": "记忆想问你",
-       "variant": "h4"
+       "id": "t1",
+       "text": "「在读博士」是否属实？",
+       "variant": "strong"
       },
       {
        "component": "Text",
        "id": "t2",
-       "text": "「在读博士」，对吗？"
-      },
-      {
-       "component": "Text",
-       "id": "t3",
-       "text": "打字里说到导师和开题，记忆不确定是不是在读博士。确认后，邮件助手起草回复时会知道。"
-      },
-      {
-       "component": "Text",
-       "id": "t4",
-       "text": "依据",
+       "text": "依据近期记录推断，确认后生效",
        "variant": "caption"
+      },
+      {
+       "action": {
+        "event": {
+         "context": {
+          "ask": 2,
+          "pick": {
+           "path": "/choices/a2"
+          },
+          "replies": {
+           "0": {
+            "choice": "yes"
+           },
+           "1": {
+            "choice": "no"
+           },
+           "2": {
+            "choice": "later"
+           }
+          }
+         },
+         "name": "mem_reply"
+        }
+       },
+       "child": "b3-text",
+       "component": "Button",
+       "id": "b3"
+      },
+      {
+       "component": "Text",
+       "id": "b3-text",
+       "text": "回答"
+      },
+      {
+       "component": "ChoicePicker",
+       "id": "k4",
+       "options": [
+        {
+         "label": "是",
+         "value": "0"
+        },
+        {
+         "label": "不是",
+         "value": "1"
+        },
+        {
+         "label": "稍后",
+         "value": "2"
+        }
+       ],
+       "submit": "b3",
+       "value": {
+        "path": "/choices/a2"
+       }
       },
       {
        "component": "Text",
@@ -322,141 +312,12 @@
        "variant": "caption"
       },
       {
-       "component": "TextField",
-       "id": "f-revise",
-       "label": "不太对的话，改成",
-       "value": {
-        "path": "/fields/revise"
-       }
-      },
-      {
-       "action": {
-        "event": {
-         "context": {
-          "ask": 2,
-          "choice": "yes"
-         },
-         "name": "mem_reply"
-        }
-       },
-       "child": "b6-text",
-       "component": "Button",
-       "id": "b6",
-       "variant": "primary"
-      },
-      {
-       "component": "Text",
-       "id": "b6-text",
-       "text": "对"
-      },
-      {
-       "action": {
-        "event": {
-         "context": {
-          "ask": 2,
-          "choice": "no"
-         },
-         "name": "mem_reply"
-        }
-       },
-       "child": "b7-text",
-       "component": "Button",
-       "id": "b7"
-      },
-      {
-       "component": "Text",
-       "id": "b7-text",
-       "text": "不对"
-      },
-      {
-       "action": {
-        "event": {
-         "context": {
-          "ask": 2,
-          "choice": "past"
-         },
-         "name": "mem_reply"
-        }
-       },
-       "child": "b8-text",
-       "component": "Button",
-       "id": "b8"
-      },
-      {
-       "component": "Text",
-       "id": "b8-text",
-       "text": "以前是，现在不是"
-      },
-      {
-       "action": {
-        "event": {
-         "context": {
-          "ask": 2,
-          "choice": "revise",
-          "text": {
-           "path": "/fields/revise"
-          }
-         },
-         "name": "mem_reply"
-        }
-       },
-       "child": "b9-text",
-       "component": "Button",
-       "id": "b9"
-      },
-      {
-       "component": "Text",
-       "id": "b9-text",
-       "text": "按我改的"
-      },
-      {
-       "action": {
-        "event": {
-         "context": {
-          "ask": 2,
-          "choice": "later"
-         },
-         "name": "mem_reply"
-        }
-       },
-       "child": "b10-text",
-       "component": "Button",
-       "id": "b10"
-      },
-      {
-       "component": "Text",
-       "id": "b10-text",
-       "text": "以后再说"
-      },
-      {
-       "action": {
-        "event": {
-         "context": {
-          "note": 2
-         },
-         "name": "mem_open"
-        }
-       },
-       "child": "b11-text",
-       "component": "Button",
-       "id": "b11"
-      },
-      {
-       "component": "Text",
-       "id": "b11-text",
-       "text": "在螺壳记忆里看"
-      },
-      {
        "children": [
-        "b6",
-        "b7",
-        "b8",
-        "b9",
-        "b10",
-        "b11"
+        "t5"
        ],
-       "component": "Row",
-       "id": "r12"
+       "collapsed": "依据 1 条",
+       "component": "List",
+       "id": "l6"
       }
      ],
      "surfaceId": "luoke-mem/ask-2"
@@ -471,8 +332,8 @@
      "path": "/",
      "surfaceId": "luoke-mem/ask-2",
      "value": {
-      "fields": {
-       "revise": ""
+      "choices": {
+       "a2": []
       }
      }
     },
@@ -496,38 +357,79 @@
      "components": [
       {
        "children": [
-        "h1",
+        "t1",
         "t2",
-        "t3",
-        "t4",
-        "t5",
-        "f-revise",
-        "r12"
+        "k4",
+        "l6"
        ],
        "component": "Column",
        "id": "root"
       },
       {
        "component": "Text",
-       "id": "h1",
-       "text": "记忆想问你",
-       "variant": "h4"
+       "id": "t1",
+       "text": "是否关注「本地大模型」？",
+       "variant": "strong"
       },
       {
        "component": "Text",
        "id": "t2",
-       "text": "「本地大模型」，对吗？"
-      },
-      {
-       "component": "Text",
-       "id": "t3",
-       "text": "这几天打字常谈到「本地大模型」。确认后，邮件助手挑订阅精选时会优先这个话题。"
-      },
-      {
-       "component": "Text",
-       "id": "t4",
-       "text": "依据",
+       "text": "依据近期记录推断，确认后生效",
        "variant": "caption"
+      },
+      {
+       "action": {
+        "event": {
+         "context": {
+          "ask": 1,
+          "pick": {
+           "path": "/choices/a1"
+          },
+          "replies": {
+           "0": {
+            "choice": "yes"
+           },
+           "1": {
+            "choice": "no"
+           },
+           "2": {
+            "choice": "later"
+           }
+          }
+         },
+         "name": "mem_reply"
+        }
+       },
+       "child": "b3-text",
+       "component": "Button",
+       "id": "b3"
+      },
+      {
+       "component": "Text",
+       "id": "b3-text",
+       "text": "回答"
+      },
+      {
+       "component": "ChoicePicker",
+       "id": "k4",
+       "options": [
+        {
+         "label": "是",
+         "value": "0"
+        },
+        {
+         "label": "不是",
+         "value": "1"
+        },
+        {
+         "label": "稍后",
+         "value": "2"
+        }
+       ],
+       "submit": "b3",
+       "value": {
+        "path": "/choices/a1"
+       }
       },
       {
        "component": "Text",
@@ -536,141 +438,12 @@
        "variant": "caption"
       },
       {
-       "component": "TextField",
-       "id": "f-revise",
-       "label": "不太对的话，改成",
-       "value": {
-        "path": "/fields/revise"
-       }
-      },
-      {
-       "action": {
-        "event": {
-         "context": {
-          "ask": 1,
-          "choice": "yes"
-         },
-         "name": "mem_reply"
-        }
-       },
-       "child": "b6-text",
-       "component": "Button",
-       "id": "b6",
-       "variant": "primary"
-      },
-      {
-       "component": "Text",
-       "id": "b6-text",
-       "text": "对"
-      },
-      {
-       "action": {
-        "event": {
-         "context": {
-          "ask": 1,
-          "choice": "no"
-         },
-         "name": "mem_reply"
-        }
-       },
-       "child": "b7-text",
-       "component": "Button",
-       "id": "b7"
-      },
-      {
-       "component": "Text",
-       "id": "b7-text",
-       "text": "不对"
-      },
-      {
-       "action": {
-        "event": {
-         "context": {
-          "ask": 1,
-          "choice": "past"
-         },
-         "name": "mem_reply"
-        }
-       },
-       "child": "b8-text",
-       "component": "Button",
-       "id": "b8"
-      },
-      {
-       "component": "Text",
-       "id": "b8-text",
-       "text": "以前是，现在不是"
-      },
-      {
-       "action": {
-        "event": {
-         "context": {
-          "ask": 1,
-          "choice": "revise",
-          "text": {
-           "path": "/fields/revise"
-          }
-         },
-         "name": "mem_reply"
-        }
-       },
-       "child": "b9-text",
-       "component": "Button",
-       "id": "b9"
-      },
-      {
-       "component": "Text",
-       "id": "b9-text",
-       "text": "按我改的"
-      },
-      {
-       "action": {
-        "event": {
-         "context": {
-          "ask": 1,
-          "choice": "later"
-         },
-         "name": "mem_reply"
-        }
-       },
-       "child": "b10-text",
-       "component": "Button",
-       "id": "b10"
-      },
-      {
-       "component": "Text",
-       "id": "b10-text",
-       "text": "以后再说"
-      },
-      {
-       "action": {
-        "event": {
-         "context": {
-          "note": 1
-         },
-         "name": "mem_open"
-        }
-       },
-       "child": "b11-text",
-       "component": "Button",
-       "id": "b11"
-      },
-      {
-       "component": "Text",
-       "id": "b11-text",
-       "text": "在螺壳记忆里看"
-      },
-      {
        "children": [
-        "b6",
-        "b7",
-        "b8",
-        "b9",
-        "b10",
-        "b11"
+        "t5"
        ],
-       "component": "Row",
-       "id": "r12"
+       "collapsed": "依据 1 条",
+       "component": "List",
+       "id": "l6"
       }
      ],
      "surfaceId": "luoke-mem/ask-1"
@@ -685,8 +458,8 @@
      "path": "/",
      "surfaceId": "luoke-mem/ask-1",
      "value": {
-      "fields": {
-       "revise": ""
+      "choices": {
+       "a1": []
       }
      }
     },
@@ -710,37 +483,79 @@
      "components": [
       {
        "children": [
-        "h1",
+        "t1",
         "t2",
-        "t3",
-        "t4",
-        "t5",
-        "r10"
+        "k4",
+        "l6"
        ],
        "component": "Column",
        "id": "root"
       },
       {
        "component": "Text",
-       "id": "h1",
-       "text": "记忆有个建议",
-       "variant": "h4"
+       "id": "t1",
+       "text": "以后某商城的促销邮件都归档？",
+       "variant": "strong"
       },
       {
        "component": "Text",
        "id": "t2",
-       "text": "以后某商城的促销邮件都归档？"
-      },
-      {
-       "component": "Text",
-       "id": "t3",
-       "text": "这个月你亲手归档了 6 封某商城的促销。"
-      },
-      {
-       "component": "Text",
-       "id": "t4",
-       "text": "依据",
+       "text": "这个月你亲手归档了 6 封某商城的促销。",
        "variant": "caption"
+      },
+      {
+       "action": {
+        "event": {
+         "context": {
+          "ask": 4,
+          "pick": {
+           "path": "/choices/a4"
+          },
+          "replies": {
+           "0": {
+            "choice": "useful"
+           },
+           "1": {
+            "choice": "useless"
+           },
+           "2": {
+            "choice": "never"
+           }
+          }
+         },
+         "name": "mem_reply"
+        }
+       },
+       "child": "b3-text",
+       "component": "Button",
+       "id": "b3"
+      },
+      {
+       "component": "Text",
+       "id": "b3-text",
+       "text": "回答"
+      },
+      {
+       "component": "ChoicePicker",
+       "id": "k4",
+       "options": [
+        {
+         "label": "同意",
+         "value": "0"
+        },
+        {
+         "label": "不需要",
+         "value": "1"
+        },
+        {
+         "label": "不再询问",
+         "value": "2"
+        }
+       ],
+       "submit": "b3",
+       "value": {
+        "path": "/choices/a4"
+       }
       },
       {
        "component": "Text",
@@ -749,93 +564,30 @@
        "variant": "caption"
       },
       {
-       "action": {
-        "event": {
-         "context": {
-          "ask": 4,
-          "choice": "useful"
-         },
-         "name": "mem_reply"
-        }
-       },
-       "child": "b6-text",
-       "component": "Button",
-       "id": "b6",
-       "variant": "primary"
-      },
-      {
-       "component": "Text",
-       "id": "b6-text",
-       "text": "好"
-      },
-      {
-       "action": {
-        "event": {
-         "context": {
-          "ask": 4,
-          "choice": "useless"
-         },
-         "name": "mem_reply"
-        }
-       },
-       "child": "b7-text",
-       "component": "Button",
-       "id": "b7"
-      },
-      {
-       "component": "Text",
-       "id": "b7-text",
-       "text": "不用"
-      },
-      {
-       "action": {
-        "event": {
-         "context": {
-          "ask": 4,
-          "choice": "never"
-         },
-         "name": "mem_reply"
-        }
-       },
-       "child": "b8-text",
-       "component": "Button",
-       "id": "b8"
-      },
-      {
-       "component": "Text",
-       "id": "b8-text",
-       "text": "别再提"
-      },
-      {
-       "action": {
-        "event": {
-         "context": {
-          "note": 4
-         },
-         "name": "mem_open"
-        }
-       },
-       "child": "b9-text",
-       "component": "Button",
-       "id": "b9"
-      },
-      {
-       "component": "Text",
-       "id": "b9-text",
-       "text": "在螺壳记忆里看"
-      },
-      {
        "children": [
-        "b6",
-        "b7",
-        "b8",
-        "b9"
+        "t5"
        ],
-       "component": "Row",
-       "id": "r10"
+       "collapsed": "依据 1 条",
+       "component": "List",
+       "id": "l6"
       }
      ],
      "surfaceId": "luoke-mem/ask-4"
+    },
+    "version": "v0.9"
+   }
+  ],
+  [
+   "a2ui",
+   {
+    "updateDataModel": {
+     "path": "/",
+     "surfaceId": "luoke-mem/ask-4",
+     "value": {
+      "choices": {
+       "a4": []
+      }
+     }
     },
     "version": "v0.9"
    }
@@ -857,102 +609,88 @@
      "components": [
       {
        "children": [
-        "h1",
+        "t1",
         "t2",
-        "t3",
-        "c-reply",
-        "r6"
+        "k4"
        ],
        "component": "Column",
        "id": "root"
       },
       {
        "component": "Text",
-       "id": "h1",
-       "text": "记忆想问你",
-       "variant": "h4"
+       "id": "t1",
+       "text": "你的论文主要是哪个方向？",
+       "variant": "strong"
       },
       {
        "component": "Text",
        "id": "t2",
-       "text": "你的论文主要是哪个方向？"
-      },
-      {
-       "component": "Text",
-       "id": "t3",
-       "text": "邮件里常提到论文，知道方向以后挑精选更准。"
-      },
-      {
-       "component": "ChoicePicker",
-       "id": "c-reply",
-       "label": "选一个",
-       "options": [
-        {
-         "label": "机器学习",
-         "value": "机器学习"
-        },
-        {
-         "label": "系统",
-         "value": "系统"
-        },
-        {
-         "label": "别的",
-         "value": "别的"
-        }
-       ],
-       "value": {
-        "path": "/choices/reply"
-       }
+       "text": "邮件里常提到论文，知道方向以后挑精选更准。",
+       "variant": "caption"
       },
       {
        "action": {
         "event": {
          "context": {
           "ask": 5,
-          "choice": "answer",
-          "text": {
-           "path": "/choices/reply"
+          "pick": {
+           "path": "/choices/a5"
+          },
+          "replies": {
+           "0": {
+            "choice": "answer",
+            "text": "机器学习"
+           },
+           "1": {
+            "choice": "answer",
+            "text": "系统"
+           },
+           "2": {
+            "choice": "answer",
+            "text": "别的"
+           },
+           "3": {
+            "choice": "later"
+           }
           }
          },
          "name": "mem_reply"
         }
        },
-       "child": "b4-text",
+       "child": "b3-text",
        "component": "Button",
-       "id": "b4",
-       "variant": "primary"
+       "id": "b3"
       },
       {
        "component": "Text",
-       "id": "b4-text",
-       "text": "交回"
+       "id": "b3-text",
+       "text": "回答"
       },
       {
-       "action": {
-        "event": {
-         "context": {
-          "ask": 5,
-          "choice": "later"
-         },
-         "name": "mem_reply"
+       "component": "ChoicePicker",
+       "id": "k4",
+       "options": [
+        {
+         "label": "机器学习",
+         "value": "0"
+        },
+        {
+         "label": "系统",
+         "value": "1"
+        },
+        {
+         "label": "别的",
+         "value": "2"
+        },
+        {
+         "label": "稍后",
+         "value": "3"
         }
-       },
-       "child": "b5-text",
-       "component": "Button",
-       "id": "b5"
-      },
-      {
-       "component": "Text",
-       "id": "b5-text",
-       "text": "以后再说"
-      },
-      {
-       "children": [
-        "b4",
-        "b5"
        ],
-       "component": "Row",
-       "id": "r6"
+       "submit": "b3",
+       "value": {
+        "path": "/choices/a5"
+       }
       }
      ],
      "surfaceId": "luoke-mem/ask-5"
@@ -968,9 +706,7 @@
      "surfaceId": "luoke-mem/ask-5",
      "value": {
       "choices": {
-       "reply": [
-        "机器学习"
-       ]
+       "a5": []
       }
      }
     },
@@ -981,7 +717,8 @@
    "feed",
    {
     "brief": {
-     "next": "2026-11-06T08:00:00+08:00"
+     "next": "2026-11-06T08:00:00+08:00",
+     "words": null
     },
     "cards": [
      {
@@ -1012,7 +749,7 @@
       "app": "luoke-mem",
       "id": "luoke-mem/ask-4",
       "kind": "suggestion",
-      "section": "decide",
+      "section": "held",
       "time": "2026-11-05T20:45:00+08:00",
       "title": "记忆建议：以后某商城的促销邮件都归档？"
      },
@@ -1020,12 +757,14 @@
       "app": "luoke-mem",
       "id": "luoke-mem/ask-5",
       "kind": "question",
-      "section": "decide",
+      "section": "held",
       "time": "2026-11-05T20:45:00+08:00",
       "title": "记忆想问：你的论文主要是哪个方向？"
      }
     ],
     "dot": false,
+    "hello": null,
+    "notice_rows": [],
     "notices": [],
     "open": 5,
     "order": [
@@ -1041,6 +780,1029 @@
  ],
  "host": {},
  "pages": {
+  "all": {
+   "messages": [
+    {
+     "createSurface": {
+      "catalogId": "ai.luoke/a2ui/agent/1",
+      "surfaceId": "luoke-mem/page/all"
+     },
+     "version": "v0.9"
+    },
+    {
+     "updateComponents": {
+      "components": [
+       {
+        "children": [
+         "k2",
+         "r5",
+         "l50"
+        ],
+        "component": "Column",
+        "id": "root"
+       },
+       {
+        "action": {
+         "event": {
+          "context": {
+           "args": {
+            "filter": {
+             "path": "/choices/filter/0"
+            }
+           },
+           "page": "all"
+          },
+          "name": "agent.open_page"
+         }
+        },
+        "child": "b1-text",
+        "component": "Button",
+        "id": "b1"
+       },
+       {
+        "component": "Text",
+        "id": "b1-text",
+        "text": "筛选"
+       },
+       {
+        "component": "ChoicePicker",
+        "id": "k2",
+        "options": [
+         {
+          "label": "全部",
+          "value": "all"
+         },
+         {
+          "label": "个人信息",
+          "value": "fact"
+         },
+         {
+          "label": "关注话题",
+          "value": "interest"
+         },
+         {
+          "label": "处理习惯",
+          "value": "preference"
+         },
+         {
+          "label": "待确认",
+          "value": "pending"
+         }
+        ],
+        "submit": "b1",
+        "value": {
+         "path": "/choices/filter"
+        }
+       },
+       {
+        "action": {
+         "event": {
+          "context": {
+           "args": {
+            "q": {
+             "path": "/fields/q"
+            }
+           },
+           "page": "all"
+          },
+          "name": "agent.open_page"
+         }
+        },
+        "child": "b3-text",
+        "component": "Button",
+        "id": "b3"
+       },
+       {
+        "component": "Text",
+        "id": "b3-text",
+        "text": "搜索"
+       },
+       {
+        "component": "TextField",
+        "id": "f4",
+        "label": "搜索记忆",
+        "value": {
+         "path": "/fields/q"
+        }
+       },
+       {
+        "children": [
+         "f4",
+         "b3"
+        ],
+        "component": "Row",
+        "id": "r5"
+       },
+       {
+        "action": {
+         "event": {
+          "context": {
+           "note": 4,
+           "op": "confirm"
+          },
+          "name": "mem_note"
+         }
+        },
+        "child": "b6-row",
+        "component": "Button",
+        "id": "b6",
+        "variant": "borderless"
+       },
+       {
+        "component": "Icon",
+        "id": "b6-icon",
+        "name": "check"
+       },
+       {
+        "component": "Text",
+        "id": "b6-text",
+        "text": "确认"
+       },
+       {
+        "children": [
+         "b6-icon",
+         "b6-text"
+        ],
+        "component": "Row",
+        "id": "b6-row"
+       },
+       {
+        "action": {
+         "event": {
+          "context": {
+           "note": 4,
+           "op": "reject"
+          },
+          "name": "mem_note"
+         }
+        },
+        "child": "b7-row",
+        "component": "Button",
+        "id": "b7",
+        "variant": "borderless"
+       },
+       {
+        "component": "Icon",
+        "id": "b7-icon",
+        "name": "x"
+       },
+       {
+        "component": "Text",
+        "id": "b7-text",
+        "text": "标记错误"
+       },
+       {
+        "children": [
+         "b7-icon",
+         "b7-text"
+        ],
+        "component": "Row",
+        "id": "b7-row"
+       },
+       {
+        "action": {
+         "event": {
+          "context": {
+           "args": {
+            "id": "4"
+           },
+           "page": "item"
+          },
+          "name": "agent.open_page"
+         }
+        },
+        "child": "b8-text",
+        "component": "Button",
+        "id": "b8"
+       },
+       {
+        "component": "Text",
+        "id": "b8-text",
+        "text": "查看依据"
+       },
+       {
+        "component": "Text",
+        "id": "t9",
+        "text": "某商城的促销邮件归档",
+        "variant": "strong"
+       },
+       {
+        "component": "Text",
+        "id": "t10",
+        "text": "某商城的促销邮件归档",
+        "variant": "strong"
+       },
+       {
+        "component": "Text",
+        "id": "t11",
+        "text": "待确认",
+        "variant": "badge"
+       },
+       {
+        "children": [
+         "t10",
+         "t11"
+        ],
+        "component": "Row",
+        "id": "r12"
+       },
+       {
+        "component": "Text",
+        "id": "t13",
+        "text": "处理习惯 · 11月5日",
+        "variant": "caption"
+       },
+       {
+        "children": [
+         "r12",
+         "t13"
+        ],
+        "component": "Column",
+        "id": "c14"
+       },
+       {
+        "children": [
+         "b6",
+         "b7",
+         "b8"
+        ],
+        "component": "Row",
+        "id": "r15"
+       },
+       {
+        "children": [
+         "c14",
+         "r15"
+        ],
+        "component": "Row",
+        "id": "r16",
+        "justify": "spaceBetween",
+        "open": "b8"
+       },
+       {
+        "action": {
+         "event": {
+          "context": {
+           "note": 3,
+           "op": "confirm"
+          },
+          "name": "mem_note"
+         }
+        },
+        "child": "b17-row",
+        "component": "Button",
+        "id": "b17",
+        "variant": "borderless"
+       },
+       {
+        "component": "Icon",
+        "id": "b17-icon",
+        "name": "check"
+       },
+       {
+        "component": "Text",
+        "id": "b17-text",
+        "text": "确认"
+       },
+       {
+        "children": [
+         "b17-icon",
+         "b17-text"
+        ],
+        "component": "Row",
+        "id": "b17-row"
+       },
+       {
+        "action": {
+         "event": {
+          "context": {
+           "note": 3,
+           "op": "reject"
+          },
+          "name": "mem_note"
+         }
+        },
+        "child": "b18-row",
+        "component": "Button",
+        "id": "b18",
+        "variant": "borderless"
+       },
+       {
+        "component": "Icon",
+        "id": "b18-icon",
+        "name": "x"
+       },
+       {
+        "component": "Text",
+        "id": "b18-text",
+        "text": "标记错误"
+       },
+       {
+        "children": [
+         "b18-icon",
+         "b18-text"
+        ],
+        "component": "Row",
+        "id": "b18-row"
+       },
+       {
+        "action": {
+         "event": {
+          "context": {
+           "args": {
+            "id": "3"
+           },
+           "page": "item"
+          },
+          "name": "agent.open_page"
+         }
+        },
+        "child": "b19-text",
+        "component": "Button",
+        "id": "b19"
+       },
+       {
+        "component": "Text",
+        "id": "b19-text",
+        "text": "查看依据"
+       },
+       {
+        "component": "Text",
+        "id": "t20",
+        "text": "爬山",
+        "variant": "strong"
+       },
+       {
+        "component": "Text",
+        "id": "t21",
+        "text": "爬山",
+        "variant": "strong"
+       },
+       {
+        "component": "Text",
+        "id": "t22",
+        "text": "待确认",
+        "variant": "badge"
+       },
+       {
+        "children": [
+         "t21",
+         "t22"
+        ],
+        "component": "Row",
+        "id": "r23"
+       },
+       {
+        "component": "Text",
+        "id": "t24",
+        "text": "关注话题 · 11月5日",
+        "variant": "caption"
+       },
+       {
+        "children": [
+         "r23",
+         "t24"
+        ],
+        "component": "Column",
+        "id": "c25"
+       },
+       {
+        "children": [
+         "b17",
+         "b18",
+         "b19"
+        ],
+        "component": "Row",
+        "id": "r26"
+       },
+       {
+        "children": [
+         "c25",
+         "r26"
+        ],
+        "component": "Row",
+        "id": "r27",
+        "justify": "spaceBetween",
+        "open": "b19"
+       },
+       {
+        "action": {
+         "event": {
+          "context": {
+           "note": 2,
+           "op": "confirm"
+          },
+          "name": "mem_note"
+         }
+        },
+        "child": "b28-row",
+        "component": "Button",
+        "id": "b28",
+        "variant": "borderless"
+       },
+       {
+        "component": "Icon",
+        "id": "b28-icon",
+        "name": "check"
+       },
+       {
+        "component": "Text",
+        "id": "b28-text",
+        "text": "确认"
+       },
+       {
+        "children": [
+         "b28-icon",
+         "b28-text"
+        ],
+        "component": "Row",
+        "id": "b28-row"
+       },
+       {
+        "action": {
+         "event": {
+          "context": {
+           "note": 2,
+           "op": "reject"
+          },
+          "name": "mem_note"
+         }
+        },
+        "child": "b29-row",
+        "component": "Button",
+        "id": "b29",
+        "variant": "borderless"
+       },
+       {
+        "component": "Icon",
+        "id": "b29-icon",
+        "name": "x"
+       },
+       {
+        "component": "Text",
+        "id": "b29-text",
+        "text": "标记错误"
+       },
+       {
+        "children": [
+         "b29-icon",
+         "b29-text"
+        ],
+        "component": "Row",
+        "id": "b29-row"
+       },
+       {
+        "action": {
+         "event": {
+          "context": {
+           "args": {
+            "id": "2"
+           },
+           "page": "item"
+          },
+          "name": "agent.open_page"
+         }
+        },
+        "child": "b30-text",
+        "component": "Button",
+        "id": "b30"
+       },
+       {
+        "component": "Text",
+        "id": "b30-text",
+        "text": "查看依据"
+       },
+       {
+        "component": "Text",
+        "id": "t31",
+        "text": "在读博士",
+        "variant": "strong"
+       },
+       {
+        "component": "Text",
+        "id": "t32",
+        "text": "在读博士",
+        "variant": "strong"
+       },
+       {
+        "component": "Text",
+        "id": "t33",
+        "text": "待确认",
+        "variant": "badge"
+       },
+       {
+        "children": [
+         "t32",
+         "t33"
+        ],
+        "component": "Row",
+        "id": "r34"
+       },
+       {
+        "component": "Text",
+        "id": "t35",
+        "text": "个人信息 · 11月3日",
+        "variant": "caption"
+       },
+       {
+        "children": [
+         "r34",
+         "t35"
+        ],
+        "component": "Column",
+        "id": "c36"
+       },
+       {
+        "children": [
+         "b28",
+         "b29",
+         "b30"
+        ],
+        "component": "Row",
+        "id": "r37"
+       },
+       {
+        "children": [
+         "c36",
+         "r37"
+        ],
+        "component": "Row",
+        "id": "r38",
+        "justify": "spaceBetween",
+        "open": "b30"
+       },
+       {
+        "action": {
+         "event": {
+          "context": {
+           "note": 1,
+           "op": "confirm"
+          },
+          "name": "mem_note"
+         }
+        },
+        "child": "b39-row",
+        "component": "Button",
+        "id": "b39",
+        "variant": "borderless"
+       },
+       {
+        "component": "Icon",
+        "id": "b39-icon",
+        "name": "check"
+       },
+       {
+        "component": "Text",
+        "id": "b39-text",
+        "text": "确认"
+       },
+       {
+        "children": [
+         "b39-icon",
+         "b39-text"
+        ],
+        "component": "Row",
+        "id": "b39-row"
+       },
+       {
+        "action": {
+         "event": {
+          "context": {
+           "note": 1,
+           "op": "reject"
+          },
+          "name": "mem_note"
+         }
+        },
+        "child": "b40-row",
+        "component": "Button",
+        "id": "b40",
+        "variant": "borderless"
+       },
+       {
+        "component": "Icon",
+        "id": "b40-icon",
+        "name": "x"
+       },
+       {
+        "component": "Text",
+        "id": "b40-text",
+        "text": "标记错误"
+       },
+       {
+        "children": [
+         "b40-icon",
+         "b40-text"
+        ],
+        "component": "Row",
+        "id": "b40-row"
+       },
+       {
+        "action": {
+         "event": {
+          "context": {
+           "args": {
+            "id": "1"
+           },
+           "page": "item"
+          },
+          "name": "agent.open_page"
+         }
+        },
+        "child": "b41-text",
+        "component": "Button",
+        "id": "b41"
+       },
+       {
+        "component": "Text",
+        "id": "b41-text",
+        "text": "查看依据"
+       },
+       {
+        "component": "Text",
+        "id": "t42",
+        "text": "本地大模型",
+        "variant": "strong"
+       },
+       {
+        "component": "Text",
+        "id": "t43",
+        "text": "本地大模型",
+        "variant": "strong"
+       },
+       {
+        "component": "Text",
+        "id": "t44",
+        "text": "待确认",
+        "variant": "badge"
+       },
+       {
+        "children": [
+         "t43",
+         "t44"
+        ],
+        "component": "Row",
+        "id": "r45"
+       },
+       {
+        "component": "Text",
+        "id": "t46",
+        "text": "关注话题 · 10月28日",
+        "variant": "caption"
+       },
+       {
+        "children": [
+         "r45",
+         "t46"
+        ],
+        "component": "Column",
+        "id": "c47"
+       },
+       {
+        "children": [
+         "b39",
+         "b40",
+         "b41"
+        ],
+        "component": "Row",
+        "id": "r48"
+       },
+       {
+        "children": [
+         "c47",
+         "r48"
+        ],
+        "component": "Row",
+        "id": "r49",
+        "justify": "spaceBetween",
+        "open": "b41"
+       },
+       {
+        "children": [
+         "r16",
+         "r27",
+         "r38",
+         "r49"
+        ],
+        "component": "List",
+        "id": "l50"
+       }
+      ],
+      "surfaceId": "luoke-mem/page/all"
+     },
+     "version": "v0.9"
+    },
+    {
+     "updateDataModel": {
+      "path": "/",
+      "surfaceId": "luoke-mem/page/all",
+      "value": {
+       "choices": {
+        "filter": [
+         "all"
+        ]
+       },
+       "fields": {
+        "q": ""
+       }
+      }
+     },
+     "version": "v0.9"
+    }
+   ]
+  },
+  "asks": {
+   "messages": [
+    {
+     "createSurface": {
+      "catalogId": "ai.luoke/a2ui/agent/1",
+      "surfaceId": "luoke-mem/page/asks"
+     },
+     "version": "v0.9"
+    },
+    {
+     "updateComponents": {
+      "components": [
+       {
+        "children": [
+         "t1",
+         "t2",
+         "t3",
+         "r5",
+         "t6",
+         "t7",
+         "r9",
+         "t10",
+         "t11",
+         "r13",
+         "t14",
+         "t15",
+         "r17",
+         "t18",
+         "t19",
+         "r21",
+         "r23",
+         "d24",
+         "t25"
+        ],
+        "component": "Column",
+        "id": "root"
+       },
+       {
+        "component": "Text",
+        "id": "t1",
+        "text": "记忆想问你的事和给你的建议，会在「今天」里一件件问你。不想现在答的点「归档」：不算回答，记忆也不会自己再问；想答了，在下面「已归档」里点「放回」，它回到「今天」。",
+        "variant": "caption"
+       },
+       {
+        "component": "Text",
+        "id": "t2",
+        "text": "「爬山」，对吗？"
+       },
+       {
+        "component": "Text",
+        "id": "t3",
+        "text": "想问你 · 11月5日提出",
+        "variant": "caption"
+       },
+       {
+        "action": {
+         "event": {
+          "context": {
+           "asks": [
+            3
+           ],
+           "op": "archive"
+          },
+          "name": "mem_archive"
+         }
+        },
+        "child": "b4-text",
+        "component": "Button",
+        "id": "b4",
+        "variant": "borderless"
+       },
+       {
+        "component": "Text",
+        "id": "b4-text",
+        "text": "归档"
+       },
+       {
+        "children": [
+         "b4"
+        ],
+        "component": "Row",
+        "id": "r5"
+       },
+       {
+        "component": "Text",
+        "id": "t6",
+        "text": "「在读博士」，对吗？"
+       },
+       {
+        "component": "Text",
+        "id": "t7",
+        "text": "想问你 · 11月5日提出",
+        "variant": "caption"
+       },
+       {
+        "action": {
+         "event": {
+          "context": {
+           "asks": [
+            2
+           ],
+           "op": "archive"
+          },
+          "name": "mem_archive"
+         }
+        },
+        "child": "b8-text",
+        "component": "Button",
+        "id": "b8",
+        "variant": "borderless"
+       },
+       {
+        "component": "Text",
+        "id": "b8-text",
+        "text": "归档"
+       },
+       {
+        "children": [
+         "b8"
+        ],
+        "component": "Row",
+        "id": "r9"
+       },
+       {
+        "component": "Text",
+        "id": "t10",
+        "text": "「本地大模型」，对吗？"
+       },
+       {
+        "component": "Text",
+        "id": "t11",
+        "text": "想问你 · 11月5日提出",
+        "variant": "caption"
+       },
+       {
+        "action": {
+         "event": {
+          "context": {
+           "asks": [
+            1
+           ],
+           "op": "archive"
+          },
+          "name": "mem_archive"
+         }
+        },
+        "child": "b12-text",
+        "component": "Button",
+        "id": "b12",
+        "variant": "borderless"
+       },
+       {
+        "component": "Text",
+        "id": "b12-text",
+        "text": "归档"
+       },
+       {
+        "children": [
+         "b12"
+        ],
+        "component": "Row",
+        "id": "r13"
+       },
+       {
+        "component": "Text",
+        "id": "t14",
+        "text": "以后某商城的促销邮件都归档？"
+       },
+       {
+        "component": "Text",
+        "id": "t15",
+        "text": "建议 · 11月5日提出",
+        "variant": "caption"
+       },
+       {
+        "action": {
+         "event": {
+          "context": {
+           "asks": [
+            4
+           ],
+           "op": "archive"
+          },
+          "name": "mem_archive"
+         }
+        },
+        "child": "b16-text",
+        "component": "Button",
+        "id": "b16",
+        "variant": "borderless"
+       },
+       {
+        "component": "Text",
+        "id": "b16-text",
+        "text": "归档"
+       },
+       {
+        "children": [
+         "b16"
+        ],
+        "component": "Row",
+        "id": "r17"
+       },
+       {
+        "component": "Text",
+        "id": "t18",
+        "text": "你的论文主要是哪个方向？"
+       },
+       {
+        "component": "Text",
+        "id": "t19",
+        "text": "想问你 · 11月5日提出",
+        "variant": "caption"
+       },
+       {
+        "action": {
+         "event": {
+          "context": {
+           "asks": [
+            5
+           ],
+           "op": "archive"
+          },
+          "name": "mem_archive"
+         }
+        },
+        "child": "b20-text",
+        "component": "Button",
+        "id": "b20",
+        "variant": "borderless"
+       },
+       {
+        "component": "Text",
+        "id": "b20-text",
+        "text": "归档"
+       },
+       {
+        "children": [
+         "b20"
+        ],
+        "component": "Row",
+        "id": "r21"
+       },
+       {
+        "action": {
+         "event": {
+          "context": {
+           "asks": [
+            3,
+            2,
+            1,
+            4,
+            5
+           ],
+           "op": "archive"
+          },
+          "name": "mem_archive"
+         }
+        },
+        "child": "b22-text",
+        "component": "Button",
+        "id": "b22"
+       },
+       {
+        "component": "Text",
+        "id": "b22-text",
+        "text": "全部归档（5 件）"
+       },
+       {
+        "children": [
+         "b22"
+        ],
+        "component": "Row",
+        "id": "r23"
+       },
+       {
+        "component": "Divider",
+        "id": "d24"
+       },
+       {
+        "component": "Text",
+        "id": "t25",
+        "text": "还没有归档的。",
+        "variant": "caption"
+       }
+      ],
+      "surfaceId": "luoke-mem/page/asks"
+     },
+     "version": "v0.9"
+    }
+   ]
+  },
   "guesses": {
    "messages": [
     {
@@ -1055,46 +1817,41 @@
       "components": [
        {
         "children": [
-         "h1",
+         "k-sure",
+         "t1",
          "t2",
-         "t3",
-         "t4",
-         "r7",
+         "r6",
+         "t7",
          "t8",
-         "t9",
          "r12",
          "t13",
          "t14",
-         "r17",
-         "t18",
+         "r18",
          "t19",
-         "r22",
-         "r24"
+         "t20",
+         "r24",
+         "r26"
         ],
         "component": "Column",
         "id": "root"
        },
        {
-        "component": "Text",
-        "id": "h1",
-        "text": "猜测",
-        "variant": "h4"
+        "component": "CheckBox",
+        "id": "k-sure",
+        "label": "我知道删了找不回来",
+        "value": {
+         "path": "/checks/sure"
+        }
        },
        {
         "component": "Text",
-        "id": "t2",
-        "text": "猜测不拿来用；你点「对」，螺壳的工具才会用它。点「不对」，以后不再提。",
-        "variant": "caption"
-       },
-       {
-        "component": "Text",
-        "id": "t3",
+        "id": "t1",
         "text": "某商城的促销邮件归档"
        },
        {
         "component": "Text",
-        "id": "t4",
-        "text": "处理习惯 · 依据 1 条 · 11月5日",
+        "id": "t2",
+        "text": "待确认 · 处理习惯 · 11月5日",
         "variant": "caption"
        },
        {
@@ -1107,53 +1864,116 @@
           "name": "mem_note"
          }
         },
-        "child": "b5-text",
+        "child": "b3-label",
+        "component": "Button",
+        "id": "b3",
+        "variant": "borderless"
+       },
+       {
+        "children": [
+         "b3-icon",
+         "b3-text"
+        ],
+        "component": "Row",
+        "id": "b3-label"
+       },
+       {
+        "component": "Icon",
+        "id": "b3-icon",
+        "name": "check"
+       },
+       {
+        "component": "Text",
+        "id": "b3-text",
+        "text": "对"
+       },
+       {
+        "action": {
+         "event": {
+          "context": {
+           "note": 4,
+           "op": "reject"
+          },
+          "name": "mem_note"
+         }
+        },
+        "child": "b4-label",
+        "component": "Button",
+        "id": "b4",
+        "variant": "borderless"
+       },
+       {
+        "children": [
+         "b4-icon",
+         "b4-text"
+        ],
+        "component": "Row",
+        "id": "b4-label"
+       },
+       {
+        "component": "Icon",
+        "id": "b4-icon",
+        "name": "x"
+       },
+       {
+        "component": "Text",
+        "id": "b4-text",
+        "text": "不对"
+       },
+       {
+        "action": {
+         "event": {
+          "context": {
+           "note": 4,
+           "op": "forget",
+           "sure": {
+            "path": "/checks/sure"
+           }
+          },
+          "name": "mem_note"
+         }
+        },
+        "child": "b5-label",
         "component": "Button",
         "id": "b5",
         "variant": "borderless"
        },
        {
+        "children": [
+         "b5-icon",
+         "b5-text"
+        ],
+        "component": "Row",
+        "id": "b5-label"
+       },
+       {
+        "component": "Icon",
+        "id": "b5-icon",
+        "name": "trash-2"
+       },
+       {
         "component": "Text",
         "id": "b5-text",
-        "text": "对"
-       },
-       {
-        "action": {
-         "event": {
-          "context": {
-           "note": 4,
-           "op": "reject"
-          },
-          "name": "mem_note"
-         }
-        },
-        "child": "b6-text",
-        "component": "Button",
-        "id": "b6",
-        "variant": "borderless"
-       },
-       {
-        "component": "Text",
-        "id": "b6-text",
-        "text": "不对"
+        "text": "忘掉"
        },
        {
         "children": [
-         "b5",
-         "b6"
+         "b3",
+         "b4",
+         "b5"
         ],
         "component": "Row",
-        "id": "r7"
+        "id": "r6"
        },
        {
         "component": "Text",
-        "id": "t8",
+        "id": "t7",
         "text": "爬山"
        },
        {
         "component": "Text",
-        "id": "t9",
-        "text": "关注的话题 · 依据 1 条 · 11月5日",
+        "id": "t8",
+        "text": "待确认 · 关注的话题 · 11月5日",
         "variant": "caption"
        },
        {
@@ -1166,14 +1986,27 @@
           "name": "mem_note"
          }
         },
-        "child": "b10-text",
+        "child": "b9-label",
         "component": "Button",
-        "id": "b10",
+        "id": "b9",
         "variant": "borderless"
        },
        {
+        "children": [
+         "b9-icon",
+         "b9-text"
+        ],
+        "component": "Row",
+        "id": "b9-label"
+       },
+       {
+        "component": "Icon",
+        "id": "b9-icon",
+        "name": "check"
+       },
+       {
         "component": "Text",
-        "id": "b10-text",
+        "id": "b9-text",
         "text": "对"
        },
        {
@@ -1186,18 +2019,68 @@
           "name": "mem_note"
          }
         },
-        "child": "b11-text",
+        "child": "b10-label",
+        "component": "Button",
+        "id": "b10",
+        "variant": "borderless"
+       },
+       {
+        "children": [
+         "b10-icon",
+         "b10-text"
+        ],
+        "component": "Row",
+        "id": "b10-label"
+       },
+       {
+        "component": "Icon",
+        "id": "b10-icon",
+        "name": "x"
+       },
+       {
+        "component": "Text",
+        "id": "b10-text",
+        "text": "不对"
+       },
+       {
+        "action": {
+         "event": {
+          "context": {
+           "note": 3,
+           "op": "forget",
+           "sure": {
+            "path": "/checks/sure"
+           }
+          },
+          "name": "mem_note"
+         }
+        },
+        "child": "b11-label",
         "component": "Button",
         "id": "b11",
         "variant": "borderless"
        },
        {
+        "children": [
+         "b11-icon",
+         "b11-text"
+        ],
+        "component": "Row",
+        "id": "b11-label"
+       },
+       {
+        "component": "Icon",
+        "id": "b11-icon",
+        "name": "trash-2"
+       },
+       {
         "component": "Text",
         "id": "b11-text",
-        "text": "不对"
+        "text": "忘掉"
        },
        {
         "children": [
+         "b9",
          "b10",
          "b11"
         ],
@@ -1212,7 +2095,7 @@
        {
         "component": "Text",
         "id": "t14",
-        "text": "关于你 · 依据 1 条 · 11月3日",
+        "text": "待确认 · 关于你 · 11月3日",
         "variant": "caption"
        },
        {
@@ -1225,10 +2108,23 @@
           "name": "mem_note"
          }
         },
-        "child": "b15-text",
+        "child": "b15-label",
         "component": "Button",
         "id": "b15",
         "variant": "borderless"
+       },
+       {
+        "children": [
+         "b15-icon",
+         "b15-text"
+        ],
+        "component": "Row",
+        "id": "b15-label"
+       },
+       {
+        "component": "Icon",
+        "id": "b15-icon",
+        "name": "check"
        },
        {
         "component": "Text",
@@ -1245,10 +2141,23 @@
           "name": "mem_note"
          }
         },
-        "child": "b16-text",
+        "child": "b16-label",
         "component": "Button",
         "id": "b16",
         "variant": "borderless"
+       },
+       {
+        "children": [
+         "b16-icon",
+         "b16-text"
+        ],
+        "component": "Row",
+        "id": "b16-label"
+       },
+       {
+        "component": "Icon",
+        "id": "b16-icon",
+        "name": "x"
        },
        {
         "component": "Text",
@@ -1256,22 +2165,59 @@
         "text": "不对"
        },
        {
+        "action": {
+         "event": {
+          "context": {
+           "note": 2,
+           "op": "forget",
+           "sure": {
+            "path": "/checks/sure"
+           }
+          },
+          "name": "mem_note"
+         }
+        },
+        "child": "b17-label",
+        "component": "Button",
+        "id": "b17",
+        "variant": "borderless"
+       },
+       {
         "children": [
-         "b15",
-         "b16"
+         "b17-icon",
+         "b17-text"
         ],
         "component": "Row",
-        "id": "r17"
+        "id": "b17-label"
+       },
+       {
+        "component": "Icon",
+        "id": "b17-icon",
+        "name": "trash-2"
        },
        {
         "component": "Text",
-        "id": "t18",
-        "text": "本地大模型"
+        "id": "b17-text",
+        "text": "忘掉"
+       },
+       {
+        "children": [
+         "b15",
+         "b16",
+         "b17"
+        ],
+        "component": "Row",
+        "id": "r18"
        },
        {
         "component": "Text",
         "id": "t19",
-        "text": "关注的话题 · 依据 1 条 · 10月28日",
+        "text": "本地大模型"
+       },
+       {
+        "component": "Text",
+        "id": "t20",
+        "text": "待确认 · 关注的话题 · 10月28日",
         "variant": "caption"
        },
        {
@@ -1284,14 +2230,27 @@
           "name": "mem_note"
          }
         },
-        "child": "b20-text",
+        "child": "b21-label",
         "component": "Button",
-        "id": "b20",
+        "id": "b21",
         "variant": "borderless"
        },
        {
+        "children": [
+         "b21-icon",
+         "b21-text"
+        ],
+        "component": "Row",
+        "id": "b21-label"
+       },
+       {
+        "component": "Icon",
+        "id": "b21-icon",
+        "name": "check"
+       },
+       {
         "component": "Text",
-        "id": "b20-text",
+        "id": "b21-text",
         "text": "对"
        },
        {
@@ -1304,23 +2263,73 @@
           "name": "mem_note"
          }
         },
-        "child": "b21-text",
+        "child": "b22-label",
         "component": "Button",
-        "id": "b21",
+        "id": "b22",
         "variant": "borderless"
        },
        {
+        "children": [
+         "b22-icon",
+         "b22-text"
+        ],
+        "component": "Row",
+        "id": "b22-label"
+       },
+       {
+        "component": "Icon",
+        "id": "b22-icon",
+        "name": "x"
+       },
+       {
         "component": "Text",
-        "id": "b21-text",
+        "id": "b22-text",
         "text": "不对"
        },
        {
+        "action": {
+         "event": {
+          "context": {
+           "note": 1,
+           "op": "forget",
+           "sure": {
+            "path": "/checks/sure"
+           }
+          },
+          "name": "mem_note"
+         }
+        },
+        "child": "b23-label",
+        "component": "Button",
+        "id": "b23",
+        "variant": "borderless"
+       },
+       {
         "children": [
-         "b20",
-         "b21"
+         "b23-icon",
+         "b23-text"
         ],
         "component": "Row",
-        "id": "r22"
+        "id": "b23-label"
+       },
+       {
+        "component": "Icon",
+        "id": "b23-icon",
+        "name": "trash-2"
+       },
+       {
+        "component": "Text",
+        "id": "b23-text",
+        "text": "忘掉"
+       },
+       {
+        "children": [
+         "b21",
+         "b22",
+         "b23"
+        ],
+        "component": "Row",
+        "id": "r24"
        },
        {
         "action": {
@@ -1329,24 +2338,68 @@
           "name": "mem_open"
          }
         },
-        "child": "b23-text",
+        "child": "b25-text",
         "component": "Button",
-        "id": "b23"
+        "id": "b25"
        },
        {
         "component": "Text",
-        "id": "b23-text",
-        "text": "在整份记忆里看依据"
+        "id": "b25-text",
+        "text": "打开整份记忆"
        },
        {
         "children": [
-         "b23"
+         "b25"
         ],
         "component": "Row",
-        "id": "r24"
+        "id": "r26"
        }
       ],
       "surfaceId": "luoke-mem/page/guesses"
+     },
+     "version": "v0.9"
+    },
+    {
+     "updateDataModel": {
+      "path": "/",
+      "surfaceId": "luoke-mem/page/guesses",
+      "value": {
+       "checks": {
+        "sure": false
+       }
+      }
+     },
+     "version": "v0.9"
+    }
+   ]
+  },
+  "item": {
+   "messages": [
+    {
+     "createSurface": {
+      "catalogId": "ai.luoke/a2ui/agent/1",
+      "surfaceId": "luoke-mem/page/item"
+     },
+     "version": "v0.9"
+    },
+    {
+     "updateComponents": {
+      "components": [
+       {
+        "children": [
+         "t1"
+        ],
+        "component": "Column",
+        "id": "root"
+       },
+       {
+        "component": "Text",
+        "id": "t1",
+        "text": "此记忆已不存在",
+        "variant": "caption"
+       }
+      ],
+      "surfaceId": "luoke-mem/page/item"
      },
      "version": "v0.9"
     }
@@ -1366,30 +2419,519 @@
       "components": [
        {
         "children": [
-         "h1",
+         "k-sure",
+         "t1",
          "t2",
-         "t3",
-         "r5"
+         "r6",
+         "t7",
+         "t8",
+         "r12",
+         "t13",
+         "t14",
+         "r18",
+         "t19",
+         "t20",
+         "r24",
+         "r26"
         ],
         "component": "Column",
         "id": "root"
        },
        {
+        "component": "CheckBox",
+        "id": "k-sure",
+        "label": "我知道删了找不回来",
+        "value": {
+         "path": "/checks/sure"
+        }
+       },
+       {
         "component": "Text",
-        "id": "h1",
-        "text": "记下的",
-        "variant": "h4"
+        "id": "t1",
+        "text": "某商城的促销邮件归档"
        },
        {
         "component": "Text",
         "id": "t2",
-        "text": "螺壳的工具会用这些。不对的点「不对」，以后不再提；「忘掉」连它的依据一起删掉，删了找不回来。",
+        "text": "待确认 · 处理习惯 · 11月5日",
         "variant": "caption"
        },
        {
+        "action": {
+         "event": {
+          "context": {
+           "note": 4,
+           "op": "confirm"
+          },
+          "name": "mem_note"
+         }
+        },
+        "child": "b3-label",
+        "component": "Button",
+        "id": "b3",
+        "variant": "borderless"
+       },
+       {
+        "children": [
+         "b3-icon",
+         "b3-text"
+        ],
+        "component": "Row",
+        "id": "b3-label"
+       },
+       {
+        "component": "Icon",
+        "id": "b3-icon",
+        "name": "check"
+       },
+       {
         "component": "Text",
-        "id": "t3",
-        "text": "还没有记下的。"
+        "id": "b3-text",
+        "text": "对"
+       },
+       {
+        "action": {
+         "event": {
+          "context": {
+           "note": 4,
+           "op": "reject"
+          },
+          "name": "mem_note"
+         }
+        },
+        "child": "b4-label",
+        "component": "Button",
+        "id": "b4",
+        "variant": "borderless"
+       },
+       {
+        "children": [
+         "b4-icon",
+         "b4-text"
+        ],
+        "component": "Row",
+        "id": "b4-label"
+       },
+       {
+        "component": "Icon",
+        "id": "b4-icon",
+        "name": "x"
+       },
+       {
+        "component": "Text",
+        "id": "b4-text",
+        "text": "不对"
+       },
+       {
+        "action": {
+         "event": {
+          "context": {
+           "note": 4,
+           "op": "forget",
+           "sure": {
+            "path": "/checks/sure"
+           }
+          },
+          "name": "mem_note"
+         }
+        },
+        "child": "b5-label",
+        "component": "Button",
+        "id": "b5",
+        "variant": "borderless"
+       },
+       {
+        "children": [
+         "b5-icon",
+         "b5-text"
+        ],
+        "component": "Row",
+        "id": "b5-label"
+       },
+       {
+        "component": "Icon",
+        "id": "b5-icon",
+        "name": "trash-2"
+       },
+       {
+        "component": "Text",
+        "id": "b5-text",
+        "text": "忘掉"
+       },
+       {
+        "children": [
+         "b3",
+         "b4",
+         "b5"
+        ],
+        "component": "Row",
+        "id": "r6"
+       },
+       {
+        "component": "Text",
+        "id": "t7",
+        "text": "爬山"
+       },
+       {
+        "component": "Text",
+        "id": "t8",
+        "text": "待确认 · 关注的话题 · 11月5日",
+        "variant": "caption"
+       },
+       {
+        "action": {
+         "event": {
+          "context": {
+           "note": 3,
+           "op": "confirm"
+          },
+          "name": "mem_note"
+         }
+        },
+        "child": "b9-label",
+        "component": "Button",
+        "id": "b9",
+        "variant": "borderless"
+       },
+       {
+        "children": [
+         "b9-icon",
+         "b9-text"
+        ],
+        "component": "Row",
+        "id": "b9-label"
+       },
+       {
+        "component": "Icon",
+        "id": "b9-icon",
+        "name": "check"
+       },
+       {
+        "component": "Text",
+        "id": "b9-text",
+        "text": "对"
+       },
+       {
+        "action": {
+         "event": {
+          "context": {
+           "note": 3,
+           "op": "reject"
+          },
+          "name": "mem_note"
+         }
+        },
+        "child": "b10-label",
+        "component": "Button",
+        "id": "b10",
+        "variant": "borderless"
+       },
+       {
+        "children": [
+         "b10-icon",
+         "b10-text"
+        ],
+        "component": "Row",
+        "id": "b10-label"
+       },
+       {
+        "component": "Icon",
+        "id": "b10-icon",
+        "name": "x"
+       },
+       {
+        "component": "Text",
+        "id": "b10-text",
+        "text": "不对"
+       },
+       {
+        "action": {
+         "event": {
+          "context": {
+           "note": 3,
+           "op": "forget",
+           "sure": {
+            "path": "/checks/sure"
+           }
+          },
+          "name": "mem_note"
+         }
+        },
+        "child": "b11-label",
+        "component": "Button",
+        "id": "b11",
+        "variant": "borderless"
+       },
+       {
+        "children": [
+         "b11-icon",
+         "b11-text"
+        ],
+        "component": "Row",
+        "id": "b11-label"
+       },
+       {
+        "component": "Icon",
+        "id": "b11-icon",
+        "name": "trash-2"
+       },
+       {
+        "component": "Text",
+        "id": "b11-text",
+        "text": "忘掉"
+       },
+       {
+        "children": [
+         "b9",
+         "b10",
+         "b11"
+        ],
+        "component": "Row",
+        "id": "r12"
+       },
+       {
+        "component": "Text",
+        "id": "t13",
+        "text": "在读博士"
+       },
+       {
+        "component": "Text",
+        "id": "t14",
+        "text": "待确认 · 关于你 · 11月3日",
+        "variant": "caption"
+       },
+       {
+        "action": {
+         "event": {
+          "context": {
+           "note": 2,
+           "op": "confirm"
+          },
+          "name": "mem_note"
+         }
+        },
+        "child": "b15-label",
+        "component": "Button",
+        "id": "b15",
+        "variant": "borderless"
+       },
+       {
+        "children": [
+         "b15-icon",
+         "b15-text"
+        ],
+        "component": "Row",
+        "id": "b15-label"
+       },
+       {
+        "component": "Icon",
+        "id": "b15-icon",
+        "name": "check"
+       },
+       {
+        "component": "Text",
+        "id": "b15-text",
+        "text": "对"
+       },
+       {
+        "action": {
+         "event": {
+          "context": {
+           "note": 2,
+           "op": "reject"
+          },
+          "name": "mem_note"
+         }
+        },
+        "child": "b16-label",
+        "component": "Button",
+        "id": "b16",
+        "variant": "borderless"
+       },
+       {
+        "children": [
+         "b16-icon",
+         "b16-text"
+        ],
+        "component": "Row",
+        "id": "b16-label"
+       },
+       {
+        "component": "Icon",
+        "id": "b16-icon",
+        "name": "x"
+       },
+       {
+        "component": "Text",
+        "id": "b16-text",
+        "text": "不对"
+       },
+       {
+        "action": {
+         "event": {
+          "context": {
+           "note": 2,
+           "op": "forget",
+           "sure": {
+            "path": "/checks/sure"
+           }
+          },
+          "name": "mem_note"
+         }
+        },
+        "child": "b17-label",
+        "component": "Button",
+        "id": "b17",
+        "variant": "borderless"
+       },
+       {
+        "children": [
+         "b17-icon",
+         "b17-text"
+        ],
+        "component": "Row",
+        "id": "b17-label"
+       },
+       {
+        "component": "Icon",
+        "id": "b17-icon",
+        "name": "trash-2"
+       },
+       {
+        "component": "Text",
+        "id": "b17-text",
+        "text": "忘掉"
+       },
+       {
+        "children": [
+         "b15",
+         "b16",
+         "b17"
+        ],
+        "component": "Row",
+        "id": "r18"
+       },
+       {
+        "component": "Text",
+        "id": "t19",
+        "text": "本地大模型"
+       },
+       {
+        "component": "Text",
+        "id": "t20",
+        "text": "待确认 · 关注的话题 · 10月28日",
+        "variant": "caption"
+       },
+       {
+        "action": {
+         "event": {
+          "context": {
+           "note": 1,
+           "op": "confirm"
+          },
+          "name": "mem_note"
+         }
+        },
+        "child": "b21-label",
+        "component": "Button",
+        "id": "b21",
+        "variant": "borderless"
+       },
+       {
+        "children": [
+         "b21-icon",
+         "b21-text"
+        ],
+        "component": "Row",
+        "id": "b21-label"
+       },
+       {
+        "component": "Icon",
+        "id": "b21-icon",
+        "name": "check"
+       },
+       {
+        "component": "Text",
+        "id": "b21-text",
+        "text": "对"
+       },
+       {
+        "action": {
+         "event": {
+          "context": {
+           "note": 1,
+           "op": "reject"
+          },
+          "name": "mem_note"
+         }
+        },
+        "child": "b22-label",
+        "component": "Button",
+        "id": "b22",
+        "variant": "borderless"
+       },
+       {
+        "children": [
+         "b22-icon",
+         "b22-text"
+        ],
+        "component": "Row",
+        "id": "b22-label"
+       },
+       {
+        "component": "Icon",
+        "id": "b22-icon",
+        "name": "x"
+       },
+       {
+        "component": "Text",
+        "id": "b22-text",
+        "text": "不对"
+       },
+       {
+        "action": {
+         "event": {
+          "context": {
+           "note": 1,
+           "op": "forget",
+           "sure": {
+            "path": "/checks/sure"
+           }
+          },
+          "name": "mem_note"
+         }
+        },
+        "child": "b23-label",
+        "component": "Button",
+        "id": "b23",
+        "variant": "borderless"
+       },
+       {
+        "children": [
+         "b23-icon",
+         "b23-text"
+        ],
+        "component": "Row",
+        "id": "b23-label"
+       },
+       {
+        "component": "Icon",
+        "id": "b23-icon",
+        "name": "trash-2"
+       },
+       {
+        "component": "Text",
+        "id": "b23-text",
+        "text": "忘掉"
+       },
+       {
+        "children": [
+         "b21",
+         "b22",
+         "b23"
+        ],
+        "component": "Row",
+        "id": "r24"
        },
        {
         "action": {
@@ -1398,24 +2940,36 @@
           "name": "mem_open"
          }
         },
-        "child": "b4-text",
+        "child": "b25-text",
         "component": "Button",
-        "id": "b4"
+        "id": "b25"
        },
        {
         "component": "Text",
-        "id": "b4-text",
+        "id": "b25-text",
         "text": "打开整份记忆"
        },
        {
         "children": [
-         "b4"
+         "b25"
         ],
         "component": "Row",
-        "id": "r5"
+        "id": "r26"
        }
       ],
       "surfaceId": "luoke-mem/page/kept"
+     },
+     "version": "v0.9"
+    },
+    {
+     "updateDataModel": {
+      "path": "/",
+      "surfaceId": "luoke-mem/page/kept",
+      "value": {
+       "checks": {
+        "sure": false
+       }
+      }
      },
      "version": "v0.9"
     }
@@ -1435,73 +2989,125 @@
       "components": [
        {
         "children": [
-         "h1",
-         "t2",
-         "d3",
-         "t4",
-         "t5",
-         "t6",
-         "r8"
+         "t1",
+         "l7"
         ],
         "component": "Column",
         "id": "root"
        },
        {
         "component": "Text",
-        "id": "h1",
-        "text": "概览",
-        "variant": "h4"
-       },
-       {
-        "component": "Text",
-        "id": "t2",
-        "text": "记下了 0 条，有 4 条猜测等你确认。"
-       },
-       {
-        "component": "Divider",
-        "id": "d3"
-       },
-       {
-        "component": "Text",
-        "id": "t4",
-        "text": "最近 14 天各应用记下的",
+        "id": "t1",
+        "text": "待确认 · 1",
         "variant": "caption"
        },
        {
         "component": "Text",
-        "id": "t5",
-        "text": "螺壳输入法：3 条"
-       },
-       {
-        "component": "Text",
-        "id": "t6",
-        "text": "邮件助手：1 条"
+        "id": "t2",
+        "text": "你的论文主要是哪个方向？",
+        "variant": "strong"
        },
        {
         "action": {
          "event": {
-          "context": {},
-          "name": "mem_open"
+          "context": {
+           "ask": 5,
+           "pick": {
+            "path": "/choices/ask5"
+           },
+           "replies": {
+            "0": {
+             "choice": "answer",
+             "text": "机器学习"
+            },
+            "1": {
+             "choice": "answer",
+             "text": "系统"
+            },
+            "2": {
+             "choice": "answer",
+             "text": "别的"
+            },
+            "3": {
+             "choice": "later"
+            }
+           }
+          },
+          "name": "mem_reply"
          }
         },
-        "child": "b7-text",
+        "child": "b3-text",
         "component": "Button",
-        "id": "b7"
+        "id": "b3",
+        "variant": "primary"
        },
        {
         "component": "Text",
-        "id": "b7-text",
-        "text": "打开整份记忆"
+        "id": "b3-text",
+        "text": "确定"
+       },
+       {
+        "component": "ChoicePicker",
+        "id": "k4",
+        "options": [
+         {
+          "label": "机器学习",
+          "value": "0"
+         },
+         {
+          "label": "系统",
+          "value": "1"
+         },
+         {
+          "label": "别的",
+          "value": "2"
+         },
+         {
+          "label": "稍后",
+          "value": "3"
+         }
+        ],
+        "value": {
+         "path": "/choices/ask5"
+        }
        },
        {
         "children": [
-         "b7"
+         "k4",
+         "b3"
         ],
         "component": "Row",
-        "id": "r8"
+        "id": "r5"
+       },
+       {
+        "children": [
+         "t2",
+         "r5"
+        ],
+        "component": "Column",
+        "id": "c6"
+       },
+       {
+        "children": [
+         "c6"
+        ],
+        "component": "List",
+        "id": "l7"
        }
       ],
       "surfaceId": "luoke-mem/page/overview"
+     },
+     "version": "v0.9"
+    },
+    {
+     "updateDataModel": {
+      "path": "/",
+      "surfaceId": "luoke-mem/page/overview",
+      "value": {
+       "choices": {
+        "ask5": []
+       }
+      }
      },
      "version": "v0.9"
     }
@@ -1521,58 +3127,289 @@
       "components": [
        {
         "children": [
-         "h1",
-         "t2",
-         "t3",
-         "r5"
+         "r3",
+         "l7"
         ],
         "component": "Column",
         "id": "root"
        },
        {
-        "component": "Text",
-        "id": "h1",
-        "text": "人",
-        "variant": "h4"
+        "action": {
+         "event": {
+          "context": {
+           "args": {
+            "q": {
+             "path": "/fields/q"
+            }
+           },
+           "page": "people"
+          },
+          "name": "agent.open_page"
+         }
+        },
+        "child": "b1-text",
+        "component": "Button",
+        "id": "b1"
        },
        {
         "component": "Text",
-        "id": "t2",
-        "text": "你写信给的人，和你在发出的邮件里写到的人：同一个人的几种叫法、邮箱地址和关于这个人的事放在一起。人名会给语音输入当热词。改名、两个并成一个、拆开，在整份记忆里做。",
-        "variant": "caption"
+        "id": "b1-text",
+        "text": "搜索"
+       },
+       {
+        "component": "TextField",
+        "id": "f2",
+        "label": "按称呼或地址搜索",
+        "value": {
+         "path": "/fields/q"
+        }
+       },
+       {
+        "children": [
+         "f2",
+         "b1"
+        ],
+        "component": "Row",
+        "id": "r3"
        },
        {
         "component": "Text",
-        "id": "t3",
-        "text": "还没有。各应用用起来以后，记忆会从你发出的邮件里认出你常写信给的人。"
+        "id": "t4",
+        "text": "暂无人物"
+       },
+       {
+        "children": [
+         "t4"
+        ],
+        "component": "Column",
+        "id": "c5"
+       },
+       {
+        "children": [
+         "c5"
+        ],
+        "component": "Row",
+        "id": "r6",
+        "justify": "spaceBetween"
+       },
+       {
+        "children": [
+         "r6"
+        ],
+        "component": "List",
+        "id": "l7"
+       }
+      ],
+      "surfaceId": "luoke-mem/page/people"
+     },
+     "version": "v0.9"
+    },
+    {
+     "updateDataModel": {
+      "path": "/",
+      "surfaceId": "luoke-mem/page/people",
+      "value": {
+       "fields": {
+        "q": ""
+       }
+      }
+     },
+     "version": "v0.9"
+    }
+   ]
+  },
+  "settings": {
+   "messages": [
+    {
+     "createSurface": {
+      "catalogId": "ai.luoke/a2ui/agent/1",
+      "surfaceId": "luoke-mem/page/settings"
+     },
+     "version": "v0.9"
+    },
+    {
+     "updateComponents": {
+      "components": [
+       {
+        "children": [
+         "k2",
+         "l14"
+        ],
+        "component": "Column",
+        "id": "root"
        },
        {
         "action": {
          "event": {
           "context": {
-           "page": "people"
+           "args": {
+            "tab": {
+             "path": "/choices/tab/0"
+            }
+           },
+           "page": "settings"
           },
-          "name": "mem_open"
+          "name": "agent.open_page"
          }
         },
-        "child": "b4-text",
+        "child": "b1-text",
         "component": "Button",
-        "id": "b4"
+        "id": "b1"
        },
        {
         "component": "Text",
-        "id": "b4-text",
-        "text": "在整份记忆里看"
+        "id": "b1-text",
+        "text": "切换分页"
+       },
+       {
+        "component": "ChoicePicker",
+        "id": "k2",
+        "options": [
+         {
+          "label": "来源",
+          "value": "sources"
+         },
+         {
+          "label": "数据",
+          "value": "data"
+         }
+        ],
+        "submit": "b1",
+        "value": {
+         "path": "/choices/tab"
+        }
+       },
+       {
+        "action": {
+         "event": {
+          "context": {
+           "on": false,
+           "tool": "luoke-ime"
+          },
+          "name": "mem_learn"
+         }
+        },
+        "child": "b3-text",
+        "component": "Button",
+        "id": "b3",
+        "on": true,
+        "variant": "switch"
+       },
+       {
+        "component": "Text",
+        "id": "b3-text",
+        "text": "从螺壳输入法学习"
+       },
+       {
+        "component": "Text",
+        "id": "t4",
+        "text": "螺壳输入法",
+        "variant": "strong"
+       },
+       {
+        "component": "Text",
+        "id": "t5",
+        "text": "学习来源：输入内容；常用词自动记录，无需确认",
+        "variant": "caption"
        },
        {
         "children": [
-         "b4"
+         "t4",
+         "t5"
+        ],
+        "component": "Column",
+        "id": "c6"
+       },
+       {
+        "children": [
+         "b3"
         ],
         "component": "Row",
-        "id": "r5"
+        "id": "r7"
+       },
+       {
+        "children": [
+         "c6",
+         "r7"
+        ],
+        "component": "Row",
+        "id": "r8",
+        "justify": "spaceBetween"
+       },
+       {
+        "action": {
+         "event": {
+          "context": {
+           "on": false,
+           "tool": "luoke-mail"
+          },
+          "name": "mem_learn"
+         }
+        },
+        "child": "b9-text",
+        "component": "Button",
+        "id": "b9",
+        "on": true,
+        "variant": "switch"
+       },
+       {
+        "component": "Text",
+        "id": "b9-text",
+        "text": "从邮件助手学习"
+       },
+       {
+        "component": "Text",
+        "id": "t10",
+        "text": "邮件助手",
+        "variant": "strong"
+       },
+       {
+        "children": [
+         "t10"
+        ],
+        "component": "Column",
+        "id": "c11"
+       },
+       {
+        "children": [
+         "b9"
+        ],
+        "component": "Row",
+        "id": "r12"
+       },
+       {
+        "children": [
+         "c11",
+         "r12"
+        ],
+        "component": "Row",
+        "id": "r13",
+        "justify": "spaceBetween"
+       },
+       {
+        "children": [
+         "r8",
+         "r13"
+        ],
+        "component": "List",
+        "id": "l14"
        }
       ],
-      "surfaceId": "luoke-mem/page/people"
+      "surfaceId": "luoke-mem/page/settings"
+     },
+     "version": "v0.9"
+    },
+    {
+     "updateDataModel": {
+      "path": "/",
+      "surfaceId": "luoke-mem/page/settings",
+      "value": {
+       "choices": {
+        "tab": [
+         "sources"
+        ]
+       }
+      }
      },
      "version": "v0.9"
     }
@@ -1592,32 +3429,33 @@
       "components": [
        {
         "children": [
-         "h1",
-         "t2",
+         "t1",
          "k-sure",
+         "t2",
          "t3",
-         "r5",
-         "t6",
-         "r8",
-         "t9",
-         "d10",
-         "t11",
+         "r6",
+         "t7",
+         "t8",
+         "r11",
+         "d12",
+         "t13",
+         "t14",
+         "t15",
+         "d16",
+         "t17",
+         "t18",
+         "t19",
+         "t20",
          "f-clear",
-         "r13"
+         "r22"
         ],
         "component": "Column",
         "id": "root"
        },
        {
         "component": "Text",
-        "id": "h1",
-        "text": "各应用写的",
-        "variant": "h4"
-       },
-       {
-        "component": "Text",
-        "id": "t2",
-        "text": "忘掉某个应用写的：它的记录、它归纳的、只靠它的记录得出的理解都删掉；你确认过、否定过、改过的留下。删了找不回来。",
+        "id": "t1",
+        "text": "各应用",
         "variant": "caption"
        },
        {
@@ -1630,8 +3468,14 @@
        },
        {
         "component": "Text",
+        "id": "t2",
+        "text": "螺壳输入法"
+       },
+       {
+        "component": "Text",
         "id": "t3",
-        "text": "螺壳输入法：记录 3 条，理解 0 条"
+        "text": "从打的字里学。",
+        "variant": "caption"
        },
        {
         "action": {
@@ -1645,10 +3489,23 @@
           "name": "mem_forget_tool"
          }
         },
-        "child": "b4-text",
+        "child": "b4-label",
         "component": "Button",
         "id": "b4",
         "variant": "borderless"
+       },
+       {
+        "children": [
+         "b4-icon",
+         "b4-text"
+        ],
+        "component": "Row",
+        "id": "b4-label"
+       },
+       {
+        "component": "Icon",
+        "id": "b4-icon",
+        "name": "trash-2"
        },
        {
         "component": "Text",
@@ -1656,16 +3513,44 @@
         "text": "忘掉螺壳输入法写的"
        },
        {
-        "children": [
-         "b4"
-        ],
-        "component": "Row",
-        "id": "r5"
+        "action": {
+         "event": {
+          "context": {
+           "on": false,
+           "tool": "luoke-ime"
+          },
+          "name": "mem_learn"
+         }
+        },
+        "child": "b5-text",
+        "component": "Button",
+        "id": "b5",
+        "on": true,
+        "variant": "switch"
        },
        {
         "component": "Text",
-        "id": "t6",
-        "text": "邮件助手：记录 1 条，理解 0 条"
+        "id": "b5-text",
+        "text": "从螺壳输入法学"
+       },
+       {
+        "children": [
+         "b4",
+         "b5"
+        ],
+        "component": "Row",
+        "id": "r6"
+       },
+       {
+        "component": "Text",
+        "id": "t7",
+        "text": "邮件助手"
+       },
+       {
+        "component": "Text",
+        "id": "t8",
+        "text": "从亲手处理的邮件里学。",
+        "variant": "caption"
        },
        {
         "action": {
@@ -1679,36 +3564,102 @@
           "name": "mem_forget_tool"
          }
         },
-        "child": "b7-text",
+        "child": "b9-label",
         "component": "Button",
-        "id": "b7",
+        "id": "b9",
         "variant": "borderless"
        },
        {
+        "children": [
+         "b9-icon",
+         "b9-text"
+        ],
+        "component": "Row",
+        "id": "b9-label"
+       },
+       {
+        "component": "Icon",
+        "id": "b9-icon",
+        "name": "trash-2"
+       },
+       {
         "component": "Text",
-        "id": "b7-text",
+        "id": "b9-text",
         "text": "忘掉邮件助手写的"
        },
        {
-        "children": [
-         "b7"
-        ],
-        "component": "Row",
-        "id": "r8"
+        "action": {
+         "event": {
+          "context": {
+           "on": false,
+           "tool": "luoke-mail"
+          },
+          "name": "mem_learn"
+         }
+        },
+        "child": "b10-text",
+        "component": "Button",
+        "id": "b10",
+        "on": true,
+        "variant": "switch"
        },
        {
         "component": "Text",
-        "id": "t9",
-        "text": "你说的和记忆归纳的：理解 4 条（在「记下的」里一条条删，或者清空整份记忆）",
+        "id": "b10-text",
+        "text": "从邮件助手学"
+       },
+       {
+        "children": [
+         "b9",
+         "b10"
+        ],
+        "component": "Row",
+        "id": "r11"
+       },
+       {
+        "component": "Divider",
+        "id": "d12"
+       },
+       {
+        "component": "Text",
+        "id": "t13",
+        "text": "整理",
+        "variant": "caption"
+       },
+       {
+        "component": "Text",
+        "id": "t14",
+        "text": "还没有整理过。下次在你不用电脑时。"
+       },
+       {
+        "component": "Text",
+        "id": "t15",
+        "text": "还没有归纳过打的字，会在你不用电脑时进行。",
         "variant": "caption"
        },
        {
         "component": "Divider",
-        "id": "d10"
+        "id": "d16"
        },
        {
         "component": "Text",
-        "id": "t11",
+        "id": "t17",
+        "text": "数据",
+        "variant": "caption"
+       },
+       {
+        "component": "Text",
+        "id": "t18",
+        "text": "记住的事 0 条"
+       },
+       {
+        "component": "Text",
+        "id": "t19",
+        "text": "输入法词条 0 条"
+       },
+       {
+        "component": "Text",
+        "id": "t20",
         "text": "清空整份记忆：所有应用写的和记忆归纳的都删掉，找不回来。要清空，在下面输入「清空」。",
         "variant": "caption"
        },
@@ -1731,21 +3682,21 @@
           "name": "mem_forget_all"
          }
         },
-        "child": "b12-text",
+        "child": "b21-text",
         "component": "Button",
-        "id": "b12"
+        "id": "b21"
        },
        {
         "component": "Text",
-        "id": "b12-text",
+        "id": "b21-text",
         "text": "清空整份记忆"
        },
        {
         "children": [
-         "b12"
+         "b21"
         ],
         "component": "Row",
-        "id": "r13"
+        "id": "r22"
        }
       ],
       "surfaceId": "luoke-mem/page/sources"
@@ -1912,5 +3863,5 @@
  ],
  "scenario": "asks",
  "title": "记忆想问的事和建议",
- "version": "$VERSION"
+ "version": "0.44.0"
 }

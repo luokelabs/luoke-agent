@@ -1,0 +1,152 @@
+{
+  "reply": {
+    "id": 1004,
+    "jsonrpc": "2.0",
+    "result": {
+      "contents": [
+        {
+          "mimeType": "application/json",
+          "text": {
+            "auto": "cache",
+            "bytes": 176164864,
+            "count": 3,
+            "facts": {
+              "apps": [],
+              "appsInstalled": 0,
+              "appsMissing": 0,
+              "groups": {
+                "tool-cache": 3
+              },
+              "password": 0,
+              "rebuilds": 3,
+              "tools": [
+                "Gradle",
+                "Xcode",
+                "pip"
+              ],
+              "userFiles": "none"
+            },
+            "files": 3,
+            "id": "cache",
+            "items": [
+              {
+                "bytes": 62918656,
+                "facts": {
+                  "cache": "pip",
+                  "tool": "pip"
+                },
+                "finding": "cache.rebuildable.pip/000000000022",
+                "group": "tool-cache",
+                "key": "i13",
+                "options": [
+                  "remove",
+                  "keep",
+                  "ignore"
+                ],
+                "password": false,
+                "path": "~/Library/Caches/pip",
+                "paths": [
+                  "~/Library/Caches/pip"
+                ],
+                "pathsMore": 0,
+                "plan": "p-000000000008",
+                "reason": "rebuilds",
+                "rebuilds": true,
+                "restorable": false,
+                "reveal": "~/Library/Caches/pip",
+                "rule": "cache.rebuildable.pip",
+                "suggested": "remove",
+                "userFiles": "none"
+              },
+              {
+                "bytes": 56623104,
+                "facts": {
+                  "cache": "xcode-deriveddata",
+                  "tool": "Xcode"
+                },
+                "finding": "cache.rebuildable.xcode-deriveddata/000000000023",
+                "group": "tool-cache",
+                "key": "i14",
+                "options": [
+                  "remove",
+                  "keep",
+                  "ignore"
+                ],
+                "password": false,
+                "path": "~/Library/Developer/Xcode/DerivedData",
+                "paths": [
+                  "~/Library/Developer/Xcode/DerivedData"
+                ],
+                "pathsMore": 0,
+                "plan": "p-000000000008",
+                "reason": "rebuilds",
+                "rebuilds": true,
+                "restorable": false,
+                "reveal": "~/Library/Developer/Xcode/DerivedData",
+                "rule": "cache.rebuildable.xcode-deriveddata",
+                "suggested": "remove",
+                "userFiles": "none"
+              },
+              {
+                "bytes": 56623104,
+                "facts": {
+                  "cache": "gradle-caches",
+                  "tool": "Gradle"
+                },
+                "finding": "cache.rebuildable.gradle-caches/000000000024",
+                "group": "tool-cache",
+                "key": "i15",
+                "options": [
+                  "remove",
+                  "keep",
+                  "ignore"
+                ],
+                "password": false,
+                "path": "~/.gradle/caches",
+                "paths": [
+                  "~/.gradle/caches"
+                ],
+                "pathsMore": 0,
+                "plan": "p-000000000008",
+                "reason": "rebuilds",
+                "rebuilds": true,
+                "restorable": false,
+                "reveal": "~/.gradle/caches",
+                "rule": "cache.rebuildable.gradle-caches",
+                "suggested": "remove",
+                "userFiles": "none"
+              }
+            ],
+            "known": true,
+            "more": 0,
+            "scanned": {
+              "finished": "2026-10-20T12:00:00Z",
+              "started": "2026-10-20T12:00:00Z"
+            },
+            "schema": 1,
+            "suggested": 3,
+            "suggestedBytes": 176164864
+          },
+          "uri": "data/category?id=cache"
+        }
+      ],
+      "resultType": "complete"
+    }
+  },
+  "request": {
+    "id": 1004,
+    "jsonrpc": "2.0",
+    "method": "resources/read",
+    "params": {
+      "_meta": {
+        "io.modelcontextprotocol/clientCapabilities": {},
+        "io.modelcontextprotocol/clientInfo": {
+          "name": "luoke-agent",
+          "version": "fixtures"
+        },
+        "io.modelcontextprotocol/protocolVersion": "2026-07-28"
+      },
+      "uri": "data/category?id=cache"
+    }
+  }
+}

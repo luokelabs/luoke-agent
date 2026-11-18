@@ -45,7 +45,9 @@ final class MailSampleTests: XCTestCase {
                 XCTAssertFalse(parts.isEmpty, "\(sc) \(c.id)：分块的按钮上下文带 part")
             }
             Sample.applyAgentApps(f, mail: sc)
-            for id in s.pageIDs {
+            // 只从一行点开、要带参数的隐藏页（一封信、一条精选，核心照原始数据拼的）样例里没有：不查
+            let hidden = Set((s.apps.first?["pages"]?.array ?? []).filter { $0["hidden"]?.bool == true }.compactMap { $0["id"]?.string })
+            for id in s.pageIDs where !(hidden.contains(id) && s.pages[id] == nil) {
                 let p = m.agentPages[AgentFeed.pageKey("luoke-mail", id)]
                 XCTAssertNotNil(p?.surface, "\(sc) \(id)：\(p?.error ?? "没取到")")
                 XCTAssertEqual(p?.surface?.surface.problems() ?? [], [], "\(sc) \(id)")

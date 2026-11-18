@@ -1,0 +1,48 @@
+{
+  "_about": "luoke-search PR #123（claude/search-data-resources）docs/应用页样例.md 录的 data/…：检索范围、权限取自「1. 选好了、都读完了」，最近搜过的取自「2. 搜」之后；索引在建（progress 0.62）是照 docs/窗口接口.md 的字段写的（样例里没录到 building），搜索合了、录了在建的样例以后换掉",
+  "base": "luoke-scan/full-report",
+  "app": {
+    "summary": {
+      "count": 0,
+      "text": "在建索引"
+    }
+  },
+  "data": {
+    "data/recent": {
+      "queries": [
+        "客户名单",
+        "团队版怎么收费"
+      ]
+    },
+    "data/scope": {
+      "skipped": [],
+      "folders": [
+        {
+          "path": "~/样例/office",
+          "connected": true,
+          "id": "1509788188ff",
+          "name": "office",
+          "kind": "folder",
+          "readable": true
+        }
+      ],
+      "disks": []
+    },
+    "data/permissions": {
+      "photos": {
+        "system": "denied",
+        "on": false
+      },
+      "files": {
+        "system": "granted",
+        "on": true
+      }
+    },
+    "data/index": {
+      "state": "building",
+      "progress": 0.62,
+      "paused": null,
+      "mode": "auto"
+    }
+  }
+}

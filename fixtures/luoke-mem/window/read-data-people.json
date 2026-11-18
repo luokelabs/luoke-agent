@@ -1,0 +1,96 @@
+{
+  "reply": {
+    "id": 19,
+    "jsonrpc": "2.0",
+    "result": {
+      "contents": [
+        {
+          "mimeType": "application/json",
+          "text": {
+            "items": [
+              {
+                "contact": {
+                  "count": 15,
+                  "first": "2026-09",
+                  "lapsed": false,
+                  "last": "2026-10",
+                  "months": 2,
+                  "together": []
+                },
+                "id": 1,
+                "name": "王磊",
+                "notes": 5,
+                "relations": [
+                  {
+                    "note": 26,
+                    "relation": "同事",
+                    "status": "proposed"
+                  },
+                  {
+                    "note": 27,
+                    "relation": "合作方",
+                    "status": "proposed"
+                  }
+                ],
+                "status": "active",
+                "top": null
+              },
+              {
+                "contact": {
+                  "count": 5,
+                  "first": "2026-09",
+                  "lapsed": false,
+                  "last": "2026-10",
+                  "months": 2,
+                  "together": []
+                },
+                "id": 2,
+                "name": "林晓",
+                "notes": 1,
+                "relations": [],
+                "status": "active",
+                "top": null
+              }
+            ],
+            "page": 1,
+            "pages": 1,
+            "q": "",
+            "ready": true,
+            "total": 2,
+            "v": 1
+          },
+          "uri": "data/people"
+        }
+      ],
+      "resultType": "complete"
+    }
+  },
+  "request": {
+    "id": 19,
+    "jsonrpc": "2.0",
+    "method": "resources/read",
+    "params": {
+      "_meta": {
+        "io.modelcontextprotocol/clientCapabilities": {
+          "experimental": {
+            "ai.luoke/a2ui": {
+              "features": [
+                "openPage",
+                "pageArgs",
+                "confirm",
+                "rowOpen",
+                "fieldSubmit"
+              ]
+            }
+          }
+        },
+        "io.modelcontextprotocol/clientInfo": {
+          "name": "luoke-agent",
+          "version": "fixtures"
+        },
+        "io.modelcontextprotocol/protocolVersion": "2026-07-28"
+      },
+      "uri": "data/people"
+    }
+  }
+}

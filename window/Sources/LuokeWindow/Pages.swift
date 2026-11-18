@@ -9,7 +9,7 @@ struct ActivityPage: View {
 
     var body: some View {
         PageScroll() {
-            PageHeader(title: "活动", note: "螺壳替你做过的事").lkEnter(0)
+            PageHeader(title: "活动", note: "螺壳已完成的事项").lkEnter(0)
             let rows = model.activity
             ForEach(Array(days(rows).enumerated()), id: \.element) { i, day in
                 VStack(alignment: .leading, spacing: LKSpace.x1 + 2) {
@@ -72,7 +72,7 @@ struct ActivityLine: View {
             }
         }
         .frame(minHeight: 40)
-        .help(row.auto ? "自动做的" : "你点的")
+        .help(row.auto ? "自动" : "手动")
         .accessibilityElement(children: .combine)
     }
 
@@ -99,9 +99,10 @@ struct AppPage: View {
         let data = agent == nil ? model.appPages[page] : nil
         PageScroll(railed: model.hasRail(layout)) {
             HStack(spacing: 14) {
-                AppIcon(tool: tool, size: 40)
                 VStack(alignment: .leading, spacing: 2) {
                     Text(tool.name).font(LKFont.ui(LKType.title, .semibold)).accessibilityAddTraits(.isHeader)
+                    // 走查重画稿：标题下面不写「在运行 · 一句话」；只有出了事（没在运行、连不上螺壳）才写一行
+                    if agent.map({ !$0.running || !model.coreReachable }) ?? false {
                     HStack(spacing: 6) {
                         // 版本号不放标题下面（和模型名一样是技术细节）：在下面「这个应用 › 版本」里
                         if let agent, !model.coreReachable {
@@ -114,27 +115,33 @@ struct AppPage: View {
                             }
                         } else if let agent {
                             // 绿点只管「在运行」，挨着它写出来；这一轮找到了什么用「·」隔开，不让绿色读成「一切正常」
-                            LKLight(state: agent.running ? .ok : .off, label: agent.running ? "在运行" : "没在运行")
-                            Text(agent.running ? "在运行" : "没在运行")
+                            LKLight(state: agent.running ? .ok : .off, label: agent.running ? "运行中" : "未运行")
+                            Text(agent.running ? "运行中" : "未运行")
                                 .font(LKFont.ui(LKType.caption)).foregroundStyle(p.mutedFg)
                             if agent.running, let t = agent.summary?.text, !t.isEmpty {
                                 Text("·").font(LKFont.ui(LKType.caption)).foregroundStyle(p.mutedFg)
                                 Text(t).font(LKFont.ui(LKType.caption)).foregroundStyle(p.fg).lineLimit(1)
                             }
-                        } else {
-                            LKLight(state: .ok, label: "在运行")
-                            Text("在运行").font(LKFont.ui(LKType.caption)).foregroundStyle(p.mutedFg)
                         }
+                    }
                     }
                 }
                 Spacer()
-                // 不再有「打开完整界面」：应用要用户做的事都在这一页里（11-09 定）
+                // §4 headerPlacement：页上写了放在标题那一行的（邮件助手切换邮箱）。有标签栏的应用，它画在标签那一行的右边、
+                // 和设置这些图标挨着（负责人 11-17：放在标题旁边不靠右、容易被忽略）；只有一页的应用照旧在标题这一行
+                if let agent, AgentAppBody.tabs(agent).count <= 1 {
+                    AgentAppBody.headerItems(agent, model: model)
+                }
+                // 只有一页（没有标签栏）时，设置、处理记录这类图标放在标题右边（走查重画稿 · 扫描）
+                if let agent, AgentAppBody.tabs(agent).count <= 1 {
+                    AgentAppBody.pageIcons(agent, model: model)
+                }
             }
-            .padding(.bottom, 18)
+            .padding(.bottom, 14)
             if let agent {
                 AgentAppBody(model: model, app: agent, entry: entry)
             } else if data == nil, model.agentApps != nil {
-                Text("\(tool.name)还没接上螺壳。").font(LKFont.ui(LKType.small)).foregroundStyle(p.mutedFg)
+                Text("\(tool.name)尚未接入螺壳").font(LKFont.ui(LKType.small)).foregroundStyle(p.mutedFg)
             }
             if let data {
                 LKTabs(tabs: data.tabs.map { LKTabs.Tab(id: $0.id, title: $0.title, external: $0.external) }, selected: model.appTab) { t in
@@ -171,7 +178,6 @@ struct AppPage: View {
                             .lkRow(first: i == 0)
                         }
                     }
-                    ThisAppSection(model: model, entry: entry, tool: tool)
                 } else {
                     LKGroup {
                         let rows = model.activity.filter { $0.tool == tool }
@@ -205,8 +211,29 @@ struct AgentAppBody: View {
         return (shown + (extra.map { [$0] } ?? [])).map { LKTabs.Tab(id: $0.id, title: $0.title) }
     }
 
+    /// 隐藏页里带图标的（设置、处理记录）：标签栏右端的图标按钮，点了以弹窗打开
+    /// 正看的那一页写了 `"placement": "header"` 的几样（§4 headerPlacement：邮件助手的「全部邮箱 / 工作 / 个人」）
+    @MainActor @ViewBuilder
+    static func headerItems(_ app: AgentApp, model: WindowModel) -> some View {
+        if let tab = model.visibleAppTab, let s = model.agentPages[AgentFeed.pageKey(app.id, tab)]?.surface {
+            let sid = AgentFeed.pageKey(app.id, tab)
+            ForEach(s.surface.headerItems, id: \.self) { hid in
+                SurfaceView(model: s, part: .section(hid, skip: 0)) { cid, _, ctx in model.tapPage(sid, componentId: cid, context: ctx) }
+                    .fixedSize()
+            }
+        }
+    }
+
+    static func pageIcons(_ app: AgentApp, model: WindowModel) -> some View {
+        HStack(spacing: 6) {
+            ForEach(app.pages.filter { $0.hidden && $0.icon != nil }) { pg in
+                LKIconButton(symbol: pg.icon ?? "settings", label: pg.title) { model.selectAppTab(pg.id) }
+            }
+        }
+    }
+
     var body: some View {
-        let tab = model.agentTab(app)
+        let tab = model.visibleAppTab
         if model.hasRail(layout) {
             RailSplit {
                 content(tab, part: .main)
@@ -214,26 +241,17 @@ struct AgentAppBody: View {
                 if let tab, let s = model.agentPages[AgentFeed.pageKey(app.id, tab)]?.surface, !s.surface.asideSections.isEmpty {
                     let sid = AgentFeed.pageKey(app.id, tab)
                     if let blocks = s.surface.pageBlocks(aside: true) {   // §4 pageSections：侧栏里也一段一张卡片
-                        PageSections(model: s, blocks: blocks) { cid, _, ctx in model.tapSurface(sid, componentId: cid, context: ctx) }
+                        PageSections(model: s, blocks: blocks) { cid, _, ctx in model.tapPage(sid, componentId: cid, context: ctx) }
                             .padding(.bottom, LKSpace.x2)
                     } else {
-                        SurfaceView(model: s, part: .aside) { cid, _, ctx in model.tapSurface(sid, componentId: cid, context: ctx) }
+                        SurfaceView(model: s, part: .aside) { cid, _, ctx in model.tapPage(sid, componentId: cid, context: ctx) }
                             .lkCard()
                             .padding(.bottom, LKSpace.x2)
                     }
                 }
-                thisApp(tab)
             }
         } else {
             content(tab, part: .all)
-            thisApp(tab)
-        }
-    }
-
-    /// 第一页下面的「这个应用」
-    @ViewBuilder private func thisApp(_ tab: String?) -> some View {
-        if tab == nil || tab == app.firstPage {
-            ThisAppSection(model: model, entry: entry, tool: app.tool, needs: app.needs.isEmpty ? nil : model.needsText(app))
         }
     }
 
@@ -243,29 +261,34 @@ struct AgentAppBody: View {
             Button { model.go(.prefs, tab: PrefsTab.permissions.rawValue) } label: {
                 HStack(spacing: 12) {
                     LKIcon("lock").foregroundStyle(p.warning).frame(width: 18)
-                    Text("需要你允许：\(model.needsText(app))")
+                    Text("待允许：\(model.needsText(app))")
                     Spacer()
                     LKIcon("chevron-right", size: 13).foregroundStyle(p.mutedFg)
                 }
                 .contentShape(Rectangle())
             }
-            .buttonStyle(.plain)
+            .buttonStyle(.plainPointer)
             .lkCard(padding: EdgeInsets(top: 11, leading: 14, bottom: 11, trailing: 14))
             .padding(.bottom, 16)
-            .accessibilityLabel("需要你允许：\(model.needsText(app))，去设置 · 权限")
+            .accessibilityLabel("待允许：\(model.needsText(app))，前往设置 · 权限")
         }
-        let tabs = AgentAppBody.tabs(app, current: tab)
+        let tabs = AgentAppBody.tabs(app)
         if tabs.count > 1 {
-            LKTabs(tabs: tabs, selected: tab ?? "") { t in model.selectAppTab(t.id) }
+            LKLineTabs(tabs: tabs, selected: tab ?? "", onSelect: { t in model.selectAppTab(t.id) }) {
+                HStack(spacing: 8) {
+                    AgentAppBody.headerItems(app, model: model)
+                    AgentAppBody.pageIcons(app, model: model)
+                }
+            }
         }
         if let tab {
             let sid = AgentFeed.pageKey(app.id, tab)
             if let s = model.agentPages[sid]?.surface {
-                if let blocks = s.surface.pageBlocks(aside: part == .all ? nil : part == .aside) {
+                if let blocks = s.surface.pageBlocks(aside: part == .all ? nil : part == .aside) ?? (part == .all ? s.surface.headedBlocks() : nil) {
                     // §4 pageSections：一段一张卡片，不再整页一张
-                    PageSections(model: s, blocks: blocks) { cid, _, ctx in model.tapSurface(sid, componentId: cid, context: ctx) }
+                    PageSections(model: s, blocks: blocks) { cid, _, ctx in model.tapPage(sid, componentId: cid, context: ctx) }
                 } else {
-                    SurfaceView(model: s, part: part) { cid, _, ctx in model.tapSurface(sid, componentId: cid, context: ctx) }
+                    SurfaceView(model: s, part: part) { cid, _, ctx in model.tapPage(sid, componentId: cid, context: ctx) }
                         .lkCard()
                 }
             } else if let err = model.agentPages[sid]?.error {
@@ -273,15 +296,16 @@ struct AgentAppBody: View {
                 let urgentN = model.urgent.filter { $0.id.hasPrefix(app.id + "/") }.count
                 let decideN = model.cards.filter { $0.id.hasPrefix(app.id + "/") }.count
                 let elsewhere = urgentN + decideN == 0 ? nil
-                    : decideN == 0 ? "要尽快处理的 \(urgentN) 件在「今天」里能看到。"
-                    : "它的 \(urgentN + decideN) 件在「今天」里能看到。"
+                    : decideN == 0 ? "\(urgentN) 件急事在「今天」中"
+                    : "相关的 \(urgentN + decideN) 件在「今天」中"
                 let offline = model.agentPages[sid]?.offline == true && model.offlineLong
-                let detail = [elsewhere, offline ? WindowModel.offlineAdvice : nil].compactMap { $0 }.joined(separator: "\n")
-                ErrorNote(text: err, detail: detail.isEmpty ? nil : detail) { model.retryPage() }
+                // 不放「重试」：窗口每 3 秒自己再取（`AgentConnection.retryLater`），取到就换成页面
+                let detail = [WindowModel.autoRetrying, elsewhere, offline ? WindowModel.offlineAdvice : nil].compactMap { $0 }
+                    .joined(separator: "\n")
+                ErrorNote(text: err, detail: detail)
                     .lkCard()
             } else {
-                Text("正在取这一页…").font(LKFont.ui(LKType.small)).foregroundStyle(p.mutedFg)
-                    .lkCard()
+                LoadingNote().frame(maxWidth: .infinity, minHeight: 120).lkCard()
             }
         }
     }
@@ -300,7 +324,7 @@ struct ThisAppSection: View {
         LKSection(title: "这个应用")
         LKGroup {
             settingLine("bell", "提醒", first: true) {
-                Text("急事马上提醒，别的放进简报")   // 写字：两个小图标看不出意思
+                Text("急事立即提醒，其余纳入简报")   // 写字：两个小图标看不出意思
                     .font(LKFont.ui(LKType.caption)).foregroundStyle(p.mutedFg)
             } action: { model.go(.prefs, tab: PrefsTab.alerts.rawValue) }
             settingLine("key", "权限", first: false) {
@@ -308,10 +332,10 @@ struct ThisAppSection: View {
                 if let needs {
                     HStack(spacing: 6) {
                         LKLight(state: .warn).accessibilityHidden(true)
-                        Text("等你允许：\(needs)").font(LKFont.ui(LKType.caption)).foregroundStyle(p.mutedFg)
+                        Text("待允许：\(needs)").font(LKFont.ui(LKType.caption)).foregroundStyle(p.mutedFg)
                             .lineLimit(1).truncationMode(.tail)
                     }
-                    .help("等你允许：\(needs)")
+                    .help("待允许：\(needs)")
                 }
             } action: { model.go(.prefs, tab: PrefsTab.permissions.rawValue) }
             HStack(spacing: 12) {
@@ -324,10 +348,10 @@ struct ThisAppSection: View {
                 } else {
                     Text(entry?.version ?? "").font(LKFont.mono(LKType.caption)).foregroundStyle(p.mutedFg)
                     if model.coreReachable {
-                        Label { Text("已是最新") } icon: { LKIcon("circle-check", size: 14) }.labelStyle(.titleAndIcon)
-                            .font(LKFont.ui(LKType.caption)).foregroundStyle(p.success)
+                        Label { Text("已是最新版本") } icon: { LKIcon("circle-check", size: 14) }.labelStyle(.titleAndIcon)
+                            .font(LKFont.ui(LKType.caption)).foregroundStyle(p.successText)
                     } else {   // 连不上时查不了：不画绿勾，说是上次查的
-                        Text("上次查看时是最新版本").font(LKFont.ui(LKType.caption)).foregroundStyle(p.mutedFg)
+                        Text("上次检查时为最新版本").font(LKFont.ui(LKType.caption)).foregroundStyle(p.mutedFg)
                     }
                 }
             }
@@ -347,7 +371,7 @@ struct ThisAppSection: View {
             }
             .contentShape(Rectangle())
         }
-        .buttonStyle(.plain)
+        .buttonStyle(.plainPointer)
         .lkRow(first: first)
     }
 }
@@ -366,8 +390,8 @@ struct SearchPage: View {
                 }
                 .font(LKFont.ui(LKType.small))
                 .padding(.horizontal, 10).frame(height: 30)
-                .background(RoundedRectangle(cornerRadius: LKRadius.control, style: .continuous).fill(p.card))
-                .overlay(RoundedRectangle(cornerRadius: LKRadius.control, style: .continuous).strokeBorder(p.input, lineWidth: 1))
+                .background(RoundedRectangle(cornerRadius: p.controlRadius, style: .continuous).fill(p.card))
+                .overlay(RoundedRectangle(cornerRadius: p.controlRadius, style: .continuous).strokeBorder(p.input, lineWidth: 1))
             }
             HStack(spacing: 6) {
                 LKChip(on: model.searchFilter == "all", action: { model.searchFilter = "all" }) { Text("全部") }
@@ -381,8 +405,8 @@ struct SearchPage: View {
                 HStack(spacing: LKSpace.x3) {
                     LKIcon("search").foregroundStyle(p.mutedFg)
                     VStack(alignment: .leading, spacing: 2) {
-                        Text("没找到「\(model.searchQuery)」")
-                        Text("换个说法，或者少写几个字再试试。").font(LKFont.ui(LKType.small)).foregroundStyle(p.mutedFg)
+                        Text("未找到「\(model.searchQuery)」")
+                        Text("可更换关键词或减少字数后重试").font(LKFont.ui(LKType.small)).foregroundStyle(p.mutedFg)
                     }
                     Spacer(minLength: 0)
                 }
@@ -394,8 +418,8 @@ struct SearchPage: View {
                     HStack(spacing: 12) {
                         LKIcon("lock").foregroundStyle(p.mutedFg)
                         VStack(alignment: .leading, spacing: 1) {
-                            Text("照片还没允许搜")
-                            Text("允许以后，照片里的文字和场景也能搜到").font(LKFont.ui(LKType.small)).foregroundStyle(p.mutedFg)
+                            Text("照片搜索未允许")
+                            Text("允许后可搜索照片中的文字和场景").font(LKFont.ui(LKType.small)).foregroundStyle(p.mutedFg)
                         }
                         Spacer()
                         Button("允许") { model.requestPermission(perm) }.buttonStyle(LKButtonStyle())
@@ -420,7 +444,7 @@ struct SearchPage: View {
                                         .buttonStyle(LKButtonStyle()).accessibilityLabel("在访达中显示")
                                 }
                                 if h.similar {
-                                    Button("找相似的") { model.show("找相似的：新结果画在这一条下面") }.buttonStyle(LKButtonStyle(kind: .text))
+                                    Button("查找相似") { model.show("找相似的：新结果画在这一条下面") }.buttonStyle(LKButtonStyle(kind: .text))
                                 }
                             }
                             .lkRow(first: i == 0)
@@ -432,52 +456,273 @@ struct SearchPage: View {
     }
 }
 
-/// 添加应用：螺壳挑好、签过名的应用。装、升级归主控。
+/// 应用管理（原「添加应用」，设计规范 §18.6，2026-11-12）：两节，「螺壳出品」和「Powered by 螺壳」；应用图标放大；
+/// 每个应用右边一个「更多」，卸载也在里面，点了弹确认（接着本体时由本体的确认页走）。数据是本体给的（`HostApps`，docs/界面接口.md §16），
+/// 没有时用窗口自己的示例目录。
 struct AddAppsPage: View {
     @ObservedObject var model: WindowModel
     @Environment(\.lk) private var p
 
+    static let iconSize: CGFloat = 34
+
+    /// 螺壳自己的应用那一句话由窗口写（顶层 ADR 0028；走查重画稿「应用管理」），不用各应用清单里的宣传语
+    /// （负责人 11-17：那几句长、带人称、带句号）。不认得的应用（第三方）照它自己的
+    static func line(_ tool: ToolIcon) -> String? {
+        switch tool {
+        case .mail: return "整理收件箱"
+        case .mem: return "记录习惯和关注的事"
+        case .scan: return "清理磁盘，查看这台 Mac 的状态"
+        case .search: return "按意思查找文件、邮件和图片"
+        case .ime: return "学习常用说法的输入法"
+        default: return nil
+        }
+    }
+
     var body: some View {
-        PageScroll {
-            PageHeader(title: "应用")
-            section("有更新") { if case .update = $0.state { return true }; return false }
-            section("可以装") { $0.state == .installable }
-            section("装好了") { $0.state == .installed }
-        }
-    }
-
-    @ViewBuilder private func section(_ title: String, _ match: @escaping (CatalogApp) -> Bool) -> some View {
-        let items = model.catalog.filter(match)
-        if !items.isEmpty {
-            LKSection(title: title, count: items.count)
-            LazyVGrid(columns: [GridItem(.flexible(), spacing: 10), GridItem(.flexible(), spacing: 10)], alignment: .leading, spacing: 10) {
-                ForEach(items) { a in tile(a) }
-            }
-        }
-    }
-
-    private func tile(_ a: CatalogApp) -> some View {
-        HStack(alignment: .top, spacing: 12) {
-            AppIcon(tool: a.tool, size: 28)
-            VStack(alignment: .leading, spacing: 4) {
-                Text(a.tool.name).font(LKFont.ui(LKType.body, .medium))
-                Text(a.tagline).font(LKFont.ui(LKType.small)).foregroundStyle(p.mutedFg)
-                if a.state == .installed || a.facts.isEmpty {
-                    Text(a.version).font(LKFont.mono(LKType.caption)).foregroundStyle(p.mutedFg)
-                } else {
-                    Wrap { ForEach(a.facts, id: \.self) { LKBadge(text: $0).fixedSize() } }
+        let rows = model.appRows
+        PageScroll(padding: LKInsets.page, maxWidth: LKColumn.apps) {
+            PageHeader(title: "应用管理")
+            group("螺壳出品", rows.filter { $0.origin == .luoke })
+            group("Powered by 螺壳", rows.filter { $0.origin == .poweredBy }) {
+                // 空的时候：一行「还没有第三方应用」、一句说明，右边「欢迎接入」（走查重画稿）
+                SettingsGroup {
+                    SettingsRow(title: "暂无第三方应用", note: "第三方应用可接入螺壳，使用这台 Mac 上的模型和记忆") {
+                        // 有接入说明的网址才放按钮，按钮上写去哪个网站（负责人 11-15：「欢迎接入」点了不开网页）
+                        if let u = model.integrationGuideURL, let host = u.host {
+                            Button("接入说明（\(host)）") { model.openIntegrationGuide() }.buttonStyle(LKButtonStyle(kind: .secondary))
+                        }
+                    }
                 }
             }
+            if let n = model.appsNotice { notice(n) }
+        }
+    }
+
+    /// 做完一个动作的结果，画在页底；后面可以跟一个按钮
+    private func notice(_ n: HostAppsNotice) -> some View {
+        HStack(spacing: 10) {
+            LKIcon(n.ok ? "circle-check" : "circle-alert", size: 16).foregroundStyle(n.ok ? p.success : p.danger)
+            Text(n.text).font(LKFont.ui(LKType.small)).fixedSize(horizontal: false, vertical: true)
             Spacer(minLength: 0)
-            switch a.state {
-            case .update: Button("升级") { model.upgrade(a.tool) }.buttonStyle(LKButtonStyle(kind: .primary))
-            case .installable:
-                Button { model.show("装\(a.tool.name)：下载、核对签名、装好、本机试跑") } label: { IconText("安装", symbol: "circle-arrow-down") }
-                    .buttonStyle(LKButtonStyle(kind: .primary))
-            case .installed: LKIcon("circle-check").foregroundStyle(p.success).accessibilityLabel("装好了")
+            if let a = n.action {
+                Button(a.label) { model.perform(a.action, onApp: a.app) }.buttonStyle(LKButtonStyle(kind: .secondary))
             }
         }
-        .lkCard(padding: EdgeInsets(top: 14, leading: 14, bottom: 14, trailing: 14))
+        .padding(.top, 18)
+        .accessibilityElement(children: .combine)
+    }
+
+    @ViewBuilder private func group<Empty: View>(_ title: String, _ items: [HostAppRow], @ViewBuilder empty: () -> Empty) -> some View {
+        SettingsHeading(title: title)
+        if items.isEmpty {
+            empty()
+        } else {
+            // 一组一张卡片，一个应用一行：图标、名字、一句话，右边是卸载图标（走查重画稿第三稿）
+            SettingsGroup {
+                ForEach(items) { a in AppTile(model: model, row: a) }
+            }
+        }
+    }
+
+    @ViewBuilder private func group(_ title: String, _ items: [HostAppRow]) -> some View {
+        group(title, items) { EmptyView() }
+    }
+}
+
+struct AppTile: View {
+    @ObservedObject var model: WindowModel
+    let row: HostAppRow
+    @Environment(\.lk) private var p
+    @State private var confirming = false
+    @State private var more = false
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            HStack(alignment: .center, spacing: 12) {
+                AppIcon(tool: row.tool, size: AddAppsPage.iconSize)
+                VStack(alignment: .leading, spacing: 3) {
+                    HStack(alignment: .firstTextBaseline, spacing: 10) {
+                        Text(row.name).font(LKFont.ui(LKType.body, .semibold))
+                        Text(AddAppsPage.line(row.tool) ?? row.tagline).font(LKFont.ui(LKType.small)).foregroundStyle(p.mutedFg).lineLimit(1)
+                    }
+                    detail
+                }
+                Spacer(minLength: 0)
+                trailing
+                if expandable {
+                    LKIcon("chevron-right", size: 12).foregroundStyle(p.mutedFg).rotationEffect(.degrees(open ? 90 : 0))
+                        .accessibilityHidden(true)
+                }
+            }
+            .padding(.vertical, 3)
+            .contentShape(Rectangle())
+            .onTapGesture { if expandable { withAnimation(.easeOut(duration: 0.15)) { toggle() } } }
+            .accessibilityAddTraits(expandable ? .isButton : [])
+            // 读屏的「激活」、辅助功能的按下也要能展开（只挂点按手势的话按下没反应）
+            .accessibilityAction { if expandable { toggle() } }
+            if open && expandable { details.padding(.leading, AddAppsPage.iconSize + 12).padding(.top, 6).padding(.bottom, 4) }
+        }
+    }
+
+    /// 装好的应用点一行展开：它要的每项权限、凭什么要、现在给没给（负责人 11-15：应用详情整页没入口，看不到它要什么权限）
+    private var expandable: Bool {
+        switch row.state {
+        case .installed, .disabled, .update: return true
+        default: return false
+        }
+    }
+    private var open: Bool { model.openedApps.contains(row.id) }
+    private func toggle() { if open { model.openedApps.remove(row.id) } else { model.openedApps.insert(row.id) } }
+
+    private var running: Bool? { model.coreReachable ? model.agentApps?.first { $0.id == row.id }?.running : nil }
+
+    @ViewBuilder private var details: some View {
+        let perms = (model.agentPermissions ?? []).filter { $0.app == row.id }
+        VStack(alignment: .leading, spacing: 6) {
+            Text("权限").font(LKFont.ui(LKType.caption, .semibold)).foregroundStyle(p.mutedFg)
+            if model.agentPermissions == nil {
+                Text("正在读取").font(LKFont.ui(LKType.caption)).foregroundStyle(p.mutedFg)
+            } else if perms.isEmpty {
+                Text("未申请权限").font(LKFont.ui(LKType.caption)).foregroundStyle(p.mutedFg)
+            }
+            ForEach(perms) { r in
+                VStack(alignment: .leading, spacing: 1) {
+                    HStack(spacing: 6) {
+                        Text(r.title).font(LKFont.ui(LKType.small, .medium))
+                        Text(AppTile.stateWord(r.state)).font(LKFont.ui(LKType.caption)).foregroundStyle(p.mutedFg)
+                    }
+                    if !r.facts.isEmpty {
+                        Text(r.facts.joined(separator: "；")).font(LKFont.ui(LKType.caption)).foregroundStyle(p.mutedFg)
+                            .fixedSize(horizontal: false, vertical: true)
+                    }
+                }
+            }
+            // 从这里去改：权限在「设置 · 隐私与权限」，应用自己的设置在它的页上（团队 11-18：展开后要能跳到对应应用的设置）
+            HStack(spacing: 8) {
+                if !perms.isEmpty {
+                    Button("权限设置") { model.go(.prefs, tab: PrefsTab.permissions.rawValue) }
+                        .buttonStyle(LKButtonStyle(kind: .secondary, size: .small))
+                }
+                if let to = model.appSettingsPlace(row.tool) {
+                    Button(to.tab == nil ? "打开应用" : "应用设置") { model.go(to.page, tab: to.tab) }
+                        .buttonStyle(LKButtonStyle(kind: .secondary, size: .small))
+                }
+            }
+            .padding(.top, 4)
+        }
+    }
+
+    static func stateWord(_ s: String?) -> String {
+        switch s {
+        case "granted", "on": return "已允许"
+        case "denied", "off": return "未允许"
+        case "ask": return "待允许"
+        default: return "未知"
+        }
+    }
+
+    /// 随螺壳这个包装的应用（只有开启和停用，没有卸载，顶层 ADR 0002）：在版本那一行写明，菜单里为什么没有「卸载」
+    /// 看得出来（负责人 11-18：不改机制，页上写明）
+    static let bundledWord = "随螺壳安装"
+
+    /// 装好的应用名字下面那一行：版本、随螺壳安装、在不在运行
+    static func versionLine(_ row: HostAppRow, running: Bool?) -> String {
+        [row.version.isEmpty ? nil : "版本 \(row.version)", row.bundled ? bundledWord : nil,
+         running.map { $0 ? "运行中" : "未运行" }].compactMap { $0 }.joined(separator: " · ")
+    }
+
+    /// 名字下面最后一行：装好的写版本，没装的写大小、要哪一档，装不了的写原因，在装的画进度
+    @ViewBuilder private var detail: some View {
+        switch row.state {
+        case .working(let label, let progress):
+            VStack(alignment: .leading, spacing: 4) {
+                Text(label).font(LKFont.ui(LKType.caption)).foregroundStyle(p.mutedFg)
+                if let progress { ProgressCapsule(value: progress) }
+            }
+        case .unavailable(let reason):
+            Text(reason).font(LKFont.ui(LKType.caption)).foregroundStyle(p.warningText)
+        case .disabled:
+            HStack(spacing: 8) {
+                LKBadge(text: "已停用").fixedSize()
+                if row.bundled { Text(AppTile.bundledWord).font(LKFont.ui(LKType.caption)).foregroundStyle(p.mutedFg) }
+            }
+        case .update(let to):
+            Text("有新版本 \(to)").font(LKFont.ui(LKType.caption)).foregroundStyle(p.mutedFg)
+        case .installed:
+            // 版本和在不在运行（负责人 11-15：看不出装没装好、什么版本、在不在运行）
+            Text(AppTile.versionLine(row, running: running))
+                .font(LKFont.ui(LKType.caption)).foregroundStyle(running == false ? p.warningText : p.mutedFg)
+        default:
+            if !row.facts.isEmpty { Wrap { ForEach(row.facts, id: \.self) { LKBadge(text: $0).fixedSize() } } }
+        }
+    }
+
+    @ViewBuilder private var trailing: some View {
+        switch row.state {
+        case .update:
+            Button("升级") { model.upgrade(row.tool) }.buttonStyle(LKButtonStyle(kind: .primary))
+            tail
+        case .installable:
+            Button { model.install(row) } label: { IconText("安装", symbol: "circle-arrow-down") }
+                .buttonStyle(LKButtonStyle(kind: .primary))
+        case .working, .unavailable:
+            EmptyView()
+        case .disabled:
+            if row.enableOnRow {
+                Button("开启") { model.perform(.enable, on: row) }.buttonStyle(LKButtonStyle(kind: .secondary))
+            }
+            tail
+        case .installed:
+            if running == false {       // 没在运行：给「启动」
+                Button("启动") { model.perform(.restart, on: row) }.buttonStyle(LKButtonStyle(kind: .secondary))
+            }
+            tail
+        }
+    }
+
+    /// 行尾：「更多」（开启、停用、回到上一版……、卸载）。卸载接着本体时直接交给它（它自己的确认页会列出要拿走的东西）；
+    /// 示例里先在这里弹确认
+    @ViewBuilder private var tail: some View {
+        if !row.moreActions.isEmpty {
+            LKIconButton(symbol: "ellipsis", label: "更多") { more = true }
+                .popover(isPresented: $more, arrowEdge: .bottom) {
+                    VStack(alignment: .leading, spacing: 2) {
+                        ForEach(row.moreActions, id: \.self) { a in
+                            if a == .uninstall && row.moreActions.count > 1 { Divider().padding(.vertical, 4) }
+                            Button { more = false; pick(a) } label: {
+                                Text(a.title).foregroundStyle(a == .uninstall ? p.danger : p.fg)
+                                    .frame(maxWidth: .infinity, alignment: .leading).contentShape(Rectangle())
+                            }
+                            .buttonStyle(.plainPointer).padding(.horizontal, 10).padding(.vertical, 6)
+                        }
+                    }
+                    .padding(6).frame(minWidth: 160)
+                }
+                .popover(isPresented: $confirming, arrowEdge: .bottom) { confirmUninstall }
+        }
+    }
+
+    private func pick(_ a: HostAppAction) {
+        if a == .uninstall && model.confirmsUninstallHere {
+            DispatchQueue.main.async { confirming = true }     // 等菜单收起再弹
+        } else {
+            model.perform(a, on: row)
+        }
+    }
+
+    private var confirmUninstall: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            Text("卸载\(row.name)？").font(LKFont.ui(LKType.body, .medium))
+            Text("它写入记忆的内容和自身数据可以保留，重新安装后恢复")
+                .font(LKFont.ui(LKType.small)).foregroundStyle(p.mutedFg)
+                .fixedSize(horizontal: false, vertical: true)
+            HStack(spacing: 8) {
+                Spacer(minLength: 0)
+                Button("取消") { confirming = false }.buttonStyle(LKButtonStyle(kind: .secondary))
+                Button("卸载") { confirming = false; model.perform(.uninstall, on: row) }.buttonStyle(LKButtonStyle(kind: .danger))
+            }
+        }
+        .padding(16).frame(width: 280)
     }
 }
 
@@ -497,7 +742,7 @@ struct ChatPage: View {
                         HStack {
                             Spacer()
                             Text(line.text).padding(.horizontal, 12).padding(.vertical, 8)
-                                .background(UnevenRoundedRectangle(topLeadingRadius: LKRadius.card, bottomLeadingRadius: LKRadius.card, bottomTrailingRadius: LKRadius.small, topTrailingRadius: LKRadius.card).fill(p.muted))
+                                .background(UnevenRoundedRectangle(topLeadingRadius: p.cardRadius, bottomLeadingRadius: p.cardRadius, bottomTrailingRadius: LKRadius.small, topTrailingRadius: p.cardRadius).fill(p.muted))
                         }
                     } else {
                         Text(line.text).lkCard(padding: EdgeInsets(top: 12, leading: 14, bottom: 12, trailing: 14))
@@ -528,6 +773,7 @@ struct PageSections: View {
     /// 带小标题的段和上面隔得开一点（对照稿 .sec2 上面 18），别的 12
     private func gap(_ b: PageBlock) -> CGFloat {
         if case .card(_, let title, _) = b, title != nil { return 18 }
+        if case .group(let title, _) = b, title != nil { return 18 }
         return 12
     }
 
@@ -548,16 +794,33 @@ struct PageSections: View {
                 if let title { titleView(title) }
                 SurfaceView(model: model, part: .section(id, skip: skip), onAction: onAction).lkCard()
             }
+        case .group(let title, let ids):
+            VStack(alignment: .leading, spacing: 8) {
+                if let title { titleView(title) }
+                if ids.count == 1, model.surface.chipRow(ids[0]) {
+                    // 小标题下面只有一排小标签（「最近搜过」「检索范围」）：不放进卡片
+                    SurfaceView(model: model, part: .section(ids[0], skip: 0), onAction: onAction)
+                } else if !ids.isEmpty {
+                    VStack(alignment: .leading, spacing: 14) {
+                        ForEach(ids, id: \.self) { id in SurfaceView(model: model, part: .section(id, skip: 0), onAction: onAction) }
+                    }
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .lkCard()
+                }
+            }
         }
     }
 
     private func titleView(_ t: SectionTitle) -> some View {
+        // 走查重画稿：卡片上面的小标题是灰的小字，数跟在「·」后面（「待确认 · 1」）
         HStack(spacing: 6) {
-            if let icon = t.icon { LKIcon(A2UI.lucide(icon) ?? icon, size: 14).foregroundStyle(p.mutedFg) }
-            Text(text(t.text)).font(LKFont.ui(LKType.body, .semibold))
-            if let n = t.count { Text(text(n)).font(LKFont.ui(LKType.body, .semibold)).foregroundStyle(p.mutedFg) }
+            if let icon = t.icon { LKIcon(A2UI.lucide(icon) ?? icon, size: 13) }
+            Text(text(t.text))
+            if let n = t.count { Text("· \(text(n))") }
         }
-        .padding(.horizontal, 4)
+        .font(LKFont.ui(LKType.small))
+        .foregroundStyle(p.mutedFg)
+        .padding(.horizontal, 2)
         .accessibilityElement(children: .combine)
         .accessibilityAddTraits(.isHeader)
     }

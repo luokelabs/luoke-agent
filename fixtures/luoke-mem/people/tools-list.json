@@ -10,7 +10,7 @@
             "destructiveHint": false,
             "readOnlyHint": false
           },
-          "description": "把用户在卡片上的回答交回记忆：choice 是 yes / no / past / revise / later / answer / useful / useless / never",
+          "description": "把用户在卡片上的回答交回记忆：choice 是 yes / no / past / revise / later / answer / useful / useless / never / archive（归档）",
           "inputSchema": {
             "properties": {
               "ask": {
@@ -37,9 +37,15 @@
             "destructiveHint": true,
             "readOnlyHint": false
           },
-          "description": "",
+          "description": "op：confirm（对；以前的事是「现在还是」）、reject（不对）、forget（忘掉，要 sure；说过不对的也能忘掉）、revise（改写成 text）、split（把并进别的那条里的 note 拆出来）、reject_family（这一类都不要；family 是页上数的那几条，这一类变了就一条都不动）",
           "inputSchema": {
             "properties": {
+              "family": {
+                "items": {
+                  "type": "integer"
+                },
+                "type": "array"
+              },
               "note": {
                 "type": "integer"
               },
@@ -47,12 +53,18 @@
                 "enum": [
                   "confirm",
                   "reject",
-                  "forget"
+                  "forget",
+                  "revise",
+                  "split",
+                  "reject_family"
                 ],
                 "type": "string"
               },
               "sure": {
                 "type": "boolean"
+              },
+              "text": {
+                "type": "string"
               }
             },
             "required": [
@@ -62,7 +74,7 @@
             "type": "object"
           },
           "name": "mem_note",
-          "title": "确认、否定或忘掉一条"
+          "title": "确认、否定、改写、拆出或忘掉一条"
         },
         {
           "annotations": {
@@ -90,6 +102,30 @@
         },
         {
           "annotations": {
+            "destructiveHint": false,
+            "readOnlyHint": false
+          },
+          "description": "on 为 false：记忆以后不收这个应用写来的（已经记下的留着）；true：再从它学",
+          "inputSchema": {
+            "properties": {
+              "on": {
+                "type": "boolean"
+              },
+              "tool": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "tool",
+              "on"
+            ],
+            "type": "object"
+          },
+          "name": "mem_learn",
+          "title": "不再从某个应用学，或者再从它学"
+        },
+        {
+          "annotations": {
             "destructiveHint": true,
             "readOnlyHint": false
           },
@@ -113,15 +149,30 @@
             "destructiveHint": true,
             "readOnlyHint": false
           },
-          "description": "",
+          "description": "op：rename（改成 name）、merge（other 那个人并进来）、split（叫法或地址 alias 拆成另一个人）、reject（不是一个人）、forget（忘掉，要 sure）",
           "inputSchema": {
             "properties": {
+              "alias": {
+                "type": "string"
+              },
+              "name": {
+                "type": "string"
+              },
               "op": {
                 "enum": [
                   "reject",
-                  "forget"
+                  "forget",
+                  "rename",
+                  "merge",
+                  "split"
                 ],
                 "type": "string"
+              },
+              "other": {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
               },
               "person": {
                 "type": "integer"
@@ -137,7 +188,39 @@
             "type": "object"
           },
           "name": "mem_person",
-          "title": "不是一个人，或者忘掉这个人"
+          "title": "改名、并成一个、拆开、不是一个人，或者忘掉这个人"
+        },
+        {
+          "annotations": {
+            "destructiveHint": false,
+            "readOnlyHint": false
+          },
+          "description": "把记忆想问的事、建议归档（op: archive，不算回答、不会自己再问），或者放回去（op: back）；asks 是编号",
+          "inputSchema": {
+            "properties": {
+              "asks": {
+                "items": {
+                  "type": "integer"
+                },
+                "minItems": 1,
+                "type": "array"
+              },
+              "op": {
+                "enum": [
+                  "archive",
+                  "back"
+                ],
+                "type": "string"
+              }
+            },
+            "required": [
+              "op",
+              "asks"
+            ],
+            "type": "object"
+          },
+          "name": "mem_archive",
+          "title": "归档或放回"
         },
         {
           "_meta": {
@@ -195,7 +278,19 @@
     "method": "tools/list",
     "params": {
       "_meta": {
-        "io.modelcontextprotocol/clientCapabilities": {},
+        "io.modelcontextprotocol/clientCapabilities": {
+          "experimental": {
+            "ai.luoke/a2ui": {
+              "features": [
+                "openPage",
+                "pageArgs",
+                "confirm",
+                "rowOpen",
+                "fieldSubmit"
+              ]
+            }
+          }
+        },
         "io.modelcontextprotocol/clientInfo": {
           "name": "luoke-agent",
           "version": "fixtures"

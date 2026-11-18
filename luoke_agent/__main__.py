@@ -171,6 +171,7 @@ def serve(a: argparse.Namespace) -> int:
         stop.wait()
     finally:
         runner.stop()
+        runner.join(5)          # 等这一轮读完再关库：线程还在查的时候关掉 SQLite 连接，解释器会崩
         ui.close()
         memory.close()
         state.close()

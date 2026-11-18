@@ -31,6 +31,21 @@ final class AgentAppsTests: XCTestCase {
         return (m, f)
     }
 
+    /// 提醒分三类（§18.7，2026-11-13 负责人定）：核心给的 classes、brief_time 画进「设置 · 通用 · 提醒」，改了交回核心
+    func testAlertClassesComeFromTheCoreAndGoBack() throws {
+        let rec = Recorder()
+        let (m, f) = fed(backend: rec)
+        f.applySettings(try JSONValue.parse(Data(#"{"classes": {"urgent": "now", "decide": "off", "done": "brief"}, "brief_time": "09:30"}"#.utf8)))
+        XCTAssertEqual(m.alertClasses, [.urgent: .now, .decide: .off, .done: .brief])
+        XCTAssertEqual(m.briefTime, "09:30")
+        XCTAssertTrue(m.briefTimeOptions.contains("09:30"))
+        m.setAlertClass(.done, .off)
+        m.setBriefTime("07:30")
+        XCTAssertEqual(rec.calls, ["settings", "settings"])
+        XCTAssertEqual(AlertClass.allCases.map(\.title), ["急事", "待确认", "已自动处理"])
+        XCTAssertEqual(AlertTiming.allCases.map(\.title), ["立即提醒", "纳入简报", "不提醒"])
+    }
+
     /// 扫描这边：它的场景样例接上真核心得来的（`ToolSample`），测试照它比，不抄它的字
     private func scanSample() throws -> ToolSample {
         try XCTUnwrap(ToolSample.load("luoke-scan", ToolSample.defaultScan), "Resources/samples/luoke-scan 里要有默认的场景")
@@ -47,6 +62,29 @@ final class AgentAppsTests: XCTestCase {
 
     // MARK: 应用的页
 
+    func testAppManagementKnowsWhereAnAppsSettingsAre() throws {
+        let (m, _) = fed()
+        let scan = try XCTUnwrap(m.appSettingsPlace(.scan))
+        XCTAssertEqual(scan.page, .scan)
+        XCTAssertEqual(scan.tab, "settings", "有「设置」页的到那一页")
+        m.go(scan.page, tab: scan.tab)
+        XCTAssertEqual(m.page, .scan)
+        XCTAssertEqual(m.agentApp(for: .scan).flatMap(m.agentTab), "settings")
+        m.agentApps = nil
+        XCTAssertNil(m.appSettingsPlace(.scan), "核心没列这个应用时没有去处")
+    }
+
+    func testBundledAppsSayTheyComeWithLuoke() {
+        let scan = HostAppRow(id: "luoke-scan", tool: .scan, tagline: "", version: "0.3.40", state: .installed, bundled: true,
+                              actions: [.disable])
+        XCTAssertEqual(AppTile.versionLine(scan, running: true), "版本 0.3.40 · 随螺壳安装 · 运行中")
+        XCTAssertFalse(scan.moreActions.contains(.uninstall))
+        let ime = HostAppRow(id: "luoke-ime", tool: .ime, tagline: "", version: "0.1.104", state: .installed,
+                             actions: [.disable, .uninstall])
+        XCTAssertEqual(AppTile.versionLine(ime, running: nil), "版本 0.1.104", "单独一个包的不写")
+        XCTAssertTrue(ime.moreActions.contains(.uninstall))
+    }
+
     func testAppsListBecomesTabsAndSummary() throws {
         let (m, _) = fed()
         let scan = try XCTUnwrap(m.agentApp(for: .scan))
@@ -54,7 +92,10 @@ final class AgentAppsTests: XCTestCase {
         XCTAssertTrue(scan.running)
         XCTAssertEqual(scan.summary?.text, try scanSample().apps.first?["summary"]?["text"]?.string, "照核心答的写")
         XCTAssertNotNil(scan.summary?.text)
-        XCTAssertEqual(scan.pages.map(\.title), ["概览", "状态", "清理记录"], "窗口里画的页（「状态」：luoke-scan#124）")
+        // 扫描列了原始数据（luoke-scan#186）：页由核心照效果图拼，只有「概览」一个标签；清理记录是右上角的图标，
+        // 「状态」「详情」「其他」从页上的链接打开（ADR 0028）
+        XCTAssertEqual(scan.pages.filter { !$0.hidden }.map(\.title), ["概览", "状态"])
+        XCTAssertEqual(Set(scan.pages.filter(\.hidden).map(\.title)), ["清理记录", "扫描设置", "详情", "其他", "状态", "文件夹"])
         XCTAssertNil(scan.uiPages, "扫描没有自己的界面")
         XCTAssertFalse(scan.hasUI)
         XCTAssertEqual(m.agentApp(for: .mail)?.uiPages?.map(\.title), ["账号"], "带外链箭头、由工具自己打开的页")
@@ -88,11 +129,11 @@ final class AgentAppsTests: XCTestCase {
         XCTAssertEqual(buttons.map { try! s.surface.action($0).name }.sorted(), want.sorted())
         XCTAssertNotNil(m.agentPages["luoke-scan/page/cleaned"]?.surface)
 
-        f.applyPage(app: "luoke-mail", page: "overview", status: 503, body: Data(#"{"error":"邮件助手现在没在运行。"}"#.utf8))
+        f.applyPage(app: "luoke-mail", page: "overview", status: 503, body: Data(#"{"error":"邮件助手未运行"}"#.utf8))
         XCTAssertNil(m.agentPages["luoke-mail/page/overview"]?.surface)
-        XCTAssertEqual(m.agentPages["luoke-mail/page/overview"]?.error, "邮件助手现在没在运行。")
+        XCTAssertEqual(m.agentPages["luoke-mail/page/overview"]?.error, "邮件助手未运行")
         f.applyPage(app: "luoke-mail", page: "rules", status: 200, body: Data(#"{"messages":[{"nope":1}]}"#.utf8))
-        XCTAssertEqual(m.agentPages["luoke-mail/page/rules"]?.error, "这一页画不了。", "校验不过的不画")
+        XCTAssertEqual(m.agentPages["luoke-mail/page/rules"]?.error, "此页无法显示", "校验不过的不画")
         f.applyPage(app: "luoke-scan", page: "overview", status: 0, body: Data())
         XCTAssertNotNil(m.agentPages[sid]?.surface, "连不上：先留着上次的")
     }
@@ -101,10 +142,10 @@ final class AgentAppsTests: XCTestCase {
         let b = Recorder()
         let (m, _) = fed(backend: b)
         m.go(.scan)
-        XCTAssertEqual(b.calls, ["page luoke-scan overview"], "权限取过了：不再取")
+        XCTAssertEqual(b.calls, ["page luoke-scan overview", "page luoke-scan status"], "权限取过了：不再取；别的标签（状态）预先取好")
         b.calls = []
         m.selectAppTab("cleaned")
-        XCTAssertEqual(b.calls, ["page luoke-scan cleaned"])
+        XCTAssertEqual(b.calls, ["page luoke-scan cleaned", "page luoke-scan status"])
         b.calls = []
         m.go(.mem)
         m.go(.today)
@@ -125,11 +166,11 @@ final class AgentAppsTests: XCTestCase {
         m.go(.scan)
         XCTAssertEqual(b.calls, [], "应用列表还没来")
         f.applyApps(try JSONValue.parse(Sample.agentApps()))
-        XCTAssertEqual(b.calls, ["page luoke-scan overview", "permissions"], "列表来了：取正看着的页；缺权限要写名字，取权限")
+        XCTAssertEqual(b.calls, ["page luoke-scan overview", "permissions", "page luoke-scan status"], "列表来了：取正看着的页；缺权限要写名字，取权限")
         f.applyPage(app: "luoke-scan", page: "overview", status: 200, body: Sample.agentPage("luoke-scan", "overview")!)
         b.calls = []
         f.applyApps(try JSONValue.parse(Sample.agentApps()))
-        XCTAssertEqual(b.calls, ["permissions"], "取过的页不再取")
+        XCTAssertEqual(b.calls, ["permissions", "page luoke-scan status"], "取过的页不再取（状态那一页还没答，照旧去取）")
     }
 
     func testAppsEventRefetchesListAndTheShownPage() {
@@ -162,6 +203,33 @@ final class AgentAppsTests: XCTestCase {
         XCTAssertEqual(m.toast?.text, "开始逐项看。")
     }
 
+    /// 应用的页上点了：交给核心之前告诉本体是哪个应用的哪一页（本体只认紧跟在搜索页上的点按才弹选文件夹的框）；卡片不报
+    func testPageTapTellsTheHost() {
+        final class TapHost: WindowHost {
+            var taps: [String] = []
+            func openModelSettings() {}
+            func openPrivacySettings() {}
+            func openAddApps() {}
+            func upgrade(app: String) {}
+            func askPermission(app: String, id: String) {}
+            func askPermission(app: String, id: String, ready: @escaping @MainActor () -> Void) {}
+            func askSystem(id: String) {}
+            func setPermission(app: String, id: String, on: Bool) {}
+            func appPageTapped(app: String, page: String) { taps.append("\(app) \(page)") }
+        }
+        let b = Recorder()
+        let (m, _) = fed(backend: b)
+        let host = TapHost()
+        m.host = host
+        m.go(.scan)
+        b.calls = []
+        m.tapPage("luoke-scan/page/overview", componentId: "b1", context: .object([:]))
+        XCTAssertEqual(host.taps, ["luoke-scan overview"])
+        XCTAssertEqual(b.calls, ["action luoke-scan/page/overview b1"], "照样交给核心")
+        m.tapSurface("luoke-scan/page/overview", componentId: "b1", context: .object([:]))
+        XCTAssertEqual(host.taps, ["luoke-scan overview"], "卡片那一路（编号长得像页的也算卡片）：不报")
+    }
+
     // MARK: 设置 · 权限
 
     func testPermissionRowsAreGrouped() throws {
@@ -179,10 +247,10 @@ final class AgentAppsTests: XCTestCase {
         XCTAssertTrue(m.agentPermissionRows("each-time").allSatisfy { $0.can == nil }, "每次都问的没有按钮")
         XCTAssertTrue(m.isNeeded(row(m, "luoke-scan", "fda")))
         XCTAssertFalse(m.isNeeded(row(m, "luoke-mail", "contacts")))
-        XCTAssertEqual(AgentPermissionsTab.light("system", "denied", needed: true).1, "没允许")
-        XCTAssertEqual(AgentPermissionsTab.light("system", "ask", needed: true).1, "等你允许")
-        XCTAssertEqual(AgentPermissionsTab.light("account", "granted", needed: false).1, "连着")
-        XCTAssertEqual(AgentPermissionsTab.light("system", nil, needed: false).1, "现在不知道")
+        XCTAssertEqual(AgentPermissionsTab.light("system", "denied", needed: true).1, "未允许")
+        XCTAssertEqual(AgentPermissionsTab.light("system", "ask", needed: true).1, "待允许")
+        XCTAssertEqual(AgentPermissionsTab.light("account", "granted", needed: false).1, "已连接")
+        XCTAssertEqual(AgentPermissionsTab.light("system", nil, needed: false).1, "未知")
     }
 
     func testPermissionOpsOnlyOnClickAndOnlyWhatTheRowCan() {
@@ -315,13 +383,15 @@ final class AgentAppsTests: XCTestCase {
         let (m, h) = hosted(b)
         let sid = "luoke-scan/access-000000000003"
         let card = try XCTUnwrap(m.cards.first { $0.id == sid }, "扫描的场景里没给完全磁盘访问：有一张要权限的卡片")
-        XCTAssertEqual(m.hostAsks[sid], HostAsk(app: "luoke-scan", id: "fda", button: "b3"), "核心从工具录的卡片上认出来的")
-        m.tap(card: card, componentId: "b3", name: "scan_open_settings", context: .object([:]))
+        // 卡片是核心照扫描带的 data 画的（顶层 ADR 0028）：按钮的编号是核心自己的，照它报的来
+        let ask = try XCTUnwrap(m.hostAsks[sid], "核心从这张卡片上认出来的")
+        XCTAssertEqual(ask, HostAsk(app: "luoke-scan", id: "fda", button: ask.button))
+        m.tap(card: card, componentId: ask.button, name: "scan_open_settings", context: .object([:]))
         XCTAssertEqual(h.calls, ["ask luoke-scan fda"])
         XCTAssertEqual(b.calls, [], "不转给工具")
         XCTAssertEqual(m.cards.filter { $0.id == sid }.count, 1, "卡片留着，等本体报了 granted 由核心撤下")
 
-        m.tapSurface(sid, componentId: "b3", context: .object([:]))
+        m.tapSurface(sid, componentId: ask.button, context: .object([:]))
         XCTAssertEqual(h.calls.last, "ask luoke-scan fda", "画在别的段里也一样")
         h.calls = []
         m.tap(card: card, componentId: "b9", name: "scan_later", context: .object([:]))
@@ -435,8 +505,8 @@ final class AgentAppsTests: XCTestCase {
         m.permissionAnswered(app: "luoke-mail", id: "auto", op: "on", text: "这一项现在不能这样改。", error: true)
         XCTAssertEqual(m.toast?.text, "这一项现在不能这样改。")
         m.permissionAnswered(app: "luoke-mail", id: "auto", op: "on", text: "", error: true)
-        XCTAssertEqual(m.toast?.text, "没改成。")
-        XCTAssertEqual(AgentConnection.answer(0, Data()).0, "螺壳暂时没响应，这会儿做不成。")
+        XCTAssertEqual(m.toast?.text, "修改失败")
+        XCTAssertEqual(AgentConnection.answer(0, Data()).0, "螺壳暂时没响应，操作未完成")
         XCTAssertTrue(AgentConnection.answer(400, Data(#"{"error":"要有 app、id 和 op"}"#.utf8)).1)
         XCTAssertEqual(AgentConnection.answer(400, Data(#"{"error":"要有 app、id 和 op"}"#.utf8)).0, "要有 app、id 和 op")
         XCTAssertFalse(AgentConnection.answer(200, Data(#"{"text":"好","error":false}"#.utf8)).1)

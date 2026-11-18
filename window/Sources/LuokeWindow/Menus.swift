@@ -64,8 +64,8 @@ extension WindowModel {
         [
             MenuSpec(id: "app", title: "螺壳", items: [
                 .plain("about", "关于螺壳"), .sep("s1"),
-                MenuItemSpec(id: "settings", title: "设置…", shortcut: Shortcut(key: ",", modifiers: .command, label: "⌘,"), action: .go(.prefs, nil)),
-                .plain("update", "检查更新…"), .sep("s2"),
+                MenuItemSpec(id: "settings", title: "设置", shortcut: Shortcut(key: ",", modifiers: .command, label: "⌘,"), action: .go(.prefs, nil)),
+                .plain("update", "检查更新"), .sep("s2"),
                 .plain("hide", "隐藏螺壳", "⌘H"), .plain("hideOthers", "隐藏其他", "⌥⌘H"), .plain("showAll", "全部显示"), .sep("s3"),
                 .plain("quit", "退出螺壳", "⌘Q"),
             ]),
@@ -82,7 +82,7 @@ extension WindowModel {
             MenuSpec(id: "window", title: "窗口", items: [
                 .plain("min", "最小化", "⌘M"), .plain("zoom", "缩放"), .sep("s1"), .plain("front", "前置全部窗口"), .sep("s2"), .plain("win", "✓ 螺壳"),
             ]),
-            MenuSpec(id: "help", title: "帮助", items: [.plain("guide", "螺壳使用说明")]),
+            MenuSpec(id: "help", title: "帮助", items: [.plain("checks", "系统权限检查"), .plain("export", "导出诊断信息")]),
         ]
     }
 
@@ -99,14 +99,20 @@ extension WindowModel {
             default: return true
             }
         }
-        for a in apps {
+        for a in apps where a.id != .mem {
             items.append(MenuItemSpec(id: "app-\(a.tool.rawValue)", title: a.tool.name, icon: .tool(a.tool), action: .go(a.id, nil)))
         }
+        // 和侧栏一样：应用管理是包裹；记忆不算应用，是「记忆」加线条图标，在应用管理下面（负责人 11-15）
+        items.append(MenuItemSpec(id: "add", title: "应用管理", icon: .symbol("package"), action: .go(.apps, nil)))
+        if apps.contains(where: { $0.id == .mem }) {
+            items.append(MenuItemSpec(id: "app-mem", title: "记忆", icon: .symbol("brain"), action: .go(.mem, nil)))
+        }
         items += [
-            MenuItemSpec(id: "add", title: "添加应用…", icon: .symbol("plus"), action: .go(.apps, nil)),
             .sep("s2"),
-            MenuItemSpec(id: "permissions", title: "权限", icon: .symbol("key"), action: .go(.prefs, PrefsTab.permissions.rawValue)),
-            MenuItemSpec(id: "model", title: "模型", icon: .symbol("cpu"), action: .go(.prefs, PrefsTab.model.rawValue)),
+            MenuItemSpec(id: "permissions", title: PrefsTab.privacy.title, icon: .symbol("key"), action: .go(.prefs, PrefsTab.privacy.rawValue)),
+            MenuItemSpec(id: "model", title: PrefsTab.model.title, icon: .symbol("sliders-horizontal"), action: .go(.prefs, PrefsTab.model.rawValue)),
+            // 「前往」里也有「设置」（负责人 11-15：有「隐私与权限」「模型」，没有「设置」）；⌘, 在应用菜单的「设置」上，这里不重复
+            MenuItemSpec(id: "prefs", title: "设置", icon: .symbol("settings"), action: .go(.prefs, PrefsTab.general.rawValue)),
         ]
         return items
     }
@@ -114,7 +120,7 @@ extension WindowModel {
     /// 菜单栏图标的菜单：只放必要的。不列应用、活动、设置。
     public var statusMenu: MenuSpec {
         var items: [MenuItemSpec] = [
-            MenuItemSpec(id: "state", title: pausedUntil.map { "螺壳在运行 · 提醒暂停到 \($0)" } ?? (engineReady ? "螺壳在运行" : "螺壳在准备"), kind: .plain),
+            MenuItemSpec(id: "state", title: pausedUntil.map { "螺壳运行中 · 提醒已暂停至 \($0)" } ?? (engineReady ? "螺壳运行中" : "螺壳正在准备"), kind: .plain),
             .sep("s1"),
         ]
         if !urgent.isEmpty {
@@ -144,7 +150,7 @@ extension WindowModel {
         let rest = stacks.dropFirst(room).reduce(0) { $0 + $1.count }
         if rest > 0, let next = stacks.dropFirst(room).first?.first {
             // 点了：「今天」把急事全展开，滚到菜单里没列出的第一叠
-            rows.append(MenuItemSpec(id: "urgent-more", title: "还有 \(rest) 件急事…", action: .urgent(next.id)))
+            rows.append(MenuItemSpec(id: "urgent-more", title: "其余 \(rest) 件急事", action: .urgent(next.id)))
         }
         return rows
     }
@@ -198,6 +204,18 @@ public struct LuokeCommands: Commands {
             Button(model.sidebarMini ? "展开侧栏" : "收起侧栏") { model.toggleSidebar() }
                 .keyboardShortcut("s", modifiers: [.control, .command])
                 .disabled(model.hostTakeover != nil)      // 本体的界面占着整个窗口：没有侧栏
+        }
+        // 应用菜单「设置」下面：检查更新（负责人 11-15：顶部菜单里没有「检查更新」）
+        CommandGroup(after: .appSettings) {
+            Button("检查更新") { openWindow(); model.go(.prefs, tab: PrefsTab.general.rawValue); model.settingsAction(.checkUpdates) }
+                .disabled(model.host == nil || model.hostTakeover != nil)
+        }
+        // 「帮助」：放现在就能用的两样（以前是空的）。使用说明、反馈问题要有网址以后再加
+        CommandGroup(replacing: .help) {
+            Button("系统权限检查") { openWindow(); model.go(.prefs, tab: PrefsTab.privacy.rawValue); model.settingsDialog = .checks }
+                .disabled(model.hostTakeover != nil)
+            Button("导出诊断信息") { model.settingsAction(.export) }
+                .disabled(model.host == nil)
         }
         CommandMenu("前往") {
             ForEach(model.goItems) { item in
@@ -281,8 +299,8 @@ struct MenuReplica: View {
         }
         .padding(5)
         .frame(width: width, alignment: .leading)
-        .background(RoundedRectangle(cornerRadius: LKRadius.control, style: .continuous).fill(p.card.opacity(0.96)))
-        .overlay(RoundedRectangle(cornerRadius: LKRadius.control, style: .continuous).strokeBorder(p.border, lineWidth: 1))
+        .background(RoundedRectangle(cornerRadius: p.controlRadius, style: .continuous).fill(p.card.opacity(0.96)))
+        .overlay(RoundedRectangle(cornerRadius: p.controlRadius, style: .continuous).strokeBorder(p.border, lineWidth: 1))
         .shadow(color: .black.opacity(0.2), radius: 20, y: 12)
     }
 }
@@ -345,7 +363,7 @@ struct MenuBarScene: View {
                         }
                         .padding(.horizontal, 14).padding(.vertical, 12)
                         .frame(width: 330)
-                        .background(RoundedRectangle(cornerRadius: LKRadius.card, style: .continuous).fill(p.card.opacity(0.95)))
+                        .background(RoundedRectangle(cornerRadius: p.cardRadius, style: .continuous).fill(p.card.opacity(0.95)))
                         .shadow(color: .black.opacity(0.18), radius: 15, y: 10)
                     } else {
                         Color.clear.frame(width: 330, height: 1)

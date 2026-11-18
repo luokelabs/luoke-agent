@@ -1,0 +1,369 @@
+{
+  "id": "window",
+  "normalised": {
+    "resources/read": "contents[0].text 解开成了 JSON 值；线上是 JSON 文字"
+  },
+  "produced": {
+    "features": [
+      "openPage",
+      "pageArgs",
+      "confirm",
+      "rowOpen",
+      "fieldSubmit"
+    ],
+    "mcp": "python3 -m luoke_mem --path <假记忆> mcp --clock <那一步的时钟>：一个请求一个进程",
+    "seed": [
+      "螺壳输入法记了五段打字、邮件助手记了五封发出的邮件（10月27日到11月5日），还有关于王磊的四封、每月写信给谁的记录",
+      "猜测：关注的话题「本地大模型」「电商促销与物流广告」，关于你的「某银行的信用卡」「某书店的会员」（同属「机构」这一类）",
+      "记下的：用户自己写的 16 个关注的话题；没问就记下的「在读研究生，导师是王老师」「学校：某大学计算机系」（打字里猜的「学校：某大学」并进了它）、用户确认过的「住在北京」；「住在杭州」用户说过以前是、现在不是；订阅精选的口味「大模型推理优化」",
+      "人：「王磊」（两种叫法并成的一个人）、「林晓」；记忆想问「本地大模型」对不对"
+    ],
+    "tz": "Asia/Shanghai",
+    "user_action_at": "点按时的 at 是那一步的时钟，按 Asia/Shanghai 写"
+  },
+  "situation": "螺壳的核心认页带参数（`pageArgs`）：记忆网页上能做的，都在主窗口记忆的页上做。用户从「今天」的卡片跳到那一条，在「全部记忆」里按类看、翻页、搜索、看待确认的，看一条的全部依据、改写、拆出并进来的说法、说「这一类都不要」，把以前的事说成现在还是，看订阅精选的口味，给人改名、拆开、并成一个，在设置里看邮件助手每天记了什么，先看会删多少再忘掉输入法写的，关掉邮件助手的开关（不再从它学）再打开。",
+  "steps": [
+    {
+      "clock": "2026-11-06T10:00:00",
+      "do": "server/discover",
+      "file": "server-discover.json"
+    },
+    {
+      "clock": "2026-11-06T10:00:00",
+      "do": "列工具（agent 认 readOnlyHint）",
+      "file": "tools-list.json"
+    },
+    {
+      "clock": "2026-11-06T10:00:00",
+      "do": "列资源",
+      "file": "resources-list.json"
+    },
+    {
+      "clock": "2026-11-06T10:00:00",
+      "do": "读 outbox（每分钟一次）",
+      "file": "read-outbox.json"
+    },
+    {
+      "clock": "2026-11-06T10:00:00",
+      "do": "读概览（侧栏的计数和一句话）",
+      "file": "read-summary.json"
+    },
+    {
+      "clock": "2026-11-06T10:00:00",
+      "do": "打开应用页的「overview」",
+      "file": "read-page-overview.json"
+    },
+    {
+      "clock": "2026-11-06T10:00:00",
+      "do": "打开应用页的「all」",
+      "file": "read-page-all.json"
+    },
+    {
+      "clock": "2026-11-06T10:00:00",
+      "do": "打开应用页的「people」",
+      "file": "read-page-people.json"
+    },
+    {
+      "clock": "2026-11-06T10:00:00",
+      "do": "打开应用页的「settings」",
+      "file": "read-page-settings.json"
+    },
+    {
+      "clock": "2026-11-06T10:00:00",
+      "do": "打开应用页的「item」",
+      "file": "read-page-item.json"
+    },
+    {
+      "clock": "2026-11-06T10:00:00",
+      "do": "打开应用页的「asks」",
+      "file": "read-page-asks.json"
+    },
+    {
+      "clock": "2026-11-06T10:00:00",
+      "do": "打开应用页的「guesses」",
+      "file": "read-page-guesses.json"
+    },
+    {
+      "clock": "2026-11-06T10:00:00",
+      "do": "打开应用页的「kept」",
+      "file": "read-page-kept.json"
+    },
+    {
+      "clock": "2026-11-06T10:00:00",
+      "do": "打开应用页的「sources」",
+      "file": "read-page-sources.json"
+    },
+    {
+      "clock": "2026-11-06T10:00:00",
+      "do": "读原始数据 data/recent",
+      "file": "read-data-recent.json"
+    },
+    {
+      "clock": "2026-11-06T10:00:00",
+      "do": "读原始数据 data/helped",
+      "file": "read-data-helped.json"
+    },
+    {
+      "clock": "2026-11-06T10:00:00",
+      "do": "读原始数据 data/asks",
+      "file": "read-data-asks.json"
+    },
+    {
+      "clock": "2026-11-06T10:00:00",
+      "do": "读原始数据 data/notes",
+      "file": "read-data-notes.json"
+    },
+    {
+      "clock": "2026-11-06T10:00:00",
+      "do": "读原始数据 data/people",
+      "file": "read-data-people.json"
+    },
+    {
+      "clock": "2026-11-06T10:00:00",
+      "do": "读原始数据 data/sources",
+      "file": "read-data-sources.json"
+    },
+    {
+      "clock": "2026-11-06T10:00:00",
+      "do": "读原始数据 data/data",
+      "file": "read-data-data.json"
+    },
+    {
+      "clock": "2026-11-06T10:00:00",
+      "do": "读原始数据 data/ask?id=1（卡片、概览上的一件）",
+      "file": "read-data-ask-1.json"
+    },
+    {
+      "clock": "2026-11-06T10:00:00",
+      "do": "原始数据：「学校：某大学计算机系」和它的全部依据",
+      "file": "read-data-note.json"
+    },
+    {
+      "clock": "2026-11-06T10:00:00",
+      "do": "原始数据：全部记忆的第二页",
+      "file": "read-data-notes-p2.json"
+    },
+    {
+      "clock": "2026-11-06T10:00:00",
+      "do": "原始数据：全部记忆里待确认的",
+      "file": "read-data-notes-pending.json"
+    },
+    {
+      "clock": "2026-11-06T10:01:00",
+      "do": "「今天」里记忆的卡片上点「在螺壳记忆里看」：窗口换到记忆的「一条理解」",
+      "file": "read-page-item-from-card.json"
+    },
+    {
+      "clock": "2026-11-06T10:02:00",
+      "do": "「全部记忆」上点「关注的话题」",
+      "file": "read-page-all-interest.json"
+    },
+    {
+      "clock": "2026-11-06T10:03:00",
+      "do": "点「下一页」",
+      "file": "read-page-all-interest-2.json"
+    },
+    {
+      "clock": "2026-11-06T10:04:00",
+      "do": "搜索框里写「计算」，点「搜索」",
+      "file": "read-page-all-search.json"
+    },
+    {
+      "clock": "2026-11-06T10:05:00",
+      "do": "点「待确认」",
+      "file": "read-page-all-pending.json"
+    },
+    {
+      "clock": "2026-11-06T10:06:00",
+      "do": "「本地大模型」的「看依据」",
+      "file": "read-page-item-guess.json"
+    },
+    {
+      "clock": "2026-11-06T10:07:00",
+      "do": "改写成的话里带了验证码，点「按我改的」：记忆不收，页上的字留着",
+      "file": "call-mem_note-revise-refused.json"
+    },
+    {
+      "clock": "2026-11-06T10:08:00",
+      "do": "改成「本地部署的大模型」，再点",
+      "file": "call-mem_note-revise.json"
+    },
+    {
+      "clock": "2026-11-06T10:08:00",
+      "do": "窗口重新读这一页：已经改成了新的说法",
+      "file": "read-page-item-after-revise.json"
+    },
+    {
+      "clock": "2026-11-06T10:09:00",
+      "do": "点「看改好的」",
+      "file": "read-page-item-revised.json"
+    },
+    {
+      "clock": "2026-11-06T10:10:00",
+      "do": "「全部记忆」上点「关于你」",
+      "file": "read-page-all-fact.json"
+    },
+    {
+      "clock": "2026-11-06T10:11:00",
+      "do": "「学校：某大学计算机系」的「看依据」：下面有并进来的说法",
+      "file": "read-page-item-merged.json"
+    },
+    {
+      "clock": "2026-11-06T10:12:00",
+      "do": "「学校：某大学」不是同一件事，点「拆出来」",
+      "file": "call-mem_note-split.json"
+    },
+    {
+      "clock": "2026-11-06T10:12:00",
+      "do": "窗口重新读这一页",
+      "file": "read-page-item-after-split.json"
+    },
+    {
+      "clock": "2026-11-06T10:13:00",
+      "do": "「某银行的信用卡」（只凭一封信，不在列表上）的那一页",
+      "file": "read-page-item-family.json"
+    },
+    {
+      "clock": "2026-11-06T10:14:00",
+      "do": "点「这一类都不要（2 条）」",
+      "file": "call-mem_note-reject_family.json"
+    },
+    {
+      "clock": "2026-11-06T10:14:00",
+      "do": "窗口重新读这一页",
+      "file": "read-page-item-after-family.json"
+    },
+    {
+      "clock": "2026-11-06T10:15:00",
+      "do": "「全部记忆」上点「以前的事」",
+      "file": "read-page-all-past.json"
+    },
+    {
+      "clock": "2026-11-06T10:16:00",
+      "do": "「住在杭州」点「现在还是」",
+      "file": "call-mem_note-confirm-past.json"
+    },
+    {
+      "clock": "2026-11-06T10:16:00",
+      "do": "窗口重新读这一页",
+      "file": "read-page-all-past-after.json"
+    },
+    {
+      "clock": "2026-11-06T10:17:00",
+      "do": "再看「关于你」：「住在杭州」「住在北京」排在一起，各写「可能和上下 1 条是同一件」",
+      "file": "read-page-all-fact-alike.json"
+    },
+    {
+      "clock": "2026-11-06T10:18:00",
+      "do": "点「精选的口味」：不算在「全部」里",
+      "file": "read-page-all-taste.json"
+    },
+    {
+      "clock": "2026-11-06T10:19:00",
+      "do": "「人物」上王磊那一行",
+      "file": "read-page-people-wang.json"
+    },
+    {
+      "clock": "2026-11-06T10:20:00",
+      "do": "名字改成「磊哥」，点「改名」",
+      "file": "call-mem_person-rename.json"
+    },
+    {
+      "clock": "2026-11-06T10:20:00",
+      "do": "窗口重新读这一页",
+      "file": "read-page-people-after-rename.json"
+    },
+    {
+      "clock": "2026-11-06T10:21:00",
+      "do": "没选人就点「并成一个」：不并",
+      "file": "call-mem_person-merge-unchosen.json"
+    },
+    {
+      "clock": "2026-11-06T10:22:00",
+      "do": "选「林晓」再点：林晓并进来",
+      "file": "call-mem_person-merge.json"
+    },
+    {
+      "clock": "2026-11-06T10:22:00",
+      "do": "窗口重新读这一页",
+      "file": "read-page-people-after-merge.json"
+    },
+    {
+      "clock": "2026-11-06T10:23:00",
+      "do": "并错了：林晓的地址不是他，没勾「确定不是同一个人」就点「linxiao@corp.example」的「不是这个人」：不拆",
+      "file": "call-mem_person-split-unsure.json"
+    },
+    {
+      "clock": "2026-11-06T10:23:00",
+      "do": "勾上「确定不是同一个人」再点",
+      "file": "call-mem_person-split.json"
+    },
+    {
+      "clock": "2026-11-06T10:23:00",
+      "do": "窗口重新读这一页",
+      "file": "read-page-people-after-split.json"
+    },
+    {
+      "clock": "2026-11-06T10:24:00",
+      "do": "点齿轮打开「设置」",
+      "file": "read-page-settings-again.json"
+    },
+    {
+      "clock": "2026-11-06T10:25:00",
+      "do": "邮件助手那一行的「看记了什么」：最近有记录的那天",
+      "file": "read-page-settings-mail.json"
+    },
+    {
+      "clock": "2026-11-06T10:26:00",
+      "do": "点「10月30日 2 条」",
+      "file": "read-page-settings-mail-day.json"
+    },
+    {
+      "clock": "2026-11-06T10:27:00",
+      "do": "回到「设置」",
+      "file": "read-page-settings-third.json"
+    },
+    {
+      "clock": "2026-11-06T10:28:00",
+      "do": "输入法那一行的「忘掉螺壳输入法写的…」：先说会删多少",
+      "file": "read-page-settings-forget-ime.json"
+    },
+    {
+      "clock": "2026-11-06T10:29:00",
+      "do": "点「忘掉螺壳输入法写的」（窗口先弹确认，用户点了确定）",
+      "file": "call-mem_forget_tool-ime.json"
+    },
+    {
+      "clock": "2026-11-06T10:29:00",
+      "do": "窗口重新读这一页：输入法已经没有写在记忆里的了",
+      "file": "read-page-settings-forget-ime-after.json"
+    },
+    {
+      "clock": "2026-11-06T10:30:00",
+      "do": "回到「设置」",
+      "file": "read-page-settings-fourth.json"
+    },
+    {
+      "clock": "2026-11-06T10:31:00",
+      "do": "关掉邮件助手那一行的开关：记忆不再从它学",
+      "file": "call-mem_learn-off.json"
+    },
+    {
+      "clock": "2026-11-06T10:31:00",
+      "do": "窗口重新读这一页：开关关着，那一行写「不再从它学」",
+      "file": "read-page-settings-learn-off.json"
+    },
+    {
+      "clock": "2026-11-06T10:32:00",
+      "do": "再打开",
+      "file": "call-mem_learn-on.json"
+    },
+    {
+      "clock": "2026-11-06T10:32:00",
+      "do": "窗口重新读这一页：开关开着",
+      "file": "read-page-settings-learn-on.json"
+    }
+  ],
+  "title": "记忆的事都在窗口里做",
+  "window": "页上的按钮多了「看依据」「详细」「看记了什么」、按类的一排（不带条数）、搜索框和「上一页」「下一页」（都是 `agent.open_page`，带 `args`），没有「打开整份记忆」，卡片上的「在螺壳记忆里看」跳到「一条理解」。同一话题的事实排在一起，写「可能和上下 N 条是同一件」；以前的事写「大约 N 年」；只凭一条依据的猜测不在列表上（问到的除外）；「设置」上「忘掉…写的…」先到一页说会删多少。「忘掉」「清空整份记忆」的按钮带 `confirm`（窗口先弹确认），「忘掉」带 `sure: true`，页上没有勾选框；行上是一项一行（`justify: spaceBetween`：左边字，右边图标）。「设置」每个应用一行的最右边是一个开关（`variant: \"switch\"`），关着的那一行写「不再从它学。已经记下的留着。」。每次点完，窗口带着同样的参数重新读那一页。"
+}

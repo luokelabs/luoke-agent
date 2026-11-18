@@ -1,0 +1,143 @@
+{
+  "id": "crowded",
+  "normalised": {
+    "$TMPDIR": "假目录的临时目录（$FIXTURE/tmp）",
+    "000000000001…": "由路径、随机数算出的 12 位编号，按在本场景里出现的先后编号",
+    "resources/read": "contents[0].text 解开成了 JSON 值；线上是 JSON 文字",
+    "~": "假用户目录（$FIXTURE/home）",
+    "~/.Trash": "假目录的废纸篓（$FIXTURE/Trash）"
+  },
+  "produced": {
+    "changes": [
+      "pip 的缓存长到 60 MB",
+      "41 个已经装好的应用（AsterNote…GroveMail）和它们 30 天前下载的安装包（带下载标记、临时签名，文件名里好几个点）",
+      "node-gyp、Cargo、Gradle（两处）、Go、Composer 的缓存（各 51–54 MB）",
+      "7 组重复文件，文稿和下载里各一份，名字是百分号编码的",
+      "5 个从网上下载代码直接运行的 skill",
+      "4 个两天前来的、没有签名的应用"
+    ],
+    "fixture": [
+      "blackbox/fx.py 造的假目录：blackbox/cases/base.py 的 `build`（照单元测试的 Fixture.build 摆），fakes.json 是 `fx.standard_fakes`（和单元测试的 Fixture.Fakes.standard 一样），另加一块 494 GB、还剩 182 GB 的硬盘",
+      "luoke-scan update --data $FIXTURE/data --tool-dir $FIXTURE/tools --force（假的 freshclam，daily 27000，库文件的时间 2026-10-20T01:00:00Z）",
+      "luoke-scan scan --fixture $FIXTURE --clock 2026-10-17T12:00:00Z（3 天前查过一轮：pip 的缓存还是空的）",
+      "luoke-scan update --data $FIXTURE/data --tool-dir $FIXTURE/tools --force（假的 freshclam，daily 27000，库文件的时间 2026-10-20T01:00:00Z）"
+    ],
+    "mcp": "luoke-scan mcp --fixture $FIXTURE --clock <那一步的时钟>：一个请求一个进程，标准输入一条 JSON-RPC，标准输出是答复",
+    "tz": "Asia/Shanghai",
+    "user_action_at": "点按时的 at 是那一步的时钟，按 Asia/Shanghai 写"
+  },
+  "situation": "基础假目录上再加：41 个已经装好的应用留下的安装包、node-gyp/Cargo/Gradle/Go/Composer 的缓存、7 组重复文件、5 个能自己运行命令的 AI 插件、4 个来路不明的应用（数目照 luoke-scan#129 里的一台真机）。",
+  "steps": [
+    {
+      "clock": "2026-10-20T12:00:00Z",
+      "do": "查一轮（agent 叫的那种，只读、不自动清）：luoke-scan scan --fixture $FIXTURE --clock 2026-10-20T12:00:00Z --for-agent"
+    },
+    {
+      "clock": "2026-10-20T12:00:00Z",
+      "do": "server/discover",
+      "file": "server-discover.json"
+    },
+    {
+      "clock": "2026-10-20T12:00:00Z",
+      "do": "列工具（agent 认 readOnlyHint）",
+      "file": "tools-list.json"
+    },
+    {
+      "clock": "2026-10-20T12:00:00Z",
+      "do": "列资源",
+      "file": "resources-list.json"
+    },
+    {
+      "clock": "2026-10-20T12:00:00Z",
+      "do": "读 outbox（每分钟一次）",
+      "file": "read-outbox.json"
+    },
+    {
+      "clock": "2026-10-20T12:00:00Z",
+      "do": "读概览（侧栏的计数和一句话）",
+      "file": "read-summary.json"
+    },
+    {
+      "clock": "2026-10-20T12:00:00Z",
+      "do": "读权限的状态",
+      "file": "read-permissions.json"
+    },
+    {
+      "clock": "2026-10-20T12:00:00Z",
+      "do": "读基础页 page/overview",
+      "file": "read-page-overview.json"
+    },
+    {
+      "clock": "2026-10-20T12:00:00Z",
+      "do": "读基础页 page/mac",
+      "file": "read-page-mac.json"
+    },
+    {
+      "clock": "2026-10-20T12:00:00Z",
+      "do": "读基础页 page/cleaned",
+      "file": "read-page-cleaned.json"
+    },
+    {
+      "clock": "2026-10-20T12:00:00Z",
+      "do": "读扫描页的数据 data/overview",
+      "file": "read-data-overview.json"
+    },
+    {
+      "clock": "2026-10-20T12:00:00Z",
+      "do": "读清理记录的数据 data/history",
+      "file": "read-data-history.json"
+    },
+    {
+      "clock": "2026-10-20T12:00:00Z",
+      "do": "读设置的数据 data/settings",
+      "file": "read-data-settings.json"
+    },
+    {
+      "clock": "2026-10-20T12:00:00Z",
+      "do": "读一类的详情 data/category?id=cache",
+      "file": "read-data-category-cache.json"
+    },
+    {
+      "clock": "2026-10-20T12:00:00Z",
+      "do": "读一类的详情 data/category?id=installer",
+      "file": "read-data-category-installer.json"
+    },
+    {
+      "clock": "2026-10-20T12:00:00Z",
+      "do": "读一类的详情 data/category?id=duplicate",
+      "file": "read-data-category-duplicate.json"
+    },
+    {
+      "clock": "2026-10-20T12:00:00Z",
+      "do": "读一类的详情 data/category?id=temp",
+      "file": "read-data-category-temp.json"
+    },
+    {
+      "clock": "2026-10-20T12:00:00Z",
+      "do": "读一类的详情 data/category?id=project",
+      "file": "read-data-category-project.json"
+    },
+    {
+      "clock": "2026-10-20T12:00:00Z",
+      "do": "读一类的详情 data/category?id=startup",
+      "file": "read-data-category-startup.json"
+    },
+    {
+      "clock": "2026-10-20T12:00:00Z",
+      "do": "读一类的详情 data/category?id=ai-plugin",
+      "file": "read-data-category-ai-plugin.json"
+    },
+    {
+      "clock": "2026-10-20T12:00:00Z",
+      "do": "读一类的详情 data/category?id=malware",
+      "file": "read-data-category-malware.json"
+    }
+  ],
+  "title": "用了很久的 Mac：能清的有几十项",
+  "window": [
+    "能清的都在扫描页的「可以清掉」里：缓存合成一行，每个工具写一次；同一类超过 3 项的合成一行（「已经装好的应用留下的安装包，一共 41 项」），标题写合起来的大小，下面写名字，一个选择框管这几项，选择发回时的键是 `g-<第一项的键>`。",
+    "「要你看看」里几个 AI 插件、几个应用合成一行时，每个一个「在访达里显示「名字」」（多于 3 个时先收起）。",
+    "底下的按钮：核心认 `countLabel`、`countAlso`、`countWeights` 时写「移到废纸篓 {n} 项」，`count.weights` 给合成的每一行它的项数（`{\"g-<键>\": 41}`）；不认 `countWeights` 时照旧「按上面的选择清理」。",
+    "一页不超过 200 个组件。"
+  ]
+}

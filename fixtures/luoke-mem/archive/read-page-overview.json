@@ -1,0 +1,184 @@
+{
+  "reply": {
+    "id": 6,
+    "jsonrpc": "2.0",
+    "result": {
+      "contents": [
+        {
+          "mimeType": "application/json",
+          "text": [
+            {
+              "createSurface": {
+                "catalogId": "ai.luoke/a2ui/agent/1",
+                "surfaceId": "overview"
+              },
+              "version": "v0.9"
+            },
+            {
+              "updateComponents": {
+                "components": [
+                  {
+                    "children": [
+                      "t1",
+                      "t2",
+                      "d3",
+                      "t4",
+                      "t5",
+                      "t6",
+                      "r10",
+                      "r12"
+                    ],
+                    "component": "Column",
+                    "id": "root"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "t1",
+                    "text": "最近了解到的",
+                    "variant": "caption"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "t2",
+                    "text": "最近没有新了解到的。"
+                  },
+                  {
+                    "component": "Divider",
+                    "id": "d3"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "t4",
+                    "text": "想跟你确认",
+                    "variant": "caption"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "t5",
+                    "text": "以后某商城的促销邮件都归档？"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "t6",
+                    "text": "这个月你亲手归档了 6 封某商城的促销。",
+                    "variant": "caption"
+                  },
+                  {
+                    "action": {
+                      "event": {
+                        "context": {
+                          "ask": 3,
+                          "choice": "useful"
+                        },
+                        "name": "mem_reply"
+                      }
+                    },
+                    "child": "b7-text",
+                    "component": "Button",
+                    "id": "b7",
+                    "variant": "primary"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "b7-text",
+                    "text": "好"
+                  },
+                  {
+                    "action": {
+                      "event": {
+                        "context": {
+                          "ask": 3,
+                          "choice": "useless"
+                        },
+                        "name": "mem_reply"
+                      }
+                    },
+                    "child": "b8-text",
+                    "component": "Button",
+                    "id": "b8"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "b8-text",
+                    "text": "不用"
+                  },
+                  {
+                    "action": {
+                      "event": {
+                        "context": {
+                          "ask": 3,
+                          "choice": "never"
+                        },
+                        "name": "mem_reply"
+                      }
+                    },
+                    "child": "b9-text",
+                    "component": "Button",
+                    "id": "b9"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "b9-text",
+                    "text": "别再提"
+                  },
+                  {
+                    "children": [
+                      "b7",
+                      "b8",
+                      "b9"
+                    ],
+                    "component": "Row",
+                    "id": "r10"
+                  },
+                  {
+                    "action": {
+                      "event": {
+                        "context": {},
+                        "name": "mem_open"
+                      }
+                    },
+                    "child": "b11-text",
+                    "component": "Button",
+                    "id": "b11"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "b11-text",
+                    "text": "打开整份记忆"
+                  },
+                  {
+                    "children": [
+                      "b11"
+                    ],
+                    "component": "Row",
+                    "id": "r12"
+                  }
+                ],
+                "surfaceId": "overview"
+              },
+              "version": "v0.9"
+            }
+          ],
+          "uri": "page/overview"
+        }
+      ],
+      "resultType": "complete"
+    }
+  },
+  "request": {
+    "id": 6,
+    "jsonrpc": "2.0",
+    "method": "resources/read",
+    "params": {
+      "_meta": {
+        "io.modelcontextprotocol/clientCapabilities": {},
+        "io.modelcontextprotocol/clientInfo": {
+          "name": "luoke-agent",
+          "version": "fixtures"
+        },
+        "io.modelcontextprotocol/protocolVersion": "2026-07-28"
+      },
+      "uri": "page/overview"
+    }
+  }
+}

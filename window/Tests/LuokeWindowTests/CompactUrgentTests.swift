@@ -65,10 +65,10 @@ final class CompactUrgentTests: XCTestCase {
         let m = Self.replay()
         let u = try XCTUnwrap(m.urgent.first { $0.surface != nil && $0.tool == .mail })
         XCTAssertEqual(u.surface?.surface.subtitle, StressSample.mailSubtitle(0))
-        XCTAssertEqual(TodayCompact.chooseLabel, "选一下")
+        XCTAssertEqual(TodayCompact.chooseLabel, "选择")
     }
 
-    /// §4 countWeights：窗口里按钮的字（卡片里、紧凑的表和一件件处理另画的按钮）照 weights 数，选一下就跟着变
+    /// §4 countWeights：窗口里按钮的字（卡片里、紧凑的表和逐件处理另画的按钮）照 weights 数，选一下就跟着变
     func testWeightedCountLabelInTheWindow() throws {
         let msgs = try JSONValue.parse(Data("""
         [{"version":"v0.9","createSurface":{"surfaceId":"s","catalogId":"ai.luoke/a2ui/agent/1"}},
@@ -82,6 +82,8 @@ final class CompactUrgentTests: XCTestCase {
         XCTAssertEqual(SurfaceDigest(s.surface).actions.first?.label, "移到废纸篓 42 项")
         s.set("/choices/g-pkg", .array([.string("keep")]))
         XCTAssertEqual(SurfaceDigest(s.surface).actions.first?.label, "移到废纸篓 1 项")
+        s.set("/choices/i1", .array([.string("keep")]))
+        XCTAssertTrue(SurfaceDigest(s.surface).actions.isEmpty, "§4 countLabel：0 项的按钮外面也不画")
     }
 
     // MARK: 选择框（#65）

@@ -1,0 +1,57 @@
+{
+  "reply": {
+    "id": 38,
+    "jsonrpc": "2.0",
+    "result": {
+      "content": [
+        {
+          "text": "拆出来了，成了一条单独的猜测。",
+          "type": "text"
+        }
+      ],
+      "isError": false,
+      "resultType": "complete",
+      "structuredContent": {
+        "note": 3,
+        "result": "split"
+      }
+    }
+  },
+  "request": {
+    "id": 38,
+    "jsonrpc": "2.0",
+    "method": "tools/call",
+    "params": {
+      "_meta": {
+        "ai.luoke/user-action": {
+          "at": "2026-11-06T10:12:00+08:00",
+          "componentId": "b13",
+          "surfaceId": "item"
+        },
+        "io.modelcontextprotocol/clientCapabilities": {
+          "experimental": {
+            "ai.luoke/a2ui": {
+              "features": [
+                "openPage",
+                "pageArgs",
+                "confirm",
+                "rowOpen",
+                "fieldSubmit"
+              ]
+            }
+          }
+        },
+        "io.modelcontextprotocol/clientInfo": {
+          "name": "luoke-agent",
+          "version": "fixtures"
+        },
+        "io.modelcontextprotocol/protocolVersion": "2026-07-28"
+      },
+      "arguments": {
+        "note": 3,
+        "op": "split"
+      },
+      "name": "mem_note"
+    }
+  }
+}

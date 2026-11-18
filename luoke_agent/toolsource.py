@@ -16,7 +16,7 @@ from typing import Any, Callable, Dict, List, Optional, Set
 
 from . import __version__, a2ui, apps, cards
 from .items import RANK, UNREAD, URGENCY, Item, tool_surface_id
-from .mcp import BAD_TOKEN, NotRunning, RpcError, TimedOut, ToolClient
+from .mcp import BAD_TOKEN, NoAnswer, NotRunning, RpcError, TimedOut, ToolClient
 from .safety import refuse_real
 
 HUB_CONTRACT = 1
@@ -27,6 +27,9 @@ RESERVED_PREFIX = "luoke-core"
 ACCESSORY_ID = re.compile(r"^[a-z0-9][a-z0-9._-]{0,63}$")
 SEARCH_TIMEOUT = 10.0            # 一个工具搜多久没答就不等（docs/界面接口.md §7）
 
+
+# 点按的答复里交给 `said` 的代号和数（`call` 的 `facts`）
+FACT_KEYS = ("result", "reason", "stale", "n", "of", "days", "same", "was", "records", "notes", "on")
 
 class HubRefused(Exception):
     """主控不认这个版本的 agent（配方的已验证版本里没有）。"""
@@ -233,7 +236,9 @@ def accessories(data: dict, *, home: Optional[str] = None, stdio: bool = False) 
         out.append({"accessory": acc, "name": a.get("name") or acc, "socket": sock, "socket_dirs": dirs, "home": home,
                     "transport": "stdio" if piped else "socket",
                     "reports": caps.get("reports") if isinstance(caps.get("reports"), list) else [],
-                    "service": caps.get("service"), "permissions": caps.get("permissions")})
+                    "service": caps.get("service"), "permissions": caps.get("permissions"),
+                    # 给了哪些原始数据（`data/<名字>`，顶层 ADR 0028）：核心照它们自己拼页（apppages）
+                    "data": [d for d in caps.get("data") or [] if isinstance(d, str)] if isinstance(caps.get("data"), list) else []})
     return out
 
 
@@ -270,7 +275,7 @@ class ToolSource:
         self.read_only: Dict[str, bool] = {}
         self.running = False
         self.service = apps.service(service)
-        self.permissions = apps.permissions(permissions)
+        self.permissions = self._named(apps.permissions(permissions))
         self.summary: Optional[dict] = None
         self.perm_states: Optional[Dict[str, str]] = None
         self.asking: Set[str] = set()
@@ -285,7 +290,7 @@ class ToolSource:
     def set_manifest(self, service: Any, permissions: Any, reports: Any = None) -> None:
         """主控那边的清单变了（升级了）：换上新的 `service`、`permissions`（给了 `reports` 也换）。"""
         self.service = apps.service(service)
-        self.permissions = apps.permissions(permissions)
+        self.permissions = self._named(apps.permissions(permissions))
         if reports is not None:
             self.set_reports(reports)
 
@@ -343,10 +348,40 @@ class ToolSource:
         try:
             if summary:
                 self.summary = self._read("summary", apps.summary) if self.service["summary"] else None
+                self._own_summary()
             if self.permissions:
                 self.perm_states = self._read("permissions", apps.states)
+        except NoAnswer:            # 在运行，这次没等到：留着上次读到的，不当它停了
+            pass
         except NotRunning:
             self._down()
+
+    def _named(self, perms: List[dict]) -> List[dict]:
+        """权限的名字照 apppages 里这个应用起的（没起的照清单）"""
+        from . import apppages
+        return [dict(p, title=apppages.permission_name(self.source, p["id"]) or p["title"]) for p in perms]
+
+    def _own_summary(self) -> None:
+        """概览的那一句由核心照应用的原始数据写（apppages 里这个应用的 `summary`；负责人 11-17：应用只给数字和状态，
+        用语由 agent 定）。件数照应用报的。应用没给数据、没拼成，照旧用它自己的那一句"""
+        from . import apppages          # 用到时才引：apppages 的模块不引这里
+        mod = apppages.builder(self)
+        if self.summary is None or mod is None or not hasattr(mod, "summary"):
+            return
+        def read(uri: str) -> Any:
+            try:
+                return self.client.read_json(uri)
+            except RpcError:
+                return None
+        try:
+            text = mod.summary(read)
+        except NotRunning:
+            raise
+        except Exception as e:
+            print(f"luoke-agent: {self.source} 的概览没拼成（{type(e).__name__}），照它自己报的", file=sys.stderr)
+            return
+        if isinstance(text, str) and 0 < len(text) <= apps.MAX_TEXT:
+            self.summary = dict(self.summary, text=text)
 
     def _read(self, uri: str, parse: Any) -> Any:
         try:
@@ -369,10 +404,17 @@ class ToolSource:
             tools = self._tools(refresh=True)
         return set(tools)
 
-    def search(self, query: str, limit: int) -> Any:
-        """问一次清单 `service.ask.search` 写的工具（docs/界面接口.md §7）。只读，不带 user_action。
+    def search(self, query: str, limit: int, at: Optional[str] = None) -> Any:
+        """问一次清单 `service.ask.search` 写的工具（docs/界面接口.md §7）。只读，不带 user_action；
+        给了「最近搜过的」（清单 `capabilities.data` 有 `recent`，螺壳搜索）的工具，这是用户在窗口搜索框里按的回车：
+        带 `remember: true` 和用户的操作，记进最近搜过的。
         答 ToolResult；没在运行抛 NotRunning，超时抛 TimedOut，出错抛 RpcError。"""
-        return self.client.call_tool(self.service["search"], {"query": query, "limit": limit}, timeout=SEARCH_TIMEOUT)
+        args: Dict[str, Any] = {"query": query, "limit": limit}
+        ua = None
+        if "recent" in (getattr(self, "data", None) or []) and at:
+            args["remember"] = True
+            ua = {"surfaceId": "search", "componentId": "search", "at": at}
+        return self.client.call_tool(self.service["search"], args, timeout=SEARCH_TIMEOUT, user_action=ua)
 
     def _item(self, r: dict) -> Optional[Item]:
         if not isinstance(r.get("id"), str) or not r["id"] or not isinstance(r.get("title"), str) or not r["title"]:
@@ -391,12 +433,34 @@ class ToolSource:
             card = self._fallback(r)
         text = lambda k: r[k] if isinstance(r.get(k), str) else None  # noqa: E731
         extra = {"id": r["id"]}
+        own = self._own_words(r, card)      # 带了 data、agent 认得：标题、摘要和卡片照数据写（顶层 ADR 0028）
+        if own is not None:
+            card, r = own["card"], dict(r, title=own["title"], summary=own["summary"], why_now=own["why_now"])
         if kind == "needs-access" and text("permission"):
             extra["permission"] = r["permission"]   # 要的是哪一项权限（协议 §1a「用到才要」）
         return Item(key=f"{self.source}/{r['id']}", source=self.source, kind=kind, urgency=urgency,
                     title=r["title"], summary=text("summary") or "", why_now=text("why_now") or "",
                     card=card, deadline=text("deadline"), expires=text("expires"), created=text("created"),
                     extra=extra)
+
+    def _own_words(self, r: dict, card: Any) -> Optional[dict]:
+        """这件事照它带的 `data` 写（apppages 里这个应用的 `item`）：卡片用应用那张的 surfaceId，点按照旧交给应用。
+        没带 data、认不出、拼出来的卡片过不了校验：None，照应用带的"""
+        if not isinstance(r.get("data"), dict):
+            return None
+        from . import apppages
+        try:
+            surface = tool_surface_id(card)
+            own = apppages.item_words(self.source, r["data"], surface) if surface else None
+            if own is None:
+                return None
+            a2ui.build(own["card"])
+            if not (isinstance(own.get("title"), str) and own["title"]):
+                return None
+            return own
+        except Exception as e:
+            print(f"luoke-agent: {self.source} 的一件事没照数据写成（{type(e).__name__}），照它自己的", file=sys.stderr)
+            return None
 
     def _fallback(self, r: dict) -> List[dict]:
         """卡片画不了：只显示纯文本的标题和摘要（工具协议 §4）。"""
@@ -419,22 +483,36 @@ class ToolSource:
             if name not in tools:
                 tools = self._tools(refresh=True)
             if name not in tools:
-                return {"text": f"{self.name}没有这个动作。", "error": True}
+                return {"text": f"{self.name}不支持此操作", "error": True}
             read_only = tools[name] if write is None else not write
             ua = dict(user_action, surfaceId=surface)
             result = self.client.call_tool(name, ctx, user_action=None if read_only else ua)
         except NotRunning:
-            return {"text": f"{self.name}现在没在运行。", "error": True}
+            return {"text": f"{self.name}未运行", "error": True}
         except TimedOut:
-            return {"text": f"{self.name}还没答复，结果不明；稍后在{self.name}里看看。", "error": True}
+            return {"text": f"{self.name}未响应，结果未知；请稍后在{self.name}中确认", "error": True}
         except RpcError:
-            return {"text": f"{self.name}出错了。", "error": True}
-        out: Dict[str, Any] = {"text": result.text or ("没做成。" if result.is_error else "好了。"),
+            return {"text": f"{self.name}出错", "error": True}
+        out: Dict[str, Any] = {"text": result.text or ("操作未完成" if result.is_error else "已完成"),
                                "error": result.is_error, "done": result.done and not result.is_error}
         if result.card:
             out["card"] = result.card
+        # 答复里的代号和数（记忆 0.44 的 `result`、`reason`、`n`、`of`……）：那一句由 apppages 的 `said` 照它们写。只留简单的值
+        facts = {k: v for k, v in result.structured.items()
+                 if k in FACT_KEYS and (v is None or isinstance(v, (bool, int)) or (isinstance(v, str) and len(v) <= 200))}
+        if facts:
+            out["facts"] = facts
+        if not result.is_error and isinstance(result.structured.get("data"), dict):
+            self._own_result(out, name, result.structured["data"], surface, bool(result.card))
+        elif not result.is_error:
+            self._own_said(out, name, ctx, surface)
         if result.code:
             out["code"] = result.code
+        if result.is_error and result.structured.get("saved") is True:
+            out["saved"] = True      # 出错了但已经存下（邮件助手「已保存，但连不上」）：核心拼的页点完换页时看（apppages after）
+        job = result.structured.get("job")
+        if isinstance(job, str) and 0 < len(job) <= 64 and not result.is_error:
+            out["job"] = job         # 起了一个后台任务（邮件助手清理旧邮件、预演规则）：核心拼的页点完换到它的结果页
         if "file" in result.structured and not result.is_error:   # 存文件（§4 saveFile）：形状对才交给窗口
             f = a2ui.save_file(result.structured["file"])
             if f is not None:
@@ -442,6 +520,38 @@ class ToolSource:
             else:
                 print(f"luoke-agent: {self.source} 的 {name} 答复里的文件交不了（形状不对或太大）", file=sys.stderr)
         return out
+
+    def _own_result(self, out: Dict[str, Any], name: str, data: dict, surface: str, has_card: bool) -> None:
+        """动作的答复照它带的 `data` 写（apppages 里这个应用的 `result`）：那一句，和换上去的卡片。没写成照应用带的"""
+        from . import apppages
+        try:
+            own = apppages.result_words(self.source, name, data, surface, has_card)
+            if own is None or not isinstance(own.get("text"), str) or not own["text"]:
+                return
+            if "card" in own:
+                out["card"] = own["card"]       # 换上去时照别的结果卡片一样过校验（Agent 那边），过不了原来那张留着
+            out["text"] = own["text"]
+        except Exception as e:
+            print(f"luoke-agent: {self.source} 的 {name} 答复没照数据写成（{type(e).__name__}），照它自己的", file=sys.stderr)
+
+    def _own_said(self, out: Dict[str, Any], name: str, ctx: dict, surface: str) -> None:
+        """答复没带 `data`、做成了：那一句照点的是什么写（apppages 里这个应用的 `said`）。应用带了做完的结果卡片
+        （`done`）时，换上去的卡片也只写这一句；还没做完的卡片（重画了等用户再点）照应用带的"""
+        from . import apppages
+        mod = apppages.BUILDERS.get(self.source)
+        # 只对声明了的应用（`SAID_ON_CARDS`，现在是搜索）：别的应用的 `said` 只管核心拼的页上的点按，卡片上的照它自己的
+        if mod is None or not hasattr(mod, "said") or not getattr(mod, "SAID_ON_CARDS", False):
+            return
+        try:
+            words = mod.said(name, ctx, out)
+        except Exception as e:
+            print(f"luoke-agent: {self.source} 的 {name} 答复没写成（{type(e).__name__}），照它自己的", file=sys.stderr)
+            return
+        if not isinstance(words, str) or not words:
+            return
+        out["text"] = words
+        if out.get("card") and out.get("done"):
+            out["card"] = cards.result_card(surface, words)
 
     def ack(self, item: Item, state: str) -> None:
         """告诉工具这件说过了、答了、放下了（工具可以不实现）。"""

@@ -23,7 +23,7 @@ public enum LKButtonSize {
     case small
     /// 30 pt
     case regular
-    /// 36 pt：一件件处理里
+    /// 36 pt：逐件处理里
     case large
 }
 
@@ -50,9 +50,10 @@ private struct LKButtonBody: View {
             switch kind {
             case .primary: return (p.primary, p.primaryFg)
             case .danger: return (p.dangerSoft, p.danger)       // 对照稿的 .btn.danger（工具协议 §4 destructive）
-            case .secondary: return (hover ? p.soft : p.tint, p.fg)
-            case .text: return (hover ? p.tint : .clear, p.fg)
-            case .undo: return (hover ? p.tint : .clear, p.brandText)
+            // 停上去深一层，看得出能点（负责人 11-14：没有悬停效果）
+            case .secondary: return (hover ? p.fg.opacity(p.dark ? 0.16 : 0.13) : p.tint, p.fg)
+            case .text: return (hover ? p.soft : .clear, p.fg)
+            case .undo: return (hover ? p.soft : .clear, p.brandText)
             }
         }()
         let height: CGFloat = kind == .undo ? LKHeight.buttonSmall + 2 : (size == .small ? LKHeight.buttonSmall : size == .large ? LKHeight.buttonLarge : LKHeight.button)
@@ -63,7 +64,7 @@ private struct LKButtonBody: View {
             default: return LKSpace.x3
             }
         }()
-        let r = size == .small ? LKRadius.small : LKRadius.control
+        let r = size == .small ? LKRadius.small : p.controlRadius
         let pressed = configuration.isPressed && enabled
         configuration.label
             .font(LKFont.ui(size == .small ? LKType.caption : size == .large ? LKType.body : LKType.small, kind == .danger ? .semibold : .medium))
@@ -78,10 +79,53 @@ private struct LKButtonBody: View {
             .scaleEffect(pressed && !reduce ? 0.97 : 1)
             .animation(Motion.enter(Motion.press), value: pressed)
             .onHover { hover = enabled && $0 }
+            .pointerOnHover()
     }
 }
 
 /// 按钮里图标加字
+/// 只有图标的按钮（设计规范 §18.1 第 5 条：撤销、归档、删除、卸载这类约定俗成的动作）：点击区 30，鼠标停上去显示名称，
+/// 停上去时底下浮一层淡灰；`danger` 的停上去变红。
+struct LKIconButton: View {
+    let symbol: String
+    let label: String
+    var danger = false
+    let action: () -> Void
+    @Environment(\.lk) private var p
+    @State private var hover = false
+
+    var body: some View {
+        Button(action: action) {
+            LKIcon(symbol, size: 16)
+                .foregroundStyle(hover && danger ? p.danger : p.mutedFg)
+                .frame(width: 30, height: 30)
+                .background(RoundedRectangle(cornerRadius: p.controlRadius - 2, style: .continuous).fill(p.tint.opacity(hover ? 1 : 0.6)))
+                .contentShape(Rectangle())
+        }
+        .buttonStyle(.plainPointer)
+        .focusEffectDisabled()
+        .onHover { hover = $0 }
+        .help(label)
+        .accessibilityLabel(label)
+    }
+}
+
+/// 进度条：自己画（系统的进度条离屏画不出来，截图里是个禁止标）。`value` 0…1
+struct ProgressCapsule: View {
+    let value: Double
+    @Environment(\.lk) private var p
+
+    var body: some View {
+        let f = min(max(value, 0), 1)
+        Capsule().fill(p.input).frame(height: 4)
+            .overlay(alignment: .leading) {
+                GeometryReader { g in Capsule().fill(p.brand).frame(width: g.size.width * f) }
+            }
+            .accessibilityElement()
+            .accessibilityLabel("进度 \(Int(f * 100))%")
+    }
+}
+
 struct IconText: View {
     let symbol: String?
     let text: String
@@ -107,12 +151,13 @@ struct LKSwitch: View {
     var body: some View {
         Button { on.toggle() } label: {
             ZStack(alignment: on ? .trailing : .leading) {
-                Capsule().fill(on ? p.primary : p.input).frame(width: 36, height: 20)
-                Circle().fill(on ? p.primaryFg : Color.white).frame(width: 16, height: 16)
+                // 开着是绿的（走查重画稿 .m-tg.on #3fb96b），钮是白的
+                Capsule().fill(on ? Color(red: 0x3f / 255, green: 0xb9 / 255, blue: 0x6b / 255) : p.input).frame(width: 36, height: 20)
+                Circle().fill(Color.white).frame(width: 16, height: 16)
                     .shadow(color: .black.opacity(0.2), radius: 1, y: 1).padding(2)
             }
         }
-        .buttonStyle(.plain)
+        .buttonStyle(.plainPointer)
         .accessibilityLabel(label)
         .accessibilityValue(on ? "开" : "关")
     }
@@ -171,14 +216,14 @@ struct LKSegmented<T: Hashable>: View {
                     }
                     .contentShape(Rectangle())
                 }
-                .buttonStyle(.plain)
+                .buttonStyle(.plainPointer)
                 .help(o.title)
                 .accessibilityLabel(o.title)
                 .accessibilityAddTraits(on ? .isSelected : [])
             }
         }
         .padding(2)
-        .background(RoundedRectangle(cornerRadius: LKRadius.control, style: .continuous).fill(p.tint))
+        .background(RoundedRectangle(cornerRadius: p.controlRadius, style: .continuous).fill(p.tint))
         .animation(reduce ? nil : Motion.enter(Motion.thumb), value: value)
         .modifier(GroupLabel(label: label))
     }
@@ -310,7 +355,7 @@ struct LKBadge: View {
         let (bg, fg): (Color, Color) = {
             switch kind {
             case .plain: return (p.muted, p.mutedFg)
-            case .ok: return (p.successSoft, p.success)
+            case .ok: return (p.successSoft, p.successText)
             case .warn: return (p.warningSoft, p.warning)
             case .bad: return (p.dangerSoft, p.danger)
             case .brand: return (p.brandSoft, p.brandText)
@@ -346,11 +391,11 @@ struct ErrorNote: View {
                     HStack(alignment: .firstTextBaseline, spacing: LKSpace.x3) {
                         texts(oneLine: true)
                         Spacer(minLength: LKSpace.x3)
-                        Button("再试一次", action: retry).buttonStyle(LKButtonStyle())
+                        Button("重试", action: retry).buttonStyle(LKButtonStyle())
                     }
                     VStack(alignment: .leading, spacing: 6) {
                         texts(oneLine: false)
-                        Button("再试一次", action: retry).buttonStyle(LKButtonStyle())
+                        Button("重试", action: retry).buttonStyle(LKButtonStyle())
                     }
                 }
             } else {
@@ -375,15 +420,48 @@ struct ErrorNote: View {
     }
 }
 
-/// 卡片的底：浅色是白底加一层很淡的影子；深色只靠比底色亮一档的卡片色分层。都不描边（设计说明「禁用 1px 灰描边」）
-struct CardSurface: View {
-    var fill: Color?
-    var radius: CGFloat = LKRadius.card
+/// 「今天」顶上的一行提示：提示图标、一句话、右边至多一个按钮。`compact`：紧凑的「今天」里是灰的小字，不带图标
+struct NoticeLine: View {
+    let row: NoticeRow
+    let action: (label: String, run: () -> Void)?
+    var compact = false
     @Environment(\.lk) private var p
 
     var body: some View {
-        let shape = RoundedRectangle(cornerRadius: radius, style: .continuous)
-        if p.dark {
+        HStack(alignment: .center, spacing: compact ? LKSpace.x2 : LKSpace.x3) {
+            if !compact {
+                LKIcon("circle-alert").foregroundStyle(p.warning).frame(width: 28).accessibilityHidden(true)
+            }
+            Text(row.text).font(LKFont.ui(compact ? LKType.small : LKType.body)).foregroundStyle(compact ? p.mutedFg : p.fg)
+                .fixedSize(horizontal: false, vertical: true)
+            Spacer(minLength: LKSpace.x2)
+            if let action { Button(action.label, action: action.run).buttonStyle(LKButtonStyle()) }
+        }
+    }
+}
+
+/// 卡片的底：浅色是白底加一层很淡的影子；深色只靠比底色亮一档的卡片色分层。都不描边（设计说明「禁用 1px 灰描边」）
+/// 弹窗里的卡片：比弹窗深一层（页的底色），不带阴影（走查重画稿 .m-card.in：弹窗 #2a2624 里的卡片 #221f1d）
+private struct InDialogKey: EnvironmentKey { static let defaultValue = false }
+extension EnvironmentValues {
+    var lkInDialog: Bool {
+        get { self[InDialogKey.self] }
+        set { self[InDialogKey.self] = newValue }
+    }
+}
+
+struct CardSurface: View {
+    var fill: Color?
+    /// 不写就是这一组的卡片圆角
+    var radius: CGFloat?
+    @Environment(\.lk) private var p
+    @Environment(\.lkInDialog) private var inDialog
+
+    var body: some View {
+        let shape = RoundedRectangle(cornerRadius: radius ?? p.cardRadius, style: .continuous)
+        if inDialog {
+            shape.fill(fill ?? p.bg)
+        } else if p.dark {
             shape.fill(fill ?? p.card)
         } else {
             shape.fill(fill ?? p.card)
@@ -408,10 +486,13 @@ struct CardBackground: ViewModifier {
 enum LKInsets {
     static let card = EdgeInsets(top: LKSpace.x4, leading: LKSpace.x5, bottom: LKSpace.x4, trailing: LKSpace.x5)
     static let row = EdgeInsets(top: LKSpace.x3, leading: LKSpace.x4, bottom: LKSpace.x3, trailing: LKSpace.x4)
-    static let page = EdgeInsets(top: LKSpace.x7, leading: LKSpace.x8, bottom: 96, trailing: LKSpace.x8)
+    /// 「添加应用」那一页（对照稿 .scroll：上 28、左右 32）。底下和 `column` 一样留到搜索框那一段（84）上面，
+    /// 不然最后一行卡片被它挡住（只有这一页用）
+    static let page = EdgeInsets(top: column.top, leading: LKSpace.x8, bottom: column.bottom, trailing: LKSpace.x8)
     /// 「今天」「活动」「设置」那一栏
-    /// 底部留白要盖过搜索框那一段（离底 18 + 框 48 + 实底 20 + 渐隐 13 ≈ 100）再多一点：滚到底时最后一行在渐隐上面
-    static let column = EdgeInsets(top: LKSpace.x7, leading: LKSpace.x11, bottom: 128, trailing: LKSpace.x11)
+    /// 底部留白正好是搜索框那一段（离底 18 + 框 48 + 上面 18 = 84）：滚到底时最后一行和搜索框之间空 18，和框离底一样（负责人 11-13）
+    /// 顶上 28：标题栏下面空一点才是页标题
+    static let column = EdgeInsets(top: 28, leading: LKSpace.x11, bottom: 84, trailing: LKSpace.x11)
 }
 
 extension View {
@@ -437,13 +518,14 @@ private struct RowChrome: ViewModifier {
 
 /// 一组行：卡片的底，行之间有分隔线
 struct LKGroup<Content: View>: View {
+    @Environment(\.lk) private var p
     @ViewBuilder var content: Content
 
     var body: some View {
         VStack(spacing: 0) { content }
             .frame(maxWidth: .infinity, alignment: .leading)
             .background(CardSurface())
-            .clipShape(RoundedRectangle(cornerRadius: LKRadius.card, style: .continuous))
+            .clipShape(RoundedRectangle(cornerRadius: p.cardRadius, style: .continuous))
     }
 }
 
@@ -462,22 +544,38 @@ struct LKCount: View {
 }
 
 /// 段落标题：「要你决定 4」
-struct LKSection: View {
+struct LKSection<Action: View>: View {
     let title: String
+    /// 标题前面的小图标（「稍后查看」的咖啡杯）
+    var icon: String? = nil
     var count: Int?
     var countDelay: Double = 0
+    /// 段标题右端的一个按钮（「待确认」那一段的「逐件处理」）
+    @ViewBuilder var action: Action
     @Environment(\.lk) private var p
 
     var body: some View {
         HStack(alignment: .firstTextBaseline, spacing: 6) {
-            Text(title).font(LKFont.ui(LKType.small, .semibold))
+            // 图标和字上下居中（字的基线照旧对齐右边的按钮）
+            HStack(alignment: .center, spacing: 5) {
+                if let icon { LKIcon(icon, size: 12) }
+                Text(title).font(LKFont.ui(LKType.small, .semibold))
+            }
             if let count { LKCount(value: count, delay: countDelay).font(LKFont.ui(LKType.small)) }
+            Spacer(minLength: LKSpace.x3)
+            action
         }
         .foregroundStyle(p.mutedFg)
         .padding(.top, LKSpace.x7)
         .padding(.bottom, LKSpace.x2)
         .accessibilityElement(children: .combine)
         .accessibilityAddTraits(.isHeader)
+    }
+}
+
+extension LKSection where Action == EmptyView {
+    init(title: String, icon: String? = nil, count: Int? = nil, countDelay: Double = 0) {
+        self.init(title: title, icon: icon, count: count, countDelay: countDelay) { EmptyView() }
     }
 }
 
@@ -504,6 +602,46 @@ extension PageHeader where Trailing == EmptyView {
         self.title = title
         self.note = note
         self.trailing = EmptyView()
+    }
+}
+
+/// 应用页、设置页的标签（走查重画稿 11-12）：一排字，选中的加粗、下面一道线；整排下面一条细线，
+/// 右端放这一页的图标按钮（处理记录、设置……）
+struct LKLineTabs<Trailing: View>: View {
+    let tabs: [LKTabs.Tab]
+    let selected: String
+    let onSelect: (LKTabs.Tab) -> Void
+    @ViewBuilder var trailing: Trailing
+    @Environment(\.lk) private var p
+
+    var body: some View {
+        HStack(alignment: .bottom, spacing: LKSpace.x5) {
+            ForEach(tabs) { t in
+                let on = t.id == selected
+                Button { onSelect(t) } label: {
+                    VStack(spacing: 7) {
+                        Text(t.title)
+                            .font(LKFont.ui(LKType.body, on ? .semibold : .regular))
+                            .foregroundStyle(on ? p.fg : p.mutedFg)
+                        Rectangle().fill(on ? p.fg : .clear).frame(height: 2)
+                    }
+                    .fixedSize()
+                    .contentShape(Rectangle())
+                }
+                .buttonStyle(.plainPointer)
+                .accessibilityAddTraits(on ? .isSelected : [])
+            }
+            Spacer(minLength: LKSpace.x3)
+            HStack(spacing: 6) { trailing }.padding(.bottom, 6)
+        }
+        .overlay(alignment: .bottom) { Rectangle().fill(p.border).frame(height: 1) }
+        .padding(.bottom, LKSpace.x5)
+    }
+}
+
+extension LKLineTabs where Trailing == EmptyView {
+    init(tabs: [LKTabs.Tab], selected: String, onSelect: @escaping (LKTabs.Tab) -> Void) {
+        self.init(tabs: tabs, selected: selected, onSelect: onSelect) { EmptyView() }
     }
 }
 
@@ -537,12 +675,12 @@ struct LKTabs: View {
                         .shadow(color: p.shadow.opacity(on && !p.dark ? 0.14 : 0), radius: 1, y: 1))
                     .contentShape(Rectangle())
                 }
-                .buttonStyle(.plain)
+                .buttonStyle(.plainPointer)
                 .accessibilityAddTraits(on ? .isSelected : [])
             }
         }
         .padding(2)
-        .background(RoundedRectangle(cornerRadius: LKRadius.control, style: .continuous).fill(p.tint))
+        .background(RoundedRectangle(cornerRadius: p.controlRadius, style: .continuous).fill(p.tint))
         .fixedSize()
         .padding(.bottom, LKSpace.x4)
     }
@@ -560,11 +698,11 @@ struct LKChip<Label: View>: View {
                 .font(LKFont.ui(LKType.small))
                 .padding(.horizontal, LKSpace.x3)
                 .frame(height: 28)
-                .background(RoundedRectangle(cornerRadius: LKRadius.control, style: .continuous).fill(on ? p.selection : p.tint))
-                .overlay(RoundedRectangle(cornerRadius: LKRadius.control, style: .continuous).strokeBorder(on ? p.primary : .clear, lineWidth: 1))
+                .background(RoundedRectangle(cornerRadius: p.controlRadius, style: .continuous).fill(on ? p.selection : p.tint))
+                .overlay(RoundedRectangle(cornerRadius: p.controlRadius, style: .continuous).strokeBorder(on ? p.primary : .clear, lineWidth: 1))
                 .contentShape(Rectangle())
         }
-        .buttonStyle(.plain)
+        .buttonStyle(.plainPointer)
         .accessibilityAddTraits(on ? .isSelected : [])
     }
 }

@@ -599,7 +599,7 @@
                   {
                     "component": "Text",
                     "id": "t38",
-                    "text": "AI 用到它时，可能改动、删除或外传你的文件。不认识的建议移到废纸篓。",
+                    "text": "不会自己运行；AI 用到它时能改动、删除或外传文件\n不认识的建议移到废纸篓。",
                     "variant": "caption"
                   },
                   {
@@ -702,7 +702,7 @@
                   {
                     "component": "Text",
                     "id": "t47",
-                    "text": "输入法、快捷键工具常这样；不认得就在「输入监控」里关掉它。",
+                    "text": "不认识的就在「输入监控」里关掉",
                     "variant": "caption"
                   },
                   {
@@ -757,7 +757,7 @@
                   {
                     "component": "Text",
                     "id": "t52",
-                    "text": "换个地方存，或者把这个密码改掉。",
+                    "text": "换个地方存，或者改掉这个密码",
                     "variant": "caption"
                   },
                   {
@@ -793,7 +793,7 @@
                   {
                     "component": "Text",
                     "id": "t56",
-                    "text": "打开时会给你一个恢复密钥，抄下来放好。",
+                    "text": "打开时会给你恢复密钥，抄下来放好",
                     "variant": "caption"
                   },
                   {
@@ -840,7 +840,7 @@
                   {
                     "component": "Text",
                     "id": "t62",
-                    "text": "「tool」、「removed」\n在系统设置中选中它们，点「−」移除。",
+                    "text": "「tool」、「removed」\n应用已经删了，权限可以一起移除",
                     "variant": "caption"
                   },
                   {

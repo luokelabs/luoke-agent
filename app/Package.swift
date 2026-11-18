@@ -4,7 +4,7 @@ import PackageDescription
 
 let package = Package(
     name: "LuokeAgentApp",
-    platforms: [.macOS(.v14)],
+    platforms: [.macOS("26.2")],
     dependencies: [.package(path: "../a2ui")],
     targets: [
         .executableTarget(

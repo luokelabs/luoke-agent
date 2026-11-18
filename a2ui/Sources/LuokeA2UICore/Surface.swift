@@ -18,7 +18,8 @@ public enum A2UI {
     public static let maxFileName = 100
     public static let messageKinds = ["createSurface", "updateComponents", "updateDataModel", "deleteSurface"]
     /// agent 自己处理的动作（工具协议 §5）
-    public static let agentEvents: Set<String> = ["agent.open_url", "agent.open_page", "agent.dismiss", "agent.remind"]
+    public static let agentEvents: Set<String> = ["agent.open_url", "agent.open_page", "agent.dismiss", "agent.remind", "agent.search",
+                                                   "agent.reveal"]
 
     /// `agent.open_page` 的页 id：同清单里 service.pages 的 id（`luoke_agent/a2ui.py` 的 `PAGE_ID`），不带应用名
     public static func pageIDAcceptable(_ id: String) -> Bool {
@@ -76,12 +77,12 @@ public enum A2UI {
                                                      "text/markdown": ".md", "application/xml": ".xml"]
 
     /// Icon 能用的名字（工具协议 §4「图标」）：Lucide 的名字，和以前的名字（照旧认，画成对应的 Lucide 图标）
-    public static let lucideIcons: Set<String> = ["app-window", "archive", "brain", "calendar", "calendar-plus", "check", "chevron-down",
+    public static let lucideIcons: Set<String> = ["app-window", "archive", "bell-off", "brain", "calendar", "calendar-plus", "check", "chevron-down",
                                                   "chevron-right", "circle-help", "circle-minus", "clock", "copy", "cpu", "eye", "file", "folder",
-                                                  "folder-open", "globe", "hard-drive", "inbox", "info", "key", "keyboard", "lightbulb", "link",
-                                                  "lock", "mail", "package", "pencil-line", "power", "puzzle", "refresh-cw", "reply", "settings",
-                                                  "shield-alert", "shield-check", "sparkles", "square-arrow-out-up-right", "star", "trash-2",
-                                                  "trending-up", "triangle-alert", "user", "x"]
+                                                  "folder-open", "globe", "hard-drive", "history", "inbox", "info", "key", "keyboard", "lightbulb", "link",
+                                                  "lock", "mail", "mail-x", "package", "pencil-line", "power", "puzzle", "refresh-cw", "reply", "settings",
+                                                  "shield-alert", "shield-check", "sparkles", "square-arrow-out-up-right", "star", "thumbs-down", "thumbs-up",
+                                                  "trash-2", "trending-up", "triangle-alert", "undo-2", "user", "x"]
     public static let iconAliases: [String: String] = ["warning": "triangle-alert", "close": "x", "trash": "trash-2", "person": "user",
                                                        "memory": "brain", "question": "circle-help", "open": "square-arrow-out-up-right"]
     public static var icons: Set<String> { lucideIcons.union(iconAliases.keys) }
@@ -95,7 +96,7 @@ public enum A2UI {
     /// 标签（variant badge）的颜色：不写是浅蓝，danger 红，warning 橙，neutral 米色（大小这类不分好坏的，§4 neutralBadge）
     public static let tones: Set<String> = ["danger", "warning", "neutral"]
     /// 应用页里一段的位置（工具协议 §4「宽窗口的侧栏」）：只有 aside，写在根 Column 下面一层的 Column 上
-    public static let placements: Set<String> = ["aside"]
+    public static let placements: Set<String> = ["aside", "header"]
     /// 应用页怎么排（工具协议 §4 pageSections）：只有 sections，写在页的根 Column 上
     public static let layouts: Set<String> = ["sections"]
 
@@ -193,6 +194,20 @@ public func surfaceId(of m: JSONValue) -> String? {
     return body["surfaceId"]?.string
 }
 
+/// 一个选择框的样子：标题、选项（值和字，按顺序）、写法。两次取的页上同一个路径的选择框样子一样，才算同一个
+public struct ChoiceShape: Equatable {
+    public let label: JSONValue
+    public let options: [[JSONValue]]
+    public let variant: JSONValue
+
+    /// 这个值放得进这个选择框：字符串数组，每个都是它的选项
+    public func allows(_ v: JSONValue) -> Bool {
+        guard let arr = v.array else { return false }
+        let values = options.compactMap { $0.first?.string }
+        return arr.allSatisfy { $0.string.map(values.contains) ?? false }
+    }
+}
+
 public struct Surface {
     public let surfaceId: String
     public let catalogId: String
@@ -269,6 +284,8 @@ public struct Surface {
             guard let c = components[id] else { continue }
             marked.insert(id)
             seen.append(id)
+            // 输入框、选择写了 submit（§4 fieldSubmit、choiceSubmit）：它指的按钮也算走得到，不用另外摆进页里
+            if let sub = c["submit"]?.string, ["TextField", "ChoicePicker"].contains(c["component"]?.string ?? "") { stack.append(sub) }
             var ignore: [String] = []
             stack.append(contentsOf: childIds(c, &ignore, id).reversed())
         }
@@ -321,10 +338,15 @@ public struct Surface {
             if let g = components[id]?["group"] { checkGroup(id, g, &problems) }
             if let v = components[id]?["subtitle"] { checkSubtitle(id, v, &problems) }
         }
+        for id in shown where components[id]?["open"] != nil || components[id]?["submit"] != nil {
+            checkTarget(id, &problems)
+        }
         for id in shown {
             guard let c = components[id], let v = c["placement"] else { continue }
             if !(v.string.map { A2UI.placements.contains($0) } ?? false) {
                 problems.append("组件 \(id)：placement 只能是 " + A2UI.placements.sorted().joined(separator: "、"))
+            } else if v.string == "header" {
+                if parents[id] != "root" || !rootIsColumn { problems.append("组件 \(id)：placement header 只能写在根 Column 下面一层") }
             } else if c["component"]?.string != "Column" || parents[id] != "root" || !rootIsColumn {
                 problems.append("组件 \(id)：placement 只能写在根 Column 下面一层的 Column 上")
             }
@@ -420,12 +442,43 @@ public struct Surface {
         }
     }
 
+    /// 画着的选择框（`ChoicePicker`）绑定的路径 → 它的样子（标题、选项）。同一页重新取时认是不是同一个选择框（界面接口 §6）：
+    /// 路径一样、样子也一样的，用户选的照留。同一个路径绑了几个的，记第一个
+    public var choiceShapes: [String: ChoiceShape] {
+        var out: [String: ChoiceShape] = [:]
+        for id in reachable() {
+            guard let c = components[id], c["component"]?.string == "ChoicePicker", let p = c["value"]?.bindingPath,
+                  out[p] == nil else { continue }
+            let opts = (c["options"]?.array ?? []).map { [$0["value"] ?? .null, $0["label"] ?? .null] }
+            out[p] = ChoiceShape(label: c["label"] ?? .null, options: opts, variant: c["variant"] ?? .null)
+        }
+        return out
+    }
+
+    /// 画着的普通输入框（不是密码框）绑定的路径 → 它的标题。同一页重新取时认是不是同一个框（界面接口 §6）：
+    /// 路径一样、标题也一样、工具给的值没变的，用户填了没交出去的字照留（邮件设置「添加邮箱」连不上时地址不用重填）
+    public var textFieldLabels: [String: JSONValue] {
+        var out: [String: JSONValue] = [:]
+        for id in reachable() {
+            guard let c = components[id], c["component"]?.string == "TextField", c["variant"]?.string != "obscured",
+                  let p = c["value"]?.bindingPath, out[p] == nil else { continue }
+            out[p] = c["label"] ?? .null
+        }
+        return out
+    }
+
     /// 根 Column 下面写了 `"placement": "aside"` 的段，按顺序。宽窗口里应用页把它们画进侧栏，别的时候照原来的位置画
     public var asideSections: [String] {
         guard let root = components["root"], root["component"]?.string == "Column" else { return [] }
         return (root["children"]?.array ?? []).compactMap { $0.string }.filter {
             components[$0]?["component"]?.string == "Column" && components[$0]?["placement"]?.string == "aside"
         }
+    }
+
+    /// 根 Column 下面写了 `"placement": "header"` 的（§4 headerPlacement）：应用页画在标题那一行右边
+    public var headerItems: [String] {
+        guard let root = components["root"], root["component"]?.string == "Column" else { return [] }
+        return (root["children"]?.array ?? []).compactMap { $0.string }.filter { components[$0]?["placement"]?.string == "header" }
     }
 
     /// 应用页分段画（工具协议 §4 pageSections）时根下面一层的每一样怎么画；根没写 `"layout": "sections"` 时是 nil。
@@ -435,7 +488,8 @@ public struct Surface {
         guard page, let root = components["root"], root["component"]?.string == "Column",
               root["layout"]?.string == "sections" else { return nil }
         let side = Set(asideSections)
-        return (root["children"]?.array ?? []).compactMap { $0.string }.compactMap { id -> PageBlock? in
+        let header = Set(headerItems)
+        return (root["children"]?.array ?? []).compactMap { $0.string }.filter { !header.contains($0) }.compactMap { id -> PageBlock? in
             guard let c = components[id], let type = c["component"]?.string, type != "Divider" else { return nil }
             if let aside, side.contains(id) != aside { return nil }
             switch type {
@@ -452,6 +506,108 @@ public struct Surface {
                 return .bare(id)
             }
         }
+    }
+
+    /// 没写 pageSections 的页：根是一列、里面有小标题（`caption`、`h4`、`h5` 的一段字，后面跟着的不是字）时，
+    /// 照小标题分段：小标题画在卡片外面，到下一个小标题之前的几样放进一张卡片（走查重画稿：「最近了解到的」在卡片上面）。
+    /// 最后孤零零一段字（「还有 1 封等你回复。」这类）不进卡片。第一样不是小标题的页是 nil，照旧整页一张卡片
+    public func headedBlocks() -> [PageBlock]? {
+        guard page, let root = components["root"], root["component"]?.string == "Column", root["layout"] == nil else { return nil }
+        let header = Set(headerItems)
+        let kids = (root["children"]?.array ?? []).compactMap { $0.string }
+            .filter { components[$0]?["component"]?.string != "Divider" && !header.contains($0) }
+        func isText(_ id: String) -> Bool { components[id]?["component"]?.string == "Text" }
+        // 根下面是一列一列的，每一列以小标题开头（输入法的设置页：分隔线、`h4`、几行）：照 pageSections 那样画，
+        // 一列一张卡片、小标题在卡片外面（负责人 11-17：这一页的分组是黑体标题，别的页是卡片加小标题）。
+        // 只有说明文字的一列（页底的一句）不进卡片
+        if kids.count >= 2, kids.allSatisfy({ components[$0]?["component"]?.string == "Column" }) {
+            var titled = 0
+            let blocks = kids.flatMap { id -> [PageBlock] in
+                let inner = (components[id]?["children"]?.array ?? []).compactMap { $0.string }
+                let lead = inner.prefix { components[$0]?["component"]?.string == "Divider" }.count
+                let rest = Array(inner.dropFirst(lead))
+                if rest.count > 1, let c = components[rest[0]], c["component"]?.string == "Text",
+                   ["h4", "h5"].contains(c["variant"]?.string ?? "") {
+                    titled += 1
+                    return [.card(id, title: SectionTitle(icon: nil, text: c["text"] ?? .string(""), count: nil), skip: lead + 1)]
+                }
+                if !rest.isEmpty, rest.allSatisfy({ isText($0) && components[$0]?["variant"]?.string == "caption" }) {
+                    return rest.map { .bare($0) }
+                }
+                return [.card(id, title: nil, skip: lead)]
+            }
+            if titled >= 2 { return blocks }
+        }
+        func heading(_ i: Int) -> SectionTitle? {
+            guard i + 1 < kids.count, let c = components[kids[i]], c["component"]?.string == "Text",
+                  ["caption", "h4", "h5"].contains(c["variant"]?.string ?? ""), !isText(kids[i + 1]) else { return nil }
+            return SectionTitle(icon: nil, text: c["text"] ?? .string(""), count: nil)
+        }
+        // 页开头的选择条、搜索框（「等回复 / 全部」「搜记忆」）不进卡片，后面的放进一张卡片（走查重画稿）
+        let lead = kids.prefix { ["ChoicePicker", "TextField"].contains(components[$0]?["component"]?.string ?? "") }.count
+        if lead > 0 && lead < kids.count, heading(lead) == nil {
+            let rest = Array(kids.dropFirst(lead))
+            var out: [PageBlock] = kids.prefix(lead).map { .bare($0) }
+            let last = rest.count > 1 && footerLike(rest[rest.count - 1]) ? rest.last : nil
+            out.append(.group(title: nil, ids: last == nil ? rest : Array(rest.dropLast())))
+            if let last { out.append(.bare(last)) }
+            return out
+        }
+        // 只认从小标题开始的页：中间一句说明（「第 1 / 3 页」）不当小标题。小标题前面只有几块（「螺壳的判断」那张卡片）的，一块一张卡片
+        // 搜索框、选择条在小标题前面的（搜索的应用页），照旧不进卡片
+        func bareLead(_ id: String) -> Bool { ["ChoicePicker", "TextField"].contains(components[id]?["component"]?.string ?? "") }
+        guard let firstHead = kids.indices.first(where: { heading($0) != nil }),
+              kids[..<firstHead].allSatisfy({ ["Column", "List"].contains(components[$0]?["component"]?.string ?? "") || bareLead($0) })
+        else { return nil }
+        var out: [PageBlock] = []
+        var title: SectionTitle?
+        var group: [String] = []
+        var open = false
+        func flush() {
+            if open && !group.isEmpty { out.append(.group(title: title, ids: group)) }
+            else if open, let t = title { out.append(.group(title: t, ids: [])) }
+            group = []; title = nil; open = false
+        }
+        for (i, id) in kids.enumerated() {
+            if i < firstHead {
+                out.append(bareLead(id) ? .bare(id) : .group(title: nil, ids: [id]))
+            } else if let t = heading(i) {
+                flush(); title = t; open = true
+            } else if open && !(i == kids.count - 1 && group.count > 0 && footerLike(id)) {
+                group.append(id)
+            } else {
+                flush(); out.append(.bare(id))
+            }
+        }
+        flush()
+        return out
+    }
+
+    /// 一排小标签（「最近搜过」「检索范围」下面那排）：应用页根下面一层的一行，里面只有只写字的按钮
+    /// （不写 variant，或写 `selected`：选了的，画成实底）。画成小圆角标签；小标题下面只有这一排的，不放进卡片（走查重画稿「搜索的应用页」）
+    public func chipRow(_ id: String) -> Bool {
+        guard page, let c = components[id], c["component"]?.string == "Row", c["open"] == nil, c["justify"] == nil,
+              (components["root"]?["children"]?.array ?? []).contains(.string(id)),
+              let kids = c["children"]?.array?.compactMap({ $0.string }), !kids.isEmpty else { return false }
+        return kids.allSatisfy { k in
+            guard let b = components[k], b["component"]?.string == "Button", [nil, "selected"].contains(b["variant"]?.string),
+                  let t = b["child"]?.string else { return false }
+            return components[t]?["component"]?.string == "Text"
+        }
+    }
+
+    /// 页底的一句（灰的小字，或点了就去的一行）、一排链接、一排按钮：不进卡片
+    func footerLike(_ id: String) -> Bool {
+        guard let c = components[id] else { return false }
+        if c["component"]?.string == "Text" { return c["variant"]?.string == "caption" }
+        // 页底一排按钮（「把选中的移到废纸篓」「这一类以后别再问」：管整页的，不在最后一组里）
+        if c["component"]?.string == "Row", c["open"] == nil, let kids = c["children"]?.array?.compactMap({ $0.string }), !kids.isEmpty,
+           kids.allSatisfy({ components[$0]?["component"]?.string == "Button" }) { return true }
+        // 一行几个链接（「这台 Mac 状态正常 › · 大文件 ›」）
+        if c["component"]?.string == "Row", c["open"] == nil, let kids = c["children"]?.array?.compactMap({ $0.string }), !kids.isEmpty,
+           kids.allSatisfy({ footerLike($0) && components[$0]?["open"] != nil }) { return true }
+        guard c["component"]?.string == "Row", c["open"] != nil, let first = c["children"]?.array?.first?.string else { return false }
+        return components[first]?["component"]?.string == "Text" && components[first]?["variant"]?.string == "caption"
     }
 
     /// 一段开头的小标题（§4 pageSections）：一行 `Row`，一个 `Icon` 加一段字，可以再跟一段字写数；或者一段 `h4`、`h5`
@@ -507,6 +663,21 @@ public struct Surface {
     public func buttonCountAllows(_ id: String) -> Bool {
         guard let n = buttonCount(id) else { return true }
         return n > 0 || buttonCountAlso(id)
+    }
+
+    /// 什么都不画的组件（§4 countLabel，2026-11-11 起）：写了 count、数出 0 项、也没选 also 里的值的按钮不画（以前画成灰的）；
+    /// 一行、一列里的都是这种按钮的，整行、整列也不画（不留一块空、不多一道间距）。根不算
+    public func drawsNothing(_ id: String) -> Bool { drawsNothing(id, depth: 0) }
+
+    private func drawsNothing(_ id: String, depth: Int) -> Bool {
+        guard id != "root", depth < 32, let c = components[id], let type = c["component"]?.string else { return false }
+        switch type {
+        case "Button": return !buttonCountAllows(id)
+        case "Row", "Column":
+            let kids = (c["children"]?.array ?? []).compactMap(\.string)
+            return !kids.isEmpty && kids.allSatisfy { drawsNothing($0, depth: depth + 1) }
+        default: return false
+        }
     }
 
     private func rawButtonLabel(_ id: String) -> (text: String, icon: String?) {
@@ -567,6 +738,14 @@ public struct Surface {
         } catch {
             throw A2UIError(["按钮 \(id) 的上下文取不到值"])
         }
+    }
+
+    /// 画得出来的按钮里，点了会交出同一个动作、同样的上下文的那个（宿主排队的点按，页重新取以后按钮的编号可能变了，用它重新找）
+    public func buttonID(name: String, context: JSONValue) -> String? {
+        for id in reachable().sorted() where components[id]?["component"]?.string == "Button" {
+            if let a = try? action(id), a.name == name, a.context == context { return id }
+        }
+        return nil
     }
 
     /// 点这个按钮会交出去的密码框：上下文正好引用了的那几个（§4 secureField）。点完窗口只清这几个
@@ -636,6 +815,48 @@ public struct Surface {
         guard let p = v?.bindingPath else { return false }
         if (try? data.value(at: p)) == nil { problems.append("组件 \(id) 绑定的 \(p) 在数据模型里没有") }
         return true
+    }
+
+    /// §4 rowOpen：`Row` 的 `open` 是这一行里一个按钮的编号；§4 fieldSubmit：`TextField` 的 `submit` 是这里一个按钮的编号。
+    /// 指的按钮不能是打开网页的
+    func checkTarget(_ id: String, _ problems: inout [String]) {
+        guard let c = components[id] else { return }
+        let type = c["component"]?.string ?? ""
+        for (key, owners) in [("open", ["Row"]), ("submit", ["TextField", "ChoicePicker"])] {
+            guard let v = c[key] else { continue }
+            if !owners.contains(type) { problems.append("组件 \(id)：\(key) 只能写在 " + owners.joined(separator: " 或 ") + " 上"); continue }
+            let inside: Set<String> = key == "open" ? subtree(id) : Set(components.keys)
+            guard let t = v.string, inside.contains(t), components[t]?["component"]?.string == "Button" else {
+                problems.append("组件 \(id)：\(key) 要是\(key == "open" ? "这一行里" : "这里")一个按钮的编号"); continue
+            }
+            if components[t]?["action"]?["event"]?["name"]?.string == "agent.open_url" {
+                problems.append("组件 \(id)：\(key) 指的按钮不能是打开网页的")
+            }
+        }
+    }
+
+    /// `id` 下面的组件（不含它自己）；遇到环不会死循环
+    public func subtree(_ id: String) -> Set<String> {
+        var out = Set<String>()
+        var ignored: [String] = []
+        var stack = components[id].map { childIds($0, &ignored, id) } ?? []
+        while let k = stack.popLast() {
+            guard !out.contains(k), let kc = components[k] else { continue }
+            out.insert(k)
+            stack.append(contentsOf: childIds(kc, &ignored, k))
+        }
+        return out
+    }
+
+    /// 按钮的 confirm（§4 confirm，2026-11-12 加）：`{title, text?, label?}`，都是不空的写死的字
+    func checkConfirm(_ v: JSONValue, _ id: String, _ problems: inout [String]) {
+        guard let o = v.object, o["title"] != nil, Set(o.keys).isSubset(of: ["title", "text", "label"]),
+              o.values.allSatisfy({ ($0.string ?? "").isEmpty == false }) else {
+            problems.append("按钮 \(id)：confirm 要是 {title, text, label}（title 必写），都是不空的文字"); return
+        }
+        if o.values.contains(where: { ($0.string ?? "").count > A2UI.maxText }) {
+            problems.append("按钮 \(id)：confirm 里的字超过 \(A2UI.maxText) 字")
+        }
     }
 
     func checkText(_ name: String, required: Bool, _ id: String, _ type: String, _ c: [String: JSONValue], _ problems: inout [String]) {
@@ -757,6 +978,7 @@ public struct Surface {
             }
         case "Button":
             checkText("tooltip", required: false, id, type, c, &problems)
+            if let v = c["confirm"] { checkConfirm(v, id, &problems) }
             guard let event = c["action"]?["event"], let name = event["name"]?.string, !name.isEmpty else {
                 problems.append("按钮 \(id) 要有 action.event.name"); return
             }
@@ -796,6 +1018,9 @@ public struct Surface {
                     if !bound(o["label"], id, &problems), o["label"]?.string == nil { problems.append("组件 \(id)：每个选项要有 label") }
                     if let i = o["icon"], !(i.string.map { A2UI.icons.contains($0) } ?? false) {
                         problems.append("组件 \(id)：选项的图标名只能是 " + A2UI.icons.sorted().joined(separator: "、"))
+                    }
+                    if let t = o["tooltip"], !(t.string.map { !$0.isEmpty && $0.count <= 200 } ?? false) {
+                        problems.append("组件 \(id)：选项的 tooltip 要是不超过 200 字的文字")
                     }
                 }
             } else {
@@ -866,6 +1091,8 @@ public enum PageBlock: Equatable {
     case tiles([String])
     /// 一段一张卡片：有小标题时画在卡片外面，卡片里从第 `skip` 个子组件起
     case card(String, title: SectionTitle?, skip: Int)
+    /// 页的根一层里挨着的几样放进一张卡片，小标题在卡片外面（没写 pageSections 的页，按小标题分段：`headedBlocks`）
+    case group(title: SectionTitle?, ids: [String])
 }
 
 /// 一段的小标题：图标、字、数（字和数可能绑着数据模型，由画的人取）

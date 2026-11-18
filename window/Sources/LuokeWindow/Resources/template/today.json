@@ -137,7 +137,7 @@
       {
        "id": "b7-text",
        "component": "Text",
-       "text": "先不动"
+       "text": "暂不处理"
       },
       {
        "id": "b7-row",
@@ -168,7 +168,7 @@
       {
        "id": "b8-text",
        "component": "Text",
-       "text": "在邮件助手里看"
+       "text": "在邮件助手中查看"
       },
       {
        "id": "b8-row",
@@ -499,7 +499,7 @@
          "icon": "archive"
         },
         {
-         "label": "先不动",
+         "label": "暂不处理",
          "value": "keep",
          "icon": "circle-minus"
         }
@@ -607,7 +607,7 @@
          "icon": "archive"
         },
         {
-         "label": "先不动",
+         "label": "暂不处理",
          "value": "keep",
          "icon": "circle-minus"
         }
@@ -681,7 +681,7 @@
          "icon": "archive"
         },
         {
-         "label": "先不动",
+         "label": "暂不处理",
          "value": "keep",
          "icon": "circle-minus"
         }
@@ -755,7 +755,7 @@
          "icon": "archive"
         },
         {
-         "label": "先不动",
+         "label": "暂不处理",
          "value": "keep",
          "icon": "circle-minus"
         }
@@ -829,7 +829,7 @@
          "icon": "archive"
         },
         {
-         "label": "先不动",
+         "label": "暂不处理",
          "value": "keep",
          "icon": "circle-minus"
         }
@@ -1067,7 +1067,7 @@
          "icon": "archive"
         },
         {
-         "label": "先不动",
+         "label": "暂不处理",
          "value": "keep",
          "icon": "circle-minus"
         }
@@ -1141,7 +1141,7 @@
          "icon": "archive"
         },
         {
-         "label": "先不动",
+         "label": "暂不处理",
          "value": "keep",
          "icon": "circle-minus"
         }
@@ -1215,7 +1215,7 @@
          "icon": "archive"
         },
         {
-         "label": "先不动",
+         "label": "暂不处理",
          "value": "keep",
          "icon": "circle-minus"
         }
@@ -1289,7 +1289,7 @@
          "icon": "archive"
         },
         {
-         "label": "先不动",
+         "label": "暂不处理",
          "value": "keep",
          "icon": "circle-minus"
         }
@@ -1363,7 +1363,7 @@
          "icon": "archive"
         },
         {
-         "label": "先不动",
+         "label": "暂不处理",
          "value": "keep",
          "icon": "circle-minus"
         }
@@ -1437,7 +1437,7 @@
          "icon": "archive"
         },
         {
-         "label": "先不动",
+         "label": "暂不处理",
          "value": "keep",
          "icon": "circle-minus"
         }
@@ -1511,7 +1511,7 @@
          "icon": "archive"
         },
         {
-         "label": "先不动",
+         "label": "暂不处理",
          "value": "keep",
          "icon": "circle-minus"
         }
@@ -1585,7 +1585,7 @@
          "icon": "archive"
         },
         {
-         "label": "先不动",
+         "label": "暂不处理",
          "value": "keep",
          "icon": "circle-minus"
         }
@@ -1872,7 +1872,7 @@
          "icon": "archive"
         },
         {
-         "label": "先不动",
+         "label": "暂不处理",
          "value": "keep",
          "icon": "circle-minus"
         }
@@ -1954,7 +1954,7 @@
          "icon": "archive"
         },
         {
-         "label": "先不动",
+         "label": "暂不处理",
          "value": "keep",
          "icon": "circle-minus"
         }
@@ -2070,7 +2070,7 @@
          "icon": "archive"
         },
         {
-         "label": "先不动",
+         "label": "暂不处理",
          "value": "keep",
          "icon": "circle-minus"
         }
@@ -2191,7 +2191,7 @@
       {
        "id": "t37",
        "component": "Text",
-       "text": "可以整理"
+       "text": "待整理"
       },
       {
        "id": "r38",
@@ -2260,7 +2260,7 @@
       {
        "id": "b42-text",
        "component": "Text",
-       "text": "先不动"
+       "text": "暂不处理"
       },
       {
        "id": "b42-row",
@@ -2349,7 +2349,7 @@
        "label": "CoinPath Team：💥 BTC is down to $75k! Huge $2.3T stock market wipeout",
        "options": [
         {
-         "label": "先不动",
+         "label": "暂不处理",
          "value": "keep",
          "icon": "circle-minus"
         },
@@ -2413,7 +2413,7 @@
        "label": "Daily Brief：City council weighs new transit plan",
        "options": [
         {
-         "label": "先不动",
+         "label": "暂不处理",
          "value": "keep",
          "icon": "circle-minus"
         },
@@ -2477,7 +2477,7 @@
        "label": "ChainNews：💸 Exchange-Hack: Ist dein Geld noch sicher?",
        "options": [
         {
-         "label": "先不动",
+         "label": "暂不处理",
          "value": "keep",
          "icon": "circle-minus"
         },
@@ -2541,7 +2541,7 @@
        "label": "LinguaPal：🎃 八五折优惠活动今日盛大开启 🎃",
        "options": [
         {
-         "label": "先不动",
+         "label": "暂不处理",
          "value": "keep",
          "icon": "circle-minus"
         },
@@ -2655,7 +2655,7 @@
         "l48",
         "r73"
        ],
-       "collapsed": "206 封，都先不动"
+       "collapsed": "206 封，都暂不处理"
       }
      ]
     }
@@ -2758,7 +2758,7 @@
       {
        "id": "t6",
        "component": "Text",
-       "text": "可以整理"
+       "text": "待整理"
       },
       {
        "id": "r7",
@@ -2827,7 +2827,7 @@
       {
        "id": "b11-text",
        "component": "Text",
-       "text": "先不动"
+       "text": "暂不处理"
       },
       {
        "id": "b11-row",
@@ -2916,7 +2916,7 @@
        "label": "北辰银行：50元刷卡金期待与你相遇！[AD]",
        "options": [
         {
-         "label": "先不动",
+         "label": "暂不处理",
          "value": "keep",
          "icon": "circle-minus"
         },
@@ -2995,7 +2995,7 @@
         "l17",
         "r24"
        ],
-       "collapsed": "38 封，都先不动"
+       "collapsed": "38 封，都暂不处理"
       }
      ]
     }
@@ -3077,7 +3077,7 @@
       {
        "id": "t6",
        "component": "Text",
-       "text": "可以整理"
+       "text": "待整理"
       },
       {
        "id": "r7",
@@ -3146,7 +3146,7 @@
       {
        "id": "b11-text",
        "component": "Text",
-       "text": "先不动"
+       "text": "暂不处理"
       },
       {
        "id": "b11-row",
@@ -3211,7 +3211,7 @@
       {
        "id": "t2",
        "component": "Text",
-       "text": "「清理」会删掉 9 样会自动重建的缓存。另外 101 样在「螺壳扫描」里等你看，其中 21 样先不动，等你定。",
+       "text": "「清理」会删掉 9 样会自动重建的缓存。另外 101 样在「螺壳扫描」里等你看，其中 21 样暂不处理，等你定。",
        "variant": "caption"
       },
       {

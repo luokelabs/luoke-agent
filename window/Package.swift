@@ -7,7 +7,7 @@ let v5: [SwiftSetting] = [.swiftLanguageMode(.v5)]
 
 let package = Package(
     name: "LuokeWindow",
-    platforms: [.macOS(.v14)],
+    platforms: [.macOS("26.2")],
     products: [
         .library(name: "LuokeWindow", targets: ["LuokeWindow"]),
         .executable(name: "luoke-window-demo", targets: ["LuokeWindowDemo"]),

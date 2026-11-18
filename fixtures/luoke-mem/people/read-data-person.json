@@ -1,0 +1,236 @@
+{
+  "reply": {
+    "id": 26,
+    "jsonrpc": "2.0",
+    "result": {
+      "contents": [
+        {
+          "mimeType": "application/json",
+          "text": {
+            "about": [
+              {
+                "cites": 6,
+                "confidence": "likely",
+                "decided_at": null,
+                "entity": 1,
+                "formed_at": "2026-11-05 21:00:00",
+                "fresh": null,
+                "id": 8,
+                "kind": "term",
+                "origin": "inferred",
+                "pending": false,
+                "sources": [
+                  "luoke-mail"
+                ],
+                "status": "active",
+                "text": "Lei Wang",
+                "topic": null,
+                "why_data": {
+                  "code": "sent_mail_person",
+                  "relation": "同事",
+                  "waiting": false
+                }
+              },
+              {
+                "cites": 6,
+                "confidence": "likely",
+                "decided_at": null,
+                "entity": 1,
+                "formed_at": "2026-11-05 21:00:00",
+                "fresh": null,
+                "id": 7,
+                "kind": "term",
+                "origin": "inferred",
+                "pending": false,
+                "sources": [
+                  "luoke-mail"
+                ],
+                "status": "active",
+                "text": "Wang Lei",
+                "topic": null,
+                "why_data": {
+                  "code": "sent_mail_person",
+                  "relation": "同事",
+                  "waiting": false
+                }
+              },
+              {
+                "cites": 6,
+                "confidence": "likely",
+                "decided_at": null,
+                "entity": 1,
+                "formed_at": "2026-11-05 21:00:00",
+                "fresh": null,
+                "id": 6,
+                "kind": "term",
+                "origin": "inferred",
+                "pending": false,
+                "sources": [
+                  "luoke-mail"
+                ],
+                "status": "active",
+                "text": "王磊",
+                "topic": null,
+                "why_data": {
+                  "code": "sent_mail_person",
+                  "relation": "同事",
+                  "waiting": false
+                }
+              },
+              {
+                "cites": 2,
+                "confidence": "likely",
+                "decided_at": null,
+                "entity": 1,
+                "formed_at": "2026-11-05 20:45:00",
+                "fresh": null,
+                "id": 2,
+                "kind": "fact",
+                "origin": "inferred",
+                "pending": false,
+                "sources": [
+                  "luoke-mail"
+                ],
+                "status": "active",
+                "text": "合作方：Wang Lei（wanglei@corp.example）",
+                "topic": "合作方:Wang Lei",
+                "why_data": {
+                  "code": "sent_mail",
+                  "count": 2,
+                  "waiting": false
+                }
+              },
+              {
+                "cites": 2,
+                "confidence": "likely",
+                "decided_at": null,
+                "entity": 1,
+                "formed_at": "2026-11-05 20:45:00",
+                "fresh": null,
+                "id": 1,
+                "kind": "fact",
+                "origin": "inferred",
+                "pending": false,
+                "sources": [
+                  "luoke-mail"
+                ],
+                "status": "active",
+                "text": "同事：王磊（wanglei@corp.example）",
+                "topic": "同事:王磊",
+                "why_data": {
+                  "code": "sent_mail",
+                  "count": 2,
+                  "waiting": false
+                }
+              }
+            ],
+            "aliases": [
+              {
+                "name": "王磊"
+              },
+              {
+                "address": "wanglei@corp.example"
+              },
+              {
+                "name": "Wang Lei"
+              },
+              {
+                "name": "Lei Wang"
+              }
+            ],
+            "contact": {
+              "count": 15,
+              "first": "2026-09",
+              "lapsed": false,
+              "last": "2026-10",
+              "months": 2,
+              "together": [
+                "主控"
+              ]
+            },
+            "found": true,
+            "id": 1,
+            "name": "王磊",
+            "notes": 5,
+            "profile": {
+              "cc": 0,
+              "count": 15,
+              "first": "2026-09",
+              "lapsed": false,
+              "last": "2026-10",
+              "last_at": "2026-10-30 18:00:00",
+              "months": 2,
+              "recent": {
+                "2026-09": 6,
+                "2026-10": 9
+              },
+              "records": [
+                7,
+                8
+              ],
+              "subjects": [
+                "再看一下主控的启动",
+                "论文初稿",
+                "主控的内存预算"
+              ],
+              "to": 15,
+              "together": [
+                {
+                  "mails": 2,
+                  "note": 5,
+                  "text": "主控"
+                }
+              ]
+            },
+            "ready": true,
+            "relations": [
+              {
+                "note": 1,
+                "relation": "同事",
+                "status": "active"
+              },
+              {
+                "note": 2,
+                "relation": "合作方",
+                "status": "active"
+              }
+            ],
+            "status": "active",
+            "top": null,
+            "v": 1
+          },
+          "uri": "data/person?id=1"
+        }
+      ],
+      "resultType": "complete"
+    }
+  },
+  "request": {
+    "id": 26,
+    "jsonrpc": "2.0",
+    "method": "resources/read",
+    "params": {
+      "_meta": {
+        "io.modelcontextprotocol/clientCapabilities": {
+          "experimental": {
+            "ai.luoke/a2ui": {
+              "features": [
+                "openPage",
+                "pageArgs",
+                "confirm",
+                "rowOpen",
+                "fieldSubmit"
+              ]
+            }
+          }
+        },
+        "io.modelcontextprotocol/clientInfo": {
+          "name": "luoke-agent",
+          "version": "fixtures"
+        },
+        "io.modelcontextprotocol/protocolVersion": "2026-07-28"
+      },
+      "uri": "data/person?id=1"
+    }
+  }
+}

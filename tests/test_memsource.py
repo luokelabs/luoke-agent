@@ -211,7 +211,7 @@ class MemorySourceTest(unittest.TestCase):
         r = self.src.handle(q, "mem.reply", {"ask": ids["q习惯"], "choice": "revise", "text": "  "}, NOW)
         self.assertTrue(r["error"])
         r = self.src.handle(q, "mem.reply", {"ask": ids["q习惯"], "choice": "yes"}, NOW)
-        self.assertEqual(r["text"], "记下了：对。")
+        self.assertEqual(r["text"], "已确认")
         w = lm.WholeMemory(self.path)
         self.assertEqual(w.note(ids["习惯"])["status"], "active")
         w.db.close()
@@ -225,7 +225,7 @@ class MemorySourceTest(unittest.TestCase):
         labels = [c.get("text") for m in q.card if "updateComponents" in m for c in m["updateComponents"]["components"]]
         self.assertIn("以前是，现在不是", labels)
         r = self.src.handle(q, "mem.reply", {"ask": ids["q习惯"], "choice": "past"}, NOW)
-        self.assertEqual(r["text"], "记下了：以前是，现在不是。")
+        self.assertEqual(r["text"], "已标记为过去的情况")
         w = lm.WholeMemory(self.path)
         self.assertEqual(w.note(ids["习惯"])["status"], "past")
         w.db.close()
@@ -254,13 +254,13 @@ class MemorySourceTest(unittest.TestCase):
                          "是非类的建议：好 / 不用 / 别再提（自带的记忆能归档时最后加「归档」）")
         self.assertTrue(self.src.handle(sug, "mem.reply", {"ask": ids["建议"], "choice": "yes"}, NOW)["error"])
         r = self.src.handle(sug, "mem.reply", {"ask": ids["建议"], "choice": "useful"}, NOW)
-        self.assertEqual(r["text"], "好。")
+        self.assertEqual(r["text"], "已记录")
 
     def test_free_questions(self):
         ids = make_memory(self.path)
         yes_no, pick = self.ask_item(ids, "ask"), self.ask_item(ids, "pick")
         r = self.src.handle(yes_no, "mem.reply", {"ask": ids["ask"], "choice": "answer", "text": "是"}, NOW)
-        self.assertEqual(r["text"], "记下了。")
+        self.assertEqual(r["text"], "已记录")
         s = a2ui.build(pick.card)
         self.assertEqual(s.data["choices"]["reply"], ["周五"])
         r = self.src.handle(pick, "mem.reply", {"ask": ids["pick"], "choice": "answer", "text": ["周一"]}, NOW)

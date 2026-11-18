@@ -71,7 +71,7 @@ class CardsTest(unittest.TestCase):
     def test_mailbox_card_parts(self):
         parts = [{"icon": "inbox", "title": "待处理", "items": items()[:1],
                   "buttons": [cards.button("加星标 1", "mail_apply_plan", {"choices": cards.CHOICES}, primary=True, icon="check")]},
-                 {"icon": "archive", "title": "可以整理", "note": "多是 CoinDigest",
+                 {"icon": "archive", "title": "待整理", "note": "多是 CoinDigest",
                   "buttons": [cards.button("归档 3", "mail_apply_plan", {}, primary=True, icon="archive")]},
                  {"icon": "shield-alert", "title": "判为可疑", "collapsed": "2 封，都先不动", "items": items()[1:],
                   "buttons": [cards.button("按选的处理", "mail_apply_plan", {}, primary=True, icon="check")]}]

@@ -1,5 +1,5 @@
 {
- "_about": "scripts/window_samples.py 用 fixtures/luoke-mem/empty（luoke-mem 403be74661c2）接上真核心生成的，不要手改",
+ "_about": "scripts/window_samples.py 用 fixtures/luoke-mem/empty（luoke-mem c60631bce12f）接上真核心生成的，不要手改",
  "app": "luoke-mem",
  "apps": {
   "apps": [
@@ -12,26 +12,54 @@
       "title": "概览"
      },
      {
-      "id": "guesses",
-      "title": "猜测"
-     },
-     {
-      "id": "kept",
-      "title": "记下的"
+      "id": "all",
+      "title": "全部记忆"
      },
      {
       "id": "people",
-      "title": "人"
+      "title": "人物"
      },
      {
+      "hidden": true,
+      "icon": "settings",
+      "id": "settings",
+      "title": "记忆设置"
+     },
+     {
+      "hidden": true,
+      "id": "item",
+      "title": "一条记忆"
+     },
+     {
+      "hidden": true,
+      "id": "person",
+      "title": "人物"
+     },
+     {
+      "hidden": true,
+      "id": "asks",
+      "title": "归档的问题"
+     },
+     {
+      "hidden": true,
+      "id": "guesses",
+      "title": "待确认"
+     },
+     {
+      "hidden": true,
+      "id": "kept",
+      "title": "全部记忆"
+     },
+     {
+      "hidden": true,
       "id": "sources",
-      "title": "各应用写的"
+      "title": "设置"
      }
     ],
     "running": true,
     "summary": {
      "count": 0,
-     "text": "还没有记下什么。"
+     "text": "记忆无法打开"
     },
     "ui": {
      "pages": []
@@ -40,11 +68,14 @@
   ]
  },
  "asked": [
+  "read-data-notes.json",
+  "read-data-people.json",
+  "read-data-recent.json",
+  "read-data-sources.json",
   "read-outbox.json",
+  "read-page-asks.json",
   "read-page-guesses.json",
   "read-page-kept.json",
-  "read-page-overview.json",
-  "read-page-people.json",
   "read-page-sources.json",
   "read-summary.json",
   "tools-list.json"
@@ -55,10 +86,13 @@
    "feed",
    {
     "brief": {
-     "next": "2026-11-06T08:00:00+08:00"
+     "next": "2026-11-06T08:00:00+08:00",
+     "words": null
     },
     "cards": [],
     "dot": false,
+    "hello": null,
+    "notice_rows": [],
     "notices": [],
     "open": 0,
     "order": [],
@@ -68,6 +102,104 @@
  ],
  "host": {},
  "pages": {
+  "all": {
+   "messages": [
+    {
+     "createSurface": {
+      "catalogId": "ai.luoke/a2ui/agent/1",
+      "surfaceId": "luoke-mem/page/all"
+     },
+     "version": "v0.9"
+    },
+    {
+     "updateComponents": {
+      "components": [
+       {
+        "children": [
+         "t1",
+         "l6"
+        ],
+        "component": "Column",
+        "id": "root"
+       },
+       {
+        "component": "Text",
+        "id": "t1",
+        "text": "记忆",
+        "variant": "caption"
+       },
+       {
+        "component": "Text",
+        "id": "t2",
+        "text": "尚无记忆"
+       },
+       {
+        "component": "Text",
+        "id": "t3",
+        "text": "各应用使用一段时间后，记忆会逐步形成",
+        "variant": "caption"
+       },
+       {
+        "children": [
+         "t2",
+         "t3"
+        ],
+        "component": "Column",
+        "id": "c4"
+       },
+       {
+        "children": [
+         "c4"
+        ],
+        "component": "Row",
+        "id": "r5",
+        "justify": "spaceBetween"
+       },
+       {
+        "children": [
+         "r5"
+        ],
+        "component": "List",
+        "id": "l6"
+       }
+      ],
+      "surfaceId": "luoke-mem/page/all"
+     },
+     "version": "v0.9"
+    }
+   ]
+  },
+  "asks": {
+   "messages": [
+    {
+     "createSurface": {
+      "catalogId": "ai.luoke/a2ui/agent/1",
+      "surfaceId": "luoke-mem/page/asks"
+     },
+     "version": "v0.9"
+    },
+    {
+     "updateComponents": {
+      "components": [
+       {
+        "children": [
+         "t1"
+        ],
+        "component": "Column",
+        "id": "root"
+       },
+       {
+        "component": "Text",
+        "id": "t1",
+        "text": "还没有记下什么。各应用用起来以后，记忆会从你打的字、发的邮件里慢慢记下关于你的事。"
+       }
+      ],
+      "surfaceId": "luoke-mem/page/asks"
+     },
+     "version": "v0.9"
+    }
+   ]
+  },
   "guesses": {
    "messages": [
     {
@@ -82,25 +214,50 @@
       "components": [
        {
         "children": [
-         "h1",
-         "t2"
+         "t1"
         ],
         "component": "Column",
         "id": "root"
        },
        {
         "component": "Text",
-        "id": "h1",
-        "text": "猜测",
-        "variant": "h4"
-       },
-       {
-        "component": "Text",
-        "id": "t2",
+        "id": "t1",
         "text": "还没有记下什么。各应用用起来以后，记忆会从你打的字、发的邮件里慢慢记下关于你的事。"
        }
       ],
       "surfaceId": "luoke-mem/page/guesses"
+     },
+     "version": "v0.9"
+    }
+   ]
+  },
+  "item": {
+   "messages": [
+    {
+     "createSurface": {
+      "catalogId": "ai.luoke/a2ui/agent/1",
+      "surfaceId": "luoke-mem/page/item"
+     },
+     "version": "v0.9"
+    },
+    {
+     "updateComponents": {
+      "components": [
+       {
+        "children": [
+         "t1"
+        ],
+        "component": "Column",
+        "id": "root"
+       },
+       {
+        "component": "Text",
+        "id": "t1",
+        "text": "此记忆已不存在",
+        "variant": "caption"
+       }
+      ],
+      "surfaceId": "luoke-mem/page/item"
      },
      "version": "v0.9"
     }
@@ -120,21 +277,14 @@
       "components": [
        {
         "children": [
-         "h1",
-         "t2"
+         "t1"
         ],
         "component": "Column",
         "id": "root"
        },
        {
         "component": "Text",
-        "id": "h1",
-        "text": "记下的",
-        "variant": "h4"
-       },
-       {
-        "component": "Text",
-        "id": "t2",
+        "id": "t1",
         "text": "还没有记下什么。各应用用起来以后，记忆会从你打的字、发的邮件里慢慢记下关于你的事。"
        }
       ],
@@ -158,22 +308,51 @@
       "components": [
        {
         "children": [
-         "h1",
-         "t2"
+         "t1",
+         "l6"
         ],
         "component": "Column",
         "id": "root"
        },
        {
         "component": "Text",
-        "id": "h1",
-        "text": "概览",
-        "variant": "h4"
+        "id": "t1",
+        "text": "记忆",
+        "variant": "caption"
        },
        {
         "component": "Text",
         "id": "t2",
-        "text": "还没有记下什么。各应用用起来以后，记忆会从你打的字、发的邮件里慢慢记下关于你的事。"
+        "text": "尚无记忆"
+       },
+       {
+        "component": "Text",
+        "id": "t3",
+        "text": "各应用使用一段时间后，记忆会逐步形成",
+        "variant": "caption"
+       },
+       {
+        "children": [
+         "t2",
+         "t3"
+        ],
+        "component": "Column",
+        "id": "c4"
+       },
+       {
+        "children": [
+         "c4"
+        ],
+        "component": "Row",
+        "id": "r5",
+        "justify": "spaceBetween"
+       },
+       {
+        "children": [
+         "r5"
+        ],
+        "component": "List",
+        "id": "l6"
        }
       ],
       "surfaceId": "luoke-mem/page/overview"
@@ -196,25 +375,176 @@
       "components": [
        {
         "children": [
-         "h1",
-         "t2"
+         "t1",
+         "l6"
         ],
         "component": "Column",
         "id": "root"
        },
        {
         "component": "Text",
-        "id": "h1",
-        "text": "人",
-        "variant": "h4"
+        "id": "t1",
+        "text": "记忆",
+        "variant": "caption"
        },
        {
         "component": "Text",
         "id": "t2",
-        "text": "还没有记下什么。各应用用起来以后，记忆会从你打的字、发的邮件里慢慢记下关于你的事。"
+        "text": "尚无记忆"
+       },
+       {
+        "component": "Text",
+        "id": "t3",
+        "text": "各应用使用一段时间后，记忆会逐步形成",
+        "variant": "caption"
+       },
+       {
+        "children": [
+         "t2",
+         "t3"
+        ],
+        "component": "Column",
+        "id": "c4"
+       },
+       {
+        "children": [
+         "c4"
+        ],
+        "component": "Row",
+        "id": "r5",
+        "justify": "spaceBetween"
+       },
+       {
+        "children": [
+         "r5"
+        ],
+        "component": "List",
+        "id": "l6"
        }
       ],
       "surfaceId": "luoke-mem/page/people"
+     },
+     "version": "v0.9"
+    }
+   ]
+  },
+  "settings": {
+   "messages": [
+    {
+     "createSurface": {
+      "catalogId": "ai.luoke/a2ui/agent/1",
+      "surfaceId": "luoke-mem/page/settings"
+     },
+     "version": "v0.9"
+    },
+    {
+     "updateComponents": {
+      "components": [
+       {
+        "children": [
+         "t3",
+         "l8"
+        ],
+        "component": "Column",
+        "id": "root"
+       },
+       {
+        "action": {
+         "event": {
+          "context": {
+           "args": {
+            "tab": {
+             "path": "/choices/tab/0"
+            }
+           },
+           "page": "settings"
+          },
+          "name": "agent.open_page"
+         }
+        },
+        "child": "b1-text",
+        "component": "Button",
+        "id": "b1"
+       },
+       {
+        "component": "Text",
+        "id": "b1-text",
+        "text": "切换分页"
+       },
+       {
+        "component": "ChoicePicker",
+        "id": "k2",
+        "options": [
+         {
+          "label": "来源",
+          "value": "sources"
+         },
+         {
+          "label": "数据",
+          "value": "data"
+         }
+        ],
+        "submit": "b1",
+        "value": {
+         "path": "/choices/tab"
+        }
+       },
+       {
+        "component": "Text",
+        "id": "t3",
+        "text": "记忆",
+        "variant": "caption"
+       },
+       {
+        "component": "Text",
+        "id": "t4",
+        "text": "尚无记忆"
+       },
+       {
+        "component": "Text",
+        "id": "t5",
+        "text": "各应用使用一段时间后，记忆会逐步形成",
+        "variant": "caption"
+       },
+       {
+        "children": [
+         "t4",
+         "t5"
+        ],
+        "component": "Column",
+        "id": "c6"
+       },
+       {
+        "children": [
+         "c6"
+        ],
+        "component": "Row",
+        "id": "r7",
+        "justify": "spaceBetween"
+       },
+       {
+        "children": [
+         "r7"
+        ],
+        "component": "List",
+        "id": "l8"
+       }
+      ],
+      "surfaceId": "luoke-mem/page/settings"
+     },
+     "version": "v0.9"
+    },
+    {
+     "updateDataModel": {
+      "path": "/",
+      "surfaceId": "luoke-mem/page/settings",
+      "value": {
+       "choices": {
+        "tab": [
+         "sources"
+        ]
+       }
+      }
      },
      "version": "v0.9"
     }
@@ -234,21 +564,14 @@
       "components": [
        {
         "children": [
-         "h1",
-         "t2"
+         "t1"
         ],
         "component": "Column",
         "id": "root"
        },
        {
         "component": "Text",
-        "id": "h1",
-        "text": "各应用写的",
-        "variant": "h4"
-       },
-       {
-        "component": "Text",
-        "id": "t2",
+        "id": "t1",
         "text": "还没有记下什么。各应用用起来以后，记忆会从你打的字、发的邮件里慢慢记下关于你的事。"
        }
       ],
@@ -265,5 +588,5 @@
  "replies": [],
  "scenario": "empty",
  "title": "刚装好，记忆是空的",
- "version": "$VERSION"
+ "version": "0.44.0"
 }

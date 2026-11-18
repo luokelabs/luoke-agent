@@ -13,9 +13,9 @@ final class LayoutTests: XCTestCase {
         XCTAssertEqual(LKLayout(width: 759), .narrow)
         XCTAssertEqual(LKLayout(width: 760), .regular)
         XCTAssertEqual(LKLayout(width: 783), .regular, "默认窗口 1004 宽")
-        XCTAssertEqual(LKLayout(width: 1199), .regular)
-        XCTAssertEqual(LKLayout(width: 1200), .wide)
-        XCTAssertEqual(LKLayout(width: 1219), .wide, "1440 宽的窗口、侧栏展开")
+        XCTAssertEqual(LKLayout(width: 1219), .regular, "1440 宽的窗口、侧栏展开：一栏 860 放下了，第二栏放不下")
+        XCTAssertEqual(LKLayout(width: 1279), .regular)
+        XCTAssertEqual(LKLayout(width: 1280), .wide)
     }
 
     func testMainColumnKeepsItsWidthNextToTheRail() {
@@ -24,6 +24,17 @@ final class LayoutTests: XCTestCase {
         XCTAssertEqual(main, one, "主栏和一栏时一样宽：一行的字数不变")
         XCTAssertLessThanOrEqual(LKColumn.railedWidth, LKLayout.wideFrom, "到了 wide，主栏、侧栏和边距放得下")
         XCTAssertEqual(LKColumn.railShift * 2, LKColumn.gap + LKColumn.rail, "搜索框挪到主栏的中线上")
+    }
+
+    /// 「添加应用」照对照稿：默认 1004 宽的窗口（内容区 784）里，两列卡片一共 720；再宽也不超过这么宽，居中
+    func testAppsPageUsesTheDesignsColumn() {
+        let content: CGFloat = 1004 - 220
+        XCTAssertEqual(min(content, LKColumn.apps) - LKInsets.page.leading - LKInsets.page.trailing, 720)
+        XCTAssertEqual(LKColumn.apps, content, "默认窗口里正好铺满内容区")
+        XCTAssertGreaterThanOrEqual(LKInsets.page.bottom, LKInsets.column.bottom, "底下留得够，最后一行卡片不被底部搜索框的渐隐挡住")
+        XCTAssertEqual(LKInsets.page.top, 28, "标题栏下面空一点才是页标题")
+        XCTAssertEqual(LKInsets.page.leading, 32)
+        XCTAssertEqual(LKInsets.page.trailing, 32)
     }
 
     func testTodayHasARailOnlyWhenWideAndSomethingGoesThere() {
@@ -38,7 +49,7 @@ final class LayoutTests: XCTestCase {
     func testCompactTodayAndFocusHaveNoRail() {
         let m = Sample.model()
         m.enterFocus()
-        XCTAssertFalse(m.hasRail(.wide), "一件件处理盖住「今天」")
+        XCTAssertFalse(m.hasRail(.wide), "逐件处理盖住「今天」")
         m.exitFocus()
         m.setDensity(.compact)
         XCTAssertFalse(m.hasRail(.wide), "紧凑是一张表，不分两栏")

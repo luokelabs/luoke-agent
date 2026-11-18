@@ -1,0 +1,271 @@
+{
+  "reply": {
+    "id": 1006,
+    "jsonrpc": "2.0",
+    "result": {
+      "contents": [
+        {
+          "mimeType": "application/json",
+          "text": {
+            "auto": "duplicate",
+            "bytes": 14680064,
+            "count": 7,
+            "facts": {
+              "apps": [],
+              "appsInstalled": 0,
+              "appsMissing": 0,
+              "groups": {
+                "duplicate": 7
+              },
+              "password": 0,
+              "rebuilds": 0,
+              "tools": [],
+              "userFiles": "none"
+            },
+            "files": 7,
+            "id": "duplicate",
+            "items": [
+              {
+                "bytes": 2097152,
+                "facts": {
+                  "copies": 1,
+                  "keep": "~/Documents/%E9%A6%99%E6%B8%AF-4.v2.pdf"
+                },
+                "finding": "space.duplicates/000000000069",
+                "group": "duplicate",
+                "key": "i57",
+                "options": [
+                  "trash",
+                  "clone",
+                  "keep",
+                  "ignore"
+                ],
+                "password": false,
+                "path": "~/Downloads/%E9%A6%99%E6%B8%AF-4.v2.pdf",
+                "paths": [
+                  "~/Downloads/%E9%A6%99%E6%B8%AF-4.v2.pdf"
+                ],
+                "pathsMore": 0,
+                "plan": "p-000000000008",
+                "reason": "copy-kept",
+                "rebuilds": false,
+                "restorable": true,
+                "reveal": "~/Downloads/%E9%A6%99%E6%B8%AF-4.v2.pdf",
+                "rule": "space.duplicates",
+                "suggested": "trash",
+                "userFiles": "none"
+              },
+              {
+                "bytes": 2097152,
+                "facts": {
+                  "copies": 1,
+                  "keep": "~/Documents/%E9%A6%99%E6%B8%AF-6.v2.pdf"
+                },
+                "finding": "space.duplicates/000000000070",
+                "group": "duplicate",
+                "key": "i58",
+                "options": [
+                  "trash",
+                  "clone",
+                  "keep",
+                  "ignore"
+                ],
+                "password": false,
+                "path": "~/Downloads/%E9%A6%99%E6%B8%AF-6.v2.pdf",
+                "paths": [
+                  "~/Downloads/%E9%A6%99%E6%B8%AF-6.v2.pdf"
+                ],
+                "pathsMore": 0,
+                "plan": "p-000000000008",
+                "reason": "copy-kept",
+                "rebuilds": false,
+                "restorable": true,
+                "reveal": "~/Downloads/%E9%A6%99%E6%B8%AF-6.v2.pdf",
+                "rule": "space.duplicates",
+                "suggested": "trash",
+                "userFiles": "none"
+              },
+              {
+                "bytes": 2097152,
+                "facts": {
+                  "copies": 1,
+                  "keep": "~/Documents/%E9%A6%99%E6%B8%AF-2.v2.pdf"
+                },
+                "finding": "space.duplicates/000000000071",
+                "group": "duplicate",
+                "key": "i59",
+                "options": [
+                  "trash",
+                  "clone",
+                  "keep",
+                  "ignore"
+                ],
+                "password": false,
+                "path": "~/Downloads/%E9%A6%99%E6%B8%AF-2.v2.pdf",
+                "paths": [
+                  "~/Downloads/%E9%A6%99%E6%B8%AF-2.v2.pdf"
+                ],
+                "pathsMore": 0,
+                "plan": "p-000000000008",
+                "reason": "copy-kept",
+                "rebuilds": false,
+                "restorable": true,
+                "reveal": "~/Downloads/%E9%A6%99%E6%B8%AF-2.v2.pdf",
+                "rule": "space.duplicates",
+                "suggested": "trash",
+                "userFiles": "none"
+              },
+              {
+                "bytes": 2097152,
+                "facts": {
+                  "copies": 1,
+                  "keep": "~/Documents/%E9%A6%99%E6%B8%AF-0.v2.pdf"
+                },
+                "finding": "space.duplicates/000000000072",
+                "group": "duplicate",
+                "key": "i60",
+                "options": [
+                  "trash",
+                  "clone",
+                  "keep",
+                  "ignore"
+                ],
+                "password": false,
+                "path": "~/Downloads/%E9%A6%99%E6%B8%AF-0.v2.pdf",
+                "paths": [
+                  "~/Downloads/%E9%A6%99%E6%B8%AF-0.v2.pdf"
+                ],
+                "pathsMore": 0,
+                "plan": "p-000000000008",
+                "reason": "copy-kept",
+                "rebuilds": false,
+                "restorable": true,
+                "reveal": "~/Downloads/%E9%A6%99%E6%B8%AF-0.v2.pdf",
+                "rule": "space.duplicates",
+                "suggested": "trash",
+                "userFiles": "none"
+              },
+              {
+                "bytes": 2097152,
+                "facts": {
+                  "copies": 1,
+                  "keep": "~/Documents/%E9%A6%99%E6%B8%AF-5.v2.pdf"
+                },
+                "finding": "space.duplicates/000000000073",
+                "group": "duplicate",
+                "key": "i61",
+                "options": [
+                  "trash",
+                  "clone",
+                  "keep",
+                  "ignore"
+                ],
+                "password": false,
+                "path": "~/Downloads/%E9%A6%99%E6%B8%AF-5.v2.pdf",
+                "paths": [
+                  "~/Downloads/%E9%A6%99%E6%B8%AF-5.v2.pdf"
+                ],
+                "pathsMore": 0,
+                "plan": "p-000000000008",
+                "reason": "copy-kept",
+                "rebuilds": false,
+                "restorable": true,
+                "reveal": "~/Downloads/%E9%A6%99%E6%B8%AF-5.v2.pdf",
+                "rule": "space.duplicates",
+                "suggested": "trash",
+                "userFiles": "none"
+              },
+              {
+                "bytes": 2097152,
+                "facts": {
+                  "copies": 1,
+                  "keep": "~/Documents/%E9%A6%99%E6%B8%AF-3.v2.pdf"
+                },
+                "finding": "space.duplicates/000000000074",
+                "group": "duplicate",
+                "key": "i62",
+                "options": [
+                  "trash",
+                  "clone",
+                  "keep",
+                  "ignore"
+                ],
+                "password": false,
+                "path": "~/Downloads/%E9%A6%99%E6%B8%AF-3.v2.pdf",
+                "paths": [
+                  "~/Downloads/%E9%A6%99%E6%B8%AF-3.v2.pdf"
+                ],
+                "pathsMore": 0,
+                "plan": "p-000000000008",
+                "reason": "copy-kept",
+                "rebuilds": false,
+                "restorable": true,
+                "reveal": "~/Downloads/%E9%A6%99%E6%B8%AF-3.v2.pdf",
+                "rule": "space.duplicates",
+                "suggested": "trash",
+                "userFiles": "none"
+              },
+              {
+                "bytes": 2097152,
+                "facts": {
+                  "copies": 1,
+                  "keep": "~/Documents/%E9%A6%99%E6%B8%AF-1.v2.pdf"
+                },
+                "finding": "space.duplicates/000000000075",
+                "group": "duplicate",
+                "key": "i63",
+                "options": [
+                  "trash",
+                  "clone",
+                  "keep",
+                  "ignore"
+                ],
+                "password": false,
+                "path": "~/Downloads/%E9%A6%99%E6%B8%AF-1.v2.pdf",
+                "paths": [
+                  "~/Downloads/%E9%A6%99%E6%B8%AF-1.v2.pdf"
+                ],
+                "pathsMore": 0,
+                "plan": "p-000000000008",
+                "reason": "copy-kept",
+                "rebuilds": false,
+                "restorable": true,
+                "reveal": "~/Downloads/%E9%A6%99%E6%B8%AF-1.v2.pdf",
+                "rule": "space.duplicates",
+                "suggested": "trash",
+                "userFiles": "none"
+              }
+            ],
+            "known": true,
+            "more": 0,
+            "scanned": {
+              "finished": "2026-10-20T12:00:00Z",
+              "started": "2026-10-20T12:00:00Z"
+            },
+            "schema": 1,
+            "suggested": 7,
+            "suggestedBytes": 14680064
+          },
+          "uri": "data/category?id=duplicate"
+        }
+      ],
+      "resultType": "complete"
+    }
+  },
+  "request": {
+    "id": 1006,
+    "jsonrpc": "2.0",
+    "method": "resources/read",
+    "params": {
+      "_meta": {
+        "io.modelcontextprotocol/clientCapabilities": {},
+        "io.modelcontextprotocol/clientInfo": {
+          "name": "luoke-agent",
+          "version": "fixtures"
+        },
+        "io.modelcontextprotocol/protocolVersion": "2026-07-28"
+      },
+      "uri": "data/category?id=duplicate"
+    }
+  }
+}

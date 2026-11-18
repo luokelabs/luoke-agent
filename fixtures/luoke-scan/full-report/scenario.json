@@ -74,6 +74,61 @@
       "clock": "2026-10-20T12:00:00Z",
       "do": "读基础页 page/cleaned",
       "file": "read-page-cleaned.json"
+    },
+    {
+      "clock": "2026-10-20T12:00:00Z",
+      "do": "读扫描页的数据 data/overview",
+      "file": "read-data-overview.json"
+    },
+    {
+      "clock": "2026-10-20T12:00:00Z",
+      "do": "读清理记录的数据 data/history",
+      "file": "read-data-history.json"
+    },
+    {
+      "clock": "2026-10-20T12:00:00Z",
+      "do": "读设置的数据 data/settings",
+      "file": "read-data-settings.json"
+    },
+    {
+      "clock": "2026-10-20T12:00:00Z",
+      "do": "读一类的详情 data/category?id=cache",
+      "file": "read-data-category-cache.json"
+    },
+    {
+      "clock": "2026-10-20T12:00:00Z",
+      "do": "读一类的详情 data/category?id=installer",
+      "file": "read-data-category-installer.json"
+    },
+    {
+      "clock": "2026-10-20T12:00:00Z",
+      "do": "读一类的详情 data/category?id=temp",
+      "file": "read-data-category-temp.json"
+    },
+    {
+      "clock": "2026-10-20T12:00:00Z",
+      "do": "读一类的详情 data/category?id=project",
+      "file": "read-data-category-project.json"
+    },
+    {
+      "clock": "2026-10-20T12:00:00Z",
+      "do": "读一类的详情 data/category?id=large-file",
+      "file": "read-data-category-large-file.json"
+    },
+    {
+      "clock": "2026-10-20T12:00:00Z",
+      "do": "读一类的详情 data/category?id=startup",
+      "file": "read-data-category-startup.json"
+    },
+    {
+      "clock": "2026-10-20T12:00:00Z",
+      "do": "读一类的详情 data/category?id=ai-plugin",
+      "file": "read-data-category-ai-plugin.json"
+    },
+    {
+      "clock": "2026-10-20T12:00:00Z",
+      "do": "读一类的详情 data/category?id=malware",
+      "file": "read-data-category-malware.json"
     }
   ],
   "title": "用了一阵的开发机：一轮查出一长串",

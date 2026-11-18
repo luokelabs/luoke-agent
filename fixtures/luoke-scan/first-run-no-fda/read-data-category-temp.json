@@ -1,0 +1,111 @@
+{
+  "reply": {
+    "id": 1005,
+    "jsonrpc": "2.0",
+    "result": {
+      "contents": [
+        {
+          "mimeType": "application/json",
+          "text": {
+            "auto": "temp",
+            "bytes": 131072000,
+            "count": 1,
+            "facts": {
+              "apps": [],
+              "appsInstalled": 0,
+              "appsMissing": 0,
+              "groups": {
+                "temp": 1
+              },
+              "password": 0,
+              "rebuilds": 0,
+              "tools": [],
+              "userFiles": "none"
+            },
+            "files": 25,
+            "id": "temp",
+            "items": [
+              {
+                "bytes": 131072000,
+                "facts": {
+                  "count": 25,
+                  "first": "2026-10-15",
+                  "last": "2026-10-18",
+                  "prefix": "wings"
+                },
+                "finding": "leak.temp-prefix/000000000007",
+                "group": "temp",
+                "key": "i1",
+                "options": [
+                  "trash",
+                  "keep",
+                  "ignore"
+                ],
+                "password": false,
+                "path": "$TMPDIR/wings-*",
+                "paths": [
+                  "$TMPDIR/wings-A00000",
+                  "$TMPDIR/wings-A00001",
+                  "$TMPDIR/wings-A00002",
+                  "$TMPDIR/wings-A00003",
+                  "$TMPDIR/wings-A00004",
+                  "$TMPDIR/wings-A00005",
+                  "$TMPDIR/wings-A00006",
+                  "$TMPDIR/wings-A00007",
+                  "$TMPDIR/wings-A00008",
+                  "$TMPDIR/wings-A00009",
+                  "$TMPDIR/wings-A00010",
+                  "$TMPDIR/wings-A00011",
+                  "$TMPDIR/wings-A00012",
+                  "$TMPDIR/wings-A00013",
+                  "$TMPDIR/wings-A00014",
+                  "$TMPDIR/wings-A00015",
+                  "$TMPDIR/wings-A00016",
+                  "$TMPDIR/wings-A00017",
+                  "$TMPDIR/wings-A00018",
+                  "$TMPDIR/wings-A00019"
+                ],
+                "pathsMore": 5,
+                "plan": "p-000000000002",
+                "reason": "left-behind",
+                "rebuilds": false,
+                "restorable": true,
+                "reveal": "$TMPDIR",
+                "rule": "leak.temp-prefix",
+                "suggested": "keep",
+                "userFiles": "none"
+              }
+            ],
+            "known": true,
+            "more": 0,
+            "scanned": {
+              "finished": "2026-10-20T12:00:00Z",
+              "started": "2026-10-20T12:00:00Z"
+            },
+            "schema": 1,
+            "suggested": 0,
+            "suggestedBytes": 0
+          },
+          "uri": "data/category?id=temp"
+        }
+      ],
+      "resultType": "complete"
+    }
+  },
+  "request": {
+    "id": 1005,
+    "jsonrpc": "2.0",
+    "method": "resources/read",
+    "params": {
+      "_meta": {
+        "io.modelcontextprotocol/clientCapabilities": {},
+        "io.modelcontextprotocol/clientInfo": {
+          "name": "luoke-agent",
+          "version": "fixtures"
+        },
+        "io.modelcontextprotocol/protocolVersion": "2026-07-28"
+      },
+      "uri": "data/category?id=temp"
+    }
+  }
+}

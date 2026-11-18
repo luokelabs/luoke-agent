@@ -80,6 +80,22 @@ final class SearchHitsTests: XCTestCase {
         XCTAssertEqual(m.searchAnswer?.failed, [])
     }
 
+    /// 顶上「最相关」（工具协议 §1b，负责人 11-13 定的 A）：各应用 strong 的，每个应用最多两条；
+    /// 下面有 strong 的那几组排前面，一条都不是的收成一行；筛了一类时「最相关」里的照样算在那一类里
+    func testMostRelevantOnTopAndQuietGroupsFold() {
+        let a = SearchSample.answer()
+        XCTAssertEqual(a.top.map(\.title), ["发票开具说明.pdf", "酒店发票.pdf", "您的行程电子发票已开具", "10 月账单与发票"])
+        XCTAssertEqual(a.groups.filter { !$0.quiet }.map(\.id), ["pdf", "mail"])
+        XCTAssertEqual(Set(a.groups.filter(\.quiet).map(\.id)), ["sheet", "image", "video"])
+        XCTAssertEqual(a.allGroups.first { $0.id == "pdf" }?.hits.count, 5, "筛 PDF 时五个都在")
+        XCTAssertFalse(a.groups.flatMap(\.hits).contains { h in a.top.contains { $0.id == h.id } }, "「最相关」里的不在下面再出一次")
+        var none = SearchSample.hits
+        for i in none.indices { none[i].strong = false }
+        let b = SearchAnswer(hits: none, search: 1, failed: [], asked: 2)
+        XCTAssertTrue(b.top.isEmpty)
+        XCTAssertFalse(b.groups.contains(where: \.quiet), "一条都不 strong：照旧全摆出来，不收")
+    }
+
     func testGroupsAndHowManyAreShownFirst() {
         let hits = (1...6).map { hit("s", "p\($0)", "pdf") } + [hit("s", "i1", "screenshot"), hit("s", "i2", "photo"),
                                                                 hit("m", "m1", "mail", source: "b"), hit("m", "m2", "mail", source: "a"),
@@ -177,6 +193,42 @@ final class SearchHitsTests: XCTestCase {
         XCTAssertTrue(m.searchThumbs.isEmpty, "上一次搜的图晚到了：不要")
     }
 
+    /// 没读到的缩略图（工具还在生成）过一会儿再要，最多再要两次；读到了、换了一次搜索就不再要
+    func testAThumbnailThatFailedIsAskedAgainTwice() {
+        let (m, f, b) = searching()
+        m.thumbRetryDelay = 0.02
+        m.runSearch("发票")
+        f.applySearch(status: 200, body: Data(Self.answer.utf8))
+        let h = m.searchAnswer!.hits[0]
+        m.loadThumb(h)
+        m.thumbFailed(app: "luoke-search", ref: "thumb/9")
+        m.thumbFailed(app: "luoke-search", ref: "thumb/1-p3")
+        XCTAssertTrue(wait { b.thumbs.count == 2 }, "再要一次")
+        m.thumbFailed(app: "luoke-search", ref: "thumb/1-p3")
+        XCTAssertTrue(wait { b.thumbs.count == 3 }, "再要第二次")
+        m.thumbFailed(app: "luoke-search", ref: "thumb/1-p3")
+        XCTAssertFalse(settle { b.thumbs.count > 3 }, "到此为止；没问过的那张也不要")
+        m.runSearch("合同")
+        f.applySearch(status: 200, body: Data(Self.answer.utf8))
+        m.loadThumb(h)
+        m.thumbFailed(app: "luoke-search", ref: "thumb/1-p3")
+        m.runSearch("别的")
+        XCTAssertFalse(settle { b.thumbs.count > 4 }, "换了一次搜索：上一次的不再要")
+    }
+
+    func testAVideoCarriesItsLength() {
+        let v = try! JSONValue.parse(#"{"id": "v", "title": "a.mov", "kind": "video", "duration": 83.4, "actions": []}"#)
+        XCTAssertEqual(WindowHit(app: "s", v)?.clock, "1:23")
+        var h = hit("s", "v", "video")
+        XCTAssertNil(h.clock)
+        h.duration = 3723
+        XCTAssertEqual(h.clock, "1:02:03")
+        h.duration = 5
+        XCTAssertEqual(h.clock, "0:05")
+        h.duration = -.infinity
+        XCTAssertNil(h.clock)
+    }
+
     func testThumbImageOnlyTakesSmallPngOrJpeg() {
         func png(_ w: Int, _ h: Int) -> Data {
             let rep = NSBitmapImageRep(bitmapDataPlanes: nil, pixelsWide: w, pixelsHigh: h, bitsPerSample: 8, samplesPerPixel: 4,
@@ -221,6 +273,12 @@ final class SearchHitsTests: XCTestCase {
             XCTAssertNotNil(Lucide.nsImage(name), name)
         }
         for g in HitGroup.known.values { XCTAssertNotNil(Lucide.nsImage(g.icon), g.icon) }
+    }
+
+    /// 等上一小会儿（重试的间隔的好几倍），看有没有不该来的
+    private func settle(_ happened: () -> Bool) -> Bool {
+        RunLoop.main.run(until: Date().addingTimeInterval(0.3))
+        return happened()
     }
 
     private func wait(_ ok: () -> Bool) -> Bool {

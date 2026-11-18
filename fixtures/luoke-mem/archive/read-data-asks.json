@@ -1,0 +1,58 @@
+{
+  "reply": {
+    "id": 17,
+    "jsonrpc": "2.0",
+    "result": {
+      "contents": [
+        {
+          "mimeType": "application/json",
+          "text": {
+            "items": [
+              {
+                "about_note": 3,
+                "action": {
+                  "capability": "habit",
+                  "params": {
+                    "sender": "news@shop.example"
+                  },
+                  "tool": "luoke-mail"
+                },
+                "answer": {
+                  "type": "yes_no"
+                },
+                "created_at": "2026-11-05 20:45:00",
+                "evidence": "亲手归档 6 封",
+                "expires_at": "2026-11-19 20:45:00",
+                "id": 3,
+                "kind": "suggestion",
+                "rank": 2,
+                "text": "以后某商城的促销邮件都归档？",
+                "type": "habit"
+              }
+            ],
+            "ready": true,
+            "v": 1
+          },
+          "uri": "data/asks"
+        }
+      ],
+      "resultType": "complete"
+    }
+  },
+  "request": {
+    "id": 17,
+    "jsonrpc": "2.0",
+    "method": "resources/read",
+    "params": {
+      "_meta": {
+        "io.modelcontextprotocol/clientCapabilities": {},
+        "io.modelcontextprotocol/clientInfo": {
+          "name": "luoke-agent",
+          "version": "fixtures"
+        },
+        "io.modelcontextprotocol/protocolVersion": "2026-07-28"
+      },
+      "uri": "data/asks"
+    }
+  }
+}

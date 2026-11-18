@@ -1,0 +1,85 @@
+{
+  "reply": {
+    "id": 10,
+    "jsonrpc": "2.0",
+    "result": {
+      "contents": [
+        {
+          "mimeType": "application/json",
+          "text": [
+            {
+              "createSurface": {
+                "catalogId": "ai.luoke/a2ui/agent/1",
+                "surfaceId": "item"
+              },
+              "version": "v0.9"
+            },
+            {
+              "updateComponents": {
+                "components": [
+                  {
+                    "children": [
+                      "t1",
+                      "r3"
+                    ],
+                    "component": "Column",
+                    "id": "root"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "t1",
+                    "text": "一条理解的全部依据、改写它、拆出并进来的说法，在整份记忆里做。",
+                    "variant": "caption"
+                  },
+                  {
+                    "action": {
+                      "event": {
+                        "context": {},
+                        "name": "mem_open"
+                      }
+                    },
+                    "child": "b2-text",
+                    "component": "Button",
+                    "id": "b2"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "b2-text",
+                    "text": "打开整份记忆"
+                  },
+                  {
+                    "children": [
+                      "b2"
+                    ],
+                    "component": "Row",
+                    "id": "r3"
+                  }
+                ],
+                "surfaceId": "item"
+              },
+              "version": "v0.9"
+            }
+          ],
+          "uri": "page/item"
+        }
+      ],
+      "resultType": "complete"
+    }
+  },
+  "request": {
+    "id": 10,
+    "jsonrpc": "2.0",
+    "method": "resources/read",
+    "params": {
+      "_meta": {
+        "io.modelcontextprotocol/clientCapabilities": {},
+        "io.modelcontextprotocol/clientInfo": {
+          "name": "luoke-agent",
+          "version": "fixtures"
+        },
+        "io.modelcontextprotocol/protocolVersion": "2026-07-28"
+      },
+      "uri": "page/item"
+    }
+  }
+}

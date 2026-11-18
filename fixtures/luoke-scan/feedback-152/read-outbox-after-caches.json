@@ -110,6 +110,16 @@
                   }
                 ],
                 "created": "2026-10-20T12:00:00Z",
+                "data": {
+                  "finding": "malware.clamav/000000000003",
+                  "name": "eicar-test.com",
+                  "place": "downloads",
+                  "plan": {
+                    "id": "p-000000000002",
+                    "key": "i0"
+                  },
+                  "type": "malware"
+                },
                 "deadline": null,
                 "expires": null,
                 "id": "security/malware.clamav/000000000003",
@@ -221,6 +231,16 @@
                   }
                 ],
                 "created": "2026-10-20T12:00:00Z",
+                "data": {
+                  "finding": "malware.yara.luoke_fake_password_dialog/000000000006",
+                  "name": "update.scpt",
+                  "place": "downloads",
+                  "plan": {
+                    "id": "p-000000000005",
+                    "key": "i0"
+                  },
+                  "type": "malware"
+                },
                 "deadline": null,
                 "expires": null,
                 "id": "security/malware.yara.luoke_fake_password_dialog/000000000006",
@@ -295,6 +315,28 @@
                   }
                 ],
                 "created": "2026-10-20T12:00:00Z",
+                "data": {
+                  "cleans": [],
+                  "decide": {
+                    "bytes": 0,
+                    "caches": 0,
+                    "cleaned": 3,
+                    "freed": 175116288,
+                    "offerAuto": true,
+                    "plan": null,
+                    "rest": 21,
+                    "skipped": {
+                      "fda": 0,
+                      "other": 0,
+                      "virusDb": 0
+                    },
+                    "toLook": 23,
+                    "trash": 7
+                  },
+                  "failed": [],
+                  "moreCleans": 0,
+                  "type": "round"
+                },
                 "deadline": null,
                 "expires": "2026-10-23T12:00:00Z",
                 "id": "round/2026-10-20T12:00:00Z",

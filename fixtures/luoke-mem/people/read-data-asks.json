@@ -1,0 +1,85 @@
+{
+  "reply": {
+    "id": 17,
+    "jsonrpc": "2.0",
+    "result": {
+      "contents": [
+        {
+          "mimeType": "application/json",
+          "text": {
+            "items": [
+              {
+                "answer": {
+                  "type": "yes_no"
+                },
+                "basis": "name_inside",
+                "created_at": "2026-11-05 21:00:00",
+                "expires_at": "2026-11-19 21:00:00",
+                "id": 1,
+                "kind": "question",
+                "people": [
+                  {
+                    "addresses": [],
+                    "by": {
+                      "name": "mira"
+                    },
+                    "entity": 2,
+                    "name": "Mira",
+                    "relations": [
+                      "上级"
+                    ]
+                  },
+                  {
+                    "addresses": [],
+                    "by": {
+                      "name": "mira chen"
+                    },
+                    "entity": 3,
+                    "name": "Mira Chen",
+                    "relations": [
+                      "客户"
+                    ]
+                  }
+                ],
+                "rank": 2,
+                "type": "same_person"
+              }
+            ],
+            "ready": true,
+            "v": 1
+          },
+          "uri": "data/asks"
+        }
+      ],
+      "resultType": "complete"
+    }
+  },
+  "request": {
+    "id": 17,
+    "jsonrpc": "2.0",
+    "method": "resources/read",
+    "params": {
+      "_meta": {
+        "io.modelcontextprotocol/clientCapabilities": {
+          "experimental": {
+            "ai.luoke/a2ui": {
+              "features": [
+                "openPage",
+                "pageArgs",
+                "confirm",
+                "rowOpen",
+                "fieldSubmit"
+              ]
+            }
+          }
+        },
+        "io.modelcontextprotocol/clientInfo": {
+          "name": "luoke-agent",
+          "version": "fixtures"
+        },
+        "io.modelcontextprotocol/protocolVersion": "2026-07-28"
+      },
+      "uri": "data/asks"
+    }
+  }
+}

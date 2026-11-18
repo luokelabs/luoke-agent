@@ -67,7 +67,7 @@ final class LayoutTests: XCTestCase {
     }
 
     /// 「今天」新模板里的邮件一封一行（spaceBetween）：左边发件人加标签不缩，右边是按钮。宽的时候一行、占满给的宽；
-    /// 窄到左边放不下时不比给的宽更宽（原来把卡片连带整页撑宽），右边那块折到下一行
+    /// 窄一些时左边的字截断；窄到左边压到最窄也放不下时不比给的宽更宽（原来把卡片连带整页撑宽），右边那块折到下一行
     func testSpaceBetweenRowDoesNotWidenTheCard() throws {
         let m = try card(#"""
         {"id":"root","component":"Column","children":["row"]},
@@ -85,11 +85,16 @@ final class LayoutTests: XCTestCase {
         let wide = sizeOf(m, width: ideal.width + 60)
         XCTAssertEqual(wide.width, ideal.width + 60, accuracy: 0.5, "一行占满给的宽")
         XCTAssertEqual(wide.height, ideal.height, accuracy: 0.5, "放得下是一行")
+        // 窄一些：左边的字截断（标题那一行不折行，11-16 起），还是一行，不比给的宽更宽
         for w in [ideal.width - 20, ideal.width - 80] {
             let narrow = sizeOf(m, width: w)
             XCTAssertLessThanOrEqual(narrow.width, w + 0.5, "给 \(w) 宽时不撑宽")
-            XCTAssertGreaterThan(narrow.height, ideal.height + 10, "给 \(w) 宽时右边折到下一行")
+            XCTAssertEqual(narrow.height, ideal.height, accuracy: 0.5, "给 \(w) 宽时左边截断，还是一行")
         }
+        // 窄到左边压到最窄也放不下：右边那块折到下一行，照旧不撑宽
+        let tight = sizeOf(m, width: 120)
+        XCTAssertLessThanOrEqual(tight.width, 120.5, "给 120 宽时不撑宽")
+        XCTAssertGreaterThan(tight.height, ideal.height + 10, "给 120 宽时右边折到下一行")
     }
 }
 #endif

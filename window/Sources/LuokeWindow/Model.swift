@@ -16,7 +16,7 @@ public enum Page: String, CaseIterable, Sendable {
         case .searchApp: return ToolIcon.search.name
         case .ime: return ToolIcon.ime.name
         case .search: return "搜索"
-        case .apps: return "添加应用"
+        case .apps: return "应用管理"
         case .prefs: return "设置"
         case .chat: return "对话"
         }
@@ -35,18 +35,65 @@ public enum Page: String, CaseIterable, Sendable {
     }
 }
 
+/// 设置的标签（设计规范 §18.7，2026-11-13 起）：通用、模型、隐私与权限三个。
+/// 以前的提醒、显示并进「通用」，权限并进「隐私与权限」：这几个编号照旧认（菜单、卡片、核心都还在用），换成并进去的那个标签
 public enum PrefsTab: String, CaseIterable, Sendable {
-    case alerts, display, permissions, model, privacy
+    case alerts, display, permissions, model, privacy, general
+
+    /// 画成标签的那三个
+    public static let shown: [PrefsTab] = [.general, .model, .privacy]
 
     public var title: String {
         switch self {
+        case .general: return "通用"
+        case .model: return "模型"
+        case .privacy: return "隐私与权限"
         case .alerts: return "提醒"
         case .display: return "显示"
         case .permissions: return "权限"
-        case .model: return "模型"
-        case .privacy: return "隐私"
         }
     }
+
+    /// 并进哪个标签
+    public var shownTab: PrefsTab {
+        switch self {
+        case .alerts, .display, .general: return .general
+        case .permissions, .privacy: return .privacy
+        case .model: return .model
+        }
+    }
+}
+
+/// 外观：跟随系统、浅色、深色
+public enum Appearance: String, CaseIterable, Sendable {
+    case system, light, dark
+
+    public var title: String {
+        switch self {
+        case .system: return "跟随系统"
+        case .light: return "浅色"
+        case .dark: return "深色"
+        }
+    }
+}
+
+/// 设置页底下的链接打开的弹窗
+public enum SettingsDialog: String, Sendable {
+    case alerts, about, advanced, checks
+
+    public var title: String {
+        switch self {
+        case .alerts: return "分类提醒设置"
+        case .about: return "关于螺壳"
+        case .advanced: return "高级（本机接口）"
+        case .checks: return "系统权限检查"
+        }
+    }
+}
+
+/// 设置里交给本体的动作
+enum SettingsAction {
+    case checkUpdates, upgrade, retryDownloads, copyKey, rotateKey, export, uninstall
 }
 
 /// 「今天」的密度（设置 · 显示）：标准是卡片，紧凑是一张表。只记在这台 Mac 的这个窗口里
@@ -56,16 +103,16 @@ public enum Density: String, CaseIterable, Sendable {
     public var title: String { self == .standard ? "标准" : "紧凑" }
 }
 
-/// 「一件件处理」：进来时要你决定的那几件，一次摆一件。答了的从 `cards` 里走掉，跳过的记在这里
+/// 「逐件处理」：进来时要你决定的那几件，一次摆一件。答了的从 `cards` 里走掉，跳过的记在这里
 public struct FocusSession: Equatable {
     /// 这一轮的几件，进来时定下。工具换掉一张卡片时，新的那张顶在旧的位置；工具收走的从这里去掉
     public internal(set) var ids: [String]
     public internal(set) var skipped: [String] = []
-    /// 用户在一件件处理里点过的：只有这些不见了才算答了
+    /// 用户在逐件处理里点过的：只有这些不见了才算答了
     public internal(set) var tapped: Set<String> = []
     /// 上一下是键盘上按的：换下一件只淡入淡出
     public internal(set) var viaKey = false
-    /// 从「按类处理」进来的：只走这一类（`DecideCategory.id`）、顶上写它的名字；从「一件件处理」进来的是 nil，走全部
+    /// 从「按类处理」进来的：只走这一类（`DecideCategory.id`）、顶上写它的名字；从「逐件处理」进来的是 nil，走全部
     public internal(set) var category: String? = nil
     public internal(set) var categoryName: String? = nil
 }
@@ -109,7 +156,7 @@ public struct BriefNote: Equatable {
     }
 }
 
-/// 下一次画出来的内容怎么进场（换了页、从「一件件处理」回来）
+/// 下一次画出来的内容怎么进场（换了页、从「逐件处理」回来）
 public enum Entrance: Sendable { case none, page, fromFocus }
 
 /// 侧栏「应用」下面的一行：装好的应用
@@ -202,6 +249,20 @@ enum TodayStack {
     }
 
     static func urgent(_ items: [UrgentItem]) -> [[UrgentItem]] { group(items) { key($0.tool, $0.kind, $0.title) } }
+
+    /// 「待确认」页上的叠：同一个应用的放一叠，不分类（负责人 11-13：记忆的「想问」和「建议」是同一个应用的，合起来），
+    /// 两张起就叠（`appMin`）。「按类处理」、逐件处理照旧按类（`cards`）
+    static func byApp(_ items: [TodayCard]) -> [[TodayCard]] { group(items) { appKey($0.tool) } }
+    static func appKey(_ tool: ToolIcon) -> String { "app|\(tool.name)" }
+    static let appMin = 2
+
+    /// 同一个应用不止一类的一叠下面写「还有 2 件记忆的事」；同一类的照 `what`
+    static func appWhat(_ stack: [TodayCard]) -> String? {
+        guard stack.count > 1 else { return nil }
+        let unit = unit(stack[0].tool)
+        if Set(stack.map { $0.kind ?? "" }).count == 1, let t = stack[0].title, let w = what(t, stack.count - 1, unit: unit) { return w }
+        return "\(stack.count - 1) \(unit)\(stack[0].tool.name)的事"
+    }
     static func cards(_ items: [TodayCard]) -> [[TodayCard]] { group(items) { key($0.tool, $0.kind, $0.title) } }
 
     /// 量词：邮件论封，扫描论样（和扫描页一样），别的论件
@@ -245,7 +306,7 @@ enum TodayStack {
 }
 
 /// 「要你决定」里的一类：同一个应用、同一类（和一叠的分法一样，见 `TodayStack`）。「今天」上同一类的挨着摆，
-/// 「一件件处理」照这个次序走；有两类以上时，段标题下面「按类处理」列出不止一件的那几类，点了只走那一类
+/// 「逐件处理」照这个次序走；有两类以上时，段标题下面「按类处理」列出不止一件的那几类，点了只走那一类
 public struct DecideCategory: Identifiable, Equatable {
     /// `TodayStack.key`
     public let id: String
@@ -286,11 +347,24 @@ public struct DoneRow: Identifiable, Equatable {
             && a.undone == b.undone && a.surface === b.surface && a.group == b.group && a.members.map(\.id) == b.members.map(\.id)
     }
 
+    /// 工具没分组、一个邮箱一行的（「已自动处理 1 封（a@x.com）」「已自动处理 2 封（b@y.com）」）：同一个应用、
+    /// 去掉括号里的邮箱以后一样的合成一行，数字加起来，后面带「2 个邮箱」（负责人 11-13：每个邮箱一条的合成一行）
+    static func perMailbox(_ r: DoneRow) -> DoneGroup? {
+        guard let m = r.text.wholeMatch(of: #/(.*?)(\d+)( ?[封件样个].*?)（([^（）]+@[^（）]+)）/#), let n = Int(m.2) else { return nil }
+        let text = "\(m.1){n}\(m.3)"
+        return DoneGroup(key: "mailbox|\(r.tool.name)|\(text)", text: text, n: n, label: nil, badge: String(m.4))
+    }
+
     /// 「已经替你做了」照显示的样子：同一组的合成一行（「可疑邮件 · 已移到垃圾邮件 4 封」，数字加起来），编号用第一张的；
     /// 没分组的照旧一张一行
     static func merged(_ rows: [DoneRow]) -> [DoneRow] {
         var out: [DoneRow] = []
         var at: [String: Int] = [:]
+        let rows = rows.map { r -> DoneRow in
+            var r = r
+            if r.group == nil { r.group = perMailbox(r) }
+            return r
+        }
         for r in rows {
             guard let g = r.group else { out.append(r); continue }
             if let i = at[g.key] { out[i].members.append(r); continue }
@@ -301,10 +375,15 @@ public struct DoneRow: Identifiable, Equatable {
         }
         return out.map { row in
             guard let g = row.group else { return row }
+            if row.members.count == 1, g.key.hasPrefix("mailbox|") { return rows.first { $0.id == row.id }.map { var r = $0; r.group = nil; return r } ?? row }
             var m = row
             let n = row.members.reduce(0) { $0 + ($1.group?.n ?? 0) }
             m.text = [g.label, g.text.replacingOccurrences(of: "{n}", with: "\(n)")].compactMap { $0 }.joined(separator: " · ")
             m.undone = row.members.allSatisfy(\.undone)
+            let boxes = Set(row.members.compactMap { $0.group?.badge })
+            if g.key.hasPrefix("mailbox|"), boxes.count > 1 {
+                m.group = DoneGroup(key: g.key, text: g.text, n: n, label: nil, badge: "\(boxes.count) 个邮箱")
+            }
             return m
         }
     }
@@ -341,6 +420,66 @@ public struct ActivityRow: Identifiable, Equatable {
     public var undoLabel: String?
     public var undone = false
     public var mark: ActivityMark = .plain
+    /// 接上核心时：撤销（放回）就是点卡片上的那个按钮（§5 的 `undo`）
+    public var undo: AgentUndo? = nil
+    /// 这件事的卡片还在窗口里（§5 的 `surface`）：点这一行展开它
+    public var surfaceId: String? = nil
+}
+
+/// 「今天」顶上的一行提示：一句话，右边至多一个按钮（负责人 11-16：一条一行）
+public struct NoticeRow: Identifiable, Equatable, Sendable {
+    /// 来源：应用的配件标识，或 `memory`、`notifications`、`hub`、`host`
+    public let id: String
+    /// `stopped` 应用未运行、`stale` 读不到新事项、`memory`、`memory_too_new`、`notifications` 系统通知已关闭、
+    /// `ask_notifications` 还没问过系统、`hub`、`host`、`info`
+    public let kind: String
+    public let text: String
+
+    public init(id: String, kind: String, text: String) {
+        self.id = id
+        self.kind = kind
+        self.text = text
+    }
+}
+
+extension WindowModel {
+    static let askNotificationsText = "通知未开启，无法收到简报和急事提醒"
+
+    /// 「今天」顶上现在要画的几行：本体的一句、核心的几句、还没开通知
+    public var shownNotices: [NoticeRow] {
+        var out = hostNotice.map { [NoticeRow(id: "host", kind: "host", text: $0)] } ?? []
+        let known = Dictionary(noticeRows.map { ($0.text, $0) }, uniquingKeysWith: { a, _ in a })
+        out += notices.enumerated().map { i, t in known[t] ?? NoticeRow(id: "notice-\(i)", kind: "info", text: t) }
+        if notificationsNotAsked { out.append(NoticeRow(id: "ask-notifications", kind: "ask_notifications", text: Self.askNotificationsText)) }
+        return out
+    }
+
+    /// 这一行右边的按钮：没有能做的事就没有按钮
+    public func noticeAction(_ n: NoticeRow) -> (label: String, run: () -> Void)? {
+        switch n.kind {
+        case "stopped":
+            guard let host else { return nil }
+            return ("重新启动", { host.perform(app: n.id, action: .restart) })
+        case "memory_too_new":
+            guard let host else { return nil }
+            return ("检查更新", { host.checkForUpdates() })
+        case "notifications":
+            return ("打开系统设置", {
+                if let u = URL(string: "x-apple.systempreferences:com.apple.Notifications-Settings.extension") { NSWorkspace.shared.open(u) }
+            })
+        case "ask_notifications":
+            guard let host else { return nil }
+            return ("开启通知", { host.askNotifications() })
+        default:
+            return nil
+        }
+    }
+}
+
+/// 「历史」里一行要撤销时点哪张卡片的哪个按钮
+public struct AgentUndo: Equatable, Sendable {
+    public let surfaceId: String
+    public let componentId: String
 }
 
 /// 每类事怎么说
@@ -349,10 +488,10 @@ public enum Level: String, CaseIterable, Sendable {
 
     public var title: String {
         switch self {
-        case .now: return "当场说"
-        case .brief: return "放进简报"
-        case .window: return "只放在窗口里"
-        case .off: return "不要"
+        case .now: return "立即提醒"
+        case .brief: return "纳入简报"
+        case .window: return "仅在窗口显示"
+        case .off: return "不提醒"
         }
     }
 }
@@ -362,6 +501,40 @@ public struct KindSetting: Identifiable, Equatable {
     public let tool: ToolIcon
     public let title: String
     public var level: Level
+}
+
+/// 提醒的三类（设计规范 §18.7，2026-11-13 负责人定）：急事、要你决定、替你做了。核心 `/settings` 的 `classes`
+public enum AlertClass: String, CaseIterable, Sendable {
+    case urgent, decide, done
+
+    public var title: String {
+        switch self {
+        case .urgent: return "急事"
+        case .decide: return "待确认"
+        case .done: return "已自动处理"
+        }
+    }
+
+    var symbol: String {
+        switch self {
+        case .urgent: return "triangle-alert"
+        case .decide: return "circle-help"
+        case .done: return "check"
+        }
+    }
+}
+
+/// 一类事怎么提醒：马上提醒、放进简报、不提醒（不提醒的照旧在「今天」里）
+public enum AlertTiming: String, CaseIterable, Sendable {
+    case now, brief, off
+
+    public var title: String {
+        switch self {
+        case .now: return "立即提醒"
+        case .brief: return "纳入简报"
+        case .off: return "不提醒"
+        }
+    }
 }
 
 /// 简报什么时候发（11-03 主窗口第一版：默认每天早上）
@@ -445,6 +618,8 @@ public struct CatalogApp: Identifiable, Equatable {
     public let version: String
     public var state: CatalogState
     public var facts: [String] = []
+    /// 「Powered by 螺壳」的第三方应用（§18.6）；螺壳出品的是 false
+    public var poweredBy: Bool = false
 }
 
 /// 应用的基础页（以后由工具出 A2UI：service.pages）
@@ -486,6 +661,8 @@ public struct AgentApp: Identifiable, Equatable {
         public let title: String
         /// 不画成标签、只由 `agent.open_page` 去的页（工具协议 §1a `hidden`，2026-11-10 加）
         public var hidden = false
+        /// hidden 的页的图标（2026-11-12 加，设计规范 §18）：应用页标题那一行的右边画成图标按钮，点了去这一页
+        public var icon: String? = nil
     }
 
     /// 配件标识（`luoke-scan`）
@@ -629,8 +806,16 @@ public struct SearchCard: Identifiable {
 public struct SearchAnswer {
     /// 给了 `hits` 的工具的结果，窗口按类型分组自己画（工具协议 §1b）；照问的顺序、工具里照它给的顺序
     public var hits: [WindowHit] = [] {
-        didSet { groups = HitGroup.make(hits) }
+        didSet {
+            top = SearchLayout.top(hits)
+            groups = SearchLayout.groups(hits, top: top)
+            allGroups = HitGroup.make(hits)
+        }
     }
+    /// 按类型的全部（顶上一行的数、筛了一类时用：「最相关」里的也算在它那一类里）
+    public private(set) var allGroups: [HitGroup] = []
+    /// 顶上「最相关」：各应用很对得上的，每个应用最多两条（SearchLayout.top）
+    public private(set) var top: [WindowHit] = []
     public private(set) var groups: [HitGroup] = []
     /// 核心给这次搜索的编号：点结果上的按钮（`POST /hit`）带上它
     public var search: Int?
@@ -649,14 +834,14 @@ public struct SearchAnswer {
     /// 搜完以后结果下面的几行（没搜成、连不上的那一句另外画）。都没答上来的那一句由面板画成带「再试一次」的出错提示
     public var lines: [String] {
         if allFailed { return [] }
-        let missing = failed.map { "\($0)这次没有回应。" }
+        let missing = failed.map { "\($0)未响应" }
         if !cards.isEmpty || !hits.isEmpty { return missing }
-        return [failed.isEmpty ? "没有找到。" : "其他应用里没有找到。"] + missing
+        return [failed.isEmpty ? "未找到结果" : "其他应用中未找到结果"] + missing
     }
 
     /// 都没答上来时那一句：一个应用不写「都」
     public var allFailedText: String {
-        "\(failed.joined(separator: "、"))这次\(failed.count > 1 ? "都" : "")没有回应，没搜成。"
+        "\(failed.joined(separator: "、"))未响应，搜索未完成"
     }
     /// 没搜成时说的一句话：没有能搜的应用、连不上螺壳
     public var note: String?
@@ -666,7 +851,9 @@ public struct SearchAnswer {
     public init(hits: [WindowHit] = [], search: Int? = nil, cards: [SearchCard] = [], failed: [String] = [],
                 asked: Int? = nil, note: String? = nil, retry: Bool = false) {
         self.hits = hits
-        self.groups = HitGroup.make(hits)
+        self.top = SearchLayout.top(hits)
+        self.groups = SearchLayout.groups(hits, top: self.top)
+        self.allGroups = HitGroup.make(hits)
         self.search = search
         self.cards = cards
         self.failed = failed
@@ -694,15 +881,21 @@ public final class WindowModel: ObservableObject {
 
     // 在哪
     @Published public private(set) var page: Page = .today {
-        didSet { if page != oldValue { backend?.windowPageChanged() } }     // 核心要知道用户是不是正看着「今天」（§11）
+        didSet {
+            guard page != oldValue else { return }
+            backend?.windowPageChanged()     // 核心要知道用户是不是正看着「今天」（§11）
+            if !searchBarShown { closeSearch() }     // 离开螺壳搜索的页：搜索框不在了，结果面板也收起
+        }
     }
-    @Published public var prefsTab: PrefsTab = .alerts
+    @Published public var prefsTab: PrefsTab = .general
     @Published public var appTab: String = "overview"
+    /// 应用的隐藏页（设置、处理记录、一类的详情……）以弹窗打开时，底下那一页是哪个标签（走查重画稿：齿轮、时钟打开的是弹窗）
+    @Published public private(set) var appBaseTab: String?
     @Published public private(set) var sidebarMini = false
     @Published public private(set) var appsExpanded = false
     /// 「今天」的密度（设置 · 显示）
     @Published public private(set) var density: Density = .standard
-    /// 「一件件处理」；nil 是没在处理
+    /// 「逐件处理」；nil 是没在处理
     @Published public internal(set) var focus: FocusSession?
     /// 「今天」最上面的简报；nil 是收着
     @Published public private(set) var briefNote: BriefNote?
@@ -726,6 +919,13 @@ public final class WindowModel: ObservableObject {
     /// 读到的缩略图（应用 + `thumb/<id>`）：只在内存里，收起结果就丢（工具协议 §1b）
     @Published public internal(set) var searchThumbs: [String: NSImage] = [:]
     private var thumbsAsked: Set<String> = []
+    /// 每收起、每换一次搜索加一：晚到的重试认它
+    private var searchRound = 0
+    /// 没读到的缩略图各重要过几次
+    private var thumbRetries: [String: Int] = [:]
+    /// 没读到（多半是工具还在生成）隔多久再要一次、最多再要几次
+    var thumbRetryDelay: TimeInterval = 4
+    static let thumbRetryLimit = 2
     @Published public private(set) var answer: Answer?
     @Published public var askContext: String?
 
@@ -740,6 +940,8 @@ public final class WindowModel: ObservableObject {
 
     // 状态
     @Published public var engineReady = true
+    /// 本体要在左下角说的一件事（有新版本、已暂停、模型在下载、出错了）；没有就是 nil。本体只给最要紧的一件
+    @Published public var sidebarNotice: SidebarNotice?
     /// 窗口连得上螺壳（agent 的 socket）：连不上时侧栏不写「在运行」，应用页、搜索写「连不上螺壳」和「再试一次」
     @Published public var coreReachable = true {
         didSet { if coreReachable { offlineSince = nil } else if offlineSince == nil { offlineSince = now() } }
@@ -771,12 +973,49 @@ public final class WindowModel: ObservableObject {
     @Published public var done: [DoneRow] = []
     @Published public var quiet: [QuietRow] = []
     /// 核心的几句状态（某个应用没在运行、通知被关了……），画在「今天」最下面
-    @Published public var notices: [String] = []
+    @Published public var notices: [String] = [] {
+        didSet { noticeRows = noticeRows.filter { notices.contains($0.text) } }
+    }
+    /// 吉祥物今天的那一句（`/feed` 的 `hello`，界面规范 §15「逗一下」）：核心定，一天至多一句；nil 就只画吉祥物
+    @Published public var helloLine: String?
+    /// 最近这一份简报核心让模型写的那一段话（`feed.brief.words`）；没有时简报照模板拼
+    @Published public var briefWords: String?
+    /// 同一批，带上是哪一种、哪个应用的（`/feed` 的 `notice_rows`，2026-11-16）：窗口照它在这一行右边放按钮。旧的核心不给，是空的
+    @Published public var noticeRows: [NoticeRow] = []
     /// 螺壳.app 自己要说的一句（核心起不来、旧的螺壳 agent 还在跑……），画在核心那几句前面；nil 不画
     @Published public var hostNotice: String?
 
     // 别的页
     @Published public var activity: [ActivityRow] = []
+    /// 右边栏：开没开、在哪个页签；任务队列和今天的产出（主控给，没给就是空 / 只数完成几件）
+    @Published public var panelOpen = false {
+        didSet {
+            if historyShowing && !oldValue { backend?.reloadActivity() }
+            // 开、收时窗口一边长出、缩回，内容区先定住宽，右边栏在多出来的那一截里露出来（负责人 11-15：没动画太生硬）。
+            // 量过内容区才定（截图里没有真窗口，照旧一下画好）；窗口长完、缩完由 PanelWindowGrow 放开
+            if panelOpen != oldValue && contentWidth > 0 {
+                panelLock = contentWidth
+                panelClosing = !panelOpen
+            }
+        }
+    }
+    /// 右边栏开、收的动画里，内容区定住的宽（nil 是不定）
+    @Published var panelLock: CGFloat?
+    /// 收的动画还没完：右边栏还画着，跟着窗口缩进去
+    @Published var panelClosing = false
+    /// 内容区现在的宽（窗口量的，不触发重画）
+    var contentWidth: CGFloat = 0
+    /// 右边栏画不画：开着，或者正在收
+    var panelShown: Bool { panelOpen || panelClosing }
+    @Published public var panelTab: PanelTab = .tasks { didSet { if historyShowing && oldValue != .history { backend?.reloadActivity() } } }
+    /// 右边栏拉出来、在「历史」页签：接上核心时要取做过的事
+    public var historyShowing: Bool { panelOpen && panelTab == .history }
+    /// 今天问的名额满了、先攒着的件数（核心写 `held` 的那些卡片）
+    @Published public var heldAsks = 0
+    @Published public var tasks: [TaskRow] = []
+    @Published public var outputStats: OutputStats?
+    /// 这台 Mac 现在多忙（内存、GPU）：窗口看得见时每 2 秒读一次（`MachineLoad`），截图时由示例给
+    @Published public var machineLoad: MachineLoad?
     @Published public var activityFilter: ToolIcon?
     @Published public var apps: [AppEntry] = []
     @Published public var catalog: [CatalogApp] = []
@@ -789,6 +1028,10 @@ public final class WindowModel: ObservableObject {
     // 设置
     @Published public var alertsOn = true
     @Published public var brief: BriefMode = .morning
+    /// 三类事各怎么提醒（核心的 `classes`）
+    @Published public var alertClasses: [AlertClass: AlertTiming] = [.urgent: .now, .decide: .brief, .done: .brief]
+    /// 早上那份简报几点（核心的 `brief_time`）
+    @Published public var briefTime = "08:00"
     @Published public var quietHours = "22:00 – 08:00"
     @Published public var kinds: [KindSetting] = []
     @Published public var permissions: [PermissionRow] = []
@@ -847,20 +1090,27 @@ public final class WindowModel: ObservableObject {
     private var toastTask: Task<Void, Never>?
 
     static let sidebarKey = "luoke.window.sidebarMini"
+    static let panelKey = "luoke.window.panelOpen"
+    static let panelGrewKey = "luoke.window.panelGrew"
+    static let panelShiftedKey = "luoke.window.panelShifted"
     static let appsKey = "luoke.window.appsExpanded"
     static let densityKey = "luoke.window.density"
+    static let appearanceKey = "luoke.window.appearance"
 
     /// defaults：侧栏收起、「应用」展开、「今天」的密度记在哪（nil 就不记）
     public init(defaults: UserDefaults? = nil) {
         self.defaults = defaults
         sidebarMini = defaults?.bool(forKey: Self.sidebarKey) ?? false
+        panelOpen = defaults?.bool(forKey: Self.panelKey) ?? false
         appsExpanded = defaults?.bool(forKey: Self.appsKey) ?? false
-        density = Density(rawValue: defaults?.string(forKey: Self.densityKey) ?? "") ?? .standard
+        // 「今天」只有一种密度（2026-11-13 负责人定）：以前记下的「紧凑」不再拿出来；紧凑的画法只留给截图、测试看
+        density = .standard
+        appearance = Appearance(rawValue: defaults?.string(forKey: Self.appearanceKey) ?? "") ?? .system
     }
 
     // MARK: 算出来的
 
-    /// 侧栏「今天」的数：只算要你决定的，和「一件件处理」的数一样；有急事时侧栏只画红点、不画这个数（`hasUrgent`，`SidebarMark`）
+    /// 侧栏「今天」的数：只算要你决定的，和「逐件处理」的数一样；有急事时侧栏只画红点、不画这个数（`hasUrgent`，`SidebarMark`）
     public var todayCount: Int { cards.count }
     /// 有急事（菜单栏图标的菜单里列出来）
     public var hasUrgent: Bool { !urgent.isEmpty }
@@ -868,12 +1118,13 @@ public final class WindowModel: ObservableObject {
     public var hasDot: Bool { agentDot ?? hasUrgent }
     /// 「应用」收着、正在看某个应用的页：这一行亮着，叠着的小图标里那个应用的亮着
     public var appsRowLit: Bool { !appsExpanded && sidebarSelection.map(isAppPage) == true }
-    /// 叠着的小图标里亮着的那个；在「添加应用」时这一行亮着、小图标都照常
+    /// 叠着的小图标里亮着的那个；在「应用管理」时这一行亮着、小图标都照常
     public var appsNow: Page? { appsRowLit && page != .apps ? page : nil }
     /// 读屏和悬停时说正在看哪个
-    public var appsNowName: String? { appsRowLit ? (page == .apps ? "添加应用" : page.title) : nil }
+    public var appsNowName: String? { appsRowLit ? (page == .apps ? "应用管理" : page.title) : nil }
 
-    func isAppPage(_ p: Page) -> Bool { p == .apps || apps.contains { $0.id == p } }
+    /// 「应用」下面的页：记忆是一级入口，不算（负责人 11-14）
+    func isAppPage(_ p: Page) -> Bool { p == .apps || (p != .mem && apps.contains { $0.id == p }) }
 
     /// 螺壳.app 报装着哪些应用、版本、有没有新版。侧栏「应用」下面列核心连着的、窗口里有页的那几个，
     /// 版本和「升级」照这里的；核心的应用列表还没来时先照这里的列。有新版的在「顺便看看」里有一行（`updateRows`）
@@ -893,7 +1144,7 @@ public final class WindowModel: ObservableObject {
             let tool = AgentFeed.tool(i.accessory)
             guard let to = i.update, tool != .core, seen.insert(tool).inserted else { return nil }
             return QuietRow(id: Self.updatePrefix + tool.rawValue, tool: tool, text: "\(tool.name)可以升级到 \(to)",
-                            sub: "螺壳来装，你点了才升", action: "升级")
+                            sub: "由螺壳安装，确认后升级", action: "升级")
         }
     }
 
@@ -930,19 +1181,36 @@ public final class WindowModel: ObservableObject {
     }
 
     /// 这一页的参数换掉（`openAgentPage` 带来的），或者用户自己点进来、没了
-    private func takePageArgs(for p: Page) {
+    /// 去的是这个应用的隐藏页（弹窗）时，`base`（弹窗底下那一页）的参数留着：关掉弹窗回来还是原来那一组、那一页
+    /// （负责人 11-15：收件箱看「待处理」，打开一封信再关，跳回了「等回复」）
+    private func takePageArgs(for p: Page, tab: String? = nil, base: String? = nil) {
         let opening = openingArgs
         openingArgs = nil
         if let app = agentApp(for: p) {
             let prefix = AgentFeed.pageKey(app.id, "")
-            pageArgs = pageArgs.filter { !$0.key.hasPrefix(prefix) }
+            var keep: String?
+            if let tab, let base, app.pages.first(where: { $0.id == tab })?.hidden == true {
+                keep = AgentFeed.pageKey(app.id, base)
+            }
+            // 弹窗换了一份参数（另一封信）：上一份的内容不留着顶，先画「正在加载」（负责人 11-16：打开第二封信先闪上一封）
+            // 这个弹窗本来就开着（在里面换分页、翻页）：留着现在的内容等新的，不闪「正在加载」、不跳高度
+            let showing = appDialog.map { AgentFeed.pageKey($0.app.id, $0.page.id) }
+            if let opening, let ref = app.pages.first(where: { AgentFeed.pageKey(app.id, $0.id) == opening.key }), ref.hidden,
+               showing != opening.key, (pageArgs[opening.key] ?? [:]) != opening.args {
+                agentPages[opening.key] = nil
+            }
+            pageArgs = pageArgs.filter { !$0.key.hasPrefix(prefix) || $0.key == keep }
         }
         if let opening, !opening.args.isEmpty { pageArgs[opening.key] = opening.args }
     }
 
-    /// 密码框里填的字（工具协议 §4 secureField）：离开一页时清掉，只在内存里也不留
-    func clearSecureFields() {
-        for p in agentPages.values { p.surface?.clearSecureFields() }
+    /// 离开一页：密码框里填的字清掉（工具协议 §4 secureField，只在内存里也不留），改过、没交出去的选择放回工具给的
+    /// （界面接口 §6：回来再取照工具新给的，只有点完按钮、refresh 到时的重新取才留）
+    func forgetUnsent() {
+        for p in agentPages.values {
+            p.surface?.clearSecureFields()
+            p.surface?.forgetChoices()
+        }
     }
 
     /// 正看着的基础页，键同 `agentPages`（不是核心的应用页是 nil）。本体的一页、整窗盖着时是 nil：用户看不见它，
@@ -958,14 +1226,16 @@ public final class WindowModel: ObservableObject {
         if handOff(p, tab: tab) { openingArgs = nil; return }
         let p = shows(p) ? p : .today
         if p != page || focus != nil { entrance = .page }
+        if p != .today { closeBrief() }       // 简报是它在「今天」说的那一句：离开「今天」就说完了，回来不再说一遍
         focus = nil
-        clearSecureFields()
-        takePageArgs(for: p)
+        forgetUnsent()
+        let before = p == page ? visibleAppTab : nil     // 同一个应用里去它的隐藏页：弹窗底下留着正看的那一页
+        takePageArgs(for: p, tab: tab, base: before)
         page = p
         if let tab {
-            if p == .prefs, let t = PrefsTab(rawValue: tab) { prefsTab = t } else { appTab = tab }
+            if p == .prefs, let t = PrefsTab(rawValue: tab) { prefsTab = t.shownTab } else { setAppTab(tab, base: before) }
         } else if p != .prefs {
-            appTab = "overview"
+            setAppTab("overview", base: nil)
         }
         closeAsk()
         closeSearch()
@@ -975,22 +1245,65 @@ public final class WindowModel: ObservableObject {
 
     /// 应用页上换标签（窗口里画的那几页）：用户自己点的，这一页不带参数
     public func selectAppTab(_ id: String) {
-        clearSecureFields()
+        forgetUnsent()
         if let app = agentApp(for: page) { pageArgs[AgentFeed.pageKey(app.id, id)] = nil }
-        appTab = id
+        setAppTab(id, base: visibleAppTab)
         loadVisible()
+    }
+
+    /// 换到这个标签：是隐藏页就以弹窗打开，记下底下那一页
+    private func setAppTab(_ id: String, base: String?) {
+        if let app = agentApp(for: page), app.pages.first(where: { $0.id == id })?.hidden == true {
+            appBaseTab = base.flatMap { b in app.pages.contains { $0.id == b && !$0.hidden } ? b : nil } ?? appBaseTab
+        } else {
+            appBaseTab = nil
+        }
+        appTab = id
+    }
+
+    /// 应用页上正显示的那个标签（弹窗开着时是弹窗底下那一页）
+    public var visibleAppTab: String? {
+        guard let app = agentApp(for: page) else { return appTab }
+        guard let tab = agentTab(app) else { return nil }
+        if app.pages.first(where: { $0.id == tab })?.hidden == true {
+            return appBaseTab.flatMap { b in app.pages.contains { $0.id == b && !$0.hidden } ? b : nil } ?? app.firstPage
+        }
+        return tab
+    }
+
+    /// 以弹窗开着的隐藏页：(应用, 页)
+    public var appDialog: (app: AgentApp, page: AgentApp.PageRef)? {
+        guard let app = agentApp(for: page), let tab = agentTab(app),
+              let ref = app.pages.first(where: { $0.id == tab && $0.hidden }) else { return nil }
+        return (app, ref)
+    }
+
+    /// 关掉弹窗：回到底下那一页
+    public func closeAppDialog() {
+        guard appDialog != nil else { return }
+        let base = visibleAppTab
+        appBaseTab = nil
+        if let base { appTab = base }
+        loadVisible(onlyMissing: true)
     }
 
     /// 设置里换标签
     public func selectPrefsTab(_ t: PrefsTab) {
         if handOff(.prefs, tab: t.rawValue) { return }
-        prefsTab = t
+        prefsTab = t.shownTab
         loadVisible()
     }
 
     // MARK: 应用的页（接上核心时，§6）
 
     /// 这一页是核心的哪个应用（没接核心、核心没连着这个应用是 nil）
+    /// 应用管理里「应用设置」去哪：这个应用在侧栏里的那一页，它有「设置」页（`settings`）就到那一页，没有的只到应用（`tab` 是 nil）。
+    /// 核心没列这个应用（停用了、没接上）时没有去处
+    public func appSettingsPlace(_ tool: ToolIcon) -> (page: Page, tab: String?)? {
+        guard let page = Page.allCases.first(where: { $0.appTool == tool }), let app = agentApp(for: page) else { return nil }
+        return (page, app.pages.contains { $0.id == "settings" } ? "settings" : nil)
+    }
+
     public func agentApp(for p: Page) -> AgentApp? {
         guard let list = agentApps, let tool = p.appTool else { return nil }
         return list.first { $0.tool == tool }
@@ -1004,15 +1317,28 @@ public final class WindowModel: ObservableObject {
     /// 接上核心时，取正看着的那一页要的数据。onlyMissing：取过的不再取（应用列表刚来时）
     func loadVisible(onlyMissing: Bool = false) {
         guard let backend else { return }
+        if historyShowing && !(onlyMissing && !activity.isEmpty) { backend.reloadActivity() }
         if page == .prefs {
-            if prefsTab == .permissions && !(onlyMissing && agentPermissions != nil) { backend.reloadPermissions() }
+            if prefsTab == .privacy && !(onlyMissing && agentPermissions != nil) { backend.reloadPermissions() }
+            return
+        }
+        if page == .apps {      // 应用管理：每个应用展开能看它要的权限
+            if agentPermissions == nil || !onlyMissing { backend.reloadPermissions() }
             return
         }
         guard let app = agentApp(for: page) else { return }
         if let tab = agentTab(app), !(onlyMissing && agentPages[AgentFeed.pageKey(app.id, tab)] != nil) {
             backend.reloadPage(app: app.id, page: tab)
         }
+        // 弹窗底下那一页还没取过：也取（弹窗是直接从别处打开的时候）
+        if appDialog != nil, let base = visibleAppTab, agentPages[AgentFeed.pageKey(app.id, base)] == nil {
+            backend.reloadPage(app: app.id, page: base)
+        }
         if !app.needs.isEmpty && agentPermissions == nil { backend.reloadPermissions() }   // 要写出缺的是哪一项
+        // 这个应用别的标签先取好：换标签时不用等（负责人 11-16：每换一个标签都先出「正在取这一页」）
+        for ref in app.pages where !ref.hidden && agentPages[AgentFeed.pageKey(app.id, ref.id)] == nil && ref.id != agentTab(app) {
+            backend.reloadPage(app: app.id, page: ref.id)
+        }
     }
 
     /// 「再试一次」：重新要正看着的那一页
@@ -1028,18 +1354,20 @@ public final class WindowModel: ObservableObject {
 
     /// 连不上超过 30 秒：窗口每 2 秒自己重连，到这时多半是螺壳的核心出了事，给用户一件能做的事
     public var offlineLong: Bool { offlineSince.map { now().timeIntervalSince($0) > 30 } ?? false }
-    public static let offlineAdvice = "如果还是不行，点屏幕右上角菜单栏里的螺壳图标，选「退出螺壳」，再重新打开。"
+    public static let offlineAdvice = "如仍无法恢复，请从菜单栏的螺壳图标选择「退出螺壳」后重新打开"
     /// 断开时的说法：一律是「螺壳暂时没响应」，不说「连不上」「重试」这类系统腔（文案经 Gemini 网页版打磨，2026-11-09）
     public static let offlineShort = "螺壳暂时没响应"
+    /// 页没取到时卡片上的第二行：窗口自己在重取
+    public static let autoRetrying = "正在自动重试"
     /// 断开时点了按钮
-    public static let offlineFailed = "螺壳暂时没响应，这会儿做不成。"
+    public static let offlineFailed = "螺壳暂时没响应，操作未完成"
 
     /// `/feed` 的 `apps` 事件：这个应用变了。重新取应用列表；正看着它的页就重新取那一页；正看着权限就重新取权限。
     func agentAppChanged(_ app: String) {
         guard let backend else { return }
         backend.reloadApps()
         if let a = agentApp(for: page), a.id == app, let tab = agentTab(a) { backend.reloadPage(app: app, page: tab) }
-        if page == .prefs && prefsTab == .permissions { backend.reloadPermissions() }
+        if page == .prefs && prefsTab == .privacy { backend.reloadPermissions() }
     }
 
     /// 应用缺的权限叫什么（没取到权限就只说几项）
@@ -1120,7 +1448,7 @@ public final class WindowModel: ObservableObject {
     func permissionAnswered(app: String, id: String, op: String, text: String, error: Bool) {
         permissionPending["\(app)#\(id)"] = nil
         if op == "request", sheet?.app == app, sheet?.key == id { sheet = nil }
-        if !text.isEmpty { show(text) } else if error { show("没改成。") }
+        if !text.isEmpty { show(text) } else if error { show("修改失败") }
     }
 
     /// 螺壳.app 报它自己的权限（§10 `POST /host`）：启动时报一次，变了再报（例如用户从系统设置回来）。
@@ -1140,6 +1468,37 @@ public final class WindowModel: ObservableObject {
         sidebarMini = mini
         defaults?.set(mini, forKey: Self.sidebarKey)
     }
+
+    /// 右边栏：拉出、收起（记在这台 Mac 上）。`tab` 给了就同时换到那一页
+    public func openPanel(_ tab: PanelTab? = nil) {
+        if let tab { panelTab = tab }
+        panelOpen = true
+        defaults?.set(true, forKey: Self.panelKey)
+    }
+
+    /// 右边栏拉出时窗口长了多宽、往左挪了多少（`PanelWindowGrow`）：记在这台 Mac 上，重开以后收起还能缩回去
+    var panelGrowth: (grew: CGFloat, shifted: CGFloat)? {
+        get {
+            guard let g = defaults?.object(forKey: Self.panelGrewKey) as? Double, g > 0 else { return nil }
+            return (CGFloat(g), CGFloat(defaults?.double(forKey: Self.panelShiftedKey) ?? 0))
+        }
+        set {
+            if let v = newValue {
+                defaults?.set(Double(v.grew), forKey: Self.panelGrewKey)
+                defaults?.set(Double(v.shifted), forKey: Self.panelShiftedKey)
+            } else {
+                defaults?.removeObject(forKey: Self.panelGrewKey)
+                defaults?.removeObject(forKey: Self.panelShiftedKey)
+            }
+        }
+    }
+
+    public func closePanel() {
+        panelOpen = false
+        defaults?.set(false, forKey: Self.panelKey)
+    }
+
+    public func togglePanel() { panelOpen ? closePanel() : openPanel() }
 
     public func toggleApps() {
         appsExpanded.toggle()
@@ -1168,11 +1527,21 @@ public final class WindowModel: ObservableObject {
 
     /// 底部有一条（问螺壳或搜索框）：提示要让开
     public var hasBottomBar: Bool {
-        focus == nil && hostPage == nil && hostTakeover == nil && (features.contains(.ask) || features.contains(.search))
+        focus == nil && hostPage == nil && hostTakeover == nil && (features.contains(.ask) || searchBarShown)
     }
 
+    /// 底部的搜索框画不画。只有搜索、还没有问螺壳的时候，它只在螺壳搜索的页上（负责人 11-17：别的页上先不放，
+    /// 等有了问螺壳再全局放）
+    public var searchBarShown: Bool {
+        features.contains(.search) && !features.contains(.ask) && page == .searchApp
+            && focus == nil && hostPage == nil && hostTakeover == nil
+    }
+
+    /// ⌘K、菜单里的「搜索」：不在螺壳搜索的页上就先去那一页，再把光标放进搜索框
     public func focusSearch() {
-        if features.contains(.search) { searchFocus += 1 }
+        guard features.contains(.search) else { return }
+        if page != .searchApp { go(.searchApp) }
+        if page == .searchApp { searchFocus += 1 }
     }
 
     /// 用户按了回车：词直接给应用，不经模型
@@ -1198,6 +1567,8 @@ public final class WindowModel: ObservableObject {
         searchKind = nil
         searchThumbs = [:]
         thumbsAsked = []
+        thumbRetries = [:]
+        searchRound += 1
     }
 
     /// 结果的缩略图的键（应用 + `thumb/<id>`）
@@ -1217,10 +1588,23 @@ public final class WindowModel: ObservableObject {
         searchThumbs[key] = image
     }
 
+    /// 一张缩略图没读到：过几秒再要，最多再要两次；收起、换了一次搜索就不要了
+    public func thumbFailed(app: String, ref: String) {
+        let key = app + "\u{1}" + ref
+        guard thumbsAsked.contains(key), searchThumbs[key] == nil, thumbRetries[key, default: 0] < Self.thumbRetryLimit else { return }
+        thumbRetries[key, default: 0] += 1
+        let round = searchRound, wait = thumbRetryDelay * Double(thumbRetries[key] ?? 1)
+        Task { @MainActor [weak self] in
+            try? await Task.sleep(nanoseconds: UInt64(wait * 1_000_000_000))
+            guard let self, round == self.searchRound, self.thumbsAsked.contains(key), self.searchThumbs[key] == nil else { return }
+            self.backend?.searchThumb(app: app, ref: ref)
+        }
+    }
+
     /// 现在画出来、上下键走的那些结果
     public var searchOrder: [WindowHit] {
-        SearchLayout.order(searchAnswer?.groups ?? [], filter: searchKind, previewing: searchSelected != nil,
-                           selected: searchSelected)
+        SearchLayout.order((searchKind == nil ? searchAnswer?.groups : searchAnswer?.allGroups) ?? [], filter: searchKind, previewing: searchSelected != nil,
+                           selected: searchSelected, top: searchAnswer?.top ?? [])
     }
 
     public var selectedHit: WindowHit? {
@@ -1284,7 +1668,7 @@ public final class WindowModel: ObservableObject {
             cards.insert(TodayCard(id: "pin-\(UUID().uuidString.prefix(6))", tool: .core, time: nil, surface: SurfaceModel(surface: s)), at: 0)
         }
         closeAsk()
-        show("钉到今天了")
+        show("已固定到今天")
     }
 
     /// 展开成整页对话
@@ -1299,8 +1683,17 @@ public final class WindowModel: ObservableObject {
 
     public func setDensity(_ d: Density) {
         density = d
-        defaults?.set(d.rawValue, forKey: Self.densityKey)
     }
+
+    /// 外观（设置 · 通用，走查重画稿）：跟随系统、浅色、深色；记在这台 Mac 的这个窗口里
+    @Published public private(set) var appearance: Appearance = .system
+    public func setAppearance(_ a: Appearance) {
+        appearance = a
+        defaults?.set(a.rawValue, forKey: Self.appearanceKey)
+    }
+
+    /// 设置页底下一行链接打开的弹窗：逐类设置提醒、关于螺壳、高级（本机接口）、系统权限检查
+    @Published public var settingsDialog: SettingsDialog?
 
     /// 页标题旁边的日期：「11月4日 星期三」
     public var dateLine: String {
@@ -1351,9 +1744,9 @@ public final class WindowModel: ObservableObject {
         if userInfo[AgentNotification.userInfoKey] as? String == "brief" { openBrief() } else { go(.today) }
     }
 
-    // MARK: 一件件处理
+    // MARK: 逐件处理
 
-    /// 进「一件件处理」：从要你决定的第一件开始，次序和「今天」页上一样（同一类的挨着，一类处理完再下一类）。
+    /// 进「逐件处理」：从要你决定的第一件开始，次序和「今天」页上一样（同一类的挨着，一类处理完再下一类）。
     /// 给了 `category`（「按类处理」里点的那一类）就只走这一类；这一类已经没有卡片了就不进
     public func enterFocus(category: String? = nil) {
         let all = decideCategories
@@ -1372,7 +1765,7 @@ public final class WindowModel: ObservableObject {
         }
     }
 
-    /// 「按类处理」列哪几类：有两类以上时，不止一件的那几类（只有一类时页头的「一件件处理」就是它；
+    /// 「按类处理」列哪几类：有两类以上时，不止一件的那几类（只有一类时页头的「逐件处理」就是它；
     /// 一类只有一件时点开那张卡片就是了）
     public var categoriesToPick: [DecideCategory] {
         let all = decideCategories
@@ -1415,7 +1808,7 @@ public final class WindowModel: ObservableObject {
         return f.ids.filter { id in f.tapped.contains(id) && !cards.contains { $0.id == id } }.count
     }
 
-    /// 一件件处理时要你决定的变了：用户没点就不见了的那件，同一类（同一个应用、同一类事，`TodayStack.key`，
+    /// 逐件处理时要你决定的变了：用户没点就不见了的那件，同一类（同一个应用、同一类事，`TodayStack.key`，
     /// 也就是 `DecideCategory.id`）这次新出了一张，就是工具把它换掉了，新的顶在原来的位置（正看着的就还是这一件，不跳）；
     /// 没有同一类的顶上，是工具收走了，从这一轮里去掉。同一个应用别的类的新卡片不算换上来的：只走一类时这一轮里
     /// 不混进别的类，走全部时也不在同一个应用里换到别的类上
@@ -1439,7 +1832,7 @@ public final class WindowModel: ObservableObject {
         focus = f
     }
 
-    /// 只走了一类、这一类都答完了，「要你决定」里还有别的事：这一类的名字（一件件处理的最后一屏照它说「这一类完了」）
+    /// 只走了一类、这一类都答完了，「要你决定」里还有别的事：这一类的名字（逐件处理的最后一屏照它说「这一类完了」）
     public var focusCategoryDone: String? {
         guard let name = focus?.categoryName, focusCurrent == nil, focusLeft == 0, !cards.isEmpty else { return nil }
         return name
@@ -1492,6 +1885,13 @@ public final class WindowModel: ObservableObject {
         onCardAction?(self, card, name, context)
     }
 
+    /// 应用的页上点了（只由画页的视图调）：先告诉本体是哪个应用的哪一页（`WindowHost.appPageTapped`），再照卡片一样交给核心。
+    /// 不从编号猜：工具起的卡片编号也可能长得像页的编号
+    public func tapPage(_ id: String, componentId: String, context: JSONValue) {
+        if let p = agentPages[id] { host?.appPageTapped(app: p.app, page: p.page) }
+        tapSurface(id, componentId: componentId, context: context)
+    }
+
     /// 急事横幅、「已经替你做了」「顺便看看」里那几张核心的卡片被点了
     public func tapSurface(_ id: String, componentId: String, context: JSONValue) {
         // 等权限时页可能重画过，组件 id 会变：转的时候按现在这一页的
@@ -1535,21 +1935,27 @@ public final class WindowModel: ObservableObject {
     public func undoDone(_ id: String) {
         if let r = restores[id] {
             r()
-            show("撤销了")
+            show("已撤销")
             return
         }
         guard let i = done.firstIndex(where: { $0.id == id }), !done[i].undone else { return }
         done[i].undone = true
         let label = done[i].undoLabel ?? "撤销"
-        show(label == "放回" ? "放回了" : "撤销了") { [weak self] in
+        show(label == "放回" || label == "恢复" ? "已恢复" : "已撤销") { [weak self] in
             if let j = self?.done.firstIndex(where: { $0.id == id }) { self?.done[j].undone = false }
         }
     }
 
     public func undoActivity(_ id: String) {
         guard let i = activity.firstIndex(where: { $0.id == id }), !activity[i].undone else { return }
+        if let backend {         // 接上核心：点卡片上的撤销，结果由核心说；划掉等核心重新列
+            guard let u = activity[i].undo else { return }
+            activity[i].undone = true
+            backend.action(surfaceId: u.surfaceId, componentId: u.componentId, context: .object([:]))
+            return
+        }
         activity[i].undone = true
-        show(activity[i].undoLabel == "放回" ? "放回了" : "撤销了") { [weak self] in
+        show(activity[i].undoLabel == "放回" || activity[i].undoLabel == "恢复" ? "已恢复" : "已撤销") { [weak self] in
             if let j = self?.activity.firstIndex(where: { $0.id == id }) { self?.activity[j].undone = false }
         }
     }
@@ -1558,6 +1964,36 @@ public final class WindowModel: ObservableObject {
 
     /// 本体的界面开着（哪一种都算）：用户看的不是底下那页。报给核心的页名是 `host`（§11），新来的事项不算看过
     public var hostShowing: Bool { hostPage != nil || hostCard != nil || hostTakeover != nil }
+
+    /// 左下角现在要说的一件事（只说最要紧的一件）：连不上螺壳 > 螺壳还在准备 > 本体给的（有新版本、已暂停……）。
+    /// 一切正常、本体也没给时是 nil，左下角只有 logo
+    public var sidebarNews: SidebarNews? {
+        if !coreReachable {
+            return SidebarNews(light: .off, text: "没响应", help: "螺壳暂时没响应，窗口在等它恢复") { [weak self] in
+                self?.go(.prefs, tab: self?.hostSettingsTab.rawValue)
+            }
+        }
+        if !engineReady {
+            return SidebarNews(light: .warn, text: "在准备", help: "螺壳在准备，去设置里看") { [weak self] in
+                self?.go(.prefs, tab: PrefsTab.model.rawValue)
+            }
+        }
+        guard let n = sidebarNotice else { return nil }
+        let light: LKLight.State
+        switch n.kind {
+        case .update: light = .brand
+        case .paused, .downloading: light = .warn
+        case .error: light = .bad
+        }
+        return SidebarNews(light: light, text: n.text, help: n.detail ?? n.text, detail: n.detail,
+                           actionLabel: n.actionLabel ?? "去设置里改") { [weak self] in
+            if let open = n.open { open() } else { self?.go(.prefs, tab: (n.kind == .downloading ? PrefsTab.model : self?.hostSettingsTab)?.rawValue) }
+        }
+    }
+
+    /// 内容区现在用哪一组颜色：首页（「今天」）用首页那组；别的页、本体的页用工作台那组（界面规范 v2 §11）
+    /// 内容区用哪组颜色：都用首页那组（负责人 11-13：统一一种底色，不再「今天」暖、别的页浅）
+    public var contentLayer: Palette.Layer { .home }
 
     /// 侧栏亮哪一行：本体的一页、整窗盖着时一行都不亮（用户看的不是底下那页）；浮着的卡片不算，底下那页照旧亮
     public var sidebarSelection: Page? { hostPage != nil || hostTakeover != nil ? nil : page }
@@ -1575,7 +2011,7 @@ public final class WindowModel: ObservableObject {
             let fresh = (p.style == .page ? hostPage : hostTakeover)?.id != p.id
             if fresh {
                 entrance = .page
-                clearSecureFields()          // 底下那页看不见了：密码框里填的字照「离开一页」清掉（工具协议 §4 secureField）
+                forgetUnsent()               // 底下那页看不见了：照「离开一页」清掉密码框里的字、放回没交的选择
                 closeAsk()
                 closeSearch()
             }
@@ -1625,7 +2061,7 @@ public final class WindowModel: ObservableObject {
     func handOff(_ p: Page, tab: String?) -> Bool {
         guard let host else { return false }
         if p == .apps {
-            guard host.appsContent() == nil else { return false }
+            guard host.appsSnapshot() == nil else { return false }
             host.openAddApps()
             return true
         }
@@ -1634,16 +2070,76 @@ public final class WindowModel: ObservableObject {
         return true
     }
 
-    /// 「设置」的哪几个标签是本体的窗口（标签上画「在别处打开」的小图标）：本体给了界面的画在设置里，不算
+    /// 「设置」的哪几个标签是本体的窗口（标签上画「在别处打开」的小图标）：本体给了界面或数据的画在设置里，不算。
+    /// 「隐私与权限」里有窗口自己的权限，整个标签不交出去（本体那块缺了时在标签里放一个按钮）
     public func prefsTabOpensElsewhere(_ t: PrefsTab) -> Bool {
-        guard let host, t == .model || t == .privacy else { return false }
-        return host.settingsContent(t) == nil
+        guard let host, t == .model else { return false }
+        return host.settingsSnapshot() == nil
+    }
+
+    // MARK: 设置里本体管的那几块（界面接口 §16）
+
+    /// 「设置」画的数据：接着本体时照本体给的（没给是 nil，用本体给的界面）；没接本体（示例、截图）用窗口自己的
+    public var settingsData: HostSettings? {
+        _ = hostDataTick
+        if let host { return host.settingsSnapshot() }
+        return sampleSettings
+    }
+
+    /// 没接本体时「设置」用的示例数据
+    @Published public var sampleSettings: HostSettings? = Sample.hostSettings
+
+    /// 登录时启动、能耗、检查更新在哪个标签：本体给了数据在「通用」；没给时去「模型」（打开本体的窗口）
+    public var hostSettingsTab: PrefsTab { settingsData != nil ? .general : .model }
+
+    /// 用户在设置里改了一项：接着本体交给它，它改好了调 `hostSettingsChanged()`；示例里直接改
+    public func applySetting(_ c: HostSettingChange) {
+        if let host { host.apply(c); return }
+        guard var s = sampleSettings else { return }
+        switch c {
+        case .loginItem(let on): s.general.loginItem = on ? .on : .off
+        case .powerMode(let m): s.general.powerMode = m
+        case .batteryMode(let m): s.general.batteryMode = m
+        case .tier(let id):
+            for i in s.models.tiers.indices where s.models.tiers[i].id == id {
+                s.models.tiers[i].state = .switching(progress: 0)
+                show("开始下载\(s.models.tiers[i].shownTitle)，完成后自动切换")
+            }
+        case .localAPI(let on): s.models.advanced.enabled = on
+        case .autoCheckUpdates(let on): s.general.autoCheck = on
+        }
+        sampleSettings = s
+    }
+
+    /// 设置里的动作（检查更新、导出诊断信息……）：接着本体交给它，示例里说一句
+    func settingsAction(_ a: SettingsAction) {
+        if let host {
+            switch a {
+            case .checkUpdates: host.checkForUpdates()
+            case .upgrade: host.upgrade(app: ToolIcon.core.accessory)
+            case .retryDownloads: host.retryDownloads()
+            case .copyKey: host.copyLocalAPIKey()
+            case .rotateKey: host.rotateLocalAPIKey()
+            case .export: host.exportDiagnostics()
+            case .uninstall: host.uninstallLuoke()
+            }
+            return
+        }
+        switch a {
+        case .checkUpdates: show("已是最新")
+        case .upgrade: show("下好了，重新打开螺壳时换上")
+        case .retryDownloads: show("接着下载")
+        case .copyKey: show("密钥已复制")
+        case .rotateKey: show("换了新密钥，用旧密钥的程序要重新填")
+        case .export: show("诊断信息存到了下载文件夹")
+        case .uninstall: show("卸载前会询问是否同时删除数据")
+        }
     }
 
     /// 升级应用（交给主控：接着本体时由本体升；示例里直接升好）
     public func upgrade(_ tool: ToolIcon) {
         if let host {
-            if host.appsContent() != nil { go(.apps) }      // 升级在主窗口的「添加应用」页里做
+            if host.appsSnapshot() != nil { go(.apps) }      // 升级在主窗口的「应用管理」页里做
             host.upgrade(app: tool.accessory)
             return
         }
@@ -1653,6 +2149,86 @@ public final class WindowModel: ObservableObject {
         quiet.removeAll { $0.id == "upd-\(tool.rawValue)" }
         if let j = catalog.firstIndex(where: { $0.tool == tool }) { catalog[j].state = .installed }
         show("\(tool.name)升到 \(to)")
+    }
+
+    /// 本体给的数据变了（`hostAppsChanged`、`hostSettingsChanged`）：页上读 `hostDataTick` 才会重画
+    @Published public private(set) var hostDataTick = 0
+    public func hostAppsChanged() { hostDataTick &+= 1 }
+    public func hostSettingsChanged() { hostDataTick &+= 1 }
+
+    /// 「应用管理」画的行：本体给了数据就照它，没有就照窗口自己的目录（示例）
+    public var appRows: [HostAppRow] {
+        _ = hostDataTick
+        if let s = host?.appsSnapshot() { return s.rows }
+        return catalog.map { c in
+            let state: HostAppRow.State
+            switch c.state {
+            case .update(let v): state = .update(to: v)
+            case .installable: state = .installable
+            case .installed: state = .installed
+            }
+            return HostAppRow(id: c.id, tool: c.tool, tagline: c.tagline, version: c.version,
+                              origin: c.poweredBy ? .poweredBy : .luoke, state: state, facts: c.facts,
+                              actions: c.state == .installable ? [] : [.uninstall])
+        }
+    }
+    /// 应用管理里展开着的应用（点一行展开它要的权限）
+    @Published public var openedApps: Set<String> = []
+    public var appsNotice: HostAppsNotice? { _ = hostDataTick; return host?.appsSnapshot()?.notice }
+    /// 窗口自己会不会弹卸载的确认：接着本体时由本体的确认页走，不弹
+    public var confirmsUninstallHere: Bool { host?.appsSnapshot() == nil }
+
+    /// 一个应用的动作（应用管理页上的图标和「更多」）：接着本体时交给它；示例里只有卸载做得了
+    public func perform(_ action: HostAppAction, on row: HostAppRow) {
+        if let host { host.perform(app: row.id, action: action); return }
+        switch action {
+        case .uninstall: uninstall(row.tool)
+        default: show("\(row.name)：\(action.title)")
+        }
+    }
+
+    /// 通知里「打开键盘设置」这类跟在结果后面的按钮：动作对的是 `app`
+    public func perform(_ action: HostAppAction, onApp app: String) {
+        if let host { host.perform(app: app, action: action) } else { show(action.title) }
+    }
+
+    /// 装应用：接着本体时交给它
+    public func install(_ row: HostAppRow) {
+        if let host { host.install(app: row.id); return }
+        show("装\(row.name)：下载、核对签名、装好、本机试跑")
+    }
+
+    /// 卸载应用（用户已在应用管理页上确认过）：接着本体时交给它；示例里直接从列表拿掉
+    public func uninstall(_ tool: ToolIcon) {
+        if let host { host.uninstall(app: tool.accessory); return }
+        apps.removeAll { $0.tool == tool }
+        if let j = catalog.firstIndex(where: { $0.tool == tool }) { catalog[j].state = .installable }
+        quiet.removeAll { $0.id == "upd-\(tool.rawValue)" }
+        show("卸载了\(tool.name)")
+    }
+
+    /// 「Powered by 螺壳」那一节的「欢迎接入」：去官网的接入介绍。地址由出版方给（`integrationGuideURL`），没给时先说一声
+    public var integrationGuideURL: URL? = nil
+    public func openIntegrationGuide() {
+        if let u = integrationGuideURL { NSWorkspace.shared.open(u) } else { show("接入介绍在官网上") }
+    }
+
+    /// 截图、测试里不碰系统的剪贴板和系统设置
+    var touchesSystem: Bool { host != nil || backend != nil }
+
+    /// 复制一段字（设置里的本机接口地址），底部说一句
+    func copy(_ text: String, said: String) {
+        if touchesSystem {
+            NSPasteboard.general.clearContents()
+            NSPasteboard.general.setString(text, forType: .string)
+        }
+        show(said)
+    }
+
+    /// 「系统设置 › 通用 › 登录项」：登录时启动要用户在那里允许一次
+    func openLoginItemsSettings() {
+        guard touchesSystem, let u = URL(string: "x-apple.systempreferences:com.apple.LoginItems-Settings.extension") else { return }
+        NSWorkspace.shared.open(u)
     }
 
     // MARK: 权限
@@ -1703,6 +2279,23 @@ public final class WindowModel: ObservableObject {
         backend?.updateSettings(["brief": .string(b.agentValue)])
     }
 
+    public func setAlertClass(_ c: AlertClass, _ t: AlertTiming) {
+        alertClasses[c] = t
+        backend?.updateSettings(["classes": .object([c.rawValue: .string(t.rawValue)])])
+    }
+
+    public func setBriefTime(_ t: String) {
+        briefTime = t
+        backend?.updateSettings(["brief_time": .string(t)])
+    }
+
+    /// 简报时间能选的：07:00 到 10:00 每半小时，加上现在的
+    public var briefTimeOptions: [String] {
+        var o = (14...20).map { String(format: "%02d:%02d", $0 / 2, $0 % 2 * 30) }
+        if !o.contains(briefTime) { o.append(briefTime); o.sort() }
+        return o
+    }
+
     /// 免打扰：「22:00 – 08:00」这样写，或者「关」
     public func setQuiet(_ label: String) {
         quietHours = label
@@ -1723,13 +2316,13 @@ public final class WindowModel: ObservableObject {
 
     public func setDelegate(_ id: String, on: Bool) {
         if let i = delegates.firstIndex(where: { $0.id == id }) { delegates[i].on = on }
-        show(on ? "开了" : "关了")
+        show(on ? "已开启" : "已关闭")
     }
 
     public func setTier(_ id: String) {
         guard id != currentTier, let t = tiers.first(where: { $0.id == id }) else { return }
         currentTier = id
-        show("换到\(t.title)：空闲时下载，下完再换")
+        show("将切换到\(t.title)：空闲时下载，完成后切换")
     }
 
     // MARK: 菜单栏图标
@@ -1739,15 +2332,15 @@ public final class WindowModel: ObservableObject {
             let until = pausedUntil == nil ? JSONValue.string(AgentFeed.iso(Date().addingTimeInterval(3600))) : .null
             pausedUntil = pausedUntil == nil ? AgentFeed.hhmm(Date().addingTimeInterval(3600)) : nil
             backend.updateSettings(["paused_until": until])
-            show(pausedUntil != nil ? "一小时内不弹通知，事情照样放进「今天」" : "提醒恢复了")
+            show(pausedUntil != nil ? "提醒已暂停一小时，事项仍会列入「今天」" : "提醒已恢复")
             return
         }
         if pausedUntil == nil {
             pausedUntil = "11:02"
-            show("一小时内不弹通知，事情照样放进「今天」")
+            show("提醒已暂停一小时，事项仍会列入「今天」")
         } else {
             pausedUntil = nil
-            show("提醒恢复了")
+            show("提醒已恢复")
         }
     }
 

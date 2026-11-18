@@ -53,13 +53,19 @@ def _action(v: Any) -> Optional[str]:
 
 def _pages(v: Any) -> List[dict]:
     """`hidden: true`（协议 §1a，2026-11-10 加）：不画成标签、只由 `agent.open_page` 去的页，照样登记、照样能读；
-    `hidden` 写成布尔以外的，这一页不认。"""
+    `hidden` 写成布尔以外的，这一页不认。
+    `icon`（2026-11-12 加，设计规范 §18：设置、处理记录从右上角的图标打开）：`hidden` 的页可以写一个图标名（同 A2UI 的
+    `Icon`），窗口在应用页标题那一行的右边画成图标按钮，点了去这一页；不是 hidden 的页、不认得的图标名，`icon` 不要（页照收）。"""
+    from luoke_agent.a2ui import ICONS
     out: List[dict] = []
     for p in v if isinstance(v, list) else []:
         if isinstance(p, dict) and isinstance(p.get("id"), str) and ID.match(p["id"]) \
                 and isinstance(p.get("title"), str) and p["id"] not in {x["id"] for x in out} \
                 and isinstance(p.get("hidden", False), bool):
-            out.append({"id": p["id"], "title": p["title"], **({"hidden": True} if p.get("hidden") else {})})
+            entry = {"id": p["id"], "title": p["title"], **({"hidden": True} if p.get("hidden") else {})}
+            if p.get("hidden") and isinstance(p.get("icon"), str) and p["icon"] in ICONS:
+                entry["icon"] = p["icon"]
+            out.append(entry)
     return out
 
 

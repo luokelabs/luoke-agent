@@ -1,0 +1,3936 @@
+{
+ "_about": "luoke-scan PR #186（claude/scan-data-resources）crowded 场景录的 data/…，自动清的那一批和清理记录取自 autoclean-done；扫描合了、清单列了 capabilities.data 以后改用场景样例；「状态」页的文件夹（page/mac）和大文件（data/category?id=large-file）取自 full-report，用途说明（agent/explained）是 agent 自己记的，这里写了三条；「文件夹」页（agent/usage，核心自己量的）是手写的示例",
+ "base": "full-report",
+ "data": {
+  "data/category?id=ai-plugin": {
+   "auto": null,
+   "bytes": 0,
+   "count": 5,
+   "facts": {
+    "apps": [],
+    "appsInstalled": 0,
+    "appsMissing": 0,
+    "groups": {
+     "skill": 5
+    },
+    "password": 0,
+    "rebuilds": 0,
+    "tools": [],
+    "userFiles": "none"
+   },
+   "files": 5,
+   "id": "ai-plugin",
+   "items": [
+    {
+     "bytes": null,
+     "facts": {
+      "agent": "Claude Code",
+      "kinds": [
+       "download-exec",
+       "escalation"
+      ],
+      "scope": "personal",
+      "skill": "helper-0"
+     },
+     "finding": "skill.download-exec/000000000009",
+     "group": "skill",
+     "key": "i2",
+     "options": [
+      "trash",
+      "keep",
+      "ignore"
+     ],
+     "password": false,
+     "path": "~/.claude/skills/helper-0",
+     "paths": [
+      "~/.claude/skills/helper-0"
+     ],
+     "plan": "p-000000000008",
+     "reason": "download-exec",
+     "rebuilds": false,
+     "restorable": true,
+     "reveal": "~/.claude/skills/helper-0",
+     "rule": "skill.download-exec",
+     "suggested": "trash",
+     "userFiles": "none"
+    },
+    {
+     "bytes": null,
+     "facts": {
+      "agent": "Claude Code",
+      "kinds": [
+       "download-exec",
+       "escalation"
+      ],
+      "scope": "personal",
+      "skill": "helper-1"
+     },
+     "finding": "skill.download-exec/000000000010",
+     "group": "skill",
+     "key": "i3",
+     "options": [
+      "trash",
+      "keep",
+      "ignore"
+     ],
+     "password": false,
+     "path": "~/.claude/skills/helper-1",
+     "paths": [
+      "~/.claude/skills/helper-1"
+     ],
+     "plan": "p-000000000008",
+     "reason": "download-exec",
+     "rebuilds": false,
+     "restorable": true,
+     "reveal": "~/.claude/skills/helper-1",
+     "rule": "skill.download-exec",
+     "suggested": "trash",
+     "userFiles": "none"
+    },
+    {
+     "bytes": null,
+     "facts": {
+      "agent": "Claude Code",
+      "kinds": [
+       "download-exec",
+       "escalation"
+      ],
+      "scope": "personal",
+      "skill": "helper-2"
+     },
+     "finding": "skill.download-exec/000000000011",
+     "group": "skill",
+     "key": "i4",
+     "options": [
+      "trash",
+      "keep",
+      "ignore"
+     ],
+     "password": false,
+     "path": "~/.claude/skills/helper-2",
+     "paths": [
+      "~/.claude/skills/helper-2"
+     ],
+     "plan": "p-000000000008",
+     "reason": "download-exec",
+     "rebuilds": false,
+     "restorable": true,
+     "reveal": "~/.claude/skills/helper-2",
+     "rule": "skill.download-exec",
+     "suggested": "trash",
+     "userFiles": "none"
+    },
+    {
+     "bytes": null,
+     "facts": {
+      "agent": "Claude Code",
+      "kinds": [
+       "download-exec",
+       "escalation"
+      ],
+      "scope": "personal",
+      "skill": "helper-3"
+     },
+     "finding": "skill.download-exec/000000000012",
+     "group": "skill",
+     "key": "i5",
+     "options": [
+      "trash",
+      "keep",
+      "ignore"
+     ],
+     "password": false,
+     "path": "~/.claude/skills/helper-3",
+     "paths": [
+      "~/.claude/skills/helper-3"
+     ],
+     "plan": "p-000000000008",
+     "reason": "download-exec",
+     "rebuilds": false,
+     "restorable": true,
+     "reveal": "~/.claude/skills/helper-3",
+     "rule": "skill.download-exec",
+     "suggested": "trash",
+     "userFiles": "none"
+    },
+    {
+     "bytes": null,
+     "facts": {
+      "agent": "Claude Code",
+      "kinds": [
+       "download-exec",
+       "escalation"
+      ],
+      "scope": "personal",
+      "skill": "helper-4"
+     },
+     "finding": "skill.download-exec/000000000013",
+     "group": "skill",
+     "key": "i6",
+     "options": [
+      "trash",
+      "keep",
+      "ignore"
+     ],
+     "password": false,
+     "path": "~/.claude/skills/helper-4",
+     "paths": [
+      "~/.claude/skills/helper-4"
+     ],
+     "plan": "p-000000000008",
+     "reason": "download-exec",
+     "rebuilds": false,
+     "restorable": true,
+     "reveal": "~/.claude/skills/helper-4",
+     "rule": "skill.download-exec",
+     "suggested": "trash",
+     "userFiles": "none"
+    }
+   ],
+   "known": true,
+   "scanned": {
+    "finished": "2026-10-20T12:00:00Z",
+    "started": "2026-10-20T12:00:00Z"
+   },
+   "schema": 1,
+   "suggested": 5,
+   "suggestedBytes": 0
+  },
+  "data/category?id=cache": {
+   "auto": "cache",
+   "bytes": 392167424,
+   "count": 7,
+   "facts": {
+    "apps": [],
+    "appsInstalled": 0,
+    "appsMissing": 0,
+    "groups": {
+     "tool-cache": 7
+    },
+    "password": 0,
+    "rebuilds": 7,
+    "tools": [
+     "Cargo",
+     "Composer",
+     "Go",
+     "Gradle",
+     "node-gyp",
+     "pip"
+    ],
+    "userFiles": "none"
+   },
+   "files": 7,
+   "id": "cache",
+   "items": [
+    {
+     "bytes": 62914560,
+     "facts": {
+      "cache": "pip",
+      "tool": "pip"
+     },
+     "finding": "cache.rebuildable.pip/000000000021",
+     "group": "tool-cache",
+     "key": "i9",
+     "options": [
+      "remove",
+      "keep",
+      "ignore"
+     ],
+     "password": false,
+     "path": "~/Library/Caches/pip",
+     "paths": [
+      "~/Library/Caches/pip"
+     ],
+     "plan": "p-000000000008",
+     "reason": "rebuilds",
+     "rebuilds": true,
+     "restorable": false,
+     "reveal": "~/Library/Caches/pip",
+     "rule": "cache.rebuildable.pip",
+     "suggested": "remove",
+     "userFiles": "none"
+    },
+    {
+     "bytes": 56623104,
+     "facts": {
+      "cache": "go-build",
+      "tool": "Go"
+     },
+     "finding": "cache.rebuildable.go-build/000000000022",
+     "group": "tool-cache",
+     "key": "i10",
+     "options": [
+      "remove",
+      "keep",
+      "ignore"
+     ],
+     "password": false,
+     "path": "~/Library/Caches/go-build",
+     "paths": [
+      "~/Library/Caches/go-build"
+     ],
+     "plan": "p-000000000008",
+     "reason": "rebuilds",
+     "rebuilds": true,
+     "restorable": false,
+     "reveal": "~/Library/Caches/go-build",
+     "rule": "cache.rebuildable.go-build",
+     "suggested": "remove",
+     "userFiles": "none"
+    },
+    {
+     "bytes": 55574528,
+     "facts": {
+      "cache": "cargo-registry-cache",
+      "tool": "Cargo"
+     },
+     "finding": "cache.rebuildable.cargo-registry-cache/000000000023",
+     "group": "tool-cache",
+     "key": "i11",
+     "options": [
+      "remove",
+      "keep",
+      "ignore"
+     ],
+     "password": false,
+     "path": "~/.cargo/registry/cache",
+     "paths": [
+      "~/.cargo/registry/cache"
+     ],
+     "plan": "p-000000000008",
+     "reason": "rebuilds",
+     "rebuilds": true,
+     "restorable": false,
+     "reveal": "~/.cargo/registry/cache",
+     "rule": "cache.rebuildable.cargo-registry-cache",
+     "suggested": "remove",
+     "userFiles": "none"
+    },
+    {
+     "bytes": 55574528,
+     "facts": {
+      "cache": "gradle-caches",
+      "tool": "Gradle"
+     },
+     "finding": "cache.rebuildable.gradle-caches/000000000024",
+     "group": "tool-cache",
+     "key": "i12",
+     "options": [
+      "remove",
+      "keep",
+      "ignore"
+     ],
+     "password": false,
+     "path": "~/.gradle/caches",
+     "paths": [
+      "~/.gradle/caches"
+     ],
+     "plan": "p-000000000008",
+     "reason": "rebuilds",
+     "rebuilds": true,
+     "restorable": false,
+     "reveal": "~/.gradle/caches",
+     "rule": "cache.rebuildable.gradle-caches",
+     "suggested": "remove",
+     "userFiles": "none"
+    },
+    {
+     "bytes": 54525952,
+     "facts": {
+      "cache": "composer",
+      "tool": "Composer"
+     },
+     "finding": "cache.rebuildable.composer/000000000025",
+     "group": "tool-cache",
+     "key": "i13",
+     "options": [
+      "remove",
+      "keep",
+      "ignore"
+     ],
+     "password": false,
+     "path": "~/Library/Caches/composer",
+     "paths": [
+      "~/Library/Caches/composer"
+     ],
+     "plan": "p-000000000008",
+     "reason": "rebuilds",
+     "rebuilds": true,
+     "restorable": false,
+     "reveal": "~/Library/Caches/composer",
+     "rule": "cache.rebuildable.composer",
+     "suggested": "remove",
+     "userFiles": "none"
+    },
+    {
+     "bytes": 53477376,
+     "facts": {
+      "cache": "gradle-wrapper",
+      "tool": "Gradle"
+     },
+     "finding": "cache.rebuildable.gradle-wrapper/000000000026",
+     "group": "tool-cache",
+     "key": "i14",
+     "options": [
+      "remove",
+      "keep",
+      "ignore"
+     ],
+     "password": false,
+     "path": "~/.gradle/wrapper/dists",
+     "paths": [
+      "~/.gradle/wrapper/dists"
+     ],
+     "plan": "p-000000000008",
+     "reason": "rebuilds",
+     "rebuilds": true,
+     "restorable": false,
+     "reveal": "~/.gradle/wrapper/dists",
+     "rule": "cache.rebuildable.gradle-wrapper",
+     "suggested": "remove",
+     "userFiles": "none"
+    },
+    {
+     "bytes": 53477376,
+     "facts": {
+      "cache": "node-gyp",
+      "tool": "node-gyp"
+     },
+     "finding": "cache.rebuildable.node-gyp/000000000027",
+     "group": "tool-cache",
+     "key": "i15",
+     "options": [
+      "remove",
+      "keep",
+      "ignore"
+     ],
+     "password": false,
+     "path": "~/Library/Caches/node-gyp",
+     "paths": [
+      "~/Library/Caches/node-gyp"
+     ],
+     "plan": "p-000000000008",
+     "reason": "rebuilds",
+     "rebuilds": true,
+     "restorable": false,
+     "reveal": "~/Library/Caches/node-gyp",
+     "rule": "cache.rebuildable.node-gyp",
+     "suggested": "remove",
+     "userFiles": "none"
+    }
+   ],
+   "known": true,
+   "scanned": {
+    "finished": "2026-10-20T12:00:00Z",
+    "started": "2026-10-20T12:00:00Z"
+   },
+   "schema": 1,
+   "suggested": 7,
+   "suggestedBytes": 392167424
+  },
+  "data/category?id=duplicate": {
+   "auto": "duplicate",
+   "bytes": 14680064,
+   "count": 7,
+   "facts": {
+    "apps": [],
+    "appsInstalled": 0,
+    "appsMissing": 0,
+    "groups": {
+     "duplicate": 7
+    },
+    "password": 0,
+    "rebuilds": 0,
+    "tools": [],
+    "userFiles": "none"
+   },
+   "files": 7,
+   "id": "duplicate",
+   "items": [
+    {
+     "bytes": 2097152,
+     "facts": {
+      "copies": 1,
+      "keep": "~/Documents/%E9%A6%99%E6%B8%AF-4.v2.pdf"
+     },
+     "finding": "space.duplicates/000000000069",
+     "group": "duplicate",
+     "key": "i57",
+     "options": [
+      "trash",
+      "clone",
+      "keep",
+      "ignore"
+     ],
+     "password": false,
+     "path": "~/Downloads/%E9%A6%99%E6%B8%AF-4.v2.pdf",
+     "paths": [
+      "~/Downloads/%E9%A6%99%E6%B8%AF-4.v2.pdf"
+     ],
+     "plan": "p-000000000008",
+     "reason": "copy-kept",
+     "rebuilds": false,
+     "restorable": true,
+     "reveal": "~/Downloads/%E9%A6%99%E6%B8%AF-4.v2.pdf",
+     "rule": "space.duplicates",
+     "suggested": "trash",
+     "userFiles": "none"
+    },
+    {
+     "bytes": 2097152,
+     "facts": {
+      "copies": 1,
+      "keep": "~/Documents/%E9%A6%99%E6%B8%AF-6.v2.pdf"
+     },
+     "finding": "space.duplicates/000000000070",
+     "group": "duplicate",
+     "key": "i58",
+     "options": [
+      "trash",
+      "clone",
+      "keep",
+      "ignore"
+     ],
+     "password": false,
+     "path": "~/Downloads/%E9%A6%99%E6%B8%AF-6.v2.pdf",
+     "paths": [
+      "~/Downloads/%E9%A6%99%E6%B8%AF-6.v2.pdf"
+     ],
+     "plan": "p-000000000008",
+     "reason": "copy-kept",
+     "rebuilds": false,
+     "restorable": true,
+     "reveal": "~/Downloads/%E9%A6%99%E6%B8%AF-6.v2.pdf",
+     "rule": "space.duplicates",
+     "suggested": "trash",
+     "userFiles": "none"
+    },
+    {
+     "bytes": 2097152,
+     "facts": {
+      "copies": 1,
+      "keep": "~/Documents/%E9%A6%99%E6%B8%AF-2.v2.pdf"
+     },
+     "finding": "space.duplicates/000000000071",
+     "group": "duplicate",
+     "key": "i59",
+     "options": [
+      "trash",
+      "clone",
+      "keep",
+      "ignore"
+     ],
+     "password": false,
+     "path": "~/Downloads/%E9%A6%99%E6%B8%AF-2.v2.pdf",
+     "paths": [
+      "~/Downloads/%E9%A6%99%E6%B8%AF-2.v2.pdf"
+     ],
+     "plan": "p-000000000008",
+     "reason": "copy-kept",
+     "rebuilds": false,
+     "restorable": true,
+     "reveal": "~/Downloads/%E9%A6%99%E6%B8%AF-2.v2.pdf",
+     "rule": "space.duplicates",
+     "suggested": "trash",
+     "userFiles": "none"
+    },
+    {
+     "bytes": 2097152,
+     "facts": {
+      "copies": 1,
+      "keep": "~/Documents/%E9%A6%99%E6%B8%AF-0.v2.pdf"
+     },
+     "finding": "space.duplicates/000000000072",
+     "group": "duplicate",
+     "key": "i60",
+     "options": [
+      "trash",
+      "clone",
+      "keep",
+      "ignore"
+     ],
+     "password": false,
+     "path": "~/Downloads/%E9%A6%99%E6%B8%AF-0.v2.pdf",
+     "paths": [
+      "~/Downloads/%E9%A6%99%E6%B8%AF-0.v2.pdf"
+     ],
+     "plan": "p-000000000008",
+     "reason": "copy-kept",
+     "rebuilds": false,
+     "restorable": true,
+     "reveal": "~/Downloads/%E9%A6%99%E6%B8%AF-0.v2.pdf",
+     "rule": "space.duplicates",
+     "suggested": "trash",
+     "userFiles": "none"
+    },
+    {
+     "bytes": 2097152,
+     "facts": {
+      "copies": 1,
+      "keep": "~/Documents/%E9%A6%99%E6%B8%AF-5.v2.pdf"
+     },
+     "finding": "space.duplicates/000000000073",
+     "group": "duplicate",
+     "key": "i61",
+     "options": [
+      "trash",
+      "clone",
+      "keep",
+      "ignore"
+     ],
+     "password": false,
+     "path": "~/Downloads/%E9%A6%99%E6%B8%AF-5.v2.pdf",
+     "paths": [
+      "~/Downloads/%E9%A6%99%E6%B8%AF-5.v2.pdf"
+     ],
+     "plan": "p-000000000008",
+     "reason": "copy-kept",
+     "rebuilds": false,
+     "restorable": true,
+     "reveal": "~/Downloads/%E9%A6%99%E6%B8%AF-5.v2.pdf",
+     "rule": "space.duplicates",
+     "suggested": "trash",
+     "userFiles": "none"
+    },
+    {
+     "bytes": 2097152,
+     "facts": {
+      "copies": 1,
+      "keep": "~/Documents/%E9%A6%99%E6%B8%AF-3.v2.pdf"
+     },
+     "finding": "space.duplicates/000000000074",
+     "group": "duplicate",
+     "key": "i62",
+     "options": [
+      "trash",
+      "clone",
+      "keep",
+      "ignore"
+     ],
+     "password": false,
+     "path": "~/Downloads/%E9%A6%99%E6%B8%AF-3.v2.pdf",
+     "paths": [
+      "~/Downloads/%E9%A6%99%E6%B8%AF-3.v2.pdf"
+     ],
+     "plan": "p-000000000008",
+     "reason": "copy-kept",
+     "rebuilds": false,
+     "restorable": true,
+     "reveal": "~/Downloads/%E9%A6%99%E6%B8%AF-3.v2.pdf",
+     "rule": "space.duplicates",
+     "suggested": "trash",
+     "userFiles": "none"
+    },
+    {
+     "bytes": 2097152,
+     "facts": {
+      "copies": 1,
+      "keep": "~/Documents/%E9%A6%99%E6%B8%AF-1.v2.pdf"
+     },
+     "finding": "space.duplicates/000000000075",
+     "group": "duplicate",
+     "key": "i63",
+     "options": [
+      "trash",
+      "clone",
+      "keep",
+      "ignore"
+     ],
+     "password": false,
+     "path": "~/Downloads/%E9%A6%99%E6%B8%AF-1.v2.pdf",
+     "paths": [
+      "~/Downloads/%E9%A6%99%E6%B8%AF-1.v2.pdf"
+     ],
+     "plan": "p-000000000008",
+     "reason": "copy-kept",
+     "rebuilds": false,
+     "restorable": true,
+     "reveal": "~/Downloads/%E9%A6%99%E6%B8%AF-1.v2.pdf",
+     "rule": "space.duplicates",
+     "suggested": "trash",
+     "userFiles": "none"
+    }
+   ],
+   "known": true,
+   "scanned": {
+    "finished": "2026-10-20T12:00:00Z",
+    "started": "2026-10-20T12:00:00Z"
+   },
+   "schema": 1,
+   "suggested": 7,
+   "suggestedBytes": 14680064
+  },
+  "data/category?id=installer": {
+   "auto": "installer",
+   "bytes": 215121920,
+   "count": 41,
+   "facts": {
+    "apps": [
+     "AsterChat",
+     "AsterCode",
+     "AsterDraw",
+     "AsterMail",
+     "AsterNote",
+     "AsterSync",
+     "BirchChat",
+     "BirchCode",
+     "BirchDraw",
+     "BirchMail",
+     "BirchNote",
+     "BirchSync",
+     "CedarChat",
+     "CedarCode",
+     "CedarDraw",
+     "CedarMail",
+     "CedarNote",
+     "CedarSync",
+     "DeltaChat",
+     "DeltaCode",
+     "DeltaDraw",
+     "DeltaMail",
+     "DeltaNote",
+     "DeltaSync",
+     "EmberChat",
+     "EmberCode",
+     "EmberDraw",
+     "EmberMail",
+     "EmberNote",
+     "EmberSync",
+     "FableChat",
+     "FableCode",
+     "FableDraw",
+     "FableMail",
+     "FableNote",
+     "FableSync",
+     "GroveChat",
+     "GroveDraw",
+     "GroveMail",
+     "GroveNote",
+     "GroveSync"
+    ],
+    "appsInstalled": 41,
+    "appsMissing": 0,
+    "groups": {
+     "installer": 41
+    },
+    "password": 0,
+    "rebuilds": 0,
+    "tools": [],
+    "userFiles": "none"
+   },
+   "files": 41,
+   "id": "installer",
+   "items": [
+    {
+     "app": "AsterChat",
+     "appInstalled": true,
+     "bytes": 5246976,
+     "facts": {
+      "added": "2026-09-20",
+      "app": "AsterChat",
+      "appVersion": "1.4.2",
+      "days": 30,
+      "fromInternet": true,
+      "installerVersion": "1.4.2",
+      "sameApp": true,
+      "signed": true
+     },
+     "finding": "leftover.installer/000000000028",
+     "group": "installer",
+     "key": "i16",
+     "options": [
+      "trash",
+      "keep",
+      "ignore"
+     ],
+     "password": false,
+     "path": "~/Downloads/AsterChat-1.4.2-arm64.dmg",
+     "paths": [
+      "~/Downloads/AsterChat-1.4.2-arm64.dmg"
+     ],
+     "plan": "p-000000000008",
+     "reason": "installed",
+     "rebuilds": false,
+     "restorable": true,
+     "reveal": "~/Downloads/AsterChat-1.4.2-arm64.dmg",
+     "rule": "leftover.installer",
+     "suggested": "trash",
+     "userFiles": "none"
+    },
+    {
+     "app": "AsterCode",
+     "appInstalled": true,
+     "bytes": 5246976,
+     "facts": {
+      "added": "2026-09-20",
+      "app": "AsterCode",
+      "appVersion": "1.5.2",
+      "days": 30,
+      "fromInternet": true,
+      "installerVersion": "1.5.2",
+      "sameApp": true,
+      "signed": true
+     },
+     "finding": "leftover.installer/000000000029",
+     "group": "installer",
+     "key": "i17",
+     "options": [
+      "trash",
+      "keep",
+      "ignore"
+     ],
+     "password": false,
+     "path": "~/Downloads/AsterCode-1.5.2-arm64.dmg",
+     "paths": [
+      "~/Downloads/AsterCode-1.5.2-arm64.dmg"
+     ],
+     "plan": "p-000000000008",
+     "reason": "installed",
+     "rebuilds": false,
+     "restorable": true,
+     "reveal": "~/Downloads/AsterCode-1.5.2-arm64.dmg",
+     "rule": "leftover.installer",
+     "suggested": "trash",
+     "userFiles": "none"
+    },
+    {
+     "app": "AsterDraw",
+     "appInstalled": true,
+     "bytes": 5246976,
+     "facts": {
+      "added": "2026-09-20",
+      "app": "AsterDraw",
+      "appVersion": "1.2.2",
+      "days": 30,
+      "fromInternet": true,
+      "installerVersion": "1.2.2",
+      "sameApp": true,
+      "signed": true
+     },
+     "finding": "leftover.installer/000000000030",
+     "group": "installer",
+     "key": "i18",
+     "options": [
+      "trash",
+      "keep",
+      "ignore"
+     ],
+     "password": false,
+     "path": "~/Downloads/AsterDraw-1.2.2-arm64.dmg",
+     "paths": [
+      "~/Downloads/AsterDraw-1.2.2-arm64.dmg"
+     ],
+     "plan": "p-000000000008",
+     "reason": "installed",
+     "rebuilds": false,
+     "restorable": true,
+     "reveal": "~/Downloads/AsterDraw-1.2.2-arm64.dmg",
+     "rule": "leftover.installer",
+     "suggested": "trash",
+     "userFiles": "none"
+    },
+    {
+     "app": "AsterMail",
+     "appInstalled": true,
+     "bytes": 5246976,
+     "facts": {
+      "added": "2026-09-20",
+      "app": "AsterMail",
+      "appVersion": "1.3.2",
+      "days": 30,
+      "fromInternet": true,
+      "installerVersion": "1.3.2",
+      "sameApp": true,
+      "signed": true
+     },
+     "finding": "leftover.installer/000000000031",
+     "group": "installer",
+     "key": "i19",
+     "options": [
+      "trash",
+      "keep",
+      "ignore"
+     ],
+     "password": false,
+     "path": "~/Downloads/AsterMail-1.3.2-arm64.dmg",
+     "paths": [
+      "~/Downloads/AsterMail-1.3.2-arm64.dmg"
+     ],
+     "plan": "p-000000000008",
+     "reason": "installed",
+     "rebuilds": false,
+     "restorable": true,
+     "reveal": "~/Downloads/AsterMail-1.3.2-arm64.dmg",
+     "rule": "leftover.installer",
+     "suggested": "trash",
+     "userFiles": "none"
+    },
+    {
+     "app": "AsterSync",
+     "appInstalled": true,
+     "bytes": 5246976,
+     "facts": {
+      "added": "2026-09-20",
+      "app": "AsterSync",
+      "appVersion": "1.1.2",
+      "days": 30,
+      "fromInternet": true,
+      "installerVersion": "1.1.2",
+      "sameApp": true,
+      "signed": true
+     },
+     "finding": "leftover.installer/000000000032",
+     "group": "installer",
+     "key": "i20",
+     "options": [
+      "trash",
+      "keep",
+      "ignore"
+     ],
+     "password": false,
+     "path": "~/Downloads/AsterSync-1.1.2-arm64.dmg",
+     "paths": [
+      "~/Downloads/AsterSync-1.1.2-arm64.dmg"
+     ],
+     "plan": "p-000000000008",
+     "reason": "installed",
+     "rebuilds": false,
+     "restorable": true,
+     "reveal": "~/Downloads/AsterSync-1.1.2-arm64.dmg",
+     "rule": "leftover.installer",
+     "suggested": "trash",
+     "userFiles": "none"
+    },
+    {
+     "app": "BirchChat",
+     "appInstalled": true,
+     "bytes": 5246976,
+     "facts": {
+      "added": "2026-09-20",
+      "app": "BirchChat",
+      "appVersion": "1.10.2",
+      "days": 30,
+      "fromInternet": true,
+      "installerVersion": "1.10.2",
+      "sameApp": true,
+      "signed": true
+     },
+     "finding": "leftover.installer/000000000033",
+     "group": "installer",
+     "key": "i21",
+     "options": [
+      "trash",
+      "keep",
+      "ignore"
+     ],
+     "password": false,
+     "path": "~/Downloads/BirchChat-1.10.2-arm64.dmg",
+     "paths": [
+      "~/Downloads/BirchChat-1.10.2-arm64.dmg"
+     ],
+     "plan": "p-000000000008",
+     "reason": "installed",
+     "rebuilds": false,
+     "restorable": true,
+     "reveal": "~/Downloads/BirchChat-1.10.2-arm64.dmg",
+     "rule": "leftover.installer",
+     "suggested": "trash",
+     "userFiles": "none"
+    },
+    {
+     "app": "BirchCode",
+     "appInstalled": true,
+     "bytes": 5246976,
+     "facts": {
+      "added": "2026-09-20",
+      "app": "BirchCode",
+      "appVersion": "1.11.2",
+      "days": 30,
+      "fromInternet": true,
+      "installerVersion": "1.11.2",
+      "sameApp": true,
+      "signed": true
+     },
+     "finding": "leftover.installer/000000000034",
+     "group": "installer",
+     "key": "i22",
+     "options": [
+      "trash",
+      "keep",
+      "ignore"
+     ],
+     "password": false,
+     "path": "~/Downloads/BirchCode-1.11.2-arm64.dmg",
+     "paths": [
+      "~/Downloads/BirchCode-1.11.2-arm64.dmg"
+     ],
+     "plan": "p-000000000008",
+     "reason": "installed",
+     "rebuilds": false,
+     "restorable": true,
+     "reveal": "~/Downloads/BirchCode-1.11.2-arm64.dmg",
+     "rule": "leftover.installer",
+     "suggested": "trash",
+     "userFiles": "none"
+    },
+    {
+     "app": "BirchDraw",
+     "appInstalled": true,
+     "bytes": 5246976,
+     "facts": {
+      "added": "2026-09-20",
+      "app": "BirchDraw",
+      "appVersion": "1.8.2",
+      "days": 30,
+      "fromInternet": true,
+      "installerVersion": "1.8.2",
+      "sameApp": true,
+      "signed": true
+     },
+     "finding": "leftover.installer/000000000035",
+     "group": "installer",
+     "key": "i23",
+     "options": [
+      "trash",
+      "keep",
+      "ignore"
+     ],
+     "password": false,
+     "path": "~/Downloads/BirchDraw-1.8.2-arm64.dmg",
+     "paths": [
+      "~/Downloads/BirchDraw-1.8.2-arm64.dmg"
+     ],
+     "plan": "p-000000000008",
+     "reason": "installed",
+     "rebuilds": false,
+     "restorable": true,
+     "reveal": "~/Downloads/BirchDraw-1.8.2-arm64.dmg",
+     "rule": "leftover.installer",
+     "suggested": "trash",
+     "userFiles": "none"
+    },
+    {
+     "app": "BirchMail",
+     "appInstalled": true,
+     "bytes": 5246976,
+     "facts": {
+      "added": "2026-09-20",
+      "app": "BirchMail",
+      "appVersion": "1.9.2",
+      "days": 30,
+      "fromInternet": true,
+      "installerVersion": "1.9.2",
+      "sameApp": true,
+      "signed": true
+     },
+     "finding": "leftover.installer/000000000036",
+     "group": "installer",
+     "key": "i24",
+     "options": [
+      "trash",
+      "keep",
+      "ignore"
+     ],
+     "password": false,
+     "path": "~/Downloads/BirchMail-1.9.2-arm64.dmg",
+     "paths": [
+      "~/Downloads/BirchMail-1.9.2-arm64.dmg"
+     ],
+     "plan": "p-000000000008",
+     "reason": "installed",
+     "rebuilds": false,
+     "restorable": true,
+     "reveal": "~/Downloads/BirchMail-1.9.2-arm64.dmg",
+     "rule": "leftover.installer",
+     "suggested": "trash",
+     "userFiles": "none"
+    },
+    {
+     "app": "BirchNote",
+     "appInstalled": true,
+     "bytes": 5246976,
+     "facts": {
+      "added": "2026-09-20",
+      "app": "BirchNote",
+      "appVersion": "1.6.2",
+      "days": 30,
+      "fromInternet": true,
+      "installerVersion": "1.6.2",
+      "sameApp": true,
+      "signed": true
+     },
+     "finding": "leftover.installer/000000000037",
+     "group": "installer",
+     "key": "i25",
+     "options": [
+      "trash",
+      "keep",
+      "ignore"
+     ],
+     "password": false,
+     "path": "~/Downloads/BirchNote-1.6.2-arm64.dmg",
+     "paths": [
+      "~/Downloads/BirchNote-1.6.2-arm64.dmg"
+     ],
+     "plan": "p-000000000008",
+     "reason": "installed",
+     "rebuilds": false,
+     "restorable": true,
+     "reveal": "~/Downloads/BirchNote-1.6.2-arm64.dmg",
+     "rule": "leftover.installer",
+     "suggested": "trash",
+     "userFiles": "none"
+    },
+    {
+     "app": "BirchSync",
+     "appInstalled": true,
+     "bytes": 5246976,
+     "facts": {
+      "added": "2026-09-20",
+      "app": "BirchSync",
+      "appVersion": "1.7.2",
+      "days": 30,
+      "fromInternet": true,
+      "installerVersion": "1.7.2",
+      "sameApp": true,
+      "signed": true
+     },
+     "finding": "leftover.installer/000000000038",
+     "group": "installer",
+     "key": "i26",
+     "options": [
+      "trash",
+      "keep",
+      "ignore"
+     ],
+     "password": false,
+     "path": "~/Downloads/BirchSync-1.7.2-arm64.dmg",
+     "paths": [
+      "~/Downloads/BirchSync-1.7.2-arm64.dmg"
+     ],
+     "plan": "p-000000000008",
+     "reason": "installed",
+     "rebuilds": false,
+     "restorable": true,
+     "reveal": "~/Downloads/BirchSync-1.7.2-arm64.dmg",
+     "rule": "leftover.installer",
+     "suggested": "trash",
+     "userFiles": "none"
+    },
+    {
+     "app": "CedarChat",
+     "appInstalled": true,
+     "bytes": 5246976,
+     "facts": {
+      "added": "2026-09-20",
+      "app": "CedarChat",
+      "appVersion": "1.16.2",
+      "days": 30,
+      "fromInternet": true,
+      "installerVersion": "1.16.2",
+      "sameApp": true,
+      "signed": true
+     },
+     "finding": "leftover.installer/000000000039",
+     "group": "installer",
+     "key": "i27",
+     "options": [
+      "trash",
+      "keep",
+      "ignore"
+     ],
+     "password": false,
+     "path": "~/Downloads/CedarChat-1.16.2-arm64.dmg",
+     "paths": [
+      "~/Downloads/CedarChat-1.16.2-arm64.dmg"
+     ],
+     "plan": "p-000000000008",
+     "reason": "installed",
+     "rebuilds": false,
+     "restorable": true,
+     "reveal": "~/Downloads/CedarChat-1.16.2-arm64.dmg",
+     "rule": "leftover.installer",
+     "suggested": "trash",
+     "userFiles": "none"
+    },
+    {
+     "app": "CedarCode",
+     "appInstalled": true,
+     "bytes": 5246976,
+     "facts": {
+      "added": "2026-09-20",
+      "app": "CedarCode",
+      "appVersion": "1.17.2",
+      "days": 30,
+      "fromInternet": true,
+      "installerVersion": "1.17.2",
+      "sameApp": true,
+      "signed": true
+     },
+     "finding": "leftover.installer/000000000040",
+     "group": "installer",
+     "key": "i28",
+     "options": [
+      "trash",
+      "keep",
+      "ignore"
+     ],
+     "password": false,
+     "path": "~/Downloads/CedarCode-1.17.2-arm64.dmg",
+     "paths": [
+      "~/Downloads/CedarCode-1.17.2-arm64.dmg"
+     ],
+     "plan": "p-000000000008",
+     "reason": "installed",
+     "rebuilds": false,
+     "restorable": true,
+     "reveal": "~/Downloads/CedarCode-1.17.2-arm64.dmg",
+     "rule": "leftover.installer",
+     "suggested": "trash",
+     "userFiles": "none"
+    },
+    {
+     "app": "CedarDraw",
+     "appInstalled": true,
+     "bytes": 5246976,
+     "facts": {
+      "added": "2026-09-20",
+      "app": "CedarDraw",
+      "appVersion": "1.14.2",
+      "days": 30,
+      "fromInternet": true,
+      "installerVersion": "1.14.2",
+      "sameApp": true,
+      "signed": true
+     },
+     "finding": "leftover.installer/000000000041",
+     "group": "installer",
+     "key": "i29",
+     "options": [
+      "trash",
+      "keep",
+      "ignore"
+     ],
+     "password": false,
+     "path": "~/Downloads/CedarDraw-1.14.2-arm64.dmg",
+     "paths": [
+      "~/Downloads/CedarDraw-1.14.2-arm64.dmg"
+     ],
+     "plan": "p-000000000008",
+     "reason": "installed",
+     "rebuilds": false,
+     "restorable": true,
+     "reveal": "~/Downloads/CedarDraw-1.14.2-arm64.dmg",
+     "rule": "leftover.installer",
+     "suggested": "trash",
+     "userFiles": "none"
+    },
+    {
+     "app": "CedarMail",
+     "appInstalled": true,
+     "bytes": 5246976,
+     "facts": {
+      "added": "2026-09-20",
+      "app": "CedarMail",
+      "appVersion": "1.15.2",
+      "days": 30,
+      "fromInternet": true,
+      "installerVersion": "1.15.2",
+      "sameApp": true,
+      "signed": true
+     },
+     "finding": "leftover.installer/000000000042",
+     "group": "installer",
+     "key": "i30",
+     "options": [
+      "trash",
+      "keep",
+      "ignore"
+     ],
+     "password": false,
+     "path": "~/Downloads/CedarMail-1.15.2-arm64.dmg",
+     "paths": [
+      "~/Downloads/CedarMail-1.15.2-arm64.dmg"
+     ],
+     "plan": "p-000000000008",
+     "reason": "installed",
+     "rebuilds": false,
+     "restorable": true,
+     "reveal": "~/Downloads/CedarMail-1.15.2-arm64.dmg",
+     "rule": "leftover.installer",
+     "suggested": "trash",
+     "userFiles": "none"
+    },
+    {
+     "app": "CedarNote",
+     "appInstalled": true,
+     "bytes": 5246976,
+     "facts": {
+      "added": "2026-09-20",
+      "app": "CedarNote",
+      "appVersion": "1.12.2",
+      "days": 30,
+      "fromInternet": true,
+      "installerVersion": "1.12.2",
+      "sameApp": true,
+      "signed": true
+     },
+     "finding": "leftover.installer/000000000043",
+     "group": "installer",
+     "key": "i31",
+     "options": [
+      "trash",
+      "keep",
+      "ignore"
+     ],
+     "password": false,
+     "path": "~/Downloads/CedarNote-1.12.2-arm64.dmg",
+     "paths": [
+      "~/Downloads/CedarNote-1.12.2-arm64.dmg"
+     ],
+     "plan": "p-000000000008",
+     "reason": "installed",
+     "rebuilds": false,
+     "restorable": true,
+     "reveal": "~/Downloads/CedarNote-1.12.2-arm64.dmg",
+     "rule": "leftover.installer",
+     "suggested": "trash",
+     "userFiles": "none"
+    },
+    {
+     "app": "CedarSync",
+     "appInstalled": true,
+     "bytes": 5246976,
+     "facts": {
+      "added": "2026-09-20",
+      "app": "CedarSync",
+      "appVersion": "1.13.2",
+      "days": 30,
+      "fromInternet": true,
+      "installerVersion": "1.13.2",
+      "sameApp": true,
+      "signed": true
+     },
+     "finding": "leftover.installer/000000000044",
+     "group": "installer",
+     "key": "i32",
+     "options": [
+      "trash",
+      "keep",
+      "ignore"
+     ],
+     "password": false,
+     "path": "~/Downloads/CedarSync-1.13.2-arm64.dmg",
+     "paths": [
+      "~/Downloads/CedarSync-1.13.2-arm64.dmg"
+     ],
+     "plan": "p-000000000008",
+     "reason": "installed",
+     "rebuilds": false,
+     "restorable": true,
+     "reveal": "~/Downloads/CedarSync-1.13.2-arm64.dmg",
+     "rule": "leftover.installer",
+     "suggested": "trash",
+     "userFiles": "none"
+    },
+    {
+     "app": "DeltaChat",
+     "appInstalled": true,
+     "bytes": 5246976,
+     "facts": {
+      "added": "2026-09-20",
+      "app": "DeltaChat",
+      "appVersion": "1.22.2",
+      "days": 30,
+      "fromInternet": true,
+      "installerVersion": "1.22.2",
+      "sameApp": true,
+      "signed": true
+     },
+     "finding": "leftover.installer/000000000045",
+     "group": "installer",
+     "key": "i33",
+     "options": [
+      "trash",
+      "keep",
+      "ignore"
+     ],
+     "password": false,
+     "path": "~/Downloads/DeltaChat-1.22.2-arm64.dmg",
+     "paths": [
+      "~/Downloads/DeltaChat-1.22.2-arm64.dmg"
+     ],
+     "plan": "p-000000000008",
+     "reason": "installed",
+     "rebuilds": false,
+     "restorable": true,
+     "reveal": "~/Downloads/DeltaChat-1.22.2-arm64.dmg",
+     "rule": "leftover.installer",
+     "suggested": "trash",
+     "userFiles": "none"
+    },
+    {
+     "app": "DeltaCode",
+     "appInstalled": true,
+     "bytes": 5246976,
+     "facts": {
+      "added": "2026-09-20",
+      "app": "DeltaCode",
+      "appVersion": "1.23.2",
+      "days": 30,
+      "fromInternet": true,
+      "installerVersion": "1.23.2",
+      "sameApp": true,
+      "signed": true
+     },
+     "finding": "leftover.installer/000000000046",
+     "group": "installer",
+     "key": "i34",
+     "options": [
+      "trash",
+      "keep",
+      "ignore"
+     ],
+     "password": false,
+     "path": "~/Downloads/DeltaCode-1.23.2-arm64.dmg",
+     "paths": [
+      "~/Downloads/DeltaCode-1.23.2-arm64.dmg"
+     ],
+     "plan": "p-000000000008",
+     "reason": "installed",
+     "rebuilds": false,
+     "restorable": true,
+     "reveal": "~/Downloads/DeltaCode-1.23.2-arm64.dmg",
+     "rule": "leftover.installer",
+     "suggested": "trash",
+     "userFiles": "none"
+    },
+    {
+     "app": "DeltaDraw",
+     "appInstalled": true,
+     "bytes": 5246976,
+     "facts": {
+      "added": "2026-09-20",
+      "app": "DeltaDraw",
+      "appVersion": "1.20.2",
+      "days": 30,
+      "fromInternet": true,
+      "installerVersion": "1.20.2",
+      "sameApp": true,
+      "signed": true
+     },
+     "finding": "leftover.installer/000000000047",
+     "group": "installer",
+     "key": "i35",
+     "options": [
+      "trash",
+      "keep",
+      "ignore"
+     ],
+     "password": false,
+     "path": "~/Downloads/DeltaDraw-1.20.2-arm64.dmg",
+     "paths": [
+      "~/Downloads/DeltaDraw-1.20.2-arm64.dmg"
+     ],
+     "plan": "p-000000000008",
+     "reason": "installed",
+     "rebuilds": false,
+     "restorable": true,
+     "reveal": "~/Downloads/DeltaDraw-1.20.2-arm64.dmg",
+     "rule": "leftover.installer",
+     "suggested": "trash",
+     "userFiles": "none"
+    },
+    {
+     "app": "DeltaMail",
+     "appInstalled": true,
+     "bytes": 5246976,
+     "facts": {
+      "added": "2026-09-20",
+      "app": "DeltaMail",
+      "appVersion": "1.21.2",
+      "days": 30,
+      "fromInternet": true,
+      "installerVersion": "1.21.2",
+      "sameApp": true,
+      "signed": true
+     },
+     "finding": "leftover.installer/000000000048",
+     "group": "installer",
+     "key": "i36",
+     "options": [
+      "trash",
+      "keep",
+      "ignore"
+     ],
+     "password": false,
+     "path": "~/Downloads/DeltaMail-1.21.2-arm64.dmg",
+     "paths": [
+      "~/Downloads/DeltaMail-1.21.2-arm64.dmg"
+     ],
+     "plan": "p-000000000008",
+     "reason": "installed",
+     "rebuilds": false,
+     "restorable": true,
+     "reveal": "~/Downloads/DeltaMail-1.21.2-arm64.dmg",
+     "rule": "leftover.installer",
+     "suggested": "trash",
+     "userFiles": "none"
+    },
+    {
+     "app": "DeltaNote",
+     "appInstalled": true,
+     "bytes": 5246976,
+     "facts": {
+      "added": "2026-09-20",
+      "app": "DeltaNote",
+      "appVersion": "1.18.2",
+      "days": 30,
+      "fromInternet": true,
+      "installerVersion": "1.18.2",
+      "sameApp": true,
+      "signed": true
+     },
+     "finding": "leftover.installer/000000000049",
+     "group": "installer",
+     "key": "i37",
+     "options": [
+      "trash",
+      "keep",
+      "ignore"
+     ],
+     "password": false,
+     "path": "~/Downloads/DeltaNote-1.18.2-arm64.dmg",
+     "paths": [
+      "~/Downloads/DeltaNote-1.18.2-arm64.dmg"
+     ],
+     "plan": "p-000000000008",
+     "reason": "installed",
+     "rebuilds": false,
+     "restorable": true,
+     "reveal": "~/Downloads/DeltaNote-1.18.2-arm64.dmg",
+     "rule": "leftover.installer",
+     "suggested": "trash",
+     "userFiles": "none"
+    },
+    {
+     "app": "DeltaSync",
+     "appInstalled": true,
+     "bytes": 5246976,
+     "facts": {
+      "added": "2026-09-20",
+      "app": "DeltaSync",
+      "appVersion": "1.19.2",
+      "days": 30,
+      "fromInternet": true,
+      "installerVersion": "1.19.2",
+      "sameApp": true,
+      "signed": true
+     },
+     "finding": "leftover.installer/000000000050",
+     "group": "installer",
+     "key": "i38",
+     "options": [
+      "trash",
+      "keep",
+      "ignore"
+     ],
+     "password": false,
+     "path": "~/Downloads/DeltaSync-1.19.2-arm64.dmg",
+     "paths": [
+      "~/Downloads/DeltaSync-1.19.2-arm64.dmg"
+     ],
+     "plan": "p-000000000008",
+     "reason": "installed",
+     "rebuilds": false,
+     "restorable": true,
+     "reveal": "~/Downloads/DeltaSync-1.19.2-arm64.dmg",
+     "rule": "leftover.installer",
+     "suggested": "trash",
+     "userFiles": "none"
+    },
+    {
+     "app": "EmberChat",
+     "appInstalled": true,
+     "bytes": 5246976,
+     "facts": {
+      "added": "2026-09-20",
+      "app": "EmberChat",
+      "appVersion": "1.28.2",
+      "days": 30,
+      "fromInternet": true,
+      "installerVersion": "1.28.2",
+      "sameApp": true,
+      "signed": true
+     },
+     "finding": "leftover.installer/000000000051",
+     "group": "installer",
+     "key": "i39",
+     "options": [
+      "trash",
+      "keep",
+      "ignore"
+     ],
+     "password": false,
+     "path": "~/Downloads/EmberChat-1.28.2-arm64.dmg",
+     "paths": [
+      "~/Downloads/EmberChat-1.28.2-arm64.dmg"
+     ],
+     "plan": "p-000000000008",
+     "reason": "installed",
+     "rebuilds": false,
+     "restorable": true,
+     "reveal": "~/Downloads/EmberChat-1.28.2-arm64.dmg",
+     "rule": "leftover.installer",
+     "suggested": "trash",
+     "userFiles": "none"
+    },
+    {
+     "app": "EmberCode",
+     "appInstalled": true,
+     "bytes": 5246976,
+     "facts": {
+      "added": "2026-09-20",
+      "app": "EmberCode",
+      "appVersion": "1.29.2",
+      "days": 30,
+      "fromInternet": true,
+      "installerVersion": "1.29.2",
+      "sameApp": true,
+      "signed": true
+     },
+     "finding": "leftover.installer/000000000052",
+     "group": "installer",
+     "key": "i40",
+     "options": [
+      "trash",
+      "keep",
+      "ignore"
+     ],
+     "password": false,
+     "path": "~/Downloads/EmberCode-1.29.2-arm64.dmg",
+     "paths": [
+      "~/Downloads/EmberCode-1.29.2-arm64.dmg"
+     ],
+     "plan": "p-000000000008",
+     "reason": "installed",
+     "rebuilds": false,
+     "restorable": true,
+     "reveal": "~/Downloads/EmberCode-1.29.2-arm64.dmg",
+     "rule": "leftover.installer",
+     "suggested": "trash",
+     "userFiles": "none"
+    },
+    {
+     "app": "EmberDraw",
+     "appInstalled": true,
+     "bytes": 5246976,
+     "facts": {
+      "added": "2026-09-20",
+      "app": "EmberDraw",
+      "appVersion": "1.26.2",
+      "days": 30,
+      "fromInternet": true,
+      "installerVersion": "1.26.2",
+      "sameApp": true,
+      "signed": true
+     },
+     "finding": "leftover.installer/000000000053",
+     "group": "installer",
+     "key": "i41",
+     "options": [
+      "trash",
+      "keep",
+      "ignore"
+     ],
+     "password": false,
+     "path": "~/Downloads/EmberDraw-1.26.2-arm64.dmg",
+     "paths": [
+      "~/Downloads/EmberDraw-1.26.2-arm64.dmg"
+     ],
+     "plan": "p-000000000008",
+     "reason": "installed",
+     "rebuilds": false,
+     "restorable": true,
+     "reveal": "~/Downloads/EmberDraw-1.26.2-arm64.dmg",
+     "rule": "leftover.installer",
+     "suggested": "trash",
+     "userFiles": "none"
+    },
+    {
+     "app": "EmberMail",
+     "appInstalled": true,
+     "bytes": 5246976,
+     "facts": {
+      "added": "2026-09-20",
+      "app": "EmberMail",
+      "appVersion": "1.27.2",
+      "days": 30,
+      "fromInternet": true,
+      "installerVersion": "1.27.2",
+      "sameApp": true,
+      "signed": true
+     },
+     "finding": "leftover.installer/000000000054",
+     "group": "installer",
+     "key": "i42",
+     "options": [
+      "trash",
+      "keep",
+      "ignore"
+     ],
+     "password": false,
+     "path": "~/Downloads/EmberMail-1.27.2-arm64.dmg",
+     "paths": [
+      "~/Downloads/EmberMail-1.27.2-arm64.dmg"
+     ],
+     "plan": "p-000000000008",
+     "reason": "installed",
+     "rebuilds": false,
+     "restorable": true,
+     "reveal": "~/Downloads/EmberMail-1.27.2-arm64.dmg",
+     "rule": "leftover.installer",
+     "suggested": "trash",
+     "userFiles": "none"
+    },
+    {
+     "app": "EmberNote",
+     "appInstalled": true,
+     "bytes": 5246976,
+     "facts": {
+      "added": "2026-09-20",
+      "app": "EmberNote",
+      "appVersion": "1.24.2",
+      "days": 30,
+      "fromInternet": true,
+      "installerVersion": "1.24.2",
+      "sameApp": true,
+      "signed": true
+     },
+     "finding": "leftover.installer/000000000055",
+     "group": "installer",
+     "key": "i43",
+     "options": [
+      "trash",
+      "keep",
+      "ignore"
+     ],
+     "password": false,
+     "path": "~/Downloads/EmberNote-1.24.2-arm64.dmg",
+     "paths": [
+      "~/Downloads/EmberNote-1.24.2-arm64.dmg"
+     ],
+     "plan": "p-000000000008",
+     "reason": "installed",
+     "rebuilds": false,
+     "restorable": true,
+     "reveal": "~/Downloads/EmberNote-1.24.2-arm64.dmg",
+     "rule": "leftover.installer",
+     "suggested": "trash",
+     "userFiles": "none"
+    },
+    {
+     "app": "EmberSync",
+     "appInstalled": true,
+     "bytes": 5246976,
+     "facts": {
+      "added": "2026-09-20",
+      "app": "EmberSync",
+      "appVersion": "1.25.2",
+      "days": 30,
+      "fromInternet": true,
+      "installerVersion": "1.25.2",
+      "sameApp": true,
+      "signed": true
+     },
+     "finding": "leftover.installer/000000000056",
+     "group": "installer",
+     "key": "i44",
+     "options": [
+      "trash",
+      "keep",
+      "ignore"
+     ],
+     "password": false,
+     "path": "~/Downloads/EmberSync-1.25.2-arm64.dmg",
+     "paths": [
+      "~/Downloads/EmberSync-1.25.2-arm64.dmg"
+     ],
+     "plan": "p-000000000008",
+     "reason": "installed",
+     "rebuilds": false,
+     "restorable": true,
+     "reveal": "~/Downloads/EmberSync-1.25.2-arm64.dmg",
+     "rule": "leftover.installer",
+     "suggested": "trash",
+     "userFiles": "none"
+    },
+    {
+     "app": "FableChat",
+     "appInstalled": true,
+     "bytes": 5246976,
+     "facts": {
+      "added": "2026-09-20",
+      "app": "FableChat",
+      "appVersion": "1.34.2",
+      "days": 30,
+      "fromInternet": true,
+      "installerVersion": "1.34.2",
+      "sameApp": true,
+      "signed": true
+     },
+     "finding": "leftover.installer/000000000057",
+     "group": "installer",
+     "key": "i45",
+     "options": [
+      "trash",
+      "keep",
+      "ignore"
+     ],
+     "password": false,
+     "path": "~/Downloads/FableChat-1.34.2-arm64.dmg",
+     "paths": [
+      "~/Downloads/FableChat-1.34.2-arm64.dmg"
+     ],
+     "plan": "p-000000000008",
+     "reason": "installed",
+     "rebuilds": false,
+     "restorable": true,
+     "reveal": "~/Downloads/FableChat-1.34.2-arm64.dmg",
+     "rule": "leftover.installer",
+     "suggested": "trash",
+     "userFiles": "none"
+    },
+    {
+     "app": "FableCode",
+     "appInstalled": true,
+     "bytes": 5246976,
+     "facts": {
+      "added": "2026-09-20",
+      "app": "FableCode",
+      "appVersion": "1.35.2",
+      "days": 30,
+      "fromInternet": true,
+      "installerVersion": "1.35.2",
+      "sameApp": true,
+      "signed": true
+     },
+     "finding": "leftover.installer/000000000058",
+     "group": "installer",
+     "key": "i46",
+     "options": [
+      "trash",
+      "keep",
+      "ignore"
+     ],
+     "password": false,
+     "path": "~/Downloads/FableCode-1.35.2-arm64.dmg",
+     "paths": [
+      "~/Downloads/FableCode-1.35.2-arm64.dmg"
+     ],
+     "plan": "p-000000000008",
+     "reason": "installed",
+     "rebuilds": false,
+     "restorable": true,
+     "reveal": "~/Downloads/FableCode-1.35.2-arm64.dmg",
+     "rule": "leftover.installer",
+     "suggested": "trash",
+     "userFiles": "none"
+    },
+    {
+     "app": "FableDraw",
+     "appInstalled": true,
+     "bytes": 5246976,
+     "facts": {
+      "added": "2026-09-20",
+      "app": "FableDraw",
+      "appVersion": "1.32.2",
+      "days": 30,
+      "fromInternet": true,
+      "installerVersion": "1.32.2",
+      "sameApp": true,
+      "signed": true
+     },
+     "finding": "leftover.installer/000000000059",
+     "group": "installer",
+     "key": "i47",
+     "options": [
+      "trash",
+      "keep",
+      "ignore"
+     ],
+     "password": false,
+     "path": "~/Downloads/FableDraw-1.32.2-arm64.dmg",
+     "paths": [
+      "~/Downloads/FableDraw-1.32.2-arm64.dmg"
+     ],
+     "plan": "p-000000000008",
+     "reason": "installed",
+     "rebuilds": false,
+     "restorable": true,
+     "reveal": "~/Downloads/FableDraw-1.32.2-arm64.dmg",
+     "rule": "leftover.installer",
+     "suggested": "trash",
+     "userFiles": "none"
+    },
+    {
+     "app": "FableMail",
+     "appInstalled": true,
+     "bytes": 5246976,
+     "facts": {
+      "added": "2026-09-20",
+      "app": "FableMail",
+      "appVersion": "1.33.2",
+      "days": 30,
+      "fromInternet": true,
+      "installerVersion": "1.33.2",
+      "sameApp": true,
+      "signed": true
+     },
+     "finding": "leftover.installer/000000000060",
+     "group": "installer",
+     "key": "i48",
+     "options": [
+      "trash",
+      "keep",
+      "ignore"
+     ],
+     "password": false,
+     "path": "~/Downloads/FableMail-1.33.2-arm64.dmg",
+     "paths": [
+      "~/Downloads/FableMail-1.33.2-arm64.dmg"
+     ],
+     "plan": "p-000000000008",
+     "reason": "installed",
+     "rebuilds": false,
+     "restorable": true,
+     "reveal": "~/Downloads/FableMail-1.33.2-arm64.dmg",
+     "rule": "leftover.installer",
+     "suggested": "trash",
+     "userFiles": "none"
+    },
+    {
+     "app": "FableNote",
+     "appInstalled": true,
+     "bytes": 5246976,
+     "facts": {
+      "added": "2026-09-20",
+      "app": "FableNote",
+      "appVersion": "1.30.2",
+      "days": 30,
+      "fromInternet": true,
+      "installerVersion": "1.30.2",
+      "sameApp": true,
+      "signed": true
+     },
+     "finding": "leftover.installer/000000000061",
+     "group": "installer",
+     "key": "i49",
+     "options": [
+      "trash",
+      "keep",
+      "ignore"
+     ],
+     "password": false,
+     "path": "~/Downloads/FableNote-1.30.2-arm64.dmg",
+     "paths": [
+      "~/Downloads/FableNote-1.30.2-arm64.dmg"
+     ],
+     "plan": "p-000000000008",
+     "reason": "installed",
+     "rebuilds": false,
+     "restorable": true,
+     "reveal": "~/Downloads/FableNote-1.30.2-arm64.dmg",
+     "rule": "leftover.installer",
+     "suggested": "trash",
+     "userFiles": "none"
+    },
+    {
+     "app": "FableSync",
+     "appInstalled": true,
+     "bytes": 5246976,
+     "facts": {
+      "added": "2026-09-20",
+      "app": "FableSync",
+      "appVersion": "1.31.2",
+      "days": 30,
+      "fromInternet": true,
+      "installerVersion": "1.31.2",
+      "sameApp": true,
+      "signed": true
+     },
+     "finding": "leftover.installer/000000000062",
+     "group": "installer",
+     "key": "i50",
+     "options": [
+      "trash",
+      "keep",
+      "ignore"
+     ],
+     "password": false,
+     "path": "~/Downloads/FableSync-1.31.2-arm64.dmg",
+     "paths": [
+      "~/Downloads/FableSync-1.31.2-arm64.dmg"
+     ],
+     "plan": "p-000000000008",
+     "reason": "installed",
+     "rebuilds": false,
+     "restorable": true,
+     "reveal": "~/Downloads/FableSync-1.31.2-arm64.dmg",
+     "rule": "leftover.installer",
+     "suggested": "trash",
+     "userFiles": "none"
+    },
+    {
+     "app": "GroveChat",
+     "appInstalled": true,
+     "bytes": 5246976,
+     "facts": {
+      "added": "2026-09-20",
+      "app": "GroveChat",
+      "appVersion": "1.40.2",
+      "days": 30,
+      "fromInternet": true,
+      "installerVersion": "1.40.2",
+      "sameApp": true,
+      "signed": true
+     },
+     "finding": "leftover.installer/000000000063",
+     "group": "installer",
+     "key": "i51",
+     "options": [
+      "trash",
+      "keep",
+      "ignore"
+     ],
+     "password": false,
+     "path": "~/Downloads/GroveChat-1.40.2-arm64.dmg",
+     "paths": [
+      "~/Downloads/GroveChat-1.40.2-arm64.dmg"
+     ],
+     "plan": "p-000000000008",
+     "reason": "installed",
+     "rebuilds": false,
+     "restorable": true,
+     "reveal": "~/Downloads/GroveChat-1.40.2-arm64.dmg",
+     "rule": "leftover.installer",
+     "suggested": "trash",
+     "userFiles": "none"
+    },
+    {
+     "app": "GroveDraw",
+     "appInstalled": true,
+     "bytes": 5246976,
+     "facts": {
+      "added": "2026-09-20",
+      "app": "GroveDraw",
+      "appVersion": "1.38.2",
+      "days": 30,
+      "fromInternet": true,
+      "installerVersion": "1.38.2",
+      "sameApp": true,
+      "signed": true
+     },
+     "finding": "leftover.installer/000000000064",
+     "group": "installer",
+     "key": "i52",
+     "options": [
+      "trash",
+      "keep",
+      "ignore"
+     ],
+     "password": false,
+     "path": "~/Downloads/GroveDraw-1.38.2-arm64.dmg",
+     "paths": [
+      "~/Downloads/GroveDraw-1.38.2-arm64.dmg"
+     ],
+     "plan": "p-000000000008",
+     "reason": "installed",
+     "rebuilds": false,
+     "restorable": true,
+     "reveal": "~/Downloads/GroveDraw-1.38.2-arm64.dmg",
+     "rule": "leftover.installer",
+     "suggested": "trash",
+     "userFiles": "none"
+    },
+    {
+     "app": "GroveMail",
+     "appInstalled": true,
+     "bytes": 5246976,
+     "facts": {
+      "added": "2026-09-20",
+      "app": "GroveMail",
+      "appVersion": "1.39.2",
+      "days": 30,
+      "fromInternet": true,
+      "installerVersion": "1.39.2",
+      "sameApp": true,
+      "signed": true
+     },
+     "finding": "leftover.installer/000000000065",
+     "group": "installer",
+     "key": "i53",
+     "options": [
+      "trash",
+      "keep",
+      "ignore"
+     ],
+     "password": false,
+     "path": "~/Downloads/GroveMail-1.39.2-arm64.dmg",
+     "paths": [
+      "~/Downloads/GroveMail-1.39.2-arm64.dmg"
+     ],
+     "plan": "p-000000000008",
+     "reason": "installed",
+     "rebuilds": false,
+     "restorable": true,
+     "reveal": "~/Downloads/GroveMail-1.39.2-arm64.dmg",
+     "rule": "leftover.installer",
+     "suggested": "trash",
+     "userFiles": "none"
+    },
+    {
+     "app": "GroveNote",
+     "appInstalled": true,
+     "bytes": 5246976,
+     "facts": {
+      "added": "2026-09-20",
+      "app": "GroveNote",
+      "appVersion": "1.36.2",
+      "days": 30,
+      "fromInternet": true,
+      "installerVersion": "1.36.2",
+      "sameApp": true,
+      "signed": true
+     },
+     "finding": "leftover.installer/000000000066",
+     "group": "installer",
+     "key": "i54",
+     "options": [
+      "trash",
+      "keep",
+      "ignore"
+     ],
+     "password": false,
+     "path": "~/Downloads/GroveNote-1.36.2-arm64.dmg",
+     "paths": [
+      "~/Downloads/GroveNote-1.36.2-arm64.dmg"
+     ],
+     "plan": "p-000000000008",
+     "reason": "installed",
+     "rebuilds": false,
+     "restorable": true,
+     "reveal": "~/Downloads/GroveNote-1.36.2-arm64.dmg",
+     "rule": "leftover.installer",
+     "suggested": "trash",
+     "userFiles": "none"
+    },
+    {
+     "app": "GroveSync",
+     "appInstalled": true,
+     "bytes": 5246976,
+     "facts": {
+      "added": "2026-09-20",
+      "app": "GroveSync",
+      "appVersion": "1.37.2",
+      "days": 30,
+      "fromInternet": true,
+      "installerVersion": "1.37.2",
+      "sameApp": true,
+      "signed": true
+     },
+     "finding": "leftover.installer/000000000067",
+     "group": "installer",
+     "key": "i55",
+     "options": [
+      "trash",
+      "keep",
+      "ignore"
+     ],
+     "password": false,
+     "path": "~/Downloads/GroveSync-1.37.2-arm64.dmg",
+     "paths": [
+      "~/Downloads/GroveSync-1.37.2-arm64.dmg"
+     ],
+     "plan": "p-000000000008",
+     "reason": "installed",
+     "rebuilds": false,
+     "restorable": true,
+     "reveal": "~/Downloads/GroveSync-1.37.2-arm64.dmg",
+     "rule": "leftover.installer",
+     "suggested": "trash",
+     "userFiles": "none"
+    },
+    {
+     "app": "AsterNote",
+     "appInstalled": true,
+     "bytes": 5242880,
+     "facts": {
+      "added": "2026-09-20",
+      "app": "AsterNote",
+      "appVersion": "1.0.2",
+      "days": 30,
+      "fromInternet": true,
+      "installerVersion": "1.0.2",
+      "sameApp": true,
+      "signed": true
+     },
+     "finding": "leftover.installer/000000000068",
+     "group": "installer",
+     "key": "i56",
+     "options": [
+      "trash",
+      "keep",
+      "ignore"
+     ],
+     "password": false,
+     "path": "~/Downloads/AsterNote-1.0.2-arm64.dmg",
+     "paths": [
+      "~/Downloads/AsterNote-1.0.2-arm64.dmg"
+     ],
+     "plan": "p-000000000008",
+     "reason": "installed",
+     "rebuilds": false,
+     "restorable": true,
+     "reveal": "~/Downloads/AsterNote-1.0.2-arm64.dmg",
+     "rule": "leftover.installer",
+     "suggested": "trash",
+     "userFiles": "none"
+    }
+   ],
+   "known": true,
+   "scanned": {
+    "finished": "2026-10-20T12:00:00Z",
+    "started": "2026-10-20T12:00:00Z"
+   },
+   "schema": 1,
+   "suggested": 41,
+   "suggestedBytes": 215121920
+  },
+  "data/category?id=malware": {
+   "auto": null,
+   "bytes": 8192,
+   "count": 2,
+   "facts": {
+    "apps": [],
+    "appsInstalled": 0,
+    "appsMissing": 0,
+    "groups": {
+     "malware": 2
+    },
+    "password": 0,
+    "rebuilds": 0,
+    "tools": [],
+    "userFiles": "none"
+   },
+   "files": 2,
+   "id": "malware",
+   "items": [
+    {
+     "bytes": 4096,
+     "facts": {
+      "signature": "Eicar-Test-Signature"
+     },
+     "finding": "malware.clamav/000000000003",
+     "group": "malware",
+     "key": "i0",
+     "options": [
+      "trash",
+      "keep",
+      "ignore"
+     ],
+     "password": false,
+     "path": "~/Downloads/eicar-test.com",
+     "paths": [
+      "~/Downloads/eicar-test.com"
+     ],
+     "plan": "p-000000000008",
+     "reason": "signature",
+     "rebuilds": false,
+     "restorable": false,
+     "reveal": "~/Downloads/eicar-test.com",
+     "rule": "malware.clamav",
+     "suggested": "keep",
+     "userFiles": "none"
+    },
+    {
+     "bytes": 4096,
+     "facts": {
+      "rule": "luoke_fake_password_dialog"
+     },
+     "finding": "malware.yara.luoke_fake_password_dialog/000000000006",
+     "group": "malware",
+     "key": "i1",
+     "options": [
+      "trash",
+      "keep",
+      "ignore"
+     ],
+     "password": false,
+     "path": "~/Downloads/update.scpt",
+     "paths": [
+      "~/Downloads/update.scpt"
+     ],
+     "plan": "p-000000000008",
+     "reason": "signature",
+     "rebuilds": false,
+     "restorable": false,
+     "reveal": "~/Downloads/update.scpt",
+     "rule": "malware.yara.luoke_fake_password_dialog",
+     "suggested": "keep",
+     "userFiles": "none"
+    }
+   ],
+   "known": true,
+   "scanned": {
+    "finished": "2026-10-20T12:00:00Z",
+    "started": "2026-10-20T12:00:00Z"
+   },
+   "schema": 1,
+   "suggested": 0,
+   "suggestedBytes": 0
+  },
+  "data/category?id=project": {
+   "auto": null,
+   "bytes": 147456,
+   "count": 1,
+   "facts": {
+    "apps": [],
+    "appsInstalled": 0,
+    "appsMissing": 0,
+    "groups": {
+     "project": 1
+    },
+    "password": 0,
+    "rebuilds": 0,
+    "tools": [],
+    "userFiles": "maybe"
+   },
+   "files": 1,
+   "id": "project",
+   "items": [
+    {
+     "bytes": 147456,
+     "facts": {
+      "lastCommit": "2025-09-15",
+      "repos": 1
+     },
+     "finding": "stale.project/000000000077",
+     "group": "project",
+     "key": "i64",
+     "options": [
+      "trash",
+      "keep",
+      "ignore"
+     ],
+     "password": false,
+     "path": "~/Projects/old-pushed",
+     "paths": [
+      "~/Projects/old-pushed"
+     ],
+     "plan": "p-000000000008",
+     "reason": "pushed",
+     "rebuilds": false,
+     "restorable": true,
+     "reveal": "~/Projects/old-pushed",
+     "rule": "stale.project",
+     "suggested": "keep",
+     "userFiles": "maybe"
+    }
+   ],
+   "known": true,
+   "scanned": {
+    "finished": "2026-10-20T12:00:00Z",
+    "started": "2026-10-20T12:00:00Z"
+   },
+   "schema": 1,
+   "suggested": 0,
+   "suggestedBytes": 0
+  },
+  "data/category?id=startup": {
+   "auto": null,
+   "bytes": 0,
+   "count": 1,
+   "facts": {
+    "apps": [],
+    "appsInstalled": 0,
+    "appsMissing": 0,
+    "groups": {
+     "launch-agent": 1
+    },
+    "password": 0,
+    "rebuilds": 0,
+    "tools": [],
+    "userFiles": "none"
+   },
+   "files": 1,
+   "id": "startup",
+   "items": [
+    {
+     "bytes": null,
+     "facts": {
+      "label": "io.example.gone"
+     },
+     "finding": "persistence.launchagent-missing/000000000078",
+     "group": "launch-agent",
+     "key": "i7",
+     "options": [
+      "trash",
+      "keep",
+      "ignore"
+     ],
+     "password": false,
+     "path": "~/Library/LaunchAgents/io.example.gone.plist",
+     "paths": [
+      "~/Library/LaunchAgents/io.example.gone.plist"
+     ],
+     "plan": "p-000000000008",
+     "reason": "program-missing",
+     "rebuilds": false,
+     "restorable": false,
+     "reveal": "~/Library/LaunchAgents/io.example.gone.plist",
+     "rule": "persistence.launchagent-missing",
+     "suggested": "keep",
+     "userFiles": "none"
+    }
+   ],
+   "known": true,
+   "scanned": {
+    "finished": "2026-10-20T12:00:00Z",
+    "started": "2026-10-20T12:00:00Z"
+   },
+   "schema": 1,
+   "suggested": 0,
+   "suggestedBytes": 0
+  },
+  "data/category?id=temp": {
+   "auto": "temp",
+   "bytes": 131072000,
+   "count": 1,
+   "facts": {
+    "apps": [],
+    "appsInstalled": 0,
+    "appsMissing": 0,
+    "groups": {
+     "temp": 1
+    },
+    "password": 0,
+    "rebuilds": 0,
+    "tools": [],
+    "userFiles": "none"
+   },
+   "files": 25,
+   "id": "temp",
+   "items": [
+    {
+     "bytes": 131072000,
+     "facts": {
+      "count": 25,
+      "first": "2026-10-15",
+      "last": "2026-10-18",
+      "prefix": "wings"
+     },
+     "finding": "leak.temp-prefix/000000000076",
+     "group": "temp",
+     "key": "i8",
+     "options": [
+      "trash",
+      "keep",
+      "ignore"
+     ],
+     "password": false,
+     "path": "$TMPDIR/wings-*",
+     "paths": [
+      "$TMPDIR/wings-A00000",
+      "$TMPDIR/wings-A00001",
+      "$TMPDIR/wings-A00002",
+      "$TMPDIR/wings-A00003",
+      "$TMPDIR/wings-A00004",
+      "$TMPDIR/wings-A00005",
+      "$TMPDIR/wings-A00006",
+      "$TMPDIR/wings-A00007",
+      "$TMPDIR/wings-A00008",
+      "$TMPDIR/wings-A00009",
+      "$TMPDIR/wings-A00010",
+      "$TMPDIR/wings-A00011",
+      "$TMPDIR/wings-A00012",
+      "$TMPDIR/wings-A00013",
+      "$TMPDIR/wings-A00014",
+      "$TMPDIR/wings-A00015",
+      "$TMPDIR/wings-A00016",
+      "$TMPDIR/wings-A00017",
+      "$TMPDIR/wings-A00018",
+      "$TMPDIR/wings-A00019",
+      "$TMPDIR/wings-A00020",
+      "$TMPDIR/wings-A00021",
+      "$TMPDIR/wings-A00022",
+      "$TMPDIR/wings-A00023",
+      "$TMPDIR/wings-A00024"
+     ],
+     "plan": "p-000000000008",
+     "reason": "left-behind",
+     "rebuilds": false,
+     "restorable": true,
+     "reveal": "$TMPDIR",
+     "rule": "leak.temp-prefix",
+     "suggested": "keep",
+     "userFiles": "none"
+    }
+   ],
+   "known": true,
+   "scanned": {
+    "finished": "2026-10-20T12:00:00Z",
+    "started": "2026-10-20T12:00:00Z"
+   },
+   "schema": 1,
+   "suggested": 0,
+   "suggestedBytes": 0
+  },
+  "data/history": {
+   "batches": [
+    {
+     "at": "2026-10-20T12:00:00Z",
+     "auto": true,
+     "batch": "auto-2026-10-20T12:00:00Z",
+     "bytes": 181489664,
+     "categories": [
+      {
+       "bytes": 62914560,
+       "count": 1,
+       "id": "cache"
+      },
+      {
+       "bytes": 2097152,
+       "count": 1,
+       "id": "duplicate"
+      },
+      {
+       "bytes": 6291456,
+       "count": 1,
+       "id": "installer"
+      },
+      {
+       "bytes": 110186496,
+       "count": 21,
+       "id": "temp"
+      }
+     ],
+     "count": 24,
+     "deleted": 1,
+     "password": 0,
+     "restorable": 23,
+     "restored": 0
+    }
+   ],
+   "more": 0,
+   "schema": 1
+  },
+  "data/overview": {
+   "attention": {
+    "count": 10,
+    "items": [
+     {
+      "category": "malware",
+      "finding": "malware.clamav/000000000003",
+      "path": "~/Downloads/eicar-test.com",
+      "reveal": "~/Downloads/eicar-test.com",
+      "rule": "malware.clamav",
+      "severity": "high",
+      "urgent": true
+     },
+     {
+      "category": "malware",
+      "finding": "malware.yara.luoke_fake_password_dialog/000000000006",
+      "path": "~/Downloads/update.scpt",
+      "reveal": "~/Downloads/update.scpt",
+      "rule": "malware.yara.luoke_fake_password_dialog",
+      "severity": "high",
+      "urgent": true
+     },
+     {
+      "category": null,
+      "finding": "posture.filevault",
+      "path": null,
+      "reveal": null,
+      "rule": "posture.filevault",
+      "severity": "high",
+      "urgent": false
+     },
+     {
+      "category": null,
+      "finding": "apps.unsigned/000000000014",
+      "path": "~/Applications/Clipper.Pro.app",
+      "reveal": "~/Applications/Clipper.Pro.app",
+      "rule": "apps.unsigned",
+      "severity": "medium",
+      "urgent": false
+     },
+     {
+      "category": null,
+      "finding": "apps.unsigned/000000000015",
+      "path": "~/Applications/Notes Lite.app",
+      "reveal": "~/Applications/Notes Lite.app",
+      "rule": "apps.unsigned",
+      "severity": "medium",
+      "urgent": false
+     },
+     {
+      "category": null,
+      "finding": "apps.unsigned/000000000016",
+      "path": "~/Applications/Snap Tool 2.1.app",
+      "reveal": "~/Applications/Snap Tool 2.1.app",
+      "rule": "apps.unsigned",
+      "severity": "medium",
+      "urgent": false
+     },
+     {
+      "category": null,
+      "finding": "apps.unsigned/000000000017",
+      "path": "~/Applications/Viewer.app",
+      "reveal": "~/Applications/Viewer.app",
+      "rule": "apps.unsigned",
+      "severity": "medium",
+      "urgent": false
+     },
+     {
+      "category": null,
+      "finding": "process.deleted-binary/000000000018",
+      "path": "~/Applications/Gone.app/Contents/MacOS/gone",
+      "reveal": "~/Applications/Gone.app/Contents/MacOS/gone",
+      "rule": "process.deleted-binary",
+      "severity": "medium",
+      "urgent": false
+     },
+     {
+      "category": null,
+      "finding": "permission.stale-grant/000000000019",
+      "path": "/opt/gone/tool",
+      "reveal": "/opt/gone/tool",
+      "rule": "permission.stale-grant",
+      "severity": "medium",
+      "urgent": false
+     },
+     {
+      "category": null,
+      "finding": "permission.stale-grant/000000000020",
+      "path": null,
+      "reveal": null,
+      "rule": "permission.stale-grant",
+      "severity": "medium",
+      "urgent": false
+     }
+    ],
+    "urgent": 2
+   },
+   "autoCleaned": [
+    {
+     "at": "2026-10-20T12:00:00Z",
+     "batch": "auto-2026-10-20T12:00:00Z",
+     "bytes": 181489664,
+     "failed": [],
+     "kinds": [
+      {
+       "bytes": 62914560,
+       "count": 1,
+       "kind": "cache",
+       "partial": [],
+       "restorable": 0,
+       "restored": 0,
+       "tools": [
+        "pip"
+       ]
+      },
+      {
+       "bytes": 6291456,
+       "count": 1,
+       "kind": "installer",
+       "restorable": 1,
+       "restored": 0
+      },
+      {
+       "bytes": 2097152,
+       "count": 1,
+       "kind": "duplicate",
+       "restorable": 1,
+       "restored": 0
+      },
+      {
+       "bytes": 110186496,
+       "count": 21,
+       "kind": "temp",
+       "restorable": 21,
+       "restored": 0
+      }
+     ],
+     "restorable": 23,
+     "unrecorded": 0
+    }
+   ],
+   "autoclean": false,
+   "disk": {
+    "free": 182000000000,
+    "total": 494000000000
+   },
+   "fullDiskAccess": "granted",
+   "largeFiles": {
+    "bytes": 65011712,
+    "count": 3
+   },
+   "reclaimable": [
+    {
+     "auto": "cache",
+     "bytes": 392167424,
+     "count": 7,
+     "facts": {
+      "apps": [],
+      "appsInstalled": 0,
+      "appsMissing": 0,
+      "groups": {
+       "tool-cache": 7
+      },
+      "password": 0,
+      "rebuilds": 7,
+      "tools": [
+       "Cargo",
+       "Composer",
+       "Go",
+       "Gradle",
+       "node-gyp",
+       "pip"
+      ],
+      "userFiles": "none"
+     },
+     "files": 7,
+     "id": "cache",
+     "suggested": 7,
+     "suggestedBytes": 392167424
+    },
+    {
+     "auto": "installer",
+     "bytes": 215121920,
+     "count": 41,
+     "facts": {
+      "apps": [
+       "AsterChat",
+       "AsterCode",
+       "AsterDraw",
+       "AsterMail",
+       "AsterNote",
+       "AsterSync",
+       "BirchChat",
+       "BirchCode",
+       "BirchDraw",
+       "BirchMail",
+       "BirchNote",
+       "BirchSync",
+       "CedarChat",
+       "CedarCode",
+       "CedarDraw",
+       "CedarMail",
+       "CedarNote",
+       "CedarSync",
+       "DeltaChat",
+       "DeltaCode",
+       "DeltaDraw",
+       "DeltaMail",
+       "DeltaNote",
+       "DeltaSync",
+       "EmberChat",
+       "EmberCode",
+       "EmberDraw",
+       "EmberMail",
+       "EmberNote",
+       "EmberSync",
+       "FableChat",
+       "FableCode",
+       "FableDraw",
+       "FableMail",
+       "FableNote",
+       "FableSync",
+       "GroveChat",
+       "GroveDraw",
+       "GroveMail",
+       "GroveNote",
+       "GroveSync"
+      ],
+      "appsInstalled": 41,
+      "appsMissing": 0,
+      "groups": {
+       "installer": 41
+      },
+      "password": 0,
+      "rebuilds": 0,
+      "tools": [],
+      "userFiles": "none"
+     },
+     "files": 41,
+     "id": "installer",
+     "suggested": 41,
+     "suggestedBytes": 215121920
+    },
+    {
+     "auto": "duplicate",
+     "bytes": 14680064,
+     "count": 7,
+     "facts": {
+      "apps": [],
+      "appsInstalled": 0,
+      "appsMissing": 0,
+      "groups": {
+       "duplicate": 7
+      },
+      "password": 0,
+      "rebuilds": 0,
+      "tools": [],
+      "userFiles": "none"
+     },
+     "files": 7,
+     "id": "duplicate",
+     "suggested": 7,
+     "suggestedBytes": 14680064
+    },
+    {
+     "auto": "temp",
+     "bytes": 131072000,
+     "count": 1,
+     "facts": {
+      "apps": [],
+      "appsInstalled": 0,
+      "appsMissing": 0,
+      "groups": {
+       "temp": 1
+      },
+      "password": 0,
+      "rebuilds": 0,
+      "tools": [],
+      "userFiles": "none"
+     },
+     "files": 25,
+     "id": "temp",
+     "suggested": 0,
+     "suggestedBytes": 0
+    },
+    {
+     "auto": null,
+     "bytes": 147456,
+     "count": 1,
+     "facts": {
+      "apps": [],
+      "appsInstalled": 0,
+      "appsMissing": 0,
+      "groups": {
+       "project": 1
+      },
+      "password": 0,
+      "rebuilds": 0,
+      "tools": [],
+      "userFiles": "maybe"
+     },
+     "files": 1,
+     "id": "project",
+     "suggested": 0,
+     "suggestedBytes": 0
+    },
+    {
+     "auto": null,
+     "bytes": 0,
+     "count": 1,
+     "facts": {
+      "apps": [],
+      "appsInstalled": 0,
+      "appsMissing": 0,
+      "groups": {
+       "launch-agent": 1
+      },
+      "password": 0,
+      "rebuilds": 0,
+      "tools": [],
+      "userFiles": "none"
+     },
+     "files": 1,
+     "id": "startup",
+     "suggested": 0,
+     "suggestedBytes": 0
+    },
+    {
+     "auto": null,
+     "bytes": 0,
+     "count": 5,
+     "facts": {
+      "apps": [],
+      "appsInstalled": 0,
+      "appsMissing": 0,
+      "groups": {
+       "skill": 5
+      },
+      "password": 0,
+      "rebuilds": 0,
+      "tools": [],
+      "userFiles": "none"
+     },
+     "files": 5,
+     "id": "ai-plugin",
+     "suggested": 5,
+     "suggestedBytes": 0
+    },
+    {
+     "auto": null,
+     "bytes": 8192,
+     "count": 2,
+     "facts": {
+      "apps": [],
+      "appsInstalled": 0,
+      "appsMissing": 0,
+      "groups": {
+       "malware": 2
+      },
+      "password": 0,
+      "rebuilds": 0,
+      "tools": [],
+      "userFiles": "none"
+     },
+     "files": 2,
+     "id": "malware",
+     "suggested": 0,
+     "suggestedBytes": 0
+    }
+   ],
+   "scanned": {
+    "finished": "2026-10-20T12:00:00Z",
+    "started": "2026-10-20T12:00:00Z"
+   },
+   "scanning": null,
+   "schema": 1,
+   "skipped": [],
+   "virusDb": {
+    "date": "2026-10-20",
+    "version": "27000"
+   }
+  },
+  "data/settings": {
+   "autoclean": {
+    "neverOn": true,
+    "offSince": null,
+    "on": false
+   },
+   "ignored": [],
+   "kinds": [
+    {
+     "kind": "cache",
+     "off": false,
+     "offSince": null
+    },
+    {
+     "kind": "installer",
+     "off": false,
+     "offSince": null
+    },
+    {
+     "kind": "duplicate",
+     "off": false,
+     "offSince": null
+    },
+    {
+     "kind": "temp",
+     "off": false,
+     "offSince": null
+    }
+   ],
+   "schema": 1
+  },
+  "page/mac": [
+   {
+    "createSurface": {
+     "catalogId": "ai.luoke/a2ui/agent/1",
+     "surfaceId": "mac"
+    },
+    "version": "v0.9"
+   },
+   {
+    "updateComponents": {
+     "components": [
+      {
+       "children": [
+        "r10",
+        "r13",
+        "d14",
+        "r18",
+        "d19",
+        "t20",
+        "r24",
+        "r28",
+        "r32",
+        "r36",
+        "r40",
+        "r44",
+        "r48",
+        "r52",
+        "t53",
+        "d54",
+        "t55",
+        "t56",
+        "r60",
+        "r64",
+        "r68",
+        "d69",
+        "t70",
+        "r73",
+        "r76",
+        "t77",
+        "d78",
+        "t79",
+        "r83",
+        "r87",
+        "r91",
+        "r95",
+        "r99",
+        "r103",
+        "t104",
+        "t105"
+       ],
+       "component": "Column",
+       "id": "root"
+      },
+      {
+       "component": "Text",
+       "id": "t2",
+       "text": "硬盘还剩",
+       "variant": "caption"
+      },
+      {
+       "component": "Text",
+       "id": "t3",
+       "text": "182.0 GB",
+       "variant": "h3"
+      },
+      {
+       "children": [
+        "t2",
+        "t3"
+       ],
+       "component": "Column",
+       "id": "s1"
+      },
+      {
+       "component": "Text",
+       "id": "t5",
+       "text": "一年多没打开过的大文件",
+       "variant": "caption"
+      },
+      {
+       "component": "Text",
+       "id": "t6",
+       "text": "3 个",
+       "variant": "h3"
+      },
+      {
+       "children": [
+        "t5",
+        "t6"
+       ],
+       "component": "Column",
+       "id": "s4"
+      },
+      {
+       "component": "Text",
+       "id": "t8",
+       "text": "安全设置（1 项没查成）",
+       "variant": "caption"
+      },
+      {
+       "component": "Text",
+       "id": "t9",
+       "text": "1 项没开启",
+       "variant": "h3"
+      },
+      {
+       "children": [
+        "t8",
+        "t9"
+       ],
+       "component": "Column",
+       "id": "s7"
+      },
+      {
+       "children": [
+        "s1",
+        "s4",
+        "s7"
+       ],
+       "component": "Row",
+       "id": "r10",
+       "justify": "spaceEvenly"
+      },
+      {
+       "component": "Text",
+       "id": "n11",
+       "text": "上次扫描：10月20日 20:00",
+       "variant": "caption"
+      },
+      {
+       "action": {
+        "event": {
+         "context": {},
+         "name": "scan_now"
+        }
+       },
+       "child": "b12-text",
+       "component": "Button",
+       "id": "b12"
+      },
+      {
+       "component": "Text",
+       "id": "b12-text",
+       "text": "现在查一下"
+      },
+      {
+       "children": [
+        "n11",
+        "b12"
+       ],
+       "component": "Row",
+       "id": "r13"
+      },
+      {
+       "component": "Divider",
+       "id": "d14"
+      },
+      {
+       "component": "Text",
+       "id": "t15",
+       "text": "硬盘"
+      },
+      {
+       "component": "Text",
+       "id": "t16",
+       "text": "用了 312.0 GB，一共 494.0 GB",
+       "variant": "caption"
+      },
+      {
+       "component": "ProgressBar",
+       "id": "p17",
+       "value": 0.631578947368421
+      },
+      {
+       "children": [
+        "t15",
+        "t16",
+        "p17"
+       ],
+       "component": "Row",
+       "id": "r18",
+       "justify": "spaceBetween"
+      },
+      {
+       "component": "Divider",
+       "id": "d19"
+      },
+      {
+       "component": "Text",
+       "id": "t20",
+       "text": "占地方最多的文件夹",
+       "variant": "caption"
+      },
+      {
+       "component": "Text",
+       "id": "t21",
+       "text": "开发工具的缓存"
+      },
+      {
+       "component": "Text",
+       "id": "t22",
+       "text": "358.6 MB",
+       "variant": "caption"
+      },
+      {
+       "component": "ProgressBar",
+       "id": "p23",
+       "value": 0.5036644997986539
+      },
+      {
+       "children": [
+        "t21",
+        "t22",
+        "p23"
+       ],
+       "component": "Row",
+       "id": "r24",
+       "justify": "spaceBetween"
+      },
+      {
+       "component": "Text",
+       "id": "t25",
+       "text": "临时文件"
+      },
+      {
+       "component": "Text",
+       "id": "t26",
+       "text": "262.2 MB",
+       "variant": "caption"
+      },
+      {
+       "component": "ProgressBar",
+       "id": "p27",
+       "value": 0.3681930621871944
+      },
+      {
+       "children": [
+        "t25",
+        "t26",
+        "p27"
+       ],
+       "component": "Row",
+       "id": "r28",
+       "justify": "spaceBetween"
+      },
+      {
+       "component": "Text",
+       "id": "t29",
+       "text": "下载"
+      },
+      {
+       "component": "Text",
+       "id": "t30",
+       "text": "31.5 MB",
+       "variant": "caption"
+      },
+      {
+       "component": "ProgressBar",
+       "id": "p31",
+       "value": 0.044198354714376116
+      },
+      {
+       "children": [
+        "t29",
+        "t30",
+        "p31"
+       ],
+       "component": "Row",
+       "id": "r32",
+       "justify": "spaceBetween"
+      },
+      {
+       "component": "Text",
+       "id": "t33",
+       "text": "影片"
+      },
+      {
+       "component": "Text",
+       "id": "t34",
+       "text": "21.0 MB",
+       "variant": "caption"
+      },
+      {
+       "component": "ProgressBar",
+       "id": "p35",
+       "value": 0.02945406431571075
+      },
+      {
+       "children": [
+        "t33",
+        "t34",
+        "p35"
+       ],
+       "component": "Row",
+       "id": "r36",
+       "justify": "spaceBetween"
+      },
+      {
+       "component": "Text",
+       "id": "t37",
+       "text": "图片"
+      },
+      {
+       "component": "Text",
+       "id": "t38",
+       "text": "12.6 MB",
+       "variant": "caption"
+      },
+      {
+       "component": "ProgressBar",
+       "id": "p39",
+       "value": 0.01767243858942645
+      },
+      {
+       "children": [
+        "t37",
+        "t38",
+        "p39"
+       ],
+       "component": "Row",
+       "id": "r40",
+       "justify": "spaceBetween"
+      },
+      {
+       "component": "Text",
+       "id": "t41",
+       "text": "已经删掉的应用留下的数据（5 个应用）"
+      },
+      {
+       "component": "Text",
+       "id": "t42",
+       "text": "11.5 MB",
+       "variant": "caption"
+      },
+      {
+       "component": "ProgressBar",
+       "id": "p43",
+       "value": 0.016199735373640913
+      },
+      {
+       "children": [
+        "t41",
+        "t42",
+        "p43"
+       ],
+       "component": "Row",
+       "id": "r44",
+       "justify": "spaceBetween"
+      },
+      {
+       "component": "Text",
+       "id": "t45",
+       "text": "微信的数据"
+      },
+      {
+       "component": "Text",
+       "id": "t46",
+       "text": "9.4 MB",
+       "variant": "caption"
+      },
+      {
+       "component": "ProgressBar",
+       "id": "p47",
+       "value": 0.013254328942069838
+      },
+      {
+       "children": [
+        "t45",
+        "t46",
+        "p47"
+       ],
+       "component": "Row",
+       "id": "r48",
+       "justify": "spaceBetween"
+      },
+      {
+       "component": "Text",
+       "id": "t49",
+       "text": "Microsoft Teams 的缓存"
+      },
+      {
+       "component": "Text",
+       "id": "t50",
+       "text": "5.2 MB",
+       "variant": "caption"
+      },
+      {
+       "component": "ProgressBar",
+       "id": "p51",
+       "value": 0.007363516078927688
+      },
+      {
+       "children": [
+        "t49",
+        "t50",
+        "p51"
+       ],
+       "component": "Row",
+       "id": "r52",
+       "justify": "spaceBetween"
+      },
+      {
+       "component": "Text",
+       "id": "t53",
+       "text": "这些加起来约 712 MB。其余是没列出来的小文件夹，以及系统和应用本身。",
+       "variant": "caption"
+      },
+      {
+       "component": "Divider",
+       "id": "d54"
+      },
+      {
+       "component": "Text",
+       "id": "t55",
+       "text": "一年多没打开过的大文件",
+       "variant": "caption"
+      },
+      {
+       "component": "Text",
+       "id": "t56",
+       "text": "1 MB 以上算大文件，按大小排",
+       "variant": "caption"
+      },
+      {
+       "component": "Text",
+       "id": "t57",
+       "text": "macOS Sonoma 安装程序…月最终版 (1).dmg"
+      },
+      {
+       "component": "Text",
+       "id": "t58",
+       "text": "31.5 MB",
+       "variant": "caption"
+      },
+      {
+       "action": {
+        "event": {
+         "context": {
+          "finding_id": "stale.large-file/000000000012"
+         },
+         "name": "scan_reveal"
+        }
+       },
+       "child": "b59-text",
+       "component": "Button",
+       "id": "b59"
+      },
+      {
+       "component": "Text",
+       "id": "b59-text",
+       "text": "在访达里显示"
+      },
+      {
+       "children": [
+        "t57",
+        "t58",
+        "b59"
+       ],
+       "component": "Row",
+       "id": "r60",
+       "justify": "spaceBetween"
+      },
+      {
+       "component": "Text",
+       "id": "t61",
+       "text": "二零二三年大学毕业典礼…完整版.mp4"
+      },
+      {
+       "component": "Text",
+       "id": "t62",
+       "text": "21.0 MB",
+       "variant": "caption"
+      },
+      {
+       "action": {
+        "event": {
+         "context": {
+          "finding_id": "stale.large-file/000000000013"
+         },
+         "name": "scan_reveal"
+        }
+       },
+       "child": "b63-text",
+       "component": "Button",
+       "id": "b63"
+      },
+      {
+       "component": "Text",
+       "id": "b63-text",
+       "text": "在访达里显示"
+      },
+      {
+       "children": [
+        "t61",
+        "t62",
+        "b63"
+       ],
+       "component": "Row",
+       "id": "r64",
+       "justify": "spaceBetween"
+      },
+      {
+       "component": "Text",
+       "id": "t65",
+       "text": "IMG_8519.MOV"
+      },
+      {
+       "component": "Text",
+       "id": "t66",
+       "text": "12.6 MB",
+       "variant": "caption"
+      },
+      {
+       "action": {
+        "event": {
+         "context": {
+          "finding_id": "stale.large-file/000000000014"
+         },
+         "name": "scan_reveal"
+        }
+       },
+       "child": "b67-text",
+       "component": "Button",
+       "id": "b67"
+      },
+      {
+       "component": "Text",
+       "id": "b67-text",
+       "text": "在访达里显示"
+      },
+      {
+       "children": [
+        "t65",
+        "t66",
+        "b67"
+       ],
+       "component": "Row",
+       "id": "r68",
+       "justify": "spaceBetween"
+      },
+      {
+       "component": "Divider",
+       "id": "d69"
+      },
+      {
+       "component": "Text",
+       "id": "t70",
+       "text": "权限",
+       "variant": "caption"
+      },
+      {
+       "component": "Text",
+       "id": "t71",
+       "text": "完全磁盘访问"
+      },
+      {
+       "component": "Text",
+       "id": "t72",
+       "text": "已允许",
+       "variant": "caption"
+      },
+      {
+       "children": [
+        "t71",
+        "t72"
+       ],
+       "component": "Row",
+       "id": "r73",
+       "justify": "spaceBetween"
+      },
+      {
+       "component": "Text",
+       "id": "t74",
+       "text": "已经删掉的应用还拿着权限"
+      },
+      {
+       "component": "Text",
+       "id": "t75",
+       "text": "2 个",
+       "variant": "caption"
+      },
+      {
+       "children": [
+        "t74",
+        "t75"
+       ],
+       "component": "Row",
+       "id": "r76",
+       "justify": "spaceBetween"
+      },
+      {
+       "component": "Text",
+       "id": "t77",
+       "text": "要收回，去「概览」看。",
+       "variant": "caption"
+      },
+      {
+       "component": "Divider",
+       "id": "d78"
+      },
+      {
+       "component": "Text",
+       "id": "t79",
+       "text": "安全设置",
+       "variant": "caption"
+      },
+      {
+       "component": "Text",
+       "id": "t80",
+       "text": "硬盘加密（文件保险箱）"
+      },
+      {
+       "component": "Icon",
+       "id": "i81",
+       "name": "warning"
+      },
+      {
+       "component": "Text",
+       "id": "t82",
+       "text": "没开启"
+      },
+      {
+       "children": [
+        "t80",
+        "t82",
+        "i81"
+       ],
+       "component": "Row",
+       "id": "r83",
+       "justify": "spaceBetween"
+      },
+      {
+       "component": "Text",
+       "id": "t84",
+       "text": "只打开来路清楚的应用"
+      },
+      {
+       "component": "Icon",
+       "id": "i85",
+       "name": "question"
+      },
+      {
+       "component": "Text",
+       "id": "t86",
+       "text": "没查成"
+      },
+      {
+       "children": [
+        "t84",
+        "t86",
+        "i85"
+       ],
+       "component": "Row",
+       "id": "r87",
+       "justify": "spaceBetween"
+      },
+      {
+       "component": "Text",
+       "id": "t88",
+       "text": "防火墙"
+      },
+      {
+       "component": "Icon",
+       "id": "i89",
+       "name": "check"
+      },
+      {
+       "component": "Text",
+       "id": "t90",
+       "text": "已开启",
+       "variant": "caption"
+      },
+      {
+       "children": [
+        "t88",
+        "t90",
+        "i89"
+       ],
+       "component": "Row",
+       "id": "r91",
+       "justify": "spaceBetween"
+      },
+      {
+       "component": "Text",
+       "id": "t92",
+       "text": "系统完整性保护"
+      },
+      {
+       "component": "Icon",
+       "id": "i93",
+       "name": "check"
+      },
+      {
+       "component": "Text",
+       "id": "t94",
+       "text": "已开启",
+       "variant": "caption"
+      },
+      {
+       "children": [
+        "t92",
+        "t94",
+        "i93"
+       ],
+       "component": "Row",
+       "id": "r95",
+       "justify": "spaceBetween"
+      },
+      {
+       "component": "Text",
+       "id": "t96",
+       "text": "锁屏要密码"
+      },
+      {
+       "component": "Icon",
+       "id": "i97",
+       "name": "check"
+      },
+      {
+       "component": "Text",
+       "id": "t98",
+       "text": "已开启",
+       "variant": "caption"
+      },
+      {
+       "children": [
+        "t96",
+        "t98",
+        "i97"
+       ],
+       "component": "Row",
+       "id": "r99",
+       "justify": "spaceBetween"
+      },
+      {
+       "component": "Text",
+       "id": "t100",
+       "text": "自动检查系统更新"
+      },
+      {
+       "component": "Icon",
+       "id": "i101",
+       "name": "check"
+      },
+      {
+       "component": "Text",
+       "id": "t102",
+       "text": "已开启",
+       "variant": "caption"
+      },
+      {
+       "children": [
+        "t100",
+        "t102",
+        "i101"
+       ],
+       "component": "Row",
+       "id": "r103",
+       "justify": "spaceBetween"
+      },
+      {
+       "component": "Text",
+       "id": "t104",
+       "text": "没开启的怎么打开，在「概览」的「要你看看的」里有写。",
+       "variant": "caption"
+      },
+      {
+       "component": "Text",
+       "id": "t105",
+       "text": "没查成的，下次扫描或点上面的「现在查一下」时会再查。",
+       "variant": "caption"
+      }
+     ],
+     "surfaceId": "mac"
+    },
+    "version": "v0.9"
+   }
+  ],
+  "data/category?id=large-file": {
+   "auto": null,
+   "bytes": 65011712,
+   "count": 3,
+   "facts": {
+    "apps": [],
+    "appsInstalled": 0,
+    "appsMissing": 0,
+    "groups": {
+     "large-file": 3
+    },
+    "password": 0,
+    "rebuilds": 0,
+    "tools": [],
+    "userFiles": "yes"
+   },
+   "files": 3,
+   "id": "large-file",
+   "items": [
+    {
+     "bytes": 31457280,
+     "facts": {
+      "lastOpened": "2025-09-15"
+     },
+     "finding": "stale.large-file/000000000012",
+     "group": "large-file",
+     "key": "i12",
+     "options": [
+      "trash",
+      "keep",
+      "ignore"
+     ],
+     "password": false,
+     "path": "~/Downloads/macOS Sonoma 安装程序 备份 2023 年 3 月最终版 (1).dmg",
+     "paths": [
+      "~/Downloads/macOS Sonoma 安装程序 备份 2023 年 3 月最终版 (1).dmg"
+     ],
+     "pathsMore": 0,
+     "plan": "p-000000000008",
+     "reason": "not-opened",
+     "rebuilds": false,
+     "restorable": true,
+     "reveal": "~/Downloads/macOS Sonoma 安装程序 备份 2023 年 3 月最终版 (1).dmg",
+     "rule": "stale.large-file",
+     "suggested": "keep",
+     "userFiles": "yes"
+    },
+    {
+     "bytes": 20971520,
+     "facts": {
+      "lastOpened": "2025-02-27"
+     },
+     "finding": "stale.large-file/000000000013",
+     "group": "large-file",
+     "key": "i13",
+     "options": [
+      "trash",
+      "keep",
+      "ignore"
+     ],
+     "password": false,
+     "path": "~/Movies/二零二三年大学毕业典礼全程录像（含校长致辞和学生代表发言）完整版.mp4",
+     "paths": [
+      "~/Movies/二零二三年大学毕业典礼全程录像（含校长致辞和学生代表发言）完整版.mp4"
+     ],
+     "pathsMore": 0,
+     "plan": "p-000000000008",
+     "reason": "not-opened",
+     "rebuilds": false,
+     "restorable": true,
+     "reveal": "~/Movies/二零二三年大学毕业典礼全程录像（含校长致辞和学生代表发言）完整版.mp4",
+     "rule": "stale.large-file",
+     "suggested": "keep",
+     "userFiles": "yes"
+    },
+    {
+     "bytes": 12582912,
+     "facts": {
+      "lastOpened": "2018-09-22"
+     },
+     "finding": "stale.large-file/000000000014",
+     "group": "large-file",
+     "key": "i14",
+     "options": [
+      "trash",
+      "keep",
+      "ignore"
+     ],
+     "password": false,
+     "path": "~/Pictures/Trip/IMG_8519.MOV",
+     "paths": [
+      "~/Pictures/Trip/IMG_8519.MOV"
+     ],
+     "pathsMore": 0,
+     "plan": "p-000000000008",
+     "reason": "not-opened",
+     "rebuilds": false,
+     "restorable": true,
+     "reveal": "~/Pictures/Trip/IMG_8519.MOV",
+     "rule": "stale.large-file",
+     "suggested": "keep",
+     "userFiles": "yes"
+    }
+   ],
+   "known": true,
+   "more": 0,
+   "scanned": {
+    "finished": "2026-10-20T12:00:00Z",
+    "started": "2026-10-20T12:00:00Z"
+   },
+   "schema": 1,
+   "suggested": 0,
+   "suggestedBytes": 0
+  },
+  "agent/explained": {
+   "~/Downloads/macOS Sonoma 安装程序 备份 2023 年 3 月最终版 (1).dmg|31457280": {
+    "use": "macOS 系统安装程序的备份",
+    "verdict": "safe",
+    "at": 0
+   },
+   "~/Movies/二零二三年大学毕业典礼全程录像（含校长致辞和学生代表发言）完整版.mp4|20971520": {
+    "use": "毕业典礼的录像",
+    "verdict": "careful",
+    "at": 0
+   },
+   "~/Pictures/Trip/IMG_8519.MOV|12582912": {
+    "use": "相机或手机拍的视频",
+    "verdict": "careful",
+    "at": 0
+   },
+   "/Users/user/Movies/Final Cut Projects|39943195852": {
+    "use": "Final Cut Pro 的剪辑工程",
+    "verdict": "careful",
+    "at": 0
+   },
+   "/Users/user/Movies/录屏|13314398617": {
+    "use": "屏幕录制的视频",
+    "verdict": "careful",
+    "at": 0
+   },
+   "/Users/user/Movies/二零二三年大学毕业典礼全程录像（含校长致辞和学生代表发言）完整版.mp4|6764573491": {
+    "use": "毕业典礼的录像",
+    "verdict": "careful",
+    "at": 0
+   }
+  },
+  "agent/usage?path=~%2FMovies": {
+   "state": "done",
+   "path": "~/Movies",
+   "parent": null,
+   "items": [
+    {
+     "name": "Final Cut Projects",
+     "path": "~/Movies/Final Cut Projects",
+     "key": "/Users/user/Movies/Final Cut Projects|39943195852",
+     "bytes": 39943195852,
+     "dir": true,
+     "changed": "2024-01-08",
+     "contains": [
+      "旅行 vlog 西藏.fcpbundle",
+      "年会.fcpbundle"
+     ]
+    },
+    {
+     "name": "录屏",
+     "path": "~/Movies/录屏",
+     "key": "/Users/user/Movies/录屏|13314398617",
+     "bytes": 13314398617,
+     "dir": true,
+     "changed": "2025-06-30",
+     "contains": [
+      "2025-06-30 14.02.11.mov"
+     ]
+    },
+    {
+     "name": "二零二三年大学毕业典礼全程录像（含校长致辞和学生代表发言）完整版.mp4",
+     "path": "~/Movies/二零二三年大学毕业典礼全程录像（含校长致辞和学生代表发言）完整版.mp4",
+     "key": "/Users/user/Movies/二零二三年大学毕业典礼全程录像（含校长致辞和学生代表发言）完整版.mp4|6764573491",
+     "bytes": 6764573491,
+     "dir": false,
+     "changed": "2024-02-27",
+     "contains": []
+    },
+    {
+     "name": "TV",
+     "path": "~/Movies/TV",
+     "key": "/Users/user/Movies/TV|3328599654",
+     "bytes": 3328599654,
+     "dir": true,
+     "changed": "2023-11-02",
+     "contains": [
+      "Media.localized"
+     ]
+    },
+    {
+     "name": "家庭录像 2019.mov",
+     "path": "~/Movies/家庭录像 2019.mov",
+     "key": "/Users/user/Movies/家庭录像 2019.mov|1932735283",
+     "bytes": 1932735283,
+     "dir": false,
+     "changed": "2019-10-05",
+     "contains": []
+    }
+   ],
+   "count": 7,
+   "bytes": 65283502897,
+   "partial": false
+  }
+ },
+ "args": {
+  "category": {
+   "id": "installer"
+  },
+  "folder": {
+   "dir": "~/Movies"
+  }
+ }
+}

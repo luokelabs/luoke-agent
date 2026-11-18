@@ -889,7 +889,7 @@ details.more[open] summary .i { transform: rotate(90deg); }
 </div></section><section class="page" data-page="prefs" data-ask="settings">
 <div class="scroll">
   <div class="ph"><h4>设置</h4><span class="grow"></span></div>
-  <div class="ptabs"><button type="button" class="pt on" data-tab="al">提醒</button><button type="button" class="pt" data-tab="dp">显示</button><button type="button" class="pt" data-tab="pm">权限</button><button type="button" class="pt" data-tab="md">模型</button><button type="button" class="pt" data-tab="pv">隐私</button></div>
+  <div class="ptabs"><button type="button" class="pt on" data-tab="al">提醒</button><button type="button" class="pt" data-tab="dp">显示</button><button type="button" class="pt" data-tab="pm">权限</button><button type="button" class="pt" data-tab="md">通用</button><button type="button" class="pt" data-tab="pv">隐私</button></div>
   <div data-sub="al">
   <div class="group">
     <div class="row"><svg class="i "><use href="#i-bell"/></svg><div class="grow"><span class="t">主动提醒</span></div><button class="sw on" type="button" data-act="switch" aria-label="开关" data-master="alerts"></button></div>
@@ -1049,7 +1049,7 @@ details.more[open] summary .i { transform: rotate(90deg); }
     <button class="mi" type="button" data-go="apps"><svg class="i "><use href="#i-plus"/></svg>添加应用…</button>
     <hr>
     <button class="mi" type="button" data-go="prefs:pm"><svg class="i "><use href="#i-key"/></svg>权限</button>
-    <button class="mi" type="button" data-go="prefs:md"><svg class="i "><use href="#i-cpu"/></svg>模型</button>
+    <button class="mi" type="button" data-go="prefs:md"><svg class="i "><use href="#i-sliders"/></svg>通用</button>
   </div>
   <div class="menu am" data-menu="window" role="menu" aria-label="窗口" hidden>
     <button class="mi off" type="button" tabindex="-1">最小化<span class="grow"></span><span class="k">⌘M</span></button>
@@ -1827,7 +1827,7 @@ resources/read permissions
         doneAll = false; briefOpen = false; briefIds = null; lastUndo = null; $('#toast').hidden = true; limitDone(); syncOne();
         // 设置 · 显示, 紧凑
         click('[data-nav="prefs"]');
-        check('设置的标签：提醒、显示、权限、模型、隐私', $$('.page[data-page="prefs"] .ptabs .pt').map(t => t.textContent).join() === '提醒,显示,权限,模型,隐私');
+        check('设置的标签：提醒、显示、权限、通用、隐私', $$('.page[data-page="prefs"] .ptabs .pt').map(t => t.textContent).join() === '提醒,显示,权限,通用,隐私');
         check('「提醒」里有简报的预览', !!$('[data-sub="al"] .brief-prev img[src^="data:"]') && $('[data-sub="al"] .brief-prev').textContent.includes('螺壳 · 今早的简报') && $('[data-sub="al"] [data-brief-short]').textContent.includes('还有 4 件等你'));
         click('.page[data-page="prefs"] .pt[data-tab="dp"]');
         check('「显示」：「今天」的密度，标准和紧凑', !$('[data-sub="dp"]').hidden && $('[data-sub="dp"] .t').textContent === '「今天」的密度' && $$('[data-density]').map(b => b.textContent).join() === '标准,紧凑' && $('[data-density="standard"]').getAttribute('aria-checked') === 'true' && $$('#dprev .pr').length === 3);
@@ -1903,7 +1903,7 @@ resources/read permissions
         click('[data-master="alerts"]'); check('主动提醒关了，下面变灰', $('[data-follow="alerts"]').classList.contains('muted-group'));
         click('[data-master="alerts"]');
         check('简报默认每天早上，改成早晚各一次', $('.page[data-page="prefs"] .sel .v').textContent === '早晚各一次');
-        click('.page[data-page="prefs"] .pt[data-tab="md"]'); check('切到模型', !$('[data-sub="md"]').hidden && $('[data-sub="al"]').hidden);
+        click('.page[data-page="prefs"] .pt[data-tab="md"]'); check('切到通用', !$('[data-sub="md"]').hidden && $('[data-sub="al"]').hidden);
         click('.rc:nth-child(3)'); check('换到 128 GB 档', $('.rc:nth-child(3)').classList.contains('on') && !$('.rc:nth-child(2)').classList.contains('on'));
         click('[data-nav="activity"]'); click('.sidefoot .model');
         check('点侧栏底部的模型名进「设置 · 模型」', $('.page[data-page="prefs"]').classList.contains('on') && !$('[data-sub="md"]').hidden);
@@ -1920,7 +1920,7 @@ resources/read permissions
         click('#appmenu .mt[data-m="go"]');
         click('#appmenu [data-go="audit"]'); check('侧栏收起时从「前往」打开螺壳扫描', $('.page[data-page="audit"]').classList.contains('on'));
         click('#appmenu [data-go="prefs:pm"]'); check('「前往 · 权限」进「设置 · 权限」', $('.page[data-page="prefs"]').classList.contains('on') && !$('[data-sub="pm"]').hidden);
-        click('#appmenu [data-go="prefs:md"]'); check('「前往 · 模型」进「设置 · 模型」', !$('[data-sub="md"]').hidden);
+        click('#appmenu [data-go="prefs:md"]'); check('「前往 · 通用」进「设置 · 通用」', !$('[data-sub="md"]').hidden);
         check('装了输入法，「前往」也列出', !$('#appmenu [data-menu-ime]').hidden);
         check('顶部菜单不写计数和状态', !/有新版本|等你|想问你|急事/.test($('#appmenu').textContent));
         setSide(false, false);

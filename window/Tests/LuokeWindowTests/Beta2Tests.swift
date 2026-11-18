@@ -19,7 +19,7 @@ final class Beta2Tests: XCTestCase {
         m.go(.scan)
         XCTAssertEqual(m.page, .scan, "应用页照旧")
         m.go(.prefs, tab: PrefsTab.permissions.rawValue)
-        XCTAssertEqual([m.page, m.prefsTab.rawValue] as [AnyHashable], [Page.prefs, "permissions"])
+        XCTAssertEqual([m.page, m.prefsTab.rawValue] as [AnyHashable], [Page.prefs, "privacy"], "权限并进了「隐私与权限」")
         m.openAsk()
         XCTAssertFalse(m.askOpen, "问螺壳不开")
         m.perform(.ask)
@@ -54,6 +54,25 @@ final class Beta2Tests: XCTestCase {
         return (m, AgentFeed(model: m), b)
     }
 
+    /// 只有搜索、还没有问螺壳时，底部的搜索框只在螺壳搜索的页上（负责人 11-17）；⌘K 先去那一页；离开那一页结果面板收起
+    func testTheSearchBoxIsOnlyOnTheSearchAppsPage() throws {
+        let (m, _, b) = searching()
+        XCTAssertEqual(m.page, .today)
+        XCTAssertFalse(m.searchBarShown, "「今天」上不放搜索框")
+        XCTAssertFalse(m.hasBottomBar)
+        let before = m.searchFocus
+        m.focusSearch()
+        XCTAssertEqual(m.page, .searchApp, "⌘K：先去螺壳搜索的页")
+        XCTAssertTrue(m.searchBarShown && m.hasBottomBar)
+        XCTAssertEqual(m.searchFocus, before + 1, "再把光标放进搜索框")
+        m.runSearch("合同")
+        XCTAssertEqual(b.queries, ["合同"])
+        XCTAssertTrue(m.searchOpen)
+        m.go(.today)
+        XCTAssertFalse(m.searchOpen, "离开那一页：结果面板收起")
+        XCTAssertFalse(m.searchBarShown)
+    }
+
     func testSearchBoxSendsTheWordsAndDrawsTheCard() throws {
         let (m, f, b) = searching()
         m.runSearch("  ")
@@ -76,26 +95,26 @@ final class Beta2Tests: XCTestCase {
         let (m, f, _) = searching()
         m.runSearch("合同")
         f.applySearch(status: 0, body: Data())
-        XCTAssertEqual(m.searchAnswer?.note, "螺壳暂时没响应，搜不了「合同」。", "写出是哪一句")
+        XCTAssertEqual(m.searchAnswer?.note, "螺壳暂时没响应，无法搜索「合同」", "写出是哪一句")
         XCTAssertEqual(m.searchQuery, "合同", "再试一次搜同一句")
         XCTAssertTrue(m.searchAnswer?.retry == true)
         m.runSearch("合同")
-        f.applySearch(status: 200, body: Data(#"{"results": [], "failed": [], "text": "还没有能搜的应用。"}"#.utf8))
-        XCTAssertEqual(m.searchAnswer?.note, "还没有能搜的应用。")
+        f.applySearch(status: 200, body: Data(#"{"results": [], "failed": [], "text": "暂无可搜索的应用"}"#.utf8))
+        XCTAssertEqual(m.searchAnswer?.note, "暂无可搜索的应用")
         XCTAssertEqual(m.searchAnswer?.cards.count, 0)
     }
 
     func testSearchLinesNeverContradict() {
         var a = SearchAnswer(failed: ["螺壳邮件助手"], asked: 2)
         XCTAssertFalse(a.allFailed)
-        XCTAssertEqual(a.lines, ["其他应用里没有找到。", "螺壳邮件助手这次没有回应。"], "没答的那个里还没搜：不写「没有找到。」")
+        XCTAssertEqual(a.lines, ["其他应用中未找到结果", "螺壳邮件助手未响应"], "没答的那个里还没搜：不写「没有找到。」")
         a.asked = 1
         XCTAssertTrue(a.allFailed)
         XCTAssertEqual(a.lines, [])
-        XCTAssertEqual(a.allFailedText, "螺壳邮件助手这次没有回应，没搜成。", "一个应用不写「都」")
+        XCTAssertEqual(a.allFailedText, "螺壳邮件助手未响应，搜索未完成", "一个应用不写「都」")
         a = SearchAnswer(failed: ["螺壳邮件助手", "记忆"], asked: 2)
-        XCTAssertEqual(a.allFailedText, "螺壳邮件助手、记忆这次都没有回应，没搜成。")
-        XCTAssertEqual(SearchAnswer(asked: 2).lines, ["没有找到。"])
+        XCTAssertEqual(a.allFailedText, "螺壳邮件助手、记忆未响应，搜索未完成")
+        XCTAssertEqual(SearchAnswer(asked: 2).lines, ["未找到结果"])
         XCTAssertFalse(SearchAnswer(failed: ["记忆"]).allFailed, "旧核心不给 asked：不说都没答")
     }
 
@@ -219,9 +238,9 @@ final class Beta2Tests: XCTestCase {
         let m = WindowModel()
         let f = AgentFeed(model: m)
         m.hostNotice = "螺壳的核心起不来。"
-        f.handle("feed", Data(#"{"order":[],"open":0,"notices":["螺壳搜索现在没在运行。"],"cards":[]}"#.utf8))
+        f.handle("feed", Data(#"{"order":[],"open":0,"notices":["螺壳搜索未运行"],"cards":[]}"#.utf8))
         XCTAssertEqual(m.hostNotice, "螺壳的核心起不来。", "核心的几句换掉的是它自己的")
-        XCTAssertEqual(m.notices, ["螺壳搜索现在没在运行。"])
+        XCTAssertEqual(m.notices, ["螺壳搜索未运行"])
     }
 
     private func wait(_ ok: () -> Bool) -> Bool {

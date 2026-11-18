@@ -221,6 +221,20 @@ class SocketTest(unittest.TestCase):
         with self.assertRaises(RuntimeError):
             make_server().start(self.path)
 
+    def test_read_timeout_is_no_answer_not_gone(self):
+        # 读数据超时：工具在、只是慢。是 NotRunning 的一种，但分得出来（页上写「未响应」，不写「未运行」）
+        release = threading.Event()
+        s = ToolServer("slow", "1")
+        s.resource("data/slow", lambda: (release.wait(5), {"ok": True})[1], name="慢")
+        s.start(self.path)
+        try:
+            with self.assertRaises(mcp.NoAnswer):
+                ToolClient(self.path).read_json("data/slow", timeout=0.3)
+            self.assertTrue(issubclass(mcp.NoAnswer, mcp.NotRunning))
+        finally:
+            release.set()
+            s.close()
+
     def test_write_timeout_is_timed_out(self):
         release = threading.Event()
         s = ToolServer("slow", "1")

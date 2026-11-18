@@ -8,6 +8,8 @@
           "mimeType": "application/json",
           "text": {
             "count": 0,
+            "problem": "empty",
+            "state": "not_ready",
             "text": "还没有记下什么。"
           },
           "uri": "summary"

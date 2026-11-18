@@ -1,0 +1,105 @@
+{
+  "reply": {
+    "id": 24,
+    "jsonrpc": "2.0",
+    "result": {
+      "contents": [
+        {
+          "mimeType": "application/json",
+          "text": {
+            "counts": {
+              "all": 22,
+              "dislike": 0,
+              "fact": 5,
+              "interest": 17,
+              "past": 1,
+              "pending": 3,
+              "preference": 0,
+              "rejected": 0,
+              "taste": 1,
+              "term": 4
+            },
+            "filter": "all",
+            "items": [
+              {
+                "cites": 1,
+                "confidence": "sure",
+                "decided_at": "2026-10-11 09:00:00",
+                "entity": null,
+                "formed_at": "2026-10-11 09:00:00",
+                "fresh": "2026-10-11 09:00:00",
+                "id": 7,
+                "kind": "interest",
+                "origin": "user",
+                "pending": false,
+                "sources": [
+                  "luoke-mem"
+                ],
+                "status": "active",
+                "text": "系统",
+                "topic": null,
+                "why_data": null
+              },
+              {
+                "cites": 1,
+                "confidence": "sure",
+                "decided_at": "2026-10-10 09:00:00",
+                "entity": null,
+                "formed_at": "2026-10-10 09:00:00",
+                "fresh": "2026-10-10 09:00:00",
+                "id": 6,
+                "kind": "interest",
+                "origin": "user",
+                "pending": false,
+                "sources": [
+                  "luoke-mem"
+                ],
+                "status": "active",
+                "text": "机器学习",
+                "topic": null,
+                "why_data": null
+              }
+            ],
+            "page": 2,
+            "pages": 2,
+            "q": "",
+            "ready": true,
+            "total": 22,
+            "v": 1,
+            "waiting": 3
+          },
+          "uri": "data/notes?p=2"
+        }
+      ],
+      "resultType": "complete"
+    }
+  },
+  "request": {
+    "id": 24,
+    "jsonrpc": "2.0",
+    "method": "resources/read",
+    "params": {
+      "_meta": {
+        "io.modelcontextprotocol/clientCapabilities": {
+          "experimental": {
+            "ai.luoke/a2ui": {
+              "features": [
+                "openPage",
+                "pageArgs",
+                "confirm",
+                "rowOpen",
+                "fieldSubmit"
+              ]
+            }
+          }
+        },
+        "io.modelcontextprotocol/clientInfo": {
+          "name": "luoke-agent",
+          "version": "fixtures"
+        },
+        "io.modelcontextprotocol/protocolVersion": "2026-07-28"
+      },
+      "uri": "data/notes?p=2"
+    }
+  }
+}

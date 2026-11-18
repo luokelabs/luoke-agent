@@ -7,7 +7,7 @@
 
     card = Card("plan-42")
     card.heading("这 2 封我打算这样处理")
-    card.choice("m1", "王老师：答辩时间？（周五前回）", [("draft", "写草稿"), ("star", "加星标"), ("keep", "先不动")], "draft")
+    card.choice("m1", "王老师：答辩时间？（周五前回）", [("draft", "写草稿"), ("star", "加星标"), ("keep", "暂不处理")], "draft")
     card.buttons(button("写草稿 1", "mail_apply_plan", {"plan_id": "plan-42", "choices": CHOICES}, primary=True))
     messages = card.messages()
 

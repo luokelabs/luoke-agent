@@ -1,0 +1,291 @@
+{
+  "reply": {
+    "id": 39,
+    "jsonrpc": "2.0",
+    "result": {
+      "contents": [
+        {
+          "mimeType": "application/json",
+          "text": [
+            {
+              "createSurface": {
+                "catalogId": "ai.luoke/a2ui/agent/1",
+                "surfaceId": "item"
+              },
+              "version": "v0.9"
+            },
+            {
+              "updateComponents": {
+                "components": [
+                  {
+                    "children": [
+                      "t1",
+                      "t2",
+                      "t3",
+                      "r5",
+                      "f-revise",
+                      "r7",
+                      "r9",
+                      "d10",
+                      "t11",
+                      "t12",
+                      "t13",
+                      "t14",
+                      "t15",
+                      "t16",
+                      "t17",
+                      "r19"
+                    ],
+                    "component": "Column",
+                    "id": "root"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "t1",
+                    "text": "学校：某大学计算机系"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "t2",
+                    "text": "关于你 · 生效 · 比较确定 · 11月5日 · 依据 2 条",
+                    "variant": "caption"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "t3",
+                    "text": "理由：发出的邮件里说到",
+                    "variant": "caption"
+                  },
+                  {
+                    "action": {
+                      "event": {
+                        "context": {
+                          "note": 25,
+                          "op": "reject"
+                        },
+                        "name": "mem_note"
+                      }
+                    },
+                    "child": "b4-text",
+                    "component": "Button",
+                    "id": "b4",
+                    "variant": "borderless"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "b4-text",
+                    "text": "不对"
+                  },
+                  {
+                    "children": [
+                      "b4"
+                    ],
+                    "component": "Row",
+                    "id": "r5"
+                  },
+                  {
+                    "component": "TextField",
+                    "id": "f-revise",
+                    "label": "改写成（旧的说法留着，标为已被取代）",
+                    "value": {
+                      "path": "/fields/revise"
+                    }
+                  },
+                  {
+                    "action": {
+                      "event": {
+                        "context": {
+                          "note": 25,
+                          "op": "revise",
+                          "text": {
+                            "path": "/fields/revise"
+                          }
+                        },
+                        "name": "mem_note"
+                      }
+                    },
+                    "child": "b6-text",
+                    "component": "Button",
+                    "id": "b6",
+                    "variant": "borderless"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "b6-text",
+                    "text": "按我改的"
+                  },
+                  {
+                    "children": [
+                      "b6"
+                    ],
+                    "component": "Row",
+                    "id": "r7"
+                  },
+                  {
+                    "action": {
+                      "event": {
+                        "context": {
+                          "note": 25,
+                          "op": "forget",
+                          "sure": true
+                        },
+                        "name": "mem_note"
+                      }
+                    },
+                    "child": "b8-label",
+                    "component": "Button",
+                    "confirm": {
+                      "label": "忘掉",
+                      "text": "连它的依据一起删掉，找不回来。",
+                      "title": "忘掉这一条？"
+                    },
+                    "id": "b8",
+                    "variant": "borderless"
+                  },
+                  {
+                    "children": [
+                      "b8-icon",
+                      "b8-text"
+                    ],
+                    "component": "Row",
+                    "id": "b8-label"
+                  },
+                  {
+                    "component": "Icon",
+                    "id": "b8-icon",
+                    "name": "trash-2"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "b8-text",
+                    "text": "忘掉"
+                  },
+                  {
+                    "children": [
+                      "b8"
+                    ],
+                    "component": "Row",
+                    "id": "r9"
+                  },
+                  {
+                    "component": "Divider",
+                    "id": "d10"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "t11",
+                    "text": "依据 2 条",
+                    "variant": "caption"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "t12",
+                    "text": "答辩的时间我再和王老师确认"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "t13",
+                    "text": "你说的 · 邮件助手 · 11月4日 08:15",
+                    "variant": "caption"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "t14",
+                    "text": "subject：答辩 · by：user",
+                    "variant": "caption"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "t15",
+                    "text": "王老师您好，论文初稿下周三前发您"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "t16",
+                    "text": "你说的 · 邮件助手 · 10月27日 21:10",
+                    "variant": "caption"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "t17",
+                    "text": "subject：论文初稿 · by：user",
+                    "variant": "caption"
+                  },
+                  {
+                    "action": {
+                      "event": {
+                        "context": {
+                          "page": "all"
+                        },
+                        "name": "agent.open_page"
+                      }
+                    },
+                    "child": "b18-text",
+                    "component": "Button",
+                    "id": "b18"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "b18-text",
+                    "text": "回到「全部记忆」"
+                  },
+                  {
+                    "children": [
+                      "b18"
+                    ],
+                    "component": "Row",
+                    "id": "r19"
+                  }
+                ],
+                "surfaceId": "item"
+              },
+              "version": "v0.9"
+            },
+            {
+              "updateDataModel": {
+                "path": "/",
+                "surfaceId": "item",
+                "value": {
+                  "fields": {
+                    "revise": "学校：某大学计算机系"
+                  }
+                }
+              },
+              "version": "v0.9"
+            }
+          ],
+          "uri": "page/item?id=25"
+        }
+      ],
+      "resultType": "complete"
+    }
+  },
+  "request": {
+    "id": 39,
+    "jsonrpc": "2.0",
+    "method": "resources/read",
+    "params": {
+      "_meta": {
+        "io.modelcontextprotocol/clientCapabilities": {
+          "experimental": {
+            "ai.luoke/a2ui": {
+              "features": [
+                "openPage",
+                "pageArgs",
+                "confirm",
+                "rowOpen",
+                "fieldSubmit"
+              ]
+            }
+          }
+        },
+        "io.modelcontextprotocol/clientInfo": {
+          "name": "luoke-agent",
+          "version": "fixtures"
+        },
+        "io.modelcontextprotocol/protocolVersion": "2026-07-28"
+      },
+      "uri": "page/item?id=25"
+    }
+  }
+}

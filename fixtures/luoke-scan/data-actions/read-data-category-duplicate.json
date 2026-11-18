@@ -1,0 +1,91 @@
+{
+  "reply": {
+    "id": 1006,
+    "jsonrpc": "2.0",
+    "result": {
+      "contents": [
+        {
+          "mimeType": "application/json",
+          "text": {
+            "auto": "duplicate",
+            "bytes": 2097152,
+            "count": 1,
+            "facts": {
+              "apps": [],
+              "appsInstalled": 0,
+              "appsMissing": 0,
+              "groups": {
+                "duplicate": 1
+              },
+              "password": 0,
+              "rebuilds": 0,
+              "tools": [],
+              "userFiles": "none"
+            },
+            "files": 1,
+            "id": "duplicate",
+            "items": [
+              {
+                "bytes": 2097152,
+                "facts": {
+                  "copies": 1,
+                  "keep": "~/Documents/report-2026.pdf"
+                },
+                "finding": "space.duplicates/000000000008",
+                "group": "duplicate",
+                "key": "i4",
+                "options": [
+                  "trash",
+                  "clone",
+                  "keep",
+                  "ignore"
+                ],
+                "password": false,
+                "path": "~/Downloads/report-2026.pdf",
+                "paths": [
+                  "~/Downloads/report-2026.pdf"
+                ],
+                "pathsMore": 0,
+                "plan": "p-000000000002",
+                "reason": "copy-kept",
+                "rebuilds": false,
+                "restorable": true,
+                "reveal": "~/Downloads/report-2026.pdf",
+                "rule": "space.duplicates",
+                "suggested": "trash",
+                "userFiles": "none"
+              }
+            ],
+            "known": true,
+            "more": 0,
+            "scanned": {
+              "finished": "2026-10-20T12:00:00Z",
+              "started": "2026-10-20T12:00:00Z"
+            },
+            "schema": 1,
+            "suggested": 1,
+            "suggestedBytes": 2097152
+          },
+          "uri": "data/category?id=duplicate"
+        }
+      ],
+      "resultType": "complete"
+    }
+  },
+  "request": {
+    "id": 1006,
+    "jsonrpc": "2.0",
+    "method": "resources/read",
+    "params": {
+      "_meta": {
+        "io.modelcontextprotocol/clientCapabilities": {},
+        "io.modelcontextprotocol/clientInfo": {
+          "name": "luoke-agent",
+          "version": "fixtures"
+        },
+        "io.modelcontextprotocol/protocolVersion": "2026-07-28"
+      },
+      "uri": "data/category?id=duplicate"
+    }
+  }
+}

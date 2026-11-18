@@ -1,0 +1,59 @@
+{
+  "reply": {
+    "id": 33,
+    "jsonrpc": "2.0",
+    "result": {
+      "content": [
+        {
+          "text": "改好了：旧的说法留着，标为已被取代。",
+          "type": "text"
+        }
+      ],
+      "isError": false,
+      "resultType": "complete",
+      "structuredContent": {
+        "new_text": "本地部署的大模型",
+        "note": 1,
+        "result": "revise"
+      }
+    }
+  },
+  "request": {
+    "id": 33,
+    "jsonrpc": "2.0",
+    "method": "tools/call",
+    "params": {
+      "_meta": {
+        "ai.luoke/user-action": {
+          "at": "2026-11-06T10:08:00+08:00",
+          "componentId": "b7",
+          "surfaceId": "item"
+        },
+        "io.modelcontextprotocol/clientCapabilities": {
+          "experimental": {
+            "ai.luoke/a2ui": {
+              "features": [
+                "openPage",
+                "pageArgs",
+                "confirm",
+                "rowOpen",
+                "fieldSubmit"
+              ]
+            }
+          }
+        },
+        "io.modelcontextprotocol/clientInfo": {
+          "name": "luoke-agent",
+          "version": "fixtures"
+        },
+        "io.modelcontextprotocol/protocolVersion": "2026-07-28"
+      },
+      "arguments": {
+        "note": 1,
+        "op": "revise",
+        "text": "本地部署的大模型"
+      },
+      "name": "mem_note"
+    }
+  }
+}

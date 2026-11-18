@@ -17,8 +17,8 @@ final class ThemeTests: XCTestCase {
     }
 
     func testFilledButtonsAreReadable() {
-        for (name, p) in [("浅色", Palette.light), ("深色", Palette.dark)] {
-            XCTAssertGreaterThanOrEqual(contrast(.white, p.dangerFill), 4.5, "\(name)：红按钮上的白字")
+        for (name, p) in [("浅色", Palette.light), ("深色", Palette.dark), ("首页浅色", Palette.homeLight), ("首页深色", Palette.homeDark)] {
+            XCTAssertGreaterThanOrEqual(contrast(p.dangerFillFg, p.dangerFill), 4.5, "\(name)：红按钮上的字")
             XCTAssertGreaterThanOrEqual(contrast(p.primaryFg, p.primary), 4.5, "\(name)：主按钮")
             XCTAssertGreaterThanOrEqual(contrast(p.fg, p.bg), 4.5, "\(name)：正文")
             XCTAssertGreaterThanOrEqual(contrast(p.brandText, p.brandSoft), 4.5, "\(name)：粉底小标签上的珊瑚红字")
@@ -28,22 +28,52 @@ final class ThemeTests: XCTestCase {
         }
     }
 
-    /// 主要的几个颜色
+    /// 主要的几个颜色：照界面规范 v2 §2
     func testBrandColours() {
         XCTAssertEqual(Palette.light.bg, .hex(0xFCFAF7))
         XCTAssertEqual(Palette.light.sidebar, .hex(0xF7F2EB))
-        XCTAssertEqual(Palette.light.fg, .hex(0x3A1F14))
+        XCTAssertEqual(Palette.light.fg, .hex(0x2B1A12))
         XCTAssertEqual(Palette.light.primary, .hex(0x3A1F14))
         XCTAssertEqual(Palette.light.brand, .hex(0xE8556B))
-        XCTAssertEqual(Palette.dark.fg, .hex(0xFFF8EE))
-        XCTAssertEqual(Palette.dark.primary, .hex(0xFFF8EE))
-        XCTAssertEqual(Palette.dark.primaryFg, .hex(0x3A1F14))
+        XCTAssertEqual(Palette.dark.bg, .hex(0x1F1511))
+        XCTAssertEqual(Palette.dark.card, .hex(0x2C1F19))
+        XCTAssertEqual(Palette.dark.fg, .hex(0xFBF3E8))
+        XCTAssertEqual(Palette.dark.primary, .hex(0xFDF4E4))
+        XCTAssertEqual(Palette.dark.primaryFg, .hex(0x2B1A12))
+    }
+
+    /// 首页那一组只换规范列的几样，别的同工作台；主按钮和工作台一样是深棕（负责人 11-17：品牌粉像删除、像报错）
+    func testHomeLayer() {
+        XCTAssertEqual(Palette.homeLight.bg, .hex(0xFFF8EE))
+        XCTAssertEqual(Palette.homeLight.sidebar, .hex(0xFBEEDC))
+        XCTAssertEqual(Palette.homeLight.primary, Palette.light.primary)
+        XCTAssertEqual(Palette.homeLight.primaryFg, Palette.light.primaryFg)
+        XCTAssertEqual(Palette.homeDark.bg, .hex(0x241713))
+        XCTAssertEqual(Palette.homeDark.card, .hex(0x32221B))
+        XCTAssertEqual(Palette.homeDark.primary, Palette.dark.primary)
+        XCTAssertEqual(Palette.homeLight.fg, Palette.light.fg)
+        XCTAssertEqual(Palette.homeDark.mutedFg, Palette.dark.mutedFg)
+        XCTAssertEqual(Palette.of(.home, dark: true), .homeDark)
+        XCTAssertEqual(Palette.of(.workbench, dark: false), .light)
+    }
+
+    /// 内容区用哪一组：只有首页用首页那组
+    /// 每一页都用首页那组颜色（负责人 11-13：统一一种底色）
+    @MainActor func testEveryPageUsesOneColourSet() {
+        let m = WindowModel()
+        m.go(.today)
+        XCTAssertEqual(m.contentLayer, .home)
+        m.go(.prefs)
+        XCTAssertEqual(m.contentLayer, .home)
     }
 
     /// 字号只用五档，圆角只用这几档，间距在 4 pt 的格子上
     func testTokens() {
         XCTAssertEqual([LKType.title, LKType.lead, LKType.body, LKType.small, LKType.caption], [26, 15, 14, 13, 12])
-        XCTAssertEqual([LKRadius.small, LKRadius.control, LKRadius.card, LKRadius.sheet], [6, 8, 14, 20])
+        XCTAssertEqual([LKRadius.small, LKRadius.sheet], [6, 20])
+        // 卡片和按钮的圆角跟着哪一组：工作台 12 / 10，首页 18 / 12（界面规范 v2 §2、§11）
+        for p in [Palette.light, Palette.dark] { XCTAssertEqual([p.cardRadius, p.controlRadius], [12, 10]) }
+        for p in [Palette.homeLight, Palette.homeDark] { XCTAssertEqual([p.cardRadius, p.controlRadius], [18, 12]) }
         XCTAssertEqual(LKRadius.focus, 16)
         for v in [LKSpace.x1, LKSpace.x2, LKSpace.x3, LKSpace.x4, LKSpace.x5, LKSpace.x6, LKSpace.x7, LKSpace.x8, LKSpace.x11, LKSpace.x14] {
             XCTAssertEqual(v.truncatingRemainder(dividingBy: 4), 0, "\(v)")
@@ -70,9 +100,11 @@ final class ThemeTests: XCTestCase {
             let (x, y) = (lum(a), lum(b))
             return (max(x, y) + 0.05) / (min(x, y) + 0.05)
         }
-        for p in [Palette.light, Palette.dark] {
-            for (fn, fg) in [("mutedFg", p.mutedFg), ("danger", p.danger), ("success", p.success), ("brandText", p.brandText)] {
+        for p in [Palette.light, Palette.dark, Palette.homeLight, Palette.homeDark] {
+            for (fn, fg) in [("mutedFg", p.mutedFg), ("danger", p.danger), ("successText", p.successText), ("brandText", p.brandText)] {
                 for (bn, bg) in [("bg", p.bg), ("card", p.card), ("sidebar", p.sidebar), ("muted", p.muted), ("dangerSoft", p.dangerSoft), ("brandSoft", p.brandSoft)] {
+                    // 深色下珊瑚红字不放在红底上（规范 §2：这个搭配不用，4.47）
+                    if p.dark && fn == "brandText" && bn == "dangerSoft" { continue }
                     XCTAssertGreaterThanOrEqual(ratio(fg, bg), 4.5, "\(p.dark ? "深色" : "浅色") \(fn) 在 \(bn) 上")
                 }
             }

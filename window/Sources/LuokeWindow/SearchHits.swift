@@ -20,8 +20,19 @@ public struct WindowHit: Identifiable, Equatable {
     /// 缩略图 `thumb/<id>`：窗口经核心读（`GET /thumb`）
     public let thumb: String?
     public let actions: [HitAction]
+    /// 工具说这条本身就很对得上（工具协议 §1b `strong`）：放进顶上「最相关」
+    public var strong: Bool = false
+    /// 视频、录音有多长（秒）
+    public var duration: Double?
 
     public var id: String { app + "\u{1}" + hitID }
+
+    /// 时长写成「1:23」「1:02:03」；没有、不是正常的数就没有
+    public var clock: String? {
+        guard let d = duration, d.isFinite, d >= 0 else { return nil }
+        let s = Int(d.rounded())
+        return s >= 3600 ? String(format: "%d:%02d:%02d", s / 3600, s % 3600 / 60, s % 60) : String(format: "%d:%02d", s / 60, s % 60)
+    }
 
     public init(app: String, hitID: String, kind: String, kindLabel: String? = nil, title: String, line: String? = nil,
                 date: String? = nil, snippet: String? = nil, source: String? = nil, path: String? = nil,
@@ -51,6 +62,8 @@ public struct WindowHit: Identifiable, Equatable {
                       guard let t = a["title"]?.string, !t.isEmpty else { return nil }
                       return HitAction(title: t, primary: a["primary"]?.bool == true, reveal: a["reveal"]?.bool == true)
                   })
+        strong = v["strong"]?.bool == true
+        duration = v["duration"]?.number.flatMap { $0.isFinite && $0 >= 0 ? $0 : nil }
     }
 
     /// 打开（回车）：标了 primary 的，没有就第一个不是「在访达中显示」的；⌘↩：在访达中显示的那个。答它在 `actions` 里的序号
@@ -102,6 +115,8 @@ public struct HitGroup: Identifiable, Equatable {
     /// 画成缩略图格子（PDF、表格、图片、视频）；别的一行一条
     public let grid: Bool
     public var hits: [WindowHit]
+    /// 这一组一条都不是很对得上的（顶上「最相关」有东西时）：收成一行「邮件里还有 3 封提到『护照』 ›」，点了只看这一组
+    public var quiet = false
 
     /// 组的编号：截图、照片都算图片
     public static func key(_ kind: String) -> String {
@@ -116,6 +131,9 @@ public struct HitGroup: Identifiable, Equatable {
         "image": ("图片", "image", true), "video": ("视频", "video", true), "audio": ("录音", "mic", false),
         "mail": ("邮件", "mail", false), "memory": ("记忆", "brain", false),
     ]
+
+    /// 一条结果的图标（「最相关」里一行一条，照它是什么画）
+    public static func icon(_ kind: String) -> String { known[key(kind)]?.icon ?? "file" }
 
     /// 分组：跨工具合在一起；组的顺序按每组第一条出现的先后（各工具照问的顺序、工具里照它给的顺序），组里照工具给的顺序
     public static func make(_ hits: [WindowHit]) -> [HitGroup] {
@@ -162,9 +180,30 @@ public enum SearchLayout {
         return groups.filter { $0.id == filter }
     }
 
-    /// 键盘上下走的顺序：画出来的顺序
-    public static func order(_ groups: [HitGroup], filter: String?, previewing: Bool, selected: String? = nil) -> [WindowHit] {
-        visible(groups, filter: filter).flatMap { g -> [WindowHit] in
+    /// 顶上「最相关」（工具协议 §1b、界面接口 §7）：各应用标了 strong 的，每个应用最多两条，照问的顺序。各工具的分数不混排
+    public static let topPerApp = 2
+    public static func top(_ hits: [WindowHit]) -> [WindowHit] {
+        var n: [String: Int] = [:]
+        return hits.filter { h in
+            guard h.strong, n[h.app, default: 0] < topPerApp else { return false }
+            n[h.app, default: 0] += 1
+            return true
+        }
+    }
+
+    /// 分组：「最相关」里的不再出现在下面；有很对得上的那几组排前面；一条都不是的收成一行（`quiet`），
+    /// 「最相关」是空的时候照旧全摆出来
+    public static func groups(_ hits: [WindowHit], top: [WindowHit]) -> [HitGroup] {
+        let inTop = Set(top.map(\.id))
+        let strongKinds = Set(hits.filter(\.strong).map { HitGroup.key($0.kind) })
+        var gs = HitGroup.make(hits.filter { !inTop.contains($0.id) })
+        for i in gs.indices { gs[i].quiet = !top.isEmpty && !strongKinds.contains(gs[i].id) }
+        return gs.filter { !$0.quiet } + gs.filter(\.quiet)
+    }
+
+    /// 键盘上下走的顺序：画出来的顺序（顶上「最相关」在最前；收成一行的组不走）
+    public static func order(_ groups: [HitGroup], filter: String?, previewing: Bool, selected: String? = nil, top: [WindowHit] = []) -> [WindowHit] {
+        (filter == nil ? top : []) + visible(groups, filter: filter).filter { filter != nil || !$0.quiet }.flatMap { g -> [WindowHit] in
             let s = shown(g, filtered: filter != nil, previewing: previewing, selected: selected)
             return g.id == "mail" ? HitGroup(id: g.id, label: g.label, icon: g.icon, grid: false, hits: s).mailboxes.flatMap(\.hits) : s
         }

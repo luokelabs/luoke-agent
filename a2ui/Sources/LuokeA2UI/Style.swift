@@ -191,27 +191,33 @@ public extension EnvironmentValues {
     }
 }
 
-/// 自己画的勾选框
+/// 自己画的勾选框：勾上是一个绿勾（走查重画稿「扫描 · 一类的详情」），没勾是一个空框。
+/// 应用页上（`strong`）字加粗：一行的标题就是勾的那一样（「某设计软件 4.2.dmg」）
 struct DrawnCheckBox: View {
     let label: String
     @Binding var on: Bool
     let colors: A2UIDrawn
+    var strong = false
+
+    static let check = Color(red: 0x5f / 255, green: 0xbf / 255, blue: 0x7a / 255)
+    /// 开关开着的颜色（走查重画稿 .m-tg.on）
+    public static let switchOn = Color(red: 0x3f / 255, green: 0xb9 / 255, blue: 0x6b / 255)
 
     var body: some View {
         Button { on.toggle() } label: {
             HStack(spacing: 8) {
                 RoundedRectangle(cornerRadius: 4)
-                    .fill(on ? colors.primary : colors.card)
-                    .overlay(RoundedRectangle(cornerRadius: 4).strokeBorder(on ? colors.primary : colors.input, lineWidth: 1))
-                    .overlay(Image(systemName: "checkmark").font(.system(size: 10, weight: .bold))
-                        .foregroundStyle(colors.primaryFg).opacity(on ? 1 : 0))
+                    .strokeBorder(colors.input, lineWidth: 1)
+                    .opacity(on ? 0 : 1)
+                    .overlay(Image(systemName: "checkmark").font(.system(size: 12, weight: .semibold))
+                        .foregroundStyle(Self.check).opacity(on ? 1 : 0))
                     .frame(width: 16, height: 16)
-                Text(label).foregroundStyle(colors.fg).frame(maxWidth: .infinity, alignment: .leading)
+                Text(label).fontWeight(strong ? .semibold : nil).foregroundStyle(colors.fg).frame(maxWidth: .infinity, alignment: .leading)
                     .fixedSize(horizontal: false, vertical: true)
             }
             .contentShape(Rectangle())
         }
-        .buttonStyle(.plain)
+        .buttonStyle(.plainPointer)
         .accessibilityAddTraits(on ? .isSelected : [])
     }
 }
@@ -250,12 +256,12 @@ struct DrawnSwitch: View {
         if let colors {
             Button(action: tap) {
                 ZStack(alignment: on ? .trailing : .leading) {
-                    Capsule().fill(on ? colors.primary : colors.input).frame(width: 36, height: 20)
-                    Circle().fill(on ? colors.primaryFg : Color.white).frame(width: 16, height: 16)
+                    Capsule().fill(on ? DrawnCheckBox.switchOn : colors.input).frame(width: 36, height: 20)   // 开着是绿的（走查重画稿 .m-tg.on）
+                    Circle().fill(Color.white).frame(width: 16, height: 16)
                         .shadow(color: .black.opacity(0.2), radius: 1, y: 1).padding(2)
                 }
             }
-            .buttonStyle(.plain)
+            .buttonStyle(.plainPointer)
             .accessibilityLabel(label)
             .accessibilityValue(on ? "开" : "关")
         } else {
@@ -336,4 +342,60 @@ struct DrawnBox: View {
         .overlay(RoundedRectangle(cornerRadius: 8).strokeBorder(colors.input, lineWidth: 1))
         .fixedSize(horizontal: chevron, vertical: false)
     }
+}
+
+#if os(macOS)
+import AppKit
+
+/// 鼠标停在能点的东西上换成手形（负责人 11-14：能点的既没有悬停效果，也没有鼠标变化）。macOS 14 没有 pointerStyle，
+/// 用 NSCursor 的 push / pop；离开、消失、变成不能点时都放回去
+struct PointerOnHover: ViewModifier {
+    @Environment(\.isEnabled) private var enabled
+    @State private var pushed = false
+
+    func body(content: Content) -> some View {
+        content
+            .onHover { inside in
+                if inside && enabled && !pushed { NSCursor.pointingHand.push(); pushed = true }
+                else if !inside && pushed { NSCursor.pop(); pushed = false }
+            }
+            .onChange(of: enabled) { _, on in if !on && pushed { NSCursor.pop(); pushed = false } }
+            .onDisappear { if pushed { NSCursor.pop(); pushed = false } }
+    }
+}
+#endif
+
+public extension View {
+    /// 能点的：鼠标停上去是手形
+    func pointerOnHover() -> some View {
+        #if os(macOS)
+        return modifier(PointerOnHover())
+        #else
+        return self
+        #endif
+    }
+}
+
+/// 只在能点时鼠标停上去是手形（整行可点、有时不能点的）
+public struct PointerIf: ViewModifier {
+    let on: Bool
+    public init(on: Bool) { self.on = on }
+    public func body(content: Content) -> some View {
+        if on { content.pointerOnHover() } else { content }
+    }
+}
+
+/// 不带样子的按钮（整行、图标、链接）：和系统的 plain 一样，另外鼠标停上去是手形、按下去淡一点
+public struct PlainPointerButtonStyle: ButtonStyle {
+    public init() {}
+    public func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .opacity(configuration.isPressed ? 0.7 : 1)
+            .pointerOnHover()
+    }
+}
+
+public extension ButtonStyle where Self == PlainPointerButtonStyle {
+    /// 不带样子、鼠标停上去是手形的按钮
+    static var plainPointer: PlainPointerButtonStyle { PlainPointerButtonStyle() }
 }

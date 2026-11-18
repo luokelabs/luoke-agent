@@ -1,10 +1,10 @@
 import LuokeA2UI
 import SwiftUI
 
-/// 「一件件处理」怎么进场：第一件随面板出来，后面的从下面来，键盘上按的只淡入淡出
+/// 「逐件处理」怎么进场：第一件随面板出来，后面的从下面来，键盘上按的只淡入淡出
 enum FocusItemStyle { case enter, next, key }
 
-/// 「一件件处理」：一块面板盖住「今天」，一次只摆一件。⏎ 答标了 primary 的那个（没标的不答），↓ 跳过，Esc 回「今天」
+/// 「逐件处理」：一块面板盖住「今天」，一次只摆一件。⏎ 答标了 primary 的那个（没标的不答），↓ 跳过，Esc 回「今天」
 struct FocusPanel: View {
     @ObservedObject var model: WindowModel
     let ns: Namespace.ID
@@ -69,7 +69,7 @@ struct FocusPanel: View {
             return .handled
         }
         .accessibilityElement(children: .contain)
-        .accessibilityLabel("一件件处理")
+        .accessibilityLabel("逐件处理")
     }
 
     /// 每件一格最多画几格：再多每格太窄（40 件时不到 1 pt），改成一整条加「3 / 40」
@@ -80,7 +80,7 @@ struct FocusPanel: View {
         let segments = total <= Self.maxSegments
         return HStack(spacing: LKSpace.x4) {
             // 从「按类处理」进来的：写上是哪一类
-            Text(model.focus?.categoryName.map { "一件件处理 · \($0)" } ?? "一件件处理").font(LKFont.ui(LKType.lead, .semibold))
+            Text(model.focus?.categoryName.map { "逐件处理 · \($0)" } ?? "逐件处理").font(LKFont.ui(LKType.lead, .semibold))
                 .lineLimit(1)
             HStack(spacing: LKSpace.x2) {
                 Group {
@@ -112,15 +112,15 @@ struct FocusPanel: View {
             }
             .animation(quick ? Motion.fade(Motion.key) : Motion.move(Motion.segment, delay: 0.04, reduce: reduce), value: answered)
             .accessibilityElement()
-            .accessibilityLabel("答了 \(answered) 件，共 \(total) 件")
-            Text(model.cards.isEmpty ? "都处理完了" : "要你决定的还有 \(model.cards.count) 件")   // 和「今天」页「要你决定 N」连得上（侧栏「今天」还算上了急事）
+            .accessibilityLabel("已回答 \(answered) 件，共 \(total) 件")
+            Text(model.cards.isEmpty ? "已全部处理" : "待确认 \(model.cards.count) 件")   // 和「今天」页「要你决定 N」连得上（侧栏「今天」还算上了急事）
                 .font(LKFont.ui(LKType.small)).foregroundStyle(p.mutedFg).monospacedDigit()
                 .contentTransition(reduce ? .opacity : .numericText())
                 .animation(Motion.enter(Motion.counter, delay: 0.12, reduce: reduce), value: model.cards.count)
             Spacer(minLength: 0)
             Button { model.exitFocus() } label: {
                 HStack(spacing: LKSpace.x2) {
-                    Text("回到今天")   // 和下面的提示「Esc 回到今天」同一个说法
+                    Text("返回今天")   // 和下面的提示「Esc 返回今天」同一个说法
                     Kbd(text: "Esc")
                 }
             }
@@ -168,7 +168,7 @@ private extension View {
     func focusPart(_ i: Int, _ style: FocusItemStyle) -> some View { modifier(FocusPart(index: i, style: style)) }
 }
 
-/// 卡片里的按钮在一件件处理里另外画（大一号，后面跟「跳过」）
+/// 卡片里的按钮在逐件处理里另外画（大一号，后面跟「跳过」）
 private struct HiddenButtonStyle: ButtonStyle {
     func makeBody(configuration: Configuration) -> some View { EmptyView() }
 }
@@ -250,7 +250,7 @@ struct FocusItem: View {
             HStack(spacing: LKSpace.x4) {
                 if let a = digest.primary { hint("⏎", a.label) }
                 hint("↓", "跳过")
-                hint("Esc", "回到今天")
+                hint("Esc", "返回今天")
             }
             .padding(.top, LKSpace.x4)
             .focusPart(3, style)
@@ -265,7 +265,7 @@ struct FocusItem: View {
     }
 }
 
-/// 一件件处理里卡片的字：比「今天」里大一号，层级不变（说明比条目标题小）
+/// 逐件处理里卡片的字：比「今天」里大一号，层级不变（说明比条目标题小）
 func focusCardFont(_ variant: String?) -> Font {
     switch variant {
     case "h1", "h2", "h3", "h4", "h5": return LKFont.ui(LKType.title, .semibold)
@@ -287,15 +287,15 @@ struct FocusEnd: View {
     var body: some View {
         VStack(alignment: .leading, spacing: LKSpace.x3) {
             if left == 0 && categoryDone == nil { Mascot(width: 104).focusPart(0, style) }
-            Text(categoryDone.map { "「\($0)」都处理完了" } ?? (left == 0 ? "今天没什么要你操心的" : "还有 \(left) 件留着"))
+            Text(categoryDone.map { "「\($0)」已全部处理" } ?? (left == 0 ? "今天没有待处理的事项" : "剩余 \(left) 件"))
                 .font(LKFont.ui(LKType.title, .semibold)).tracking(-0.26)
                 .focusPart(1, style)
-            Text(categoryDone != nil ? "「要你决定」里还有 \(model.cards.count) 件别的事，在「今天」里。"
-                 : left > 0 ? "跳过的事还在「今天」里，等你有空再看。"
-                 : model.shows(.activity) ? "做了的都在「今天」和「活动」里，随时能撤销。" : "做了的都在「今天」里，随时能撤销。")
+            Text(categoryDone != nil ? "待确认的事项中还有 \(model.cards.count) 件，可在「今天」中查看"
+                 : left > 0 ? "跳过的事项仍在「今天」中"
+                 : model.shows(.activity) ? "已完成的事项在「今天」和右边栏的「历史」中，可随时撤销" : "已完成的事项在「今天」中，可随时撤销")
                 .font(LKFont.ui(LKType.lead)).foregroundStyle(p.fg.opacity(0.85))
                 .focusPart(2, style)
-            Button("回到今天") { model.exitFocus() }
+            Button("返回今天") { model.exitFocus() }
                 .buttonStyle(LKButtonStyle(kind: .primary, size: .large))
                 .padding(.top, LKSpace.x2)
                 .focusPart(3, style)

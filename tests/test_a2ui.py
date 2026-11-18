@@ -232,7 +232,7 @@ class ValidateTest(unittest.TestCase):
 
     def test_count_also(self):
         """§4 countAlso：别的值（以后别提、换成克隆）也交得上去。{n} 照样只数 value；选了 also 里的值时按钮能点、
-        字换成 alsoLabel；没选时照 countLabel（0 项灰掉）。"""
+        字换成 alsoLabel；没选时照 countLabel（0 项不画）。"""
         def btn(count, data=None):
             return card([{"id": "root", "component": "Button", "child": "t", "count": count,
                           "action": {"event": {"name": "scan_apply", "context": {"choices": {"path": "/choices"}}}}},
@@ -250,7 +250,7 @@ class ValidateTest(unittest.TestCase):
             return a2ui.count_chosen(data, ok), a2ui.count_also(data, ok)
         self.assertEqual(state("ignore", "keep"), (0, True), "只选了以后别提：0 项也能点，写 alsoLabel")
         self.assertEqual(state("trash", "clone"), (1, True), "混着选：写 alsoLabel，{n} 只数移到废纸篓的")
-        self.assertEqual(state("keep", "keep"), (0, False), "都先不动：照 countLabel，0 项灰掉")
+        self.assertEqual(state("keep", "keep"), (0, False), "都先不动：照 countLabel，0 项不画")
         self.assertEqual(state("trash", "trash"), (2, False), "只选了移到废纸篓：原来的字")
         self.assertFalse(a2ui.count_also({"choices": {"i0": ["ignore"]}}, {"path": "/choices", "value": "trash"}), "没写 also")
         self.assertFalse(a2ui.count_also({}, ok))

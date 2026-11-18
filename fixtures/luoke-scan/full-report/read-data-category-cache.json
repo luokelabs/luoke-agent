@@ -1,0 +1,242 @@
+{
+  "reply": {
+    "id": 1004,
+    "jsonrpc": "2.0",
+    "result": {
+      "contents": [
+        {
+          "mimeType": "application/json",
+          "text": {
+            "auto": "cache",
+            "bytes": 349175808,
+            "count": 6,
+            "facts": {
+              "apps": [],
+              "appsInstalled": 0,
+              "appsMissing": 0,
+              "groups": {
+                "tool-cache": 6
+              },
+              "password": 0,
+              "rebuilds": 6,
+              "tools": [
+                "Bun",
+                "Go",
+                "Xcode",
+                "npm",
+                "pip",
+                "uv"
+              ],
+              "userFiles": "none"
+            },
+            "files": 6,
+            "id": "cache",
+            "items": [
+              {
+                "bytes": 62914560,
+                "facts": {
+                  "cache": "pip",
+                  "tool": "pip"
+                },
+                "finding": "cache.rebuildable.pip/000000000018",
+                "group": "tool-cache",
+                "key": "i5",
+                "options": [
+                  "remove",
+                  "keep",
+                  "ignore"
+                ],
+                "password": false,
+                "path": "~/Library/Caches/pip",
+                "paths": [
+                  "~/Library/Caches/pip"
+                ],
+                "pathsMore": 0,
+                "plan": "p-000000000008",
+                "reason": "rebuilds",
+                "rebuilds": true,
+                "restorable": false,
+                "reveal": "~/Library/Caches/pip",
+                "rule": "cache.rebuildable.pip",
+                "suggested": "remove",
+                "userFiles": "none"
+              },
+              {
+                "bytes": 60817408,
+                "facts": {
+                  "cache": "go-build",
+                  "tool": "Go"
+                },
+                "finding": "cache.rebuildable.go-build/000000000019",
+                "group": "tool-cache",
+                "key": "i6",
+                "options": [
+                  "remove",
+                  "keep",
+                  "ignore"
+                ],
+                "password": false,
+                "path": "~/Library/Caches/go-build",
+                "paths": [
+                  "~/Library/Caches/go-build"
+                ],
+                "pathsMore": 0,
+                "plan": "p-000000000008",
+                "reason": "rebuilds",
+                "rebuilds": true,
+                "restorable": false,
+                "reveal": "~/Library/Caches/go-build",
+                "rule": "cache.rebuildable.go-build",
+                "suggested": "remove",
+                "userFiles": "none"
+              },
+              {
+                "bytes": 58720256,
+                "facts": {
+                  "cache": "uv",
+                  "tool": "uv"
+                },
+                "finding": "cache.rebuildable.uv/000000000020",
+                "group": "tool-cache",
+                "key": "i7",
+                "options": [
+                  "remove",
+                  "keep",
+                  "ignore"
+                ],
+                "password": false,
+                "path": "~/.cache/uv",
+                "paths": [
+                  "~/.cache/uv"
+                ],
+                "pathsMore": 0,
+                "plan": "p-000000000008",
+                "reason": "rebuilds",
+                "rebuilds": true,
+                "restorable": false,
+                "reveal": "~/.cache/uv",
+                "rule": "cache.rebuildable.uv",
+                "suggested": "remove",
+                "userFiles": "none"
+              },
+              {
+                "bytes": 56623104,
+                "facts": {
+                  "cache": "npm",
+                  "tool": "npm"
+                },
+                "finding": "cache.rebuildable.npm/000000000021",
+                "group": "tool-cache",
+                "key": "i8",
+                "options": [
+                  "remove",
+                  "keep",
+                  "ignore"
+                ],
+                "password": false,
+                "path": "~/.npm/_cacache",
+                "paths": [
+                  "~/.npm/_cacache"
+                ],
+                "pathsMore": 0,
+                "plan": "p-000000000008",
+                "reason": "rebuilds",
+                "rebuilds": true,
+                "restorable": false,
+                "reveal": "~/.npm/_cacache",
+                "rule": "cache.rebuildable.npm",
+                "suggested": "remove",
+                "userFiles": "none"
+              },
+              {
+                "bytes": 55574528,
+                "facts": {
+                  "cache": "xcode-deriveddata",
+                  "tool": "Xcode"
+                },
+                "finding": "cache.rebuildable.xcode-deriveddata/000000000022",
+                "group": "tool-cache",
+                "key": "i9",
+                "options": [
+                  "remove",
+                  "keep",
+                  "ignore"
+                ],
+                "password": false,
+                "path": "~/Library/Developer/Xcode/DerivedData",
+                "paths": [
+                  "~/Library/Developer/Xcode/DerivedData"
+                ],
+                "pathsMore": 0,
+                "plan": "p-000000000008",
+                "reason": "rebuilds",
+                "rebuilds": true,
+                "restorable": false,
+                "reveal": "~/Library/Developer/Xcode/DerivedData",
+                "rule": "cache.rebuildable.xcode-deriveddata",
+                "suggested": "remove",
+                "userFiles": "none"
+              },
+              {
+                "bytes": 54525952,
+                "facts": {
+                  "cache": "bun",
+                  "tool": "Bun"
+                },
+                "finding": "cache.rebuildable.bun/000000000023",
+                "group": "tool-cache",
+                "key": "i10",
+                "options": [
+                  "remove",
+                  "keep",
+                  "ignore"
+                ],
+                "password": false,
+                "path": "~/.bun/install/cache",
+                "paths": [
+                  "~/.bun/install/cache"
+                ],
+                "pathsMore": 0,
+                "plan": "p-000000000008",
+                "reason": "rebuilds",
+                "rebuilds": true,
+                "restorable": false,
+                "reveal": "~/.bun/install/cache",
+                "rule": "cache.rebuildable.bun",
+                "suggested": "remove",
+                "userFiles": "none"
+              }
+            ],
+            "known": true,
+            "more": 0,
+            "scanned": {
+              "finished": "2026-10-20T12:00:00Z",
+              "started": "2026-10-20T12:00:00Z"
+            },
+            "schema": 1,
+            "suggested": 6,
+            "suggestedBytes": 349175808
+          },
+          "uri": "data/category?id=cache"
+        }
+      ],
+      "resultType": "complete"
+    }
+  },
+  "request": {
+    "id": 1004,
+    "jsonrpc": "2.0",
+    "method": "resources/read",
+    "params": {
+      "_meta": {
+        "io.modelcontextprotocol/clientCapabilities": {},
+        "io.modelcontextprotocol/clientInfo": {
+          "name": "luoke-agent",
+          "version": "fixtures"
+        },
+        "io.modelcontextprotocol/protocolVersion": "2026-07-28"
+      },
+      "uri": "data/category?id=cache"
+    }
+  }
+}

@@ -38,6 +38,22 @@ def git(cwd, *args, check=True):
     return sh("git", *HELPER, "-c", "user.name=" + BOT, "-c", "user.email=" + BOT_EMAIL, *args, cwd=cwd, check=check)
 
 
+def test_count(text):
+    """XCTest 日志里的条数：认整个测试包（*.xctest）那行汇总；进程中途退出没有这行，写「中途退出」和停在哪条，
+    不拿最后一个小组的条数充数"""
+    whole = re.search(r"Test Suite '[^']*\.xctest' (?:passed|failed) at [^\n]*\n\s*Executed (\d+) tests?, with (\d+) failures?", text)
+    if whole:
+        return whole.group(1) if whole.group(2) == "0" else "%s，%s 项没过" % whole.groups()
+    if "Test Suite '" not in text:
+        return ""
+    started = re.findall(r"Test Case '-\[\S+ (\w+)\]' started", text)
+    last = started[-1] if started else ""
+    if last and not re.search(r"Test Case '-\[\S+ %s\]' (?:passed|failed)" % re.escape(last), text):
+        drawing = re.findall(r"^画 (\S+)$", text, re.M)
+        return "中途退出（停在 %s%s）" % (last, "，画到 " + drawing[-1] if drawing else "")
+    return "中途退出"
+
+
 def read_results(run, python):
     """Python 那一步的结果（工作流给的）加上 results.tsv 里 Swift 的几步，带从日志里数出来的测试条数"""
     out = [{"name": "Python 3.9、3.12", "result": PYTHON_RESULT.get(python, "skip"), "count": "", "log": "-"}]
@@ -49,9 +65,7 @@ def read_results(run, python):
         count = ""
         if os.path.exists(os.path.join(run, log)):
             text = open(os.path.join(run, log), encoding="utf-8", errors="replace").read()
-            m = re.findall(r"Executed (\d+) tests?, with (\d+) failures?", text)
-            if m:
-                count = m[-1][0] if m[-1][1] == "0" else "%s，%s 项没过" % m[-1]
+            count = test_count(text)
             if name == "截图" and os.path.isdir(os.path.join(run, "shots")):
                 count = str(len([f for f in os.listdir(os.path.join(run, "shots")) if f.endswith(".png")])) + " 张"
         out.append({"name": name, "result": result, "count": count, "log": log})

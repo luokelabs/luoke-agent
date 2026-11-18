@@ -1,0 +1,1071 @@
+{
+  "reply": {
+    "id": 7,
+    "jsonrpc": "2.0",
+    "result": {
+      "contents": [
+        {
+          "mimeType": "application/json",
+          "text": [
+            {
+              "createSurface": {
+                "catalogId": "ai.luoke/a2ui/agent/1",
+                "surfaceId": "overview"
+              },
+              "version": "v0.9"
+            },
+            {
+              "updateComponents": {
+                "components": [
+                  {
+                    "children": [
+                      "r4",
+                      "aside1",
+                      "d15",
+                      "t16",
+                      "t17",
+                      "t18",
+                      "r21",
+                      "t22",
+                      "t23",
+                      "r26",
+                      "d27",
+                      "t28",
+                      "t29",
+                      "t30",
+                      "r32",
+                      "c-g-i16",
+                      "t33",
+                      "c-i8",
+                      "t34",
+                      "c-g-i57",
+                      "t35",
+                      "c-i64",
+                      "c-g-i2",
+                      "t36",
+                      "t37",
+                      "r43",
+                      "c-i7",
+                      "t44",
+                      "r46",
+                      "d47",
+                      "t48",
+                      "t49",
+                      "t50",
+                      "r52",
+                      "t53",
+                      "t54",
+                      "t55",
+                      "r60",
+                      "t61",
+                      "t62",
+                      "t63",
+                      "t64",
+                      "r67",
+                      "aside2"
+                    ],
+                    "component": "Column",
+                    "id": "root"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "h1",
+                    "text": "扫描",
+                    "variant": "h4"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "n2",
+                    "text": "上次查 10月20日 20:00",
+                    "variant": "caption"
+                  },
+                  {
+                    "action": {
+                      "event": {
+                        "context": {},
+                        "name": "scan_now"
+                      }
+                    },
+                    "child": "b3-text",
+                    "component": "Button",
+                    "id": "b3"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "b3-text",
+                    "text": "现在查一下"
+                  },
+                  {
+                    "children": [
+                      "h1",
+                      "n2",
+                      "b3"
+                    ],
+                    "component": "Row",
+                    "id": "r4",
+                    "justify": "spaceBetween"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "t6",
+                    "text": "这周清掉",
+                    "variant": "caption"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "t7",
+                    "text": "还没清过",
+                    "variant": "h3"
+                  },
+                  {
+                    "children": [
+                      "t6",
+                      "t7"
+                    ],
+                    "component": "Column",
+                    "id": "s5"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "t9",
+                    "text": "能清出",
+                    "variant": "caption"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "t10",
+                    "text": "622 MB",
+                    "variant": "h3"
+                  },
+                  {
+                    "children": [
+                      "t9",
+                      "t10"
+                    ],
+                    "component": "Column",
+                    "id": "s8"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "t12",
+                    "text": "等你处理",
+                    "variant": "caption"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "t13",
+                    "text": "66 项",
+                    "variant": "h3"
+                  },
+                  {
+                    "children": [
+                      "t12",
+                      "t13"
+                    ],
+                    "component": "Column",
+                    "id": "s11"
+                  },
+                  {
+                    "children": [
+                      "s5",
+                      "s8",
+                      "s11"
+                    ],
+                    "component": "Row",
+                    "id": "r14",
+                    "justify": "spaceEvenly"
+                  },
+                  {
+                    "children": [
+                      "r14"
+                    ],
+                    "component": "Column",
+                    "id": "aside1",
+                    "placement": "aside"
+                  },
+                  {
+                    "component": "Divider",
+                    "id": "d15"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "t16",
+                    "text": "要尽快处理 2",
+                    "variant": "caption"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "t17",
+                    "text": "下载里的「eicar-test.com」可能是病毒"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "t18",
+                    "text": "病毒库认出了它。建议移到废纸篓，先不要打开。",
+                    "variant": "caption"
+                  },
+                  {
+                    "action": {
+                      "event": {
+                        "context": {
+                          "choices": {
+                            "i0": [
+                              "trash"
+                            ]
+                          },
+                          "plan_id": "p-000000000002"
+                        },
+                        "name": "scan_apply"
+                      }
+                    },
+                    "child": "b19-row",
+                    "component": "Button",
+                    "id": "b19",
+                    "variant": "primary"
+                  },
+                  {
+                    "children": [
+                      "b19-icon",
+                      "b19-text"
+                    ],
+                    "component": "Row",
+                    "id": "b19-row"
+                  },
+                  {
+                    "component": "Icon",
+                    "id": "b19-icon",
+                    "name": "trash"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "b19-text",
+                    "text": "移到废纸篓"
+                  },
+                  {
+                    "action": {
+                      "event": {
+                        "context": {
+                          "finding_id": "malware.clamav/000000000003"
+                        },
+                        "name": "scan_ignore"
+                      }
+                    },
+                    "child": "b20-text",
+                    "component": "Button",
+                    "id": "b20"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "b20-text",
+                    "text": "不是病毒"
+                  },
+                  {
+                    "children": [
+                      "b19",
+                      "b20"
+                    ],
+                    "component": "Row",
+                    "id": "r21"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "t22",
+                    "text": "下载里的「update.scpt」可能是病毒"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "t23",
+                    "text": "病毒库认出了它。建议移到废纸篓，先不要打开。",
+                    "variant": "caption"
+                  },
+                  {
+                    "action": {
+                      "event": {
+                        "context": {
+                          "choices": {
+                            "i0": [
+                              "trash"
+                            ]
+                          },
+                          "plan_id": "p-000000000005"
+                        },
+                        "name": "scan_apply"
+                      }
+                    },
+                    "child": "b24-row",
+                    "component": "Button",
+                    "id": "b24",
+                    "variant": "primary"
+                  },
+                  {
+                    "children": [
+                      "b24-icon",
+                      "b24-text"
+                    ],
+                    "component": "Row",
+                    "id": "b24-row"
+                  },
+                  {
+                    "component": "Icon",
+                    "id": "b24-icon",
+                    "name": "trash"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "b24-text",
+                    "text": "移到废纸篓"
+                  },
+                  {
+                    "action": {
+                      "event": {
+                        "context": {
+                          "finding_id": "malware.yara.luoke_fake_password_dialog/000000000006"
+                        },
+                        "name": "scan_ignore"
+                      }
+                    },
+                    "child": "b25-text",
+                    "component": "Button",
+                    "id": "b25"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "b25-text",
+                    "text": "不是病毒"
+                  },
+                  {
+                    "children": [
+                      "b24",
+                      "b25"
+                    ],
+                    "component": "Row",
+                    "id": "r26"
+                  },
+                  {
+                    "component": "Divider",
+                    "id": "d27"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "t28",
+                    "text": "可以清掉 63",
+                    "variant": "caption"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "t29",
+                    "text": "会自动重建的缓存 7 项（392.2 MB）"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "t30",
+                    "text": "pip、Go、Cargo、Gradle、Composer、node-gyp",
+                    "variant": "caption"
+                  },
+                  {
+                    "action": {
+                      "event": {
+                        "context": {
+                          "choices": {
+                            "i10": [
+                              "remove"
+                            ],
+                            "i11": [
+                              "remove"
+                            ],
+                            "i12": [
+                              "remove"
+                            ],
+                            "i13": [
+                              "remove"
+                            ],
+                            "i14": [
+                              "remove"
+                            ],
+                            "i15": [
+                              "remove"
+                            ],
+                            "i9": [
+                              "remove"
+                            ]
+                          },
+                          "plan_id": "p-000000000008"
+                        },
+                        "name": "scan_apply"
+                      }
+                    },
+                    "child": "b31-text",
+                    "component": "Button",
+                    "id": "b31"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "b31-text",
+                    "text": "清理"
+                  },
+                  {
+                    "children": [
+                      "b31"
+                    ],
+                    "component": "Row",
+                    "id": "r32"
+                  },
+                  {
+                    "component": "ChoicePicker",
+                    "id": "c-g-i16",
+                    "label": "已经装好的应用留下的安装包，一共 41 项（215.1 MB）",
+                    "options": [
+                      {
+                        "label": "移到废纸篓",
+                        "value": "trash"
+                      },
+                      {
+                        "label": "先不动",
+                        "value": "keep"
+                      },
+                      {
+                        "label": "以后别提",
+                        "value": "ignore"
+                      }
+                    ],
+                    "value": {
+                      "path": "/choices/g-i16"
+                    }
+                  },
+                  {
+                    "component": "Text",
+                    "id": "t33",
+                    "text": "「AsterChat」、「AsterCode」、「AsterDraw」、「AsterMail」等，这 41 项一起处理",
+                    "variant": "caption"
+                  },
+                  {
+                    "component": "ChoicePicker",
+                    "id": "c-i8",
+                    "label": "wings 留下的临时文件夹（131.1 MB）",
+                    "options": [
+                      {
+                        "label": "移到废纸篓",
+                        "value": "trash"
+                      },
+                      {
+                        "label": "先不动",
+                        "value": "keep"
+                      },
+                      {
+                        "label": "以后别提",
+                        "value": "ignore"
+                      }
+                    ],
+                    "value": {
+                      "path": "/choices/i8"
+                    }
+                  },
+                  {
+                    "component": "Text",
+                    "id": "t34",
+                    "text": "25 个 wings-*，在系统临时目录里",
+                    "variant": "caption"
+                  },
+                  {
+                    "component": "ChoicePicker",
+                    "id": "c-g-i57",
+                    "label": "7 组重复的文件（14.7 MB）",
+                    "options": [
+                      {
+                        "label": "移到废纸篓",
+                        "value": "trash"
+                      },
+                      {
+                        "label": "换成克隆（都留着，省空间）",
+                        "value": "clone"
+                      },
+                      {
+                        "label": "先不动",
+                        "value": "keep"
+                      },
+                      {
+                        "label": "以后别提",
+                        "value": "ignore"
+                      }
+                    ],
+                    "value": {
+                      "path": "/choices/g-i57"
+                    }
+                  },
+                  {
+                    "component": "Text",
+                    "id": "t35",
+                    "text": "「香港-4.v2.pdf」、「香港-6.v2.pdf」、「香港-2.v2.pdf」、「香港-0.v2.pdf」等，这 7 项一起处理",
+                    "variant": "caption"
+                  },
+                  {
+                    "component": "ChoicePicker",
+                    "id": "c-i64",
+                    "label": "很久没动过的项目「old-pushed」（147 KB）",
+                    "options": [
+                      {
+                        "label": "移到废纸篓",
+                        "value": "trash"
+                      },
+                      {
+                        "label": "先不动",
+                        "value": "keep"
+                      },
+                      {
+                        "label": "以后别提",
+                        "value": "ignore"
+                      }
+                    ],
+                    "value": {
+                      "path": "/choices/i64"
+                    }
+                  },
+                  {
+                    "component": "ChoicePicker",
+                    "id": "c-g-i2",
+                    "label": "5 个 AI 插件能操作你的电脑",
+                    "options": [
+                      {
+                        "label": "移到废纸篓",
+                        "value": "trash"
+                      },
+                      {
+                        "label": "先不动",
+                        "value": "keep"
+                      },
+                      {
+                        "label": "以后别提",
+                        "value": "ignore"
+                      }
+                    ],
+                    "value": {
+                      "path": "/choices/g-i2"
+                    }
+                  },
+                  {
+                    "component": "Text",
+                    "id": "t36",
+                    "text": "「helper-0」、「helper-1」、「helper-2」、「helper-3」等，这 5 项一起处理\n不会自己运行；AI 用到它们时能改动、删除或外传文件\n不认识的建议移到废纸篓。",
+                    "variant": "caption"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "t37",
+                    "text": "在访达里逐个看（5 个）",
+                    "variant": "caption"
+                  },
+                  {
+                    "action": {
+                      "event": {
+                        "context": {
+                          "finding_id": "skill.download-exec/000000000009"
+                        },
+                        "name": "scan_reveal"
+                      }
+                    },
+                    "child": "b38-text",
+                    "component": "Button",
+                    "id": "b38"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "b38-text",
+                    "text": "在访达里显示「helper-0」"
+                  },
+                  {
+                    "action": {
+                      "event": {
+                        "context": {
+                          "finding_id": "skill.download-exec/000000000010"
+                        },
+                        "name": "scan_reveal"
+                      }
+                    },
+                    "child": "b39-text",
+                    "component": "Button",
+                    "id": "b39"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "b39-text",
+                    "text": "在访达里显示「helper-1」"
+                  },
+                  {
+                    "action": {
+                      "event": {
+                        "context": {
+                          "finding_id": "skill.download-exec/000000000011"
+                        },
+                        "name": "scan_reveal"
+                      }
+                    },
+                    "child": "b40-text",
+                    "component": "Button",
+                    "id": "b40"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "b40-text",
+                    "text": "在访达里显示「helper-2」"
+                  },
+                  {
+                    "action": {
+                      "event": {
+                        "context": {
+                          "finding_id": "skill.download-exec/000000000012"
+                        },
+                        "name": "scan_reveal"
+                      }
+                    },
+                    "child": "b41-text",
+                    "component": "Button",
+                    "id": "b41"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "b41-text",
+                    "text": "在访达里显示「helper-3」"
+                  },
+                  {
+                    "action": {
+                      "event": {
+                        "context": {
+                          "finding_id": "skill.download-exec/000000000013"
+                        },
+                        "name": "scan_reveal"
+                      }
+                    },
+                    "child": "b42-text",
+                    "component": "Button",
+                    "id": "b42"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "b42-text",
+                    "text": "在访达里显示「helper-4」"
+                  },
+                  {
+                    "children": [
+                      "b38",
+                      "b39",
+                      "b40",
+                      "b41",
+                      "b42"
+                    ],
+                    "component": "Row",
+                    "id": "r43"
+                  },
+                  {
+                    "component": "ChoicePicker",
+                    "id": "c-i7",
+                    "label": "会跟着电脑一起启动的「gone」",
+                    "options": [
+                      {
+                        "label": "移到废纸篓",
+                        "value": "trash"
+                      },
+                      {
+                        "label": "先不动",
+                        "value": "keep"
+                      },
+                      {
+                        "label": "以后别提",
+                        "value": "ignore"
+                      }
+                    ],
+                    "value": {
+                      "path": "/choices/i7"
+                    }
+                  },
+                  {
+                    "component": "Text",
+                    "id": "t44",
+                    "text": "开机后在后台自动运行。不认识可以移除。",
+                    "variant": "caption"
+                  },
+                  {
+                    "action": {
+                      "event": {
+                        "context": {
+                          "choices": {
+                            "path": "/choices"
+                          },
+                          "plan_id": "p-000000000008"
+                        },
+                        "name": "scan_apply"
+                      }
+                    },
+                    "child": "b45-text",
+                    "component": "Button",
+                    "id": "b45",
+                    "variant": "primary"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "b45-text",
+                    "text": "按上面的选择清理"
+                  },
+                  {
+                    "children": [
+                      "b45"
+                    ],
+                    "component": "Row",
+                    "id": "r46"
+                  },
+                  {
+                    "component": "Divider",
+                    "id": "d47"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "t48",
+                    "text": "要你看看 8",
+                    "variant": "caption"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "t49",
+                    "text": "硬盘没加密：电脑丢了，别人能直接读出里面的东西"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "t50",
+                    "text": "打开时会给你恢复密钥，抄下来放好",
+                    "variant": "caption"
+                  },
+                  {
+                    "action": {
+                      "event": {
+                        "context": {
+                          "grant": "FileVault"
+                        },
+                        "name": "scan_open_settings"
+                      }
+                    },
+                    "child": "b51-text",
+                    "component": "Button",
+                    "id": "b51"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "b51-text",
+                    "text": "打开 FileVault 设置"
+                  },
+                  {
+                    "children": [
+                      "b51"
+                    ],
+                    "component": "Row",
+                    "id": "r52"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "t53",
+                    "text": "4 个最近装的应用来路不明"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "t54",
+                    "text": "「Clipper.Pro」、「Notes Lite」、「Snap Tool 2.1」、「Viewer」\n不是你装的就删掉",
+                    "variant": "caption"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "t55",
+                    "text": "在访达里逐个看（4 个）",
+                    "variant": "caption"
+                  },
+                  {
+                    "action": {
+                      "event": {
+                        "context": {
+                          "finding_id": "apps.unsigned/000000000014"
+                        },
+                        "name": "scan_reveal"
+                      }
+                    },
+                    "child": "b56-text",
+                    "component": "Button",
+                    "id": "b56"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "b56-text",
+                    "text": "在访达里显示「Clipper.Pro」"
+                  },
+                  {
+                    "action": {
+                      "event": {
+                        "context": {
+                          "finding_id": "apps.unsigned/000000000015"
+                        },
+                        "name": "scan_reveal"
+                      }
+                    },
+                    "child": "b57-text",
+                    "component": "Button",
+                    "id": "b57"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "b57-text",
+                    "text": "在访达里显示「Notes Lite」"
+                  },
+                  {
+                    "action": {
+                      "event": {
+                        "context": {
+                          "finding_id": "apps.unsigned/000000000016"
+                        },
+                        "name": "scan_reveal"
+                      }
+                    },
+                    "child": "b58-text",
+                    "component": "Button",
+                    "id": "b58"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "b58-text",
+                    "text": "在访达里显示「Snap Tool 2.1」"
+                  },
+                  {
+                    "action": {
+                      "event": {
+                        "context": {
+                          "finding_id": "apps.unsigned/000000000017"
+                        },
+                        "name": "scan_reveal"
+                      }
+                    },
+                    "child": "b59-text",
+                    "component": "Button",
+                    "id": "b59"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "b59-text",
+                    "text": "在访达里显示「Viewer」"
+                  },
+                  {
+                    "children": [
+                      "b56",
+                      "b57",
+                      "b58",
+                      "b59"
+                    ],
+                    "component": "Row",
+                    "id": "r60"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "t61",
+                    "text": "「gone」已经删掉了却还在运行"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "t62",
+                    "text": "它会跟着开机启动，重启后还会再运行。\n要停掉它：把上面「会跟着电脑一起启动的『gone』」改成「移到废纸篓」，清理后重启一下电脑。",
+                    "variant": "caption"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "t63",
+                    "text": "2 个已删除的应用仍有权限"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "t64",
+                    "text": "「tool」、「removed」\n应用已经删了，权限可以一起移除",
+                    "variant": "caption"
+                  },
+                  {
+                    "action": {
+                      "event": {
+                        "context": {
+                          "grant": "录屏"
+                        },
+                        "name": "scan_open_settings"
+                      }
+                    },
+                    "child": "b65-text",
+                    "component": "Button",
+                    "id": "b65"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "b65-text",
+                    "text": "打开「录屏」"
+                  },
+                  {
+                    "action": {
+                      "event": {
+                        "context": {
+                          "grant": "完全磁盘访问"
+                        },
+                        "name": "scan_open_settings"
+                      }
+                    },
+                    "child": "b66-text",
+                    "component": "Button",
+                    "id": "b66"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "b66-text",
+                    "text": "打开「完全磁盘访问」"
+                  },
+                  {
+                    "children": [
+                      "b65",
+                      "b66"
+                    ],
+                    "component": "Row",
+                    "id": "r67"
+                  },
+                  {
+                    "component": "Divider",
+                    "id": "d68"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "t69",
+                    "text": "自动清理"
+                  },
+                  {
+                    "action": {
+                      "event": {
+                        "context": {
+                          "on": true
+                        },
+                        "name": "scan_autoclean"
+                      }
+                    },
+                    "child": "b70-text",
+                    "component": "Button",
+                    "id": "b70",
+                    "on": false,
+                    "variant": "switch"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "b70-text",
+                    "text": "打开自动清理"
+                  },
+                  {
+                    "children": [
+                      "t69",
+                      "b70"
+                    ],
+                    "component": "Row",
+                    "id": "r71",
+                    "justify": "spaceBetween"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "t72",
+                    "text": "打开后，每天那一轮不用你点就清：会重建的缓存、装好了的应用的安装包、下载文件夹里的重复文件、测试工具留下的临时文件夹。移到废纸篓的都能放回，要你定的照样先问你。",
+                    "variant": "caption"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "t73",
+                    "text": "病毒库更新于 10月20日",
+                    "variant": "caption"
+                  },
+                  {
+                    "children": [
+                      "d68",
+                      "r71",
+                      "t72",
+                      "t73"
+                    ],
+                    "component": "Column",
+                    "id": "aside2",
+                    "placement": "aside"
+                  }
+                ],
+                "surfaceId": "overview"
+              },
+              "version": "v0.9"
+            },
+            {
+              "updateDataModel": {
+                "path": "/",
+                "surfaceId": "overview",
+                "value": {
+                  "choices": {
+                    "g-i16": [
+                      "trash"
+                    ],
+                    "g-i2": [
+                      "trash"
+                    ],
+                    "g-i57": [
+                      "trash"
+                    ],
+                    "i0": [
+                      "keep"
+                    ],
+                    "i1": [
+                      "keep"
+                    ],
+                    "i10": [
+                      "keep"
+                    ],
+                    "i11": [
+                      "keep"
+                    ],
+                    "i12": [
+                      "keep"
+                    ],
+                    "i13": [
+                      "keep"
+                    ],
+                    "i14": [
+                      "keep"
+                    ],
+                    "i15": [
+                      "keep"
+                    ],
+                    "i64": [
+                      "keep"
+                    ],
+                    "i7": [
+                      "keep"
+                    ],
+                    "i8": [
+                      "keep"
+                    ],
+                    "i9": [
+                      "keep"
+                    ]
+                  }
+                }
+              },
+              "version": "v0.9"
+            }
+          ],
+          "uri": "page/overview"
+        }
+      ],
+      "resultType": "complete"
+    }
+  },
+  "request": {
+    "id": 7,
+    "jsonrpc": "2.0",
+    "method": "resources/read",
+    "params": {
+      "_meta": {
+        "io.modelcontextprotocol/clientCapabilities": {},
+        "io.modelcontextprotocol/clientInfo": {
+          "name": "luoke-agent",
+          "version": "fixtures"
+        },
+        "io.modelcontextprotocol/protocolVersion": "2026-07-28"
+      },
+      "uri": "page/overview"
+    }
+  }
+}

@@ -1,0 +1,60 @@
+{
+  "reply": {
+    "id": 49,
+    "jsonrpc": "2.0",
+    "result": {
+      "content": [
+        {
+          "text": "改好了：以后就叫「磊哥」。",
+          "type": "text"
+        }
+      ],
+      "isError": false,
+      "resultType": "complete",
+      "structuredContent": {
+        "name": "磊哥",
+        "person": 1,
+        "result": "rename",
+        "was": "王磊"
+      }
+    }
+  },
+  "request": {
+    "id": 49,
+    "jsonrpc": "2.0",
+    "method": "tools/call",
+    "params": {
+      "_meta": {
+        "ai.luoke/user-action": {
+          "at": "2026-11-06T10:20:00+08:00",
+          "componentId": "b3",
+          "surfaceId": "people"
+        },
+        "io.modelcontextprotocol/clientCapabilities": {
+          "experimental": {
+            "ai.luoke/a2ui": {
+              "features": [
+                "openPage",
+                "pageArgs",
+                "confirm",
+                "rowOpen",
+                "fieldSubmit"
+              ]
+            }
+          }
+        },
+        "io.modelcontextprotocol/clientInfo": {
+          "name": "luoke-agent",
+          "version": "fixtures"
+        },
+        "io.modelcontextprotocol/protocolVersion": "2026-07-28"
+      },
+      "arguments": {
+        "name": "磊哥",
+        "op": "rename",
+        "person": 1
+      },
+      "name": "mem_person"
+    }
+  }
+}

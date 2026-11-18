@@ -1,0 +1,99 @@
+{
+  "reply": {
+    "id": 11,
+    "jsonrpc": "2.0",
+    "result": {
+      "content": [
+        {
+          "text": "以后不再提 1 项。",
+          "type": "text"
+        }
+      ],
+      "isError": false,
+      "resultType": "complete",
+      "structuredContent": {
+        "card": [
+          {
+            "updateComponents": {
+              "components": [
+                {
+                  "children": [
+                    "r97960-t1"
+                  ],
+                  "component": "Column",
+                  "id": "root"
+                },
+                {
+                  "component": "Text",
+                  "id": "r97960-t1",
+                  "text": "以后不再提 1 项。"
+                }
+              ],
+              "surfaceId": "overview"
+            },
+            "version": "v0.9"
+          }
+        ],
+        "data": {
+          "cloned": {
+            "bytes": 0,
+            "count": 0
+          },
+          "gone": 0,
+          "ignored": 1,
+          "left": [],
+          "links": 0,
+          "moved": {
+            "bytes": 0,
+            "count": 0
+          },
+          "partly": 0,
+          "password": false,
+          "removed": {
+            "bytes": 0,
+            "count": 0
+          },
+          "restore": null,
+          "retry": null,
+          "round": null,
+          "scriptsOff": 0,
+          "skipped": 0,
+          "trashed": false,
+          "type": "applied",
+          "unchanged": 0,
+          "unrecorded": []
+        },
+        "done": true
+      }
+    }
+  },
+  "request": {
+    "id": 11,
+    "jsonrpc": "2.0",
+    "method": "tools/call",
+    "params": {
+      "_meta": {
+        "ai.luoke/user-action": {
+          "at": "2026-10-20T20:06:00+08:00",
+          "componentId": "ignore-category",
+          "surfaceId": "overview"
+        },
+        "io.modelcontextprotocol/clientCapabilities": {},
+        "io.modelcontextprotocol/clientInfo": {
+          "name": "luoke-agent",
+          "version": "fixtures"
+        },
+        "io.modelcontextprotocol/protocolVersion": "2026-07-28"
+      },
+      "arguments": {
+        "choices": {
+          "i4": [
+            "ignore"
+          ]
+        },
+        "plan_id": "p-000000000002"
+      },
+      "name": "scan_apply"
+    }
+  }
+}

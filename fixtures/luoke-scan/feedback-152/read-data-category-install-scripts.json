@@ -1,0 +1,120 @@
+{
+  "reply": {
+    "id": 1010,
+    "jsonrpc": "2.0",
+    "result": {
+      "contents": [
+        {
+          "mimeType": "application/json",
+          "text": {
+            "auto": null,
+            "bytes": 0,
+            "count": 2,
+            "facts": {
+              "apps": [],
+              "appsInstalled": 0,
+              "appsMissing": 0,
+              "groups": {
+                "install-scripts": 2
+              },
+              "password": 0,
+              "rebuilds": 0,
+              "tools": [
+                "pip",
+                "uv"
+              ],
+              "userFiles": "none"
+            },
+            "files": 2,
+            "id": "install-scripts",
+            "items": [
+              {
+                "bytes": null,
+                "facts": {
+                  "tool": "pip"
+                },
+                "finding": "pkg.install-scripts/000000000029",
+                "group": "install-scripts",
+                "key": "i10",
+                "options": [
+                  "scripts-off",
+                  "keep",
+                  "ignore"
+                ],
+                "password": false,
+                "path": "~/.config/pip/pip.conf",
+                "paths": [
+                  "~/.config/pip/pip.conf"
+                ],
+                "pathsMore": 0,
+                "plan": "p-000000000008",
+                "reason": "scripts-on",
+                "rebuilds": false,
+                "restorable": true,
+                "reveal": "~/.config/pip/pip.conf",
+                "rule": "pkg.install-scripts",
+                "suggested": "keep",
+                "userFiles": "none"
+              },
+              {
+                "bytes": null,
+                "facts": {
+                  "tool": "uv"
+                },
+                "finding": "pkg.install-scripts/000000000030",
+                "group": "install-scripts",
+                "key": "i11",
+                "options": [
+                  "scripts-off",
+                  "keep",
+                  "ignore"
+                ],
+                "password": false,
+                "path": "~/.config/uv/uv.toml",
+                "paths": [
+                  "~/.config/uv/uv.toml"
+                ],
+                "pathsMore": 0,
+                "plan": "p-000000000008",
+                "reason": "scripts-on",
+                "rebuilds": false,
+                "restorable": true,
+                "reveal": "~/.config/uv/uv.toml",
+                "rule": "pkg.install-scripts",
+                "suggested": "keep",
+                "userFiles": "none"
+              }
+            ],
+            "known": true,
+            "more": 0,
+            "scanned": {
+              "finished": "2026-10-20T12:00:00Z",
+              "started": "2026-10-20T12:00:00Z"
+            },
+            "schema": 1,
+            "suggested": 0,
+            "suggestedBytes": 0
+          },
+          "uri": "data/category?id=install-scripts"
+        }
+      ],
+      "resultType": "complete"
+    }
+  },
+  "request": {
+    "id": 1010,
+    "jsonrpc": "2.0",
+    "method": "resources/read",
+    "params": {
+      "_meta": {
+        "io.modelcontextprotocol/clientCapabilities": {},
+        "io.modelcontextprotocol/clientInfo": {
+          "name": "luoke-agent",
+          "version": "fixtures"
+        },
+        "io.modelcontextprotocol/protocolVersion": "2026-07-28"
+      },
+      "uri": "data/category?id=install-scripts"
+    }
+  }
+}

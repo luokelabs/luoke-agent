@@ -1,6 +1,6 @@
 {
   "reply": {
-    "id": 8,
+    "id": 13,
     "jsonrpc": "2.0",
     "result": {
       "contents": [
@@ -19,31 +19,20 @@
                 "components": [
                   {
                     "children": [
-                      "h1",
-                      "t2",
                       "k-sure",
-                      "t3",
-                      "t4",
-                      "r7",
-                      "t8",
-                      "t9",
-                      "r12",
-                      "r14"
+                      "t1",
+                      "t2",
+                      "r5",
+                      "t6",
+                      "t7",
+                      "r11",
+                      "t12",
+                      "t13",
+                      "r17",
+                      "r19"
                     ],
                     "component": "Column",
                     "id": "root"
-                  },
-                  {
-                    "component": "Text",
-                    "id": "h1",
-                    "text": "记下的",
-                    "variant": "h4"
-                  },
-                  {
-                    "component": "Text",
-                    "id": "t2",
-                    "text": "螺壳的工具会用这些。不对的点「不对」，以后不再提；「忘掉」连它的依据一起删掉，删了找不回来。",
-                    "variant": "caption"
                   },
                   {
                     "component": "CheckBox",
@@ -55,13 +44,13 @@
                   },
                   {
                     "component": "Text",
-                    "id": "t3",
+                    "id": "t1",
                     "text": "在读研究生，导师是王老师"
                   },
                   {
                     "component": "Text",
-                    "id": "t4",
-                    "text": "关于你 · 依据 2 条 · 11月5日",
+                    "id": "t2",
+                    "text": "关于你 · 11月5日",
                     "variant": "caption"
                   },
                   {
@@ -74,14 +63,27 @@
                         "name": "mem_note"
                       }
                     },
-                    "child": "b5-text",
+                    "child": "b3-label",
                     "component": "Button",
-                    "id": "b5",
+                    "id": "b3",
                     "variant": "borderless"
                   },
                   {
+                    "children": [
+                      "b3-icon",
+                      "b3-text"
+                    ],
+                    "component": "Row",
+                    "id": "b3-label"
+                  },
+                  {
+                    "component": "Icon",
+                    "id": "b3-icon",
+                    "name": "x"
+                  },
+                  {
                     "component": "Text",
-                    "id": "b5-text",
+                    "id": "b3-text",
                     "text": "不对"
                   },
                   {
@@ -97,60 +99,241 @@
                         "name": "mem_note"
                       }
                     },
-                    "child": "b6-text",
+                    "child": "b4-label",
                     "component": "Button",
-                    "id": "b6",
+                    "id": "b4",
                     "variant": "borderless"
                   },
                   {
+                    "children": [
+                      "b4-icon",
+                      "b4-text"
+                    ],
+                    "component": "Row",
+                    "id": "b4-label"
+                  },
+                  {
+                    "component": "Icon",
+                    "id": "b4-icon",
+                    "name": "trash-2"
+                  },
+                  {
                     "component": "Text",
-                    "id": "b6-text",
+                    "id": "b4-text",
                     "text": "忘掉"
                   },
                   {
                     "children": [
-                      "b5",
-                      "b6"
+                      "b3",
+                      "b4"
                     ],
                     "component": "Row",
-                    "id": "r7"
+                    "id": "r5"
                   },
                   {
                     "component": "Text",
-                    "id": "t8",
-                    "text": "螺壳"
+                    "id": "t6",
+                    "text": "爬山"
                   },
                   {
                     "component": "Text",
-                    "id": "t9",
-                    "text": "常用说法 · 依据 1 条 · 11月3日",
+                    "id": "t7",
+                    "text": "待确认 · 关注的话题 · 11月3日",
                     "variant": "caption"
                   },
                   {
                     "action": {
                       "event": {
                         "context": {
-                          "note": 4,
+                          "note": 2,
+                          "op": "confirm"
+                        },
+                        "name": "mem_note"
+                      }
+                    },
+                    "child": "b8-label",
+                    "component": "Button",
+                    "id": "b8",
+                    "variant": "borderless"
+                  },
+                  {
+                    "children": [
+                      "b8-icon",
+                      "b8-text"
+                    ],
+                    "component": "Row",
+                    "id": "b8-label"
+                  },
+                  {
+                    "component": "Icon",
+                    "id": "b8-icon",
+                    "name": "check"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "b8-text",
+                    "text": "对"
+                  },
+                  {
+                    "action": {
+                      "event": {
+                        "context": {
+                          "note": 2,
                           "op": "reject"
                         },
                         "name": "mem_note"
                       }
                     },
-                    "child": "b10-text",
+                    "child": "b9-label",
+                    "component": "Button",
+                    "id": "b9",
+                    "variant": "borderless"
+                  },
+                  {
+                    "children": [
+                      "b9-icon",
+                      "b9-text"
+                    ],
+                    "component": "Row",
+                    "id": "b9-label"
+                  },
+                  {
+                    "component": "Icon",
+                    "id": "b9-icon",
+                    "name": "x"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "b9-text",
+                    "text": "不对"
+                  },
+                  {
+                    "action": {
+                      "event": {
+                        "context": {
+                          "note": 2,
+                          "op": "forget",
+                          "sure": {
+                            "path": "/checks/sure"
+                          }
+                        },
+                        "name": "mem_note"
+                      }
+                    },
+                    "child": "b10-label",
                     "component": "Button",
                     "id": "b10",
                     "variant": "borderless"
                   },
                   {
+                    "children": [
+                      "b10-icon",
+                      "b10-text"
+                    ],
+                    "component": "Row",
+                    "id": "b10-label"
+                  },
+                  {
+                    "component": "Icon",
+                    "id": "b10-icon",
+                    "name": "trash-2"
+                  },
+                  {
                     "component": "Text",
                     "id": "b10-text",
+                    "text": "忘掉"
+                  },
+                  {
+                    "children": [
+                      "b8",
+                      "b9",
+                      "b10"
+                    ],
+                    "component": "Row",
+                    "id": "r11"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "t12",
+                    "text": "本地大模型"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "t13",
+                    "text": "待确认 · 关注的话题 · 10月28日",
+                    "variant": "caption"
+                  },
+                  {
+                    "action": {
+                      "event": {
+                        "context": {
+                          "note": 1,
+                          "op": "confirm"
+                        },
+                        "name": "mem_note"
+                      }
+                    },
+                    "child": "b14-label",
+                    "component": "Button",
+                    "id": "b14",
+                    "variant": "borderless"
+                  },
+                  {
+                    "children": [
+                      "b14-icon",
+                      "b14-text"
+                    ],
+                    "component": "Row",
+                    "id": "b14-label"
+                  },
+                  {
+                    "component": "Icon",
+                    "id": "b14-icon",
+                    "name": "check"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "b14-text",
+                    "text": "对"
+                  },
+                  {
+                    "action": {
+                      "event": {
+                        "context": {
+                          "note": 1,
+                          "op": "reject"
+                        },
+                        "name": "mem_note"
+                      }
+                    },
+                    "child": "b15-label",
+                    "component": "Button",
+                    "id": "b15",
+                    "variant": "borderless"
+                  },
+                  {
+                    "children": [
+                      "b15-icon",
+                      "b15-text"
+                    ],
+                    "component": "Row",
+                    "id": "b15-label"
+                  },
+                  {
+                    "component": "Icon",
+                    "id": "b15-icon",
+                    "name": "x"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "b15-text",
                     "text": "不对"
                   },
                   {
                     "action": {
                       "event": {
                         "context": {
-                          "note": 4,
+                          "note": 1,
                           "op": "forget",
                           "sure": {
                             "path": "/checks/sure"
@@ -159,23 +342,37 @@
                         "name": "mem_note"
                       }
                     },
-                    "child": "b11-text",
+                    "child": "b16-label",
                     "component": "Button",
-                    "id": "b11",
+                    "id": "b16",
                     "variant": "borderless"
                   },
                   {
+                    "children": [
+                      "b16-icon",
+                      "b16-text"
+                    ],
+                    "component": "Row",
+                    "id": "b16-label"
+                  },
+                  {
+                    "component": "Icon",
+                    "id": "b16-icon",
+                    "name": "trash-2"
+                  },
+                  {
                     "component": "Text",
-                    "id": "b11-text",
+                    "id": "b16-text",
                     "text": "忘掉"
                   },
                   {
                     "children": [
-                      "b10",
-                      "b11"
+                      "b14",
+                      "b15",
+                      "b16"
                     ],
                     "component": "Row",
-                    "id": "r12"
+                    "id": "r17"
                   },
                   {
                     "action": {
@@ -184,21 +381,21 @@
                         "name": "mem_open"
                       }
                     },
-                    "child": "b13-text",
+                    "child": "b18-text",
                     "component": "Button",
-                    "id": "b13"
+                    "id": "b18"
                   },
                   {
                     "component": "Text",
-                    "id": "b13-text",
+                    "id": "b18-text",
                     "text": "打开整份记忆"
                   },
                   {
                     "children": [
-                      "b13"
+                      "b18"
                     ],
                     "component": "Row",
-                    "id": "r14"
+                    "id": "r19"
                   }
                 ],
                 "surfaceId": "kept"
@@ -225,7 +422,7 @@
     }
   },
   "request": {
-    "id": 8,
+    "id": 13,
     "jsonrpc": "2.0",
     "method": "resources/read",
     "params": {

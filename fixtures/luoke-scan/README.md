@@ -35,6 +35,7 @@ python3 scripts/record_agent_fixtures.py --only decide-3 --keep   # 只录一个
 | `read-summary*.json` | `resources/read` `summary` |
 | `read-permissions*.json` | `resources/read` `permissions` |
 | `read-page-<页>*.json` | `resources/read` `page/overview`、`page/mac`、`page/cleaned` |
+| `read-data-<资源>*.json` | `resources/read` `data/overview`、`data/history`、`data/settings`；`read-data-category-<类>.json` 是 `data/category?id=<类>`（概览里列出的每一类）。只读的原始数据，字段见 [docs/data-resources.md](../../docs/data-resources.md) |
 | `call-<工具>*.json` | `tools/call`：卡片、页上的点按（带 `ai.luoke/user-action`），或对话里模型调的只读工具 |
 
 带 `-after-…` 的是点完以后再读的。每个文件是 `{"request": …, "reply": …}`：`request` 是 agent 发的那条 JSON-RPC
@@ -57,6 +58,10 @@ JSON 按键排序、缩进两格。
 
 - agent 要问的：`tools/list`（认 `readOnlyHint`）、`luoke://luoke-scan/outbox`、`summary`、`permissions`；打开应用页时读
   `page/<页>`。`server/discover`、`resources/list` 扫描都答，agent 现在不一定问。
+- agent 自己拼扫描页时读 `data/…`（只有代号和原始数值，没有卡片、没有句子；字段和动作清单见
+  [docs/data-resources.md](../../docs/data-resources.md)）。页上的动作照旧调工具：移到废纸篓是 `scan_apply`，`plan_id`、
+  `choices` 的键取自 `data/category` 每一项的 `plan`、`key`；放回是 `scan_restore`，`id` 取自 `data/history`、
+  `data/overview` 的 `batch`。
 - 会改动东西的（`scan_apply`、`scan_ignore`、`scan_restore`、`scan_autoclean`，清单 `actions` 里的四个）只认带
   `ai.luoke/user-action`（`surfaceId` 是工具自己起的卡片编号或页 id、`componentId`、`at`）的调用，没带的答
   `isError: true`、`structuredContent.code: "needs_user_action"`。`outbox_ack` 是只读的记账。
@@ -140,7 +145,7 @@ JSON 按键排序、缩进两格。
   - （分隔线）
   - 要你看看 2
   - 硬盘没加密：电脑丢了，别人能直接读出里面的东西
-  - 打开时会给你一个恢复密钥，抄下来放好。
+  - 打开时会给你恢复密钥，抄下来放好
   - 按钮：「打开 FileVault 设置」→ `scan_open_settings`
   - 「gone」已经删掉了却还在运行
   - 它会跟着开机启动，重启后还会再运行。 / 要停掉它：把上面「会跟着电脑一起启动的『gone』」改成「移到废纸篓」，清理后重启一下电脑。
@@ -209,6 +214,10 @@ JSON 按键排序、缩进两格。
 - 基础页 `page/cleaned`：
   - **清理记录**
   - 还没清理过。
+- 数据 `data/overview`：
+  - 可以清的（`reclaimable`）：`cache` 1 项 62914560 字节、`temp` 1 项 131072000 字节、`leftover` 1 项 2101248 字节、`project` 1 项 147456 字节、`startup` 1 项 0 字节
+  - 要看的（`attention`）：2 项，急的 0 项；大文件（`largeFiles`）0 个；自动清（`autoCleaned`）0 次
+- 数据 `data/history`：0 批
 
 **窗口上**
 
@@ -229,6 +238,14 @@ JSON 按键排序、缩进两格。
 | `read-page-overview.json` | resources/read `page/overview` | 2026-10-20T12:00:00Z：读基础页 page/overview |
 | `read-page-mac.json` | resources/read `page/mac` | 2026-10-20T12:00:00Z：读基础页 page/mac |
 | `read-page-cleaned.json` | resources/read `page/cleaned` | 2026-10-20T12:00:00Z：读基础页 page/cleaned |
+| `read-data-overview.json` | resources/read `data/overview` | 2026-10-20T12:00:00Z：读扫描页的数据 data/overview |
+| `read-data-history.json` | resources/read `data/history` | 2026-10-20T12:00:00Z：读清理记录的数据 data/history |
+| `read-data-settings.json` | resources/read `data/settings` | 2026-10-20T12:00:00Z：读设置的数据 data/settings |
+| `read-data-category-cache.json` | resources/read `data/category?id=cache` | 2026-10-20T12:00:00Z：读一类的详情 data/category?id=cache |
+| `read-data-category-temp.json` | resources/read `data/category?id=temp` | 2026-10-20T12:00:00Z：读一类的详情 data/category?id=temp |
+| `read-data-category-leftover.json` | resources/read `data/category?id=leftover` | 2026-10-20T12:00:00Z：读一类的详情 data/category?id=leftover |
+| `read-data-category-project.json` | resources/read `data/category?id=project` | 2026-10-20T12:00:00Z：读一类的详情 data/category?id=project |
+| `read-data-category-startup.json` | resources/read `data/category?id=startup` | 2026-10-20T12:00:00Z：读一类的详情 data/category?id=startup |
 | `call-scan_status.json` | tools/call `scan_status` | 2026-10-20T12:00:00Z：对话里问「扫描怎么样了」：模型调 scan_status（只读，答一张新卡片） |
 
 `call-scan_status.json` 答：「上一轮：2026-10-20T12:00:00Z，用了 0 秒；发现：放心删 1、要确认 5、仅供参考 15；放心删的能腾出 62.9 MB；病毒库 daily 27000（2026-10-20）；没查成：space、space.system、space.duplicates、leftover.app-data、leftover.installer、stale.large-file、secrets、permission.stale-grant、malware；自动清：关」（新卡片）
@@ -302,12 +319,12 @@ JSON 按键排序、缩进两格。
   - （分隔线）
   - 要你看看 4
   - 硬盘没加密：电脑丢了，别人能直接读出里面的东西
-  - 打开时会给你一个恢复密钥，抄下来放好。
+  - 打开时会给你恢复密钥，抄下来放好
   - 按钮：「打开 FileVault 设置」→ `scan_open_settings`
   - 「gone」已经删掉了却还在运行
   - 它会跟着开机启动，重启后还会再运行。 / 要停掉它：把上面「会跟着电脑一起启动的『gone』」改成「移到废纸篓」，清理后重启一下电脑。
   - 2 个已删除的应用仍有权限
-  - 「tool」、「removed」 / 在系统设置中选中它们，点「−」移除。
+  - 「tool」、「removed」 / 应用已经删了，权限可以一起移除
   - 按钮：「打开「录屏」」→ `scan_open_settings`、「打开「完全磁盘访问」」→ `scan_open_settings`
   - （分隔线）
   - 自动清理
@@ -375,6 +392,10 @@ JSON 按键排序、缩进两格。
 - 基础页 `page/cleaned`：
   - **清理记录**
   - 还没清理过。
+- 数据 `data/overview`：
+  - 可以清的（`reclaimable`）：`cache` 1 项 62914560 字节、`temp` 1 项 131072000 字节、`leftover` 1 项 4198400 字节、`project` 1 项 147456 字节、`large-file` 1 项 41943040 字节、`startup` 1 项 0 字节、`malware` 2 项 8192 字节
+  - 要看的（`attention`）：6 项，急的 2 项；大文件（`largeFiles`）1 个；自动清（`autoCleaned`）0 次
+- 数据 `data/history`：0 批
 
 **窗口上**
 
@@ -390,6 +411,9 @@ JSON 按键排序、缩进两格。
 | `read-page-overview-before-fda.json` | resources/read `page/overview` | 2026-10-20T12:00:00Z：读基础页 page/overview |
 | `read-page-mac-before-fda.json` | resources/read `page/mac` | 2026-10-20T12:00:00Z：读基础页 page/mac |
 | `read-page-cleaned-before-fda.json` | resources/read `page/cleaned` | 2026-10-20T12:00:00Z：读基础页 page/cleaned |
+| `read-data-overview-before-fda.json` | resources/read `data/overview` | 2026-10-20T12:00:00Z：读扫描页的数据 data/overview |
+| `read-data-history-before-fda.json` | resources/read `data/history` | 2026-10-20T12:00:00Z：读清理记录的数据 data/history |
+| `read-data-settings-before-fda.json` | resources/read `data/settings` | 2026-10-20T12:00:00Z：读设置的数据 data/settings |
 | `server-discover.json` | server/discover | 2026-10-20T14:00:00Z：server/discover |
 | `tools-list.json` | tools/list | 2026-10-20T14:00:00Z：列工具（agent 认 readOnlyHint） |
 | `resources-list.json` | resources/list | 2026-10-20T14:00:00Z：列资源 |
@@ -399,6 +423,16 @@ JSON 按键排序、缩进两格。
 | `read-page-overview.json` | resources/read `page/overview` | 2026-10-20T14:00:00Z：读基础页 page/overview |
 | `read-page-mac.json` | resources/read `page/mac` | 2026-10-20T14:00:00Z：读基础页 page/mac |
 | `read-page-cleaned.json` | resources/read `page/cleaned` | 2026-10-20T14:00:00Z：读基础页 page/cleaned |
+| `read-data-overview.json` | resources/read `data/overview` | 2026-10-20T14:00:00Z：读扫描页的数据 data/overview |
+| `read-data-history.json` | resources/read `data/history` | 2026-10-20T14:00:00Z：读清理记录的数据 data/history |
+| `read-data-settings.json` | resources/read `data/settings` | 2026-10-20T14:00:00Z：读设置的数据 data/settings |
+| `read-data-category-cache.json` | resources/read `data/category?id=cache` | 2026-10-20T14:00:00Z：读一类的详情 data/category?id=cache |
+| `read-data-category-temp.json` | resources/read `data/category?id=temp` | 2026-10-20T14:00:00Z：读一类的详情 data/category?id=temp |
+| `read-data-category-leftover.json` | resources/read `data/category?id=leftover` | 2026-10-20T14:00:00Z：读一类的详情 data/category?id=leftover |
+| `read-data-category-project.json` | resources/read `data/category?id=project` | 2026-10-20T14:00:00Z：读一类的详情 data/category?id=project |
+| `read-data-category-large-file.json` | resources/read `data/category?id=large-file` | 2026-10-20T14:00:00Z：读一类的详情 data/category?id=large-file |
+| `read-data-category-startup.json` | resources/read `data/category?id=startup` | 2026-10-20T14:00:00Z：读一类的详情 data/category?id=startup |
+| `read-data-category-malware.json` | resources/read `data/category?id=malware` | 2026-10-20T14:00:00Z：读一类的详情 data/category?id=malware |
 
 ## `decide-3`：要你决定 3 项的清理方案
 
@@ -443,12 +477,12 @@ JSON 按键排序、缩进两格。
   - （分隔线）
   - 要你看看 4
   - 硬盘没加密：电脑丢了，别人能直接读出里面的东西
-  - 打开时会给你一个恢复密钥，抄下来放好。
+  - 打开时会给你恢复密钥，抄下来放好
   - 按钮：「打开 FileVault 设置」→ `scan_open_settings`
   - 「gone」已经删掉了却还在运行
-  - 重启一下电脑就好。
+  - 重启一下电脑就好
   - 2 个已删除的应用仍有权限
-  - 「tool」、「removed」 / 在系统设置中选中它们，点「−」移除。
+  - 「tool」、「removed」 / 应用已经删了，权限可以一起移除
   - 按钮：「打开「录屏」」→ `scan_open_settings`、「打开「完全磁盘访问」」→ `scan_open_settings`
   - （分隔线）
   - 自动清理
@@ -512,6 +546,10 @@ JSON 按键排序、缩进两格。
 - 基础页 `page/cleaned`：
   - **清理记录**
   - 还没清理过。
+- 数据 `data/overview`：
+  - 可以清的（`reclaimable`）：`cache` 1 项 62914560 字节、`temp` 1 项 131072000 字节、`leftover` 1 项 2097152 字节、`project` 1 项 147456 字节
+  - 要看的（`attention`）：4 项，急的 0 项；大文件（`largeFiles`）0 个；自动清（`autoCleaned`）0 次
+- 数据 `data/history`：0 批
 
 **窗口上**
 
@@ -533,6 +571,13 @@ JSON 按键排序、缩进两格。
 | `read-page-overview.json` | resources/read `page/overview` | 2026-10-20T12:00:00Z：读基础页 page/overview |
 | `read-page-mac.json` | resources/read `page/mac` | 2026-10-20T12:00:00Z：读基础页 page/mac |
 | `read-page-cleaned.json` | resources/read `page/cleaned` | 2026-10-20T12:00:00Z：读基础页 page/cleaned |
+| `read-data-overview.json` | resources/read `data/overview` | 2026-10-20T12:00:00Z：读扫描页的数据 data/overview |
+| `read-data-history.json` | resources/read `data/history` | 2026-10-20T12:00:00Z：读清理记录的数据 data/history |
+| `read-data-settings.json` | resources/read `data/settings` | 2026-10-20T12:00:00Z：读设置的数据 data/settings |
+| `read-data-category-cache.json` | resources/read `data/category?id=cache` | 2026-10-20T12:00:00Z：读一类的详情 data/category?id=cache |
+| `read-data-category-temp.json` | resources/read `data/category?id=temp` | 2026-10-20T12:00:00Z：读一类的详情 data/category?id=temp |
+| `read-data-category-leftover.json` | resources/read `data/category?id=leftover` | 2026-10-20T12:00:00Z：读一类的详情 data/category?id=leftover |
+| `read-data-category-project.json` | resources/read `data/category?id=project` | 2026-10-20T12:00:00Z：读一类的详情 data/category?id=project |
 | `call-scan_findings.json` | tools/call `scan_findings` | 2026-10-20T12:00:00Z：对话里问「要我看的是哪些」：模型调 scan_findings（只读） |
 | `call-scan_apply.json` | tools/call `scan_apply`（带 user-action） | 2026-10-20T12:05:00Z：用户在一轮的卡片上点「清理 1 项缓存」（只删会重建的缓存） |
 | `read-outbox-after-apply.json` | resources/read `luoke://luoke-scan/outbox` | 2026-10-20T12:05:00Z：点完再读 outbox |
@@ -610,12 +655,12 @@ JSON 按键排序、缩进两格。
   - （分隔线）
   - 要你看看 4
   - 硬盘没加密：电脑丢了，别人能直接读出里面的东西
-  - 打开时会给你一个恢复密钥，抄下来放好。
+  - 打开时会给你恢复密钥，抄下来放好
   - 按钮：「打开 FileVault 设置」→ `scan_open_settings`
   - 「gone」已经删掉了却还在运行
   - 它会跟着开机启动，重启后还会再运行。 / 要停掉它：把上面「会跟着电脑一起启动的『gone』」改成「移到废纸篓」，清理后重启一下电脑。
   - 2 个已删除的应用仍有权限
-  - 「tool」、「removed」 / 在系统设置中选中它们，点「−」移除。
+  - 「tool」、「removed」 / 应用已经删了，权限可以一起移除
   - 按钮：「打开「录屏」」→ `scan_open_settings`、「打开「完全磁盘访问」」→ `scan_open_settings`
   - （分隔线）
   - 自动清理
@@ -679,6 +724,10 @@ JSON 按键排序、缩进两格。
 - 基础页 `page/cleaned`：
   - **清理记录**
   - 还没清理过。
+- 数据 `data/overview`：
+  - 可以清的（`reclaimable`）：`cache` 1 项 62914560 字节、`temp` 1 项 131072000 字节、`leftover` 2 项 6295552 字节、`project` 1 项 147456 字节、`startup` 1 项 0 字节、`malware` 2 项 8192 字节
+  - 要看的（`attention`）：6 项，急的 2 项；大文件（`largeFiles`）0 个；自动清（`autoCleaned`）0 次
+- 数据 `data/history`：0 批
 
 **窗口上**
 
@@ -699,6 +748,15 @@ JSON 按键排序、缩进两格。
 | `read-page-overview.json` | resources/read `page/overview` | 2026-10-20T12:00:00Z：读基础页 page/overview |
 | `read-page-mac.json` | resources/read `page/mac` | 2026-10-20T12:00:00Z：读基础页 page/mac |
 | `read-page-cleaned.json` | resources/read `page/cleaned` | 2026-10-20T12:00:00Z：读基础页 page/cleaned |
+| `read-data-overview.json` | resources/read `data/overview` | 2026-10-20T12:00:00Z：读扫描页的数据 data/overview |
+| `read-data-history.json` | resources/read `data/history` | 2026-10-20T12:00:00Z：读清理记录的数据 data/history |
+| `read-data-settings.json` | resources/read `data/settings` | 2026-10-20T12:00:00Z：读设置的数据 data/settings |
+| `read-data-category-cache.json` | resources/read `data/category?id=cache` | 2026-10-20T12:00:00Z：读一类的详情 data/category?id=cache |
+| `read-data-category-temp.json` | resources/read `data/category?id=temp` | 2026-10-20T12:00:00Z：读一类的详情 data/category?id=temp |
+| `read-data-category-leftover.json` | resources/read `data/category?id=leftover` | 2026-10-20T12:00:00Z：读一类的详情 data/category?id=leftover |
+| `read-data-category-project.json` | resources/read `data/category?id=project` | 2026-10-20T12:00:00Z：读一类的详情 data/category?id=project |
+| `read-data-category-startup.json` | resources/read `data/category?id=startup` | 2026-10-20T12:00:00Z：读一类的详情 data/category?id=startup |
+| `read-data-category-malware.json` | resources/read `data/category?id=malware` | 2026-10-20T12:00:00Z：读一类的详情 data/category?id=malware |
 | `call-outbox_ack-shown.json` | tools/call `outbox_ack` | 2026-10-20T12:02:00Z：agent 把急事说给用户以后记一下（outbox_ack shown） |
 | `call-scan_apply.json` | tools/call `scan_apply`（带 user-action） | 2026-10-20T12:02:00Z：用户在 eicar 那张急事卡片上点「移到废纸篓」 |
 | `call-scan_ignore.json` | tools/call `scan_ignore`（带 user-action） | 2026-10-20T12:02:00Z：用户在 update.scpt 那张上点「不是病毒」：卡片换成一行「已记下：「update.scpt」以后不再提醒。」和「撤销」 |
@@ -721,7 +779,7 @@ JSON 按键排序、缩进两格。
 
 **扫描报的**
 
-- 概览（`summary`）：count 8，「能清出 62.9 MB，另外 7 项等你处理」
+- 概览（`summary`）：count 7，「能清出 62.9 MB，另外 6 项等你处理」
 - 权限（`permissions`）：`admin` ask、`auto` off、`fda` granted
 - outbox：0 件
 - 基础页 `page/overview`：
@@ -733,26 +791,24 @@ JSON 按键排序、缩进两格。
   - 能清出
   - 62.9 MB
   - 等你处理
-  - 7 项
+  - 6 项
   - （分隔线）
-  - 可以清掉 4
+  - 可以清掉 3
   - 会自动重建的缓存 1 项（62.9 MB）
   - pip
   - 按钮：「清理」→ `scan_apply`
-  - 选项：wings 留下的临时文件夹（131.1 MB）（trash/keep/ignore，默认 keep）
-  - 25 个 wings-*，在系统临时目录里
   - 选项：已经删掉的应用「stillused」留下的数据（2.1 MB）（trash/keep/ignore，默认 keep）
   - 选项：很久没动过的项目「old-pushed」（147 KB）（trash/keep/ignore，默认 keep）
   - 按钮：「按上面的选择清理」→ `scan_apply`
   - （分隔线）
   - 要你看看 4
   - 硬盘没加密：电脑丢了，别人能直接读出里面的东西
-  - 打开时会给你一个恢复密钥，抄下来放好。
+  - 打开时会给你恢复密钥，抄下来放好
   - 按钮：「打开 FileVault 设置」→ `scan_open_settings`
   - 「gone」已经删掉了却还在运行
-  - 重启一下电脑就好。
+  - 重启一下电脑就好
   - 2 个已删除的应用仍有权限
-  - 「tool」、「removed」 / 在系统设置中选中它们，点「−」移除。
+  - 「tool」、「removed」 / 应用已经删了，权限可以一起移除
   - 按钮：「打开「录屏」」→ `scan_open_settings`、「打开「完全磁盘访问」」→ `scan_open_settings`
   - （分隔线）
   - 自动清理
@@ -820,6 +876,10 @@ JSON 按键排序、缩进两格。
   - 10月20日 20:05
   - 「放回」把还在废纸篓里的 25 项放回原来的位置。
   - 按钮：「放回」→ `scan_restore`
+- 数据 `data/overview`：
+  - 可以清的（`reclaimable`）：`cache` 1 项 62914560 字节、`leftover` 1 项 2097152 字节、`project` 1 项 147456 字节
+  - 要看的（`attention`）：4 项，急的 0 项；大文件（`largeFiles`）0 个；自动清（`autoCleaned`）0 次
+- 数据 `data/history`：1 批
 
 **窗口上**
 
@@ -839,6 +899,13 @@ JSON 按键排序、缩进两格。
 | `read-page-overview-before.json` | resources/read `page/overview` | 2026-10-20T12:05:00Z：读基础页 page/overview |
 | `read-page-mac-before.json` | resources/read `page/mac` | 2026-10-20T12:05:00Z：读基础页 page/mac |
 | `read-page-cleaned-before.json` | resources/read `page/cleaned` | 2026-10-20T12:05:00Z：读基础页 page/cleaned |
+| `read-data-overview-before.json` | resources/read `data/overview` | 2026-10-20T12:05:00Z：读扫描页的数据 data/overview |
+| `read-data-history-before.json` | resources/read `data/history` | 2026-10-20T12:05:00Z：读清理记录的数据 data/history |
+| `read-data-settings-before.json` | resources/read `data/settings` | 2026-10-20T12:05:00Z：读设置的数据 data/settings |
+| `read-data-category-cache.json` | resources/read `data/category?id=cache` | 2026-10-20T12:05:00Z：读一类的详情 data/category?id=cache |
+| `read-data-category-temp.json` | resources/read `data/category?id=temp` | 2026-10-20T12:05:00Z：读一类的详情 data/category?id=temp |
+| `read-data-category-leftover.json` | resources/read `data/category?id=leftover` | 2026-10-20T12:05:00Z：读一类的详情 data/category?id=leftover |
+| `read-data-category-project.json` | resources/read `data/category?id=project` | 2026-10-20T12:05:00Z：读一类的详情 data/category?id=project |
 | `call-scan_apply.json` | tools/call `scan_apply`（带 user-action） | 2026-10-20T12:05:00Z：用户在扫描页上把临时文件夹改成移到废纸篓，点「按上面的选择清理」 |
 | `read-outbox.json` | resources/read `luoke://luoke-scan/outbox` | 2026-10-20T13:00:00Z：读 outbox（每分钟一次） |
 | `read-summary.json` | resources/read `summary` | 2026-10-20T13:00:00Z：读概览（侧栏的计数和一句话） |
@@ -846,6 +913,9 @@ JSON 按键排序、缩进两格。
 | `read-page-overview.json` | resources/read `page/overview` | 2026-10-20T13:00:00Z：读基础页 page/overview |
 | `read-page-mac.json` | resources/read `page/mac` | 2026-10-20T13:00:00Z：读基础页 page/mac |
 | `read-page-cleaned.json` | resources/read `page/cleaned` | 2026-10-20T13:00:00Z：读基础页 page/cleaned |
+| `read-data-overview.json` | resources/read `data/overview` | 2026-10-20T13:00:00Z：读扫描页的数据 data/overview |
+| `read-data-history.json` | resources/read `data/history` | 2026-10-20T13:00:00Z：读清理记录的数据 data/history |
+| `read-data-settings.json` | resources/read `data/settings` | 2026-10-20T13:00:00Z：读设置的数据 data/settings |
 | `call-scan_restore.json` | tools/call `scan_restore`（带 user-action） | 2026-10-20T13:05:00Z：用户在「清理记录」页上点那一批的「放回」 |
 | `read-page-cleaned-after-restore.json` | resources/read `page/cleaned` | 2026-10-20T13:05:00Z：点完窗口重新读这一页 |
 | `read-permissions-after-restore.json` | resources/read `permissions` | 2026-10-20T13:05:00Z：点完再读权限（点的方案放回不关自动清） |
@@ -899,12 +969,12 @@ JSON 按键排序、缩进两格。
   - （分隔线）
   - 要你看看 4
   - 硬盘没加密：电脑丢了，别人能直接读出里面的东西
-  - 打开时会给你一个恢复密钥，抄下来放好。
+  - 打开时会给你恢复密钥，抄下来放好
   - 按钮：「打开 FileVault 设置」→ `scan_open_settings`
   - 「gone」已经删掉了却还在运行
-  - 重启一下电脑就好。
+  - 重启一下电脑就好
   - 2 个已删除的应用仍有权限
-  - 「tool」、「removed」 / 在系统设置中选中它们，点「−」移除。
+  - 「tool」、「removed」 / 应用已经删了，权限可以一起移除
   - 按钮：「打开「录屏」」→ `scan_open_settings`、「打开「完全磁盘访问」」→ `scan_open_settings`
   - （分隔线）
   - 自动清理
@@ -976,6 +1046,10 @@ JSON 按键排序、缩进两格。
   - 10月20日 20:00
   - 「放回」把还在废纸篓里的 23 项放回原来的位置；删掉的缓存不用放回，用到时会重建。
   - 按钮：「放回」→ `scan_restore`
+- 数据 `data/overview`：
+  - 可以清的（`reclaimable`）：`temp` 1 项 131072000 字节、`project` 1 项 147456 字节
+  - 要看的（`attention`）：4 项，急的 0 项；大文件（`largeFiles`）0 个；自动清（`autoCleaned`）1 次
+- 数据 `data/history`：1 批
 
 **窗口上**
 
@@ -995,6 +1069,11 @@ JSON 按键排序、缩进两格。
 | `read-page-overview.json` | resources/read `page/overview` | 2026-10-20T12:01:00Z：读基础页 page/overview |
 | `read-page-mac.json` | resources/read `page/mac` | 2026-10-20T12:01:00Z：读基础页 page/mac |
 | `read-page-cleaned.json` | resources/read `page/cleaned` | 2026-10-20T12:01:00Z：读基础页 page/cleaned |
+| `read-data-overview.json` | resources/read `data/overview` | 2026-10-20T12:01:00Z：读扫描页的数据 data/overview |
+| `read-data-history.json` | resources/read `data/history` | 2026-10-20T12:01:00Z：读清理记录的数据 data/history |
+| `read-data-settings.json` | resources/read `data/settings` | 2026-10-20T12:01:00Z：读设置的数据 data/settings |
+| `read-data-category-temp.json` | resources/read `data/category?id=temp` | 2026-10-20T12:01:00Z：读一类的详情 data/category?id=temp |
+| `read-data-category-project.json` | resources/read `data/category?id=project` | 2026-10-20T12:01:00Z：读一类的详情 data/category?id=project |
 | `call-scan_restore.json` | tools/call `scan_restore`（带 user-action） | 2026-10-20T12:10:00Z：用户在自动清的卡片上点「放回」（整批放回，放回过的那几类以后先问） |
 | `read-permissions-after-restore.json` | resources/read `permissions` | 2026-10-20T12:10:00Z：点完再读权限 |
 | `read-outbox-after-restore.json` | resources/read `luoke://luoke-scan/outbox` | 2026-10-20T12:10:00Z：点完再读 outbox |
@@ -1075,7 +1154,7 @@ JSON 按键排序、缩进两格。
   - 8 年多没打开过
   - 选项：很久没动过的项目「old-pushed」（147 KB）（trash/keep/ignore，默认 keep）
   - 选项：「Claude Code」的插件「quick-setup」能操作你的电脑（trash/keep/ignore，默认 trash）
-  - AI 用到它时，可能改动、删除或外传你的文件。不认识的建议移到废纸篓。
+  - 不会自己运行；AI 用到它时能改动、删除或外传文件 / 不认识的建议移到废纸篓。
   - 按钮：「在访达里显示「quick-setup」」→ `scan_reveal`
   - 选项：会跟着电脑一起启动的「gone」（trash/keep/ignore，默认 keep）
   - 开机后在后台自动运行。不认识可以移除。
@@ -1083,18 +1162,18 @@ JSON 按键排序、缩进两格。
   - （分隔线）
   - 要你看看 6
   - 「Keys」能读到你按的每一个键
-  - 输入法、快捷键工具常这样；不认得就在「输入监控」里关掉它。
+  - 不认识的就在「输入监控」里关掉
   - 按钮：「打开「输入监控」设置」→ `scan_open_settings`、「在访达里显示」→ `scan_reveal`
   - 有密码或密钥直接放在文件里，别人可能看得到
-  - 换个地方存，或者把这个密码改掉。
+  - 换个地方存，或者改掉这个密码
   - 按钮：「在访达里显示」→ `scan_reveal`
   - 硬盘没加密：电脑丢了，别人能直接读出里面的东西
-  - 打开时会给你一个恢复密钥，抄下来放好。
+  - 打开时会给你恢复密钥，抄下来放好
   - 按钮：「打开 FileVault 设置」→ `scan_open_settings`
   - 「gone」已经删掉了却还在运行
   - 它会跟着开机启动，重启后还会再运行。 / 要停掉它：把上面「会跟着电脑一起启动的『gone』」改成「移到废纸篓」，清理后重启一下电脑。
   - 2 个已删除的应用仍有权限
-  - 「tool」、「removed」 / 在系统设置中选中它们，点「−」移除。
+  - 「tool」、「removed」 / 应用已经删了，权限可以一起移除
   - 按钮：「打开「录屏」」→ `scan_open_settings`、「打开「完全磁盘访问」」→ `scan_open_settings`
   - （分隔线）
   - 自动清理
@@ -1170,6 +1249,10 @@ JSON 按键排序、缩进两格。
 - 基础页 `page/cleaned`：
   - **清理记录**
   - 还没清理过。
+- 数据 `data/overview`：
+  - 可以清的（`reclaimable`）：`cache` 6 项 349175808 字节、`installer` 1 项 31457280 字节、`temp` 1 项 131072000 字节、`project` 1 项 147456 字节、`large-file` 3 项 65011712 字节、`startup` 1 项 0 字节、`ai-plugin` 1 项 0 字节、`malware` 2 项 8192 字节
+  - 要看的（`attention`）：8 项，急的 2 项；大文件（`largeFiles`）3 个；自动清（`autoCleaned`）0 次
+- 数据 `data/history`：0 批
 
 **窗口上**
 
@@ -1189,6 +1272,17 @@ JSON 按键排序、缩进两格。
 | `read-page-overview.json` | resources/read `page/overview` | 2026-10-20T12:00:00Z：读基础页 page/overview |
 | `read-page-mac.json` | resources/read `page/mac` | 2026-10-20T12:00:00Z：读基础页 page/mac |
 | `read-page-cleaned.json` | resources/read `page/cleaned` | 2026-10-20T12:00:00Z：读基础页 page/cleaned |
+| `read-data-overview.json` | resources/read `data/overview` | 2026-10-20T12:00:00Z：读扫描页的数据 data/overview |
+| `read-data-history.json` | resources/read `data/history` | 2026-10-20T12:00:00Z：读清理记录的数据 data/history |
+| `read-data-settings.json` | resources/read `data/settings` | 2026-10-20T12:00:00Z：读设置的数据 data/settings |
+| `read-data-category-cache.json` | resources/read `data/category?id=cache` | 2026-10-20T12:00:00Z：读一类的详情 data/category?id=cache |
+| `read-data-category-installer.json` | resources/read `data/category?id=installer` | 2026-10-20T12:00:00Z：读一类的详情 data/category?id=installer |
+| `read-data-category-temp.json` | resources/read `data/category?id=temp` | 2026-10-20T12:00:00Z：读一类的详情 data/category?id=temp |
+| `read-data-category-project.json` | resources/read `data/category?id=project` | 2026-10-20T12:00:00Z：读一类的详情 data/category?id=project |
+| `read-data-category-large-file.json` | resources/read `data/category?id=large-file` | 2026-10-20T12:00:00Z：读一类的详情 data/category?id=large-file |
+| `read-data-category-startup.json` | resources/read `data/category?id=startup` | 2026-10-20T12:00:00Z：读一类的详情 data/category?id=startup |
+| `read-data-category-ai-plugin.json` | resources/read `data/category?id=ai-plugin` | 2026-10-20T12:00:00Z：读一类的详情 data/category?id=ai-plugin |
+| `read-data-category-malware.json` | resources/read `data/category?id=malware` | 2026-10-20T12:00:00Z：读一类的详情 data/category?id=malware |
 
 ## `crowded`：用了很久的 Mac：能清的有几十项
 
@@ -1255,7 +1349,7 @@ JSON 按键排序、缩进两格。
   - 「香港-4.v2.pdf」、「香港-6.v2.pdf」、「香港-2.v2.pdf」、「香港-0.v2.pdf」等，这 7 项一起处理
   - 选项：很久没动过的项目「old-pushed」（147 KB）（trash/keep/ignore，默认 keep）
   - 选项：5 个 AI 插件能操作你的电脑（trash/keep/ignore，默认 trash）
-  - 「helper-0」、「helper-1」、「helper-2」、「helper-3」等，这 5 项一起处理 / AI 用到它们时，可能改动、删除或外传你的文件。不认识的建议移到废纸篓。
+  - 「helper-0」、「helper-1」、「helper-2」、「helper-3」等，这 5 项一起处理 / 不会自己运行；AI 用到它们时能改动、删除或外传文件 / 不认识的建议移到废纸篓。
   - 在访达里逐个看（5 个）
   - 按钮：「在访达里显示「helper-0」」→ `scan_reveal`、「在访达里显示「helper-1」」→ `scan_reveal`、「在访达里显示「helper-2」」→ `scan_reveal`、「在访达里显示「helper-3」」→ `scan_reveal`、「在访达里显示「helper-4」」→ `scan_reveal`
   - 选项：会跟着电脑一起启动的「gone」（trash/keep/ignore，默认 keep）
@@ -1264,16 +1358,16 @@ JSON 按键排序、缩进两格。
   - （分隔线）
   - 要你看看 8
   - 硬盘没加密：电脑丢了，别人能直接读出里面的东西
-  - 打开时会给你一个恢复密钥，抄下来放好。
+  - 打开时会给你恢复密钥，抄下来放好
   - 按钮：「打开 FileVault 设置」→ `scan_open_settings`
   - 4 个最近装的应用来路不明
-  - 「Clipper.Pro」、「Notes Lite」、「Snap Tool 2.1」、「Viewer」 / 确认是你自己装的就好；不认识就移到废纸篓。
+  - 「Clipper.Pro」、「Notes Lite」、「Snap Tool 2.1」、「Viewer」 / 不是你装的就删掉
   - 在访达里逐个看（4 个）
   - 按钮：「在访达里显示「Clipper.Pro」」→ `scan_reveal`、「在访达里显示「Notes Lite」」→ `scan_reveal`、「在访达里显示「Snap Tool 2.1」」→ `scan_reveal`、「在访达里显示「Viewer」」→ `scan_reveal`
   - 「gone」已经删掉了却还在运行
   - 它会跟着开机启动，重启后还会再运行。 / 要停掉它：把上面「会跟着电脑一起启动的『gone』」改成「移到废纸篓」，清理后重启一下电脑。
   - 2 个已删除的应用仍有权限
-  - 「tool」、「removed」 / 在系统设置中选中它们，点「−」移除。
+  - 「tool」、「removed」 / 应用已经删了，权限可以一起移除
   - 按钮：「打开「录屏」」→ `scan_open_settings`、「打开「完全磁盘访问」」→ `scan_open_settings`
   - （分隔线）
   - 自动清理
@@ -1341,6 +1435,10 @@ JSON 按键排序、缩进两格。
 - 基础页 `page/cleaned`：
   - **清理记录**
   - 还没清理过。
+- 数据 `data/overview`：
+  - 可以清的（`reclaimable`）：`cache` 7 项 392167424 字节、`installer` 41 项 215121920 字节、`duplicate` 7 项 14680064 字节、`temp` 1 项 131072000 字节、`project` 1 项 147456 字节、`startup` 1 项 0 字节、`ai-plugin` 5 项 0 字节、`malware` 2 项 8192 字节
+  - 要看的（`attention`）：10 项，急的 2 项；大文件（`largeFiles`）0 个；自动清（`autoCleaned`）0 次
+- 数据 `data/history`：0 批
 
 **窗口上**
 
@@ -1362,6 +1460,184 @@ JSON 按键排序、缩进两格。
 | `read-page-overview.json` | resources/read `page/overview` | 2026-10-20T12:00:00Z：读基础页 page/overview |
 | `read-page-mac.json` | resources/read `page/mac` | 2026-10-20T12:00:00Z：读基础页 page/mac |
 | `read-page-cleaned.json` | resources/read `page/cleaned` | 2026-10-20T12:00:00Z：读基础页 page/cleaned |
+| `read-data-overview.json` | resources/read `data/overview` | 2026-10-20T12:00:00Z：读扫描页的数据 data/overview |
+| `read-data-history.json` | resources/read `data/history` | 2026-10-20T12:00:00Z：读清理记录的数据 data/history |
+| `read-data-settings.json` | resources/read `data/settings` | 2026-10-20T12:00:00Z：读设置的数据 data/settings |
+| `read-data-category-cache.json` | resources/read `data/category?id=cache` | 2026-10-20T12:00:00Z：读一类的详情 data/category?id=cache |
+| `read-data-category-installer.json` | resources/read `data/category?id=installer` | 2026-10-20T12:00:00Z：读一类的详情 data/category?id=installer |
+| `read-data-category-duplicate.json` | resources/read `data/category?id=duplicate` | 2026-10-20T12:00:00Z：读一类的详情 data/category?id=duplicate |
+| `read-data-category-temp.json` | resources/read `data/category?id=temp` | 2026-10-20T12:00:00Z：读一类的详情 data/category?id=temp |
+| `read-data-category-project.json` | resources/read `data/category?id=project` | 2026-10-20T12:00:00Z：读一类的详情 data/category?id=project |
+| `read-data-category-startup.json` | resources/read `data/category?id=startup` | 2026-10-20T12:00:00Z：读一类的详情 data/category?id=startup |
+| `read-data-category-ai-plugin.json` | resources/read `data/category?id=ai-plugin` | 2026-10-20T12:00:00Z：读一类的详情 data/category?id=ai-plugin |
+| `read-data-category-malware.json` | resources/read `data/category?id=malware` | 2026-10-20T12:00:00Z：读一类的详情 data/category?id=malware |
+
+## `data-actions`：agent 自己拼扫描页：只读数据，照数据点按
+
+基础假目录去掉报毒的、坏了的、删了的应用的数据，再加三类不用点就清的（装好了的应用的安装包、文稿里也有一份的下载、21 个 Puppeteer 临时文件夹），自动清关着。查完一轮，agent 照 data/… 拼扫描页（顶层 ADR 0028）：用户在「临时文件夹」这一类里取消最大的一项、把其余的移到废纸篓；「重复文件」这一类点「这一类以后别再问」；再在清理记录里把那一批放回。
+
+**怎么录的**：blackbox/fx.py 造的假目录：blackbox/cases/base.py 的 `build`（照单元测试的 Fixture.build 摆），fakes.json 是 `fx.standard_fakes`（和单元测试的 Fixture.Fakes.standard 一样），另加一块 494 GB、还剩 182 GB 的硬盘；luoke-scan update --data $FIXTURE/data --tool-dir $FIXTURE/tools --force（假的 freshclam，daily 27000，库文件的时间 2026-10-20T01:00:00Z）；luoke-scan scan --fixture $FIXTURE --clock 2026-10-17T12:00:00Z（3 天前查过一轮：pip 的缓存还是空的）。
+
+假目录改过：pip 的缓存长到 60 MB；删掉了 ~/Downloads/eicar-test.com；删掉了 ~/Downloads/update.scpt；删掉了 ~/Library/LaunchAgents/io.example.gone.plist；删掉了 ~/Library/Application Support/io.example.removed；删掉了 ~/Library/Preferences/io.example.removed.plist；删掉了 ~/Library/Group Containers/ABCDE12345.io.example.removed；删掉了 ~/Library/Containers/ABCDE12345.io.example.removed；加了装好了的应用的安装包、文稿里也有一份的下载、21 个 Puppeteer 临时文件夹（都是 20 天前来的）。
+
+**扫描报的**
+
+- 概览（`summary`）：count 10，「能清出 181.5 MB，另外 9 项等你处理」
+- 权限（`permissions`）：`admin` ask、`auto` off、`fda` granted
+- outbox：1 件
+  - `round/2026-10-20T12:00:00Z`：`findings`、`low` → 顺便看看（later）
+    - 标题：能清出 181.5 MB，另外 9 项等你处理
+    - 摘要：会重建的缓存 1 项，不用你选；另外 9 项在「螺壳扫描」里等你看。
+    - 卡片（surface `round-000000000001`）：
+      - **能清出 181.5 MB**
+      - 会重建的缓存 1 项，不用你选；另外 9 项在「螺壳扫描」里等你看。
+      - 按钮：「清理 1 项缓存」→ `scan_apply`、「打开自动清理」→ `scan_autoclean`
+- 基础页 `page/overview`：
+  - **扫描**
+  - 上次查 10月20日 20:00
+  - 按钮：「现在查一下」→ `scan_now`
+  - 这周清掉
+  - 还没清过
+  - 能清出
+  - 181.5 MB
+  - 等你处理
+  - 9 项
+  - （分隔线）
+  - 可以清掉 6
+  - 会自动重建的缓存 1 项（62.9 MB）
+  - pip
+  - 按钮：「清理」→ `scan_apply`
+  - 选项：wings 留下的临时文件夹（131.1 MB）（trash/keep/ignore，默认 keep）
+  - 25 个 wings-*，在系统临时目录里
+  - 选项：Puppeteer 留下的临时文件夹（110.2 MB）（trash/keep/ignore，默认 trash）
+  - 21 个 puppeteer_dev_chrome_profile-*，在系统临时目录里
+  - 选项：Fixtureapp 的安装包（6.3 MB）（trash/keep/ignore，默认 trash）
+  - Fixtureapp-2.0.dmg · 20 天前下载，Fixtureapp 已经装好了
+  - 选项：report-2026.pdf（2.1 MB）（trash/clone/keep/ignore，默认 trash）
+  - 2 份一样的，每份 2.1 MB
+  - 选项：很久没动过的项目「old-pushed」（147 KB）（trash/keep/ignore，默认 keep）
+  - 按钮：「按上面的选择清理」→ `scan_apply`
+  - （分隔线）
+  - 要你看看 4
+  - 硬盘没加密：电脑丢了，别人能直接读出里面的东西
+  - 打开时会给你恢复密钥，抄下来放好
+  - 按钮：「打开 FileVault 设置」→ `scan_open_settings`
+  - 「gone」已经删掉了却还在运行
+  - 重启一下电脑就好
+  - 2 个已删除的应用仍有权限
+  - 「tool」、「removed」 / 应用已经删了，权限可以一起移除
+  - 按钮：「打开「录屏」」→ `scan_open_settings`、「打开「完全磁盘访问」」→ `scan_open_settings`
+  - （分隔线）
+  - 自动清理
+  - 按钮：「打开自动清理」→ `scan_autoclean`
+  - 打开后，每天那一轮不用你点就清：会重建的缓存、装好了的应用的安装包、下载文件夹里的重复文件、测试工具留下的临时文件夹。移到废纸篓的都能放回，要你定的照样先问你。
+  - 病毒库更新于 10月20日
+- 基础页 `page/mac`：
+  - 硬盘还剩
+  - 182.0 GB
+  - 一年多没打开过的大文件
+  - 没有
+  - 安全设置（1 项没查成）
+  - 1 项没开启
+  - 上次扫描：10月20日 20:00
+  - 按钮：「现在查一下」→ `scan_now`
+  - （分隔线）
+  - 硬盘
+  - 用了 312.0 GB，一共 494.0 GB
+  - （分隔线）
+  - 占地方最多的文件夹
+  - 临时文件
+  - 372.3 MB
+  - 开发工具的缓存
+  - 64.0 MB
+  - 已经删掉的应用留下的数据（5 个应用）
+  - 11.5 MB
+  - 下载
+  - 8.4 MB
+  - Projects
+  - 3.4 MB
+  - Present 的缓存
+  - 2.1 MB
+  - 几个应用共用的数据
+  - 2.1 MB
+  - 文稿
+  - 2.1 MB
+  - 这些加起来约 465 MB。其余是没列出来的小文件夹，以及系统和应用本身。
+  - （分隔线）
+  - 一年多没打开过的大文件
+  - 1 MB 以上算大文件，按大小排
+  - 没找到一年多没打开过的大文件。
+  - （分隔线）
+  - 权限
+  - 完全磁盘访问
+  - 已允许
+  - 已经删掉的应用还拿着权限
+  - 2 个
+  - 要收回，去「概览」看。
+  - （分隔线）
+  - 安全设置
+  - 硬盘加密（文件保险箱）
+  - 没开启
+  - 只打开来路清楚的应用
+  - 没查成
+  - 防火墙
+  - 已开启
+  - 系统完整性保护
+  - 已开启
+  - 锁屏要密码
+  - 已开启
+  - 自动检查系统更新
+  - 已开启
+  - 没开启的怎么打开，在「概览」的「要你看看的」里有写。
+  - 没查成的，下次扫描或点上面的「现在查一下」时会再查。
+- 基础页 `page/cleaned`：
+  - **清理记录**
+  - 还没清理过。
+- 数据 `data/overview`：
+  - 可以清的（`reclaimable`）：`cache` 1 项 62914560 字节、`installer` 1 项 6291456 字节、`duplicate` 1 项 2097152 字节、`temp` 2 项 241258496 字节、`project` 1 项 147456 字节
+  - 要看的（`attention`）：4 项，急的 0 项；大文件（`largeFiles`）0 个；自动清（`autoCleaned`）0 次
+- 数据 `data/history`：0 批
+
+**窗口上**
+
+- 扫描页由 agent 照 `data/overview` 拼：`reclaimable` 每一类一行（`id`、`bytes`、`count`、`facts`），点一行读 `data/category?id=<类>`，逐个文件带 `path`、`bytes`、`reason`、`facts`。
+- 「把选中的移到废纸篓」是 `scan_apply`：`plan_id` 是选中项的 `plan`，`choices` 是 `{<key>: ["trash"]}`，没选的不发（当作先不动）；「这一类以后别再问」是同一份方案里这一类每一项 `["ignore"]`。放回是 `scan_restore`，`id` 是 `data/history` 一行的 `batch`。点完重读 `data/…`。
+
+**文件**（按请求的先后）
+
+| 文件 | 请求 | 什么时候 |
+|---|---|---|
+| `server-discover.json` | server/discover | 2026-10-20T12:00:00Z：server/discover |
+| `tools-list.json` | tools/list | 2026-10-20T12:00:00Z：列工具（agent 认 readOnlyHint） |
+| `resources-list.json` | resources/list | 2026-10-20T12:00:00Z：列资源 |
+| `read-outbox.json` | resources/read `luoke://luoke-scan/outbox` | 2026-10-20T12:00:00Z：读 outbox（每分钟一次） |
+| `read-summary.json` | resources/read `summary` | 2026-10-20T12:00:00Z：读概览（侧栏的计数和一句话） |
+| `read-permissions.json` | resources/read `permissions` | 2026-10-20T12:00:00Z：读权限的状态 |
+| `read-page-overview.json` | resources/read `page/overview` | 2026-10-20T12:00:00Z：读基础页 page/overview |
+| `read-page-mac.json` | resources/read `page/mac` | 2026-10-20T12:00:00Z：读基础页 page/mac |
+| `read-page-cleaned.json` | resources/read `page/cleaned` | 2026-10-20T12:00:00Z：读基础页 page/cleaned |
+| `read-data-overview.json` | resources/read `data/overview` | 2026-10-20T12:00:00Z：读扫描页的数据 data/overview |
+| `read-data-history.json` | resources/read `data/history` | 2026-10-20T12:00:00Z：读清理记录的数据 data/history |
+| `read-data-settings.json` | resources/read `data/settings` | 2026-10-20T12:00:00Z：读设置的数据 data/settings |
+| `read-data-category-cache.json` | resources/read `data/category?id=cache` | 2026-10-20T12:00:00Z：读一类的详情 data/category?id=cache |
+| `read-data-category-installer.json` | resources/read `data/category?id=installer` | 2026-10-20T12:00:00Z：读一类的详情 data/category?id=installer |
+| `read-data-category-duplicate.json` | resources/read `data/category?id=duplicate` | 2026-10-20T12:00:00Z：读一类的详情 data/category?id=duplicate |
+| `read-data-category-temp.json` | resources/read `data/category?id=temp` | 2026-10-20T12:00:00Z：读一类的详情 data/category?id=temp |
+| `read-data-category-project.json` | resources/read `data/category?id=project` | 2026-10-20T12:00:00Z：读一类的详情 data/category?id=project |
+| `call-scan_apply-selected.json` | tools/call `scan_apply`（带 user-action） | 2026-10-20T12:05:00Z：用户在「临时文件夹」这一类的详情里取消了最大的一项，点「把选中的移到废纸篓」：scan_apply 的 plan_id 和 choices 的键取自 data/category 每一项的 plan、key |
+| `read-data-category-temp-after-apply.json` | resources/read `data/category?id=temp` | 2026-10-20T12:05:00Z：点完再读这一类：移走的不再列 |
+| `read-data-history-after-apply.json` | resources/read `data/history` | 2026-10-20T12:05:00Z：点完读清理记录的数据：多了这一批 |
+| `call-scan_apply-ignore.json` | tools/call `scan_apply`（带 user-action） | 2026-10-20T12:06:00Z：用户在「重复文件」这一类的详情里点「这一类以后别再问」：这一类的每一项都选 ignore |
+| `read-data-settings-after-ignore.json` | resources/read `data/settings` | 2026-10-20T12:06:00Z：点完读设置的数据：以后别提的列在 ignored 里 |
+| `read-data-overview-after.json` | resources/read `data/overview` | 2026-10-20T12:06:00Z：再读扫描页的数据 |
+| `call-scan_restore.json` | tools/call `scan_restore`（带 user-action） | 2026-10-20T12:10:00Z：用户在清理记录里点那一批的「放回」：scan_restore 的 id 取自 data/history 的 batch |
+| `read-data-history-after-restore.json` | resources/read `data/history` | 2026-10-20T12:10:00Z：放回以后再读清理记录的数据 |
+
+`call-scan_apply-selected.json` 答：「移到废纸篓 1 项（110.2 MB）。」（done: true，更新原卡片）
+
+`call-scan_apply-ignore.json` 答：「以后不再提 1 项。」（done: true，更新原卡片）
+
+`call-scan_restore.json` 答：「放回了 21 项。」（done: true，更新原卡片）
 
 ## `feedback-152`：一位用户的反馈（luoke-scan#152）：清理没删完、看不懂的几行
 
@@ -1430,13 +1706,13 @@ JSON 按键排序、缩进两格。
   - 在访达里逐个看（4 个）
   - 按钮：「在访达里显示「MiniCPM-V-4_6」的模板」→ `scan_reveal`、「在访达里显示「Qwen3.5-0.8B-Base」的模板」→ `scan_reveal`、「在访达里显示「Qwen3.5-2B-Base」的模板」→ `scan_reveal`、「在访达里显示「Qwen3.5-4B-MLX-4bit」的模板」→ `scan_reveal`
   - 选项：「Claude Code」的插件「claude-automation-recommender」能操作你的电脑（trash/keep/ignore，默认 trash）
-  - AI 用到它时，可能改动、删除或外传你的文件。不认识的建议移到废纸篓。
+  - 不会自己运行；AI 用到它时能改动、删除或外传文件 / 不认识的建议移到废纸篓。
   - 按钮：「在访达里显示「claude-automation-recommender」」→ `scan_reveal`
   - 选项：「Claude Code」的插件「cloudflare」能操作你的电脑（trash/keep/ignore，默认 trash）
-  - AI 用到它时，可能改动、删除或外传你的文件。不认识的建议移到废纸篓。
+  - 不会自己运行；AI 用到它时能改动、删除或外传文件 / 不认识的建议移到废纸篓。
   - 按钮：「在访达里显示「cloudflare」」→ `scan_reveal`
   - 选项：「Claude Code」的插件「example-command」能操作你的电脑（trash/keep/ignore，默认 trash）
-  - AI 用到它时，可能改动、删除或外传你的文件。不认识的建议移到废纸篓。
+  - 不会自己运行；AI 用到它时能改动、删除或外传文件 / 不认识的建议移到废纸篓。
   - 按钮：「在访达里显示「example-command」」→ `scan_reveal`
   - 还有 3 项
   - 选项：会跟着电脑一起启动的「gone」（trash/keep/ignore，默认 keep）
@@ -1449,15 +1725,15 @@ JSON 按键排序、缩进两格。
   - （分隔线）
   - 要你看看 7
   - 2 个 AI 插件能操作你的电脑
-  - 「command-development」、「hook-development」 / AI 用到它们时，可能改动、删除或外传你的文件。不认识的，在 Claude Code 里输入 /plugin 卸载。
+  - 「command-development」、「hook-development」 / 不会自己运行；不是你装的，就在 Claude Code 里用 /plugin 卸掉
   - 按钮：「在访达里显示「command-development」」→ `scan_reveal`、「在访达里显示「hook-development」」→ `scan_reveal`
   - 硬盘没加密：电脑丢了，别人能直接读出里面的东西
-  - 打开时会给你一个恢复密钥，抄下来放好。
+  - 打开时会给你恢复密钥，抄下来放好
   - 按钮：「打开 FileVault 设置」→ `scan_open_settings`
   - 「gone」已经删掉了却还在运行
   - 它会跟着开机启动，重启后还会再运行。 / 要停掉它：把上面「会跟着电脑一起启动的『gone』」改成「移到废纸篓」，清理后重启一下电脑。
   - 3 个已删除的应用仍有权限
-  - 「tool」、「Discord」、「removed」 / 在系统设置中选中它们，点「−」移除。
+  - 「tool」、「Discord」、「removed」 / 应用已经删了，权限可以一起移除
   - 按钮：「打开「录屏」」→ `scan_open_settings`、「打开「麦克风」」→ `scan_open_settings`、「打开「完全磁盘访问」」→ `scan_open_settings`
   - （分隔线）
   - 自动清理
@@ -1521,6 +1797,10 @@ JSON 按键排序、缩进两格。
 - 基础页 `page/cleaned`：
   - **清理记录**
   - 还没清理过。
+- 数据 `data/overview`：
+  - 可以清的（`reclaimable`）：`cache` 3 项 176164864 字节、`temp` 1 项 131072000 字节、`leftover` 2 项 6295552 字节、`project` 1 项 147456 字节、`startup` 1 项 0 字节、`ai-plugin` 7 项 0 字节、`install-scripts` 2 项 0 字节、`malware` 2 项 8192 字节
+  - 要看的（`attention`）：9 项，急的 2 项；大文件（`largeFiles`）0 个；自动清（`autoCleaned`）0 次
+- 数据 `data/history`：0 批
 
 **窗口上**
 
@@ -1540,6 +1820,17 @@ JSON 按键排序、缩进两格。
 | `read-page-overview.json` | resources/read `page/overview` | 2026-10-20T12:00:00Z：读基础页 page/overview |
 | `read-page-mac.json` | resources/read `page/mac` | 2026-10-20T12:00:00Z：读基础页 page/mac |
 | `read-page-cleaned.json` | resources/read `page/cleaned` | 2026-10-20T12:00:00Z：读基础页 page/cleaned |
+| `read-data-overview.json` | resources/read `data/overview` | 2026-10-20T12:00:00Z：读扫描页的数据 data/overview |
+| `read-data-history.json` | resources/read `data/history` | 2026-10-20T12:00:00Z：读清理记录的数据 data/history |
+| `read-data-settings.json` | resources/read `data/settings` | 2026-10-20T12:00:00Z：读设置的数据 data/settings |
+| `read-data-category-cache.json` | resources/read `data/category?id=cache` | 2026-10-20T12:00:00Z：读一类的详情 data/category?id=cache |
+| `read-data-category-temp.json` | resources/read `data/category?id=temp` | 2026-10-20T12:00:00Z：读一类的详情 data/category?id=temp |
+| `read-data-category-leftover.json` | resources/read `data/category?id=leftover` | 2026-10-20T12:00:00Z：读一类的详情 data/category?id=leftover |
+| `read-data-category-project.json` | resources/read `data/category?id=project` | 2026-10-20T12:00:00Z：读一类的详情 data/category?id=project |
+| `read-data-category-startup.json` | resources/read `data/category?id=startup` | 2026-10-20T12:00:00Z：读一类的详情 data/category?id=startup |
+| `read-data-category-ai-plugin.json` | resources/read `data/category?id=ai-plugin` | 2026-10-20T12:00:00Z：读一类的详情 data/category?id=ai-plugin |
+| `read-data-category-install-scripts.json` | resources/read `data/category?id=install-scripts` | 2026-10-20T12:00:00Z：读一类的详情 data/category?id=install-scripts |
+| `read-data-category-malware.json` | resources/read `data/category?id=malware` | 2026-10-20T12:00:00Z：读一类的详情 data/category?id=malware |
 | `call-scan_apply-caches.json` | tools/call `scan_apply`（带 user-action） | 2026-10-20T12:05:00Z：用户在扫描页上点缓存那一行的「清理」 |
 | `read-page-overview-after-caches.json` | resources/read `page/overview` | 2026-10-20T12:05:00Z：点完再读扫描页 |
 | `read-outbox-after-caches.json` | resources/read `luoke://luoke-scan/outbox` | 2026-10-20T12:05:00Z：点完再读 outbox |

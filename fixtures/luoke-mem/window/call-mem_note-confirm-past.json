@@ -1,0 +1,58 @@
+{
+  "reply": {
+    "id": 44,
+    "jsonrpc": "2.0",
+    "result": {
+      "content": [
+        {
+          "text": "记下了：现在还是。",
+          "type": "text"
+        }
+      ],
+      "isError": false,
+      "resultType": "complete",
+      "structuredContent": {
+        "note": 22,
+        "result": "confirm",
+        "was": "past"
+      }
+    }
+  },
+  "request": {
+    "id": 44,
+    "jsonrpc": "2.0",
+    "method": "tools/call",
+    "params": {
+      "_meta": {
+        "ai.luoke/user-action": {
+          "at": "2026-11-06T10:16:00+08:00",
+          "componentId": "b15",
+          "surfaceId": "all"
+        },
+        "io.modelcontextprotocol/clientCapabilities": {
+          "experimental": {
+            "ai.luoke/a2ui": {
+              "features": [
+                "openPage",
+                "pageArgs",
+                "confirm",
+                "rowOpen",
+                "fieldSubmit"
+              ]
+            }
+          }
+        },
+        "io.modelcontextprotocol/clientInfo": {
+          "name": "luoke-agent",
+          "version": "fixtures"
+        },
+        "io.modelcontextprotocol/protocolVersion": "2026-07-28"
+      },
+      "arguments": {
+        "note": 22,
+        "op": "confirm"
+      },
+      "name": "mem_note"
+    }
+  }
+}

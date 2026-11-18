@@ -575,14 +575,14 @@ class AgentTest(_Base):
         self.src.running = False
         self.agent.poll()
         self.assertEqual(self.agent.order(), [])
-        self.assertIn("假工具现在没在运行，它的事恢复后会自动列回来，不用你做什么。", self.events("feed")[-1]["notices"])
+        self.assertIn("假工具未运行", self.events("feed")[-1]["notices"])
         self.src.running = True
         self.agent.poll()
         self.assertEqual(self.agent.order(), ["tool/a"], "回来了照旧，状态没被当成撤回")
 
     def test_unread_keeps_the_items_and_says_so_after_a_while(self):
         """工具在运行、读 outbox 一直答错误：事不撤、不说没在运行；连着 3 分钟才提一句，读到一次就收起。"""
-        stale = "假工具暂时读不到新的事，列着的可能不是最新的。"
+        stale = "假工具暂时无法读取新事项"
         self.src.items = [item("a")]
         self.agent.poll()
         self.src.unread = True
@@ -611,7 +611,7 @@ class AgentTest(_Base):
         self.assertEqual(self.agent.notices.get("tool"), stale)
         self.src.running = False
         self.agent.poll()
-        self.assertEqual(self.agent.notices.get("tool"), "假工具现在没在运行，它的事恢复后会自动列回来，不用你做什么。",
+        self.assertEqual(self.agent.notices.get("tool"), "假工具未运行",
                          "真没在运行：换成那句")
         self.src.running = True
         self.clock.t = T0 + 410
@@ -662,14 +662,100 @@ class AgentTest(_Base):
         ok = next(c for c in s.components if s.components[c].get("component") == "Button"
                   and s.components[c]["action"]["event"]["name"] == "mail_apply_plan")
         self.agent.tap("tool/a", ok)
-        self.assertEqual(title(self.agent), "已归档 1 封。")
+        self.assertEqual(title(self.agent), "已归档 1 封")
+        self.src.items = []          # 做完了，工具不再报这一件
         again = Agent(self.state, [self.src], clock=self.clock)
-        self.assertEqual(title(again), "已归档 1 封。", "重启以后照旧")
+        self.assertEqual(title(again), "已归档 1 封", "重启以后照旧")
         s = again.surfaces["tool/a"][1]
         undo = next(c for c in a2ui._reachable(s.components) if s.components[c].get("component") == "Button")
         again.tap("tool/a", undo)
-        self.assertEqual(title(again), "已撤销。")
-        self.assertEqual(title(Agent(self.state, [self.src], clock=self.clock)), "已撤销。")
+        section = lambda a: next(c["section"] for c in a._cards() if c["id"] == "tool/a")
+        self.assertEqual((title(again), section(again)), ("已归档 1 封", "undone"), "撤销了的不算做完的，那一句留原来的")
+        once_more = Agent(self.state, [self.src], clock=self.clock)
+        self.assertEqual((title(once_more), section(once_more)), ("已归档 1 封", "undone"), "重启以后照旧")
+
+    def test_undone_and_listed_again_is_open_again(self):
+        """做完以后撤销了，工具又把这一件报了上来（邮箱卡片归档两封再撤销，负责人 11-17）：回到要定的样子，
+        卡片照工具现在给的画，不再留着「已撤销」"""
+        self.src.items = [item("a")]
+        self.agent.poll()
+        find = lambda name: next(c for c in a2ui._reachable(s.components) if s.components[c].get("component") == "Button"
+                                 and s.components[c]["action"]["event"]["name"] == name)
+        s = self.agent.surfaces["tool/a"][1]
+        self.src.items = []
+        self.agent.tap("tool/a", find("mail_apply_plan"))
+        s = self.agent.surfaces["tool/a"][1]
+        self.agent.tap("tool/a", find("mail_undo"))
+        self.agent.poll()
+        card = lambda: next(c for c in self.agent._cards() if c["id"] == "tool/a")
+        self.assertEqual(card()["section"], "undone", "工具没再报：照旧收着")
+        self.src.items = [item("a")]
+        self.agent.poll()
+        self.assertEqual((card()["section"], card()["title"]), ("decide", "标题 a"))
+        s = self.agent.surfaces["tool/a"][1]
+        self.assertTrue(find("mail_apply_plan"), "卡片是工具现在给的，能再点")
+        self.assertEqual(self.state.item("tool/a")["status"], "seen")
+        again = Agent(self.state, [self.src], clock=self.clock)
+        again.poll()
+        self.assertEqual(next(c for c in again._cards() if c["id"] == "tool/a")["section"], "decide", "重启以后照旧开着")
+
+    def test_the_mascot_line_is_one_a_day(self):
+        self.assertIsNone(self.agent._feed()["hello"], "没定：窗口只画吉祥物")
+        self.agent.set_hello("上午归档了 14 封促销邮件，没有一封是人写的")
+        self.assertEqual(self.agent._feed()["hello"], {"text": "上午归档了 14 封促销邮件，没有一封是人写的", "kind": "tease"})
+        self.assertEqual(Agent(self.state, [self.src], clock=self.clock)._feed()["hello"]["kind"], "tease", "重启以后还在")
+        self.clock.t += 86400
+        self.assertIsNone(self.agent._feed()["hello"], "过了今天就没有")
+        self.agent.set_hello("字" * 81)
+        self.assertIsNone(self.agent._feed()["hello"], "太长的不要")
+
+    def test_the_mascot_speaks_four_times_a_day(self):
+        """早上、下午、晚上、深夜各一句（负责人 11-17）：换了一段，上一段的那一句就没有了，要重新定；凌晨算前一天的深夜"""
+        import datetime as dt
+        from luoke_agent.agent import hello_slot
+        at = lambda h, m=0, d=17: dt.datetime(2026, 11, d, h, m).timestamp()
+        self.assertEqual([hello_slot(at(h))[0] for h in (5, 10, 11, 16, 17, 21, 22, 23)],
+                         ["2026-11-17 早上"] * 2 + ["2026-11-17 下午"] * 2 + ["2026-11-17 晚上"] * 2 + ["2026-11-17 深夜"] * 2)
+        self.assertEqual(hello_slot(at(4, 59, d=18))[0], "2026-11-17 深夜", "凌晨 5 点以前算前一天的深夜")
+        self.clock.t = at(9)
+        self.agent.set_hello("早上的那一句", note=1)
+        self.assertTrue(self.agent.hello_decided())
+        self.clock.t = at(10, 59)
+        self.assertEqual(self.agent._feed()["hello"]["text"], "早上的那一句")
+        self.clock.t = at(12)
+        self.assertFalse(self.agent.hello_decided(), "到了下午：要重新定")
+        self.assertIsNone(self.agent._feed()["hello"])
+        self.agent.set_hello("下午的那一句", note=2)
+        self.clock.t = at(23, 30)
+        self.agent.set_hello("深夜的那一句", note=3)
+        self.clock.t = at(2, d=18)
+        self.assertEqual(self.agent._feed()["hello"]["text"], "深夜的那一句", "过了零点还是同一段")
+        self.assertEqual([(r["slot"], r["note"]) for r in self.agent.hello_recent()],
+                         [("2026-11-17 早上", 1), ("2026-11-17 下午", 2), ("2026-11-17 深夜", 3)], "说过的都记着，几天内不再拿它说")
+
+    def test_a_page_remembers_the_group_last_looked_at(self):
+        """收件箱记住上次停在哪一组（负责人 11-16）：带了参数就记下，没带时把上次的交给拼页的；重启以后还在"""
+        class Mod:
+            REMEMBER_ARGS = {"inbox": ("list",)}
+        self.assertEqual(self.agent._with_last("app", "inbox", Mod, {}), {}, "还没看过：什么都不加")
+        self.assertEqual(self.agent._with_last("app", "inbox", Mod, {"list": "needs", "cursor": "20"}),
+                         {"list": "needs", "cursor": "20"}, "带了的原样用")
+        self.assertEqual(self.agent._with_last("app", "inbox", Mod, {"account": "a"}), {"account": "a", "_last_list": "needs"})
+        self.assertEqual(self.agent._with_last("app", "other", Mod, {}), {}, "没登记的页不记")
+        again = Agent(self.state, [self.src], clock=self.clock)
+        self.assertEqual(again._with_last("app", "inbox", Mod, {}), {"_last_list": "needs"})
+
+    def test_done_before_today_is_not_in_today(self):
+        """「已自动处理」只算今天零点以后的：过了零点，昨天做的不再挂在「今天」（负责人 11-16）。"""
+        self.src.items = [item("a")]
+        self.agent.poll()
+        s = self.agent.surfaces["tool/a"][1]
+        self.agent.tap("tool/a", next(c for c in s.components if s.components[c].get("component") == "Button"
+                                      and s.components[c]["action"]["event"]["name"] == "mail_apply_plan"))
+        section = lambda: next(c["section"] for c in self.agent._cards() if c["id"] == "tool/a")
+        self.assertEqual(section(), "done")
+        self.clock.t += 86400
+        self.assertEqual(section(), "past")
 
     def test_dismissed_cards_do_not_come_back(self):
         notice = Item(key="tool/x", source="tool", kind="k", urgency="low", title="t", summary="", why_now="",
@@ -713,11 +799,12 @@ class AgentTest(_Base):
         self.assertIsNone(self.agent.status()["notifications"])
         self.agent.set_notifications("denied")
         self.assertEqual(self.agent.status()["notifications"], {"status": "denied", "alerts": True})
-        notice = next(n for n in self.events("feed")[-1]["notices"] if "系统通知被关掉了" in n)
-        self.assertIn("找到「螺壳」", notice, "通知以「螺壳」的名义发：照旧名找不到")
+        notice = next(n for n in self.events("feed")[-1]["notices"] if "系统通知已关闭" in n)
         self.assertNotIn("螺壳 agent", notice)
+        rows = self.agent._feed()["notice_rows"]
+        self.assertIn({"id": "notifications", "kind": "notifications", "text": notice}, rows, "窗口照 kind 放「打开系统设置」")
         self.agent.set_notifications("authorized", alerts=False)
-        self.assertTrue(any("系统通知被关掉了" in n for n in self.agent._feed()["notices"]), "横幅关着也算")
+        self.assertTrue(any("系统通知已关闭" in n for n in self.agent._feed()["notices"]), "横幅关着也算")
         self.agent.set_notifications("not_determined", alerts=False)
         self.assertFalse(any("系统通知" in n for n in self.agent._feed()["notices"]), "还没问过：窗口留按钮")
         self.agent.set_notifications("authorized")
@@ -819,6 +906,40 @@ class BriefScheduleTest(_Base):
         nxt = self.agent._feed()["brief"]["next"]
         self.assertEqual(nxt, dt.datetime.fromtimestamp(local(8, 0, 1)).astimezone().isoformat(timespec="seconds"))
 
+    def test_brief_time_moves_the_morning_brief(self):
+        """每天简报的时间（§18.7）：设了就照它，不再跟着免打扰结束"""
+        self.assertEqual(self.agent.settings()["brief_time"], "08:00", "没设：免打扰结束时")
+        self.agent.update_settings({"brief_time": "09:30"})
+        self.state.set_meta("last_brief", local(9, 40, -1))   # 前一天的那份发过了
+        self.src.items = [item("a")]
+        self.clock.t = local(8, 0)
+        self.agent.poll()
+        self.go(local(8, 40))
+        self.assertEqual(self.briefs(), [], "还没到 09:30")
+        self.go(local(9, 35))
+        self.assertEqual(len(self.briefs()), 1)
+        with self.assertRaises(ValueError):
+            self.agent.update_settings({"brief_time": "9:30"})
+
+    def test_alert_classes(self):
+        """提醒分三类（2026-11-13 负责人定）：急事、要你决定、替你做了，各选马上提醒、放进简报、不提醒；逐类设过的照逐类"""
+        got = self.agent.settings()
+        self.assertEqual(got["classes"], {"urgent": "now", "decide": "brief", "done": "brief"})
+        bad = item("bad", urgency="urgent", kind="suspicious")
+        ask = item("ask")
+        self.assertEqual((self.agent.mode(bad), self.agent.mode(ask)), ("now", "brief"))
+        self.agent.update_settings({"classes": {"urgent": "brief", "decide": "off"}})
+        self.assertEqual((self.agent.mode(bad), self.agent.mode(ask)), ("brief", "window"), "不提醒：照旧在窗口里")
+        self.assertEqual(self.agent.settings()["classes"]["done"], "brief", "没给的那类不动")
+        self.agent.update_settings({"modes": {"tool:suspicious": "now"}})
+        self.assertEqual(self.agent.mode(bad), "now", "逐类设过的照逐类")
+        kinds = {k["id"]: k for k in self.agent.settings()["kinds"]}
+        if "tool:ask" in kinds:
+            self.assertEqual(kinds["tool:ask"]["default"], "window", "逐类的默认跟着它属于的那一类")
+        for wrong in ({"urgent": "window"}, {"later": "now"}, {}):
+            with self.assertRaises(ValueError):
+                self.agent.update_settings({"classes": wrong})
+
     def test_twice_adds_the_evening(self):
         self.agent.update_settings({"brief": "twice"})
         self.go(local(8, 30))
@@ -906,6 +1027,44 @@ class FeedAndSettingsTest(_Base):
         sec = {c["id"]: c["section"] for c in self.agent._feed()["cards"]}
         self.assertEqual(sec["tool/a"], "done", "点完、带撤销的进「已经替你做了」")
 
+    def test_at_most_three_asks_a_day_the_rest_are_held(self):
+        """每天最多问三件（负责人 2026-11-12）：多的 section 写 held 先攒着；急事不受限；第二天重新数。"""
+        self.src.items = [item(k) for k in "abcde"] + [item("bad", urgency="urgent", kind="suspicious")]
+        self.agent.poll()
+        sec = lambda: {c["id"]: c["section"] for c in self.agent._feed()["cards"]}
+        got = sec()
+        self.assertEqual(sorted(v for v in got.values()), ["decide"] * 3 + ["held"] * 2 + ["urgent"])
+        self.assertEqual(got["tool/bad"], "urgent", "急事不占名额、不被攒着")
+        asked = {k for k, v in got.items() if v == "decide"}
+        self.src.items.append(item("f"))
+        self.agent.poll()
+        self.assertEqual({k for k, v in sec().items() if v == "decide"}, asked, "今天问过的不换，新来的往后排")
+        # 答完一件：它的名额今天还占着，攒着的不顶上来
+        first = sorted(asked)[0]
+        surface = self.agent.surfaces[first][1]
+        apply = next(cid for cid, comp in surface.components.items() if comp.get("component") == "Button"
+                     and comp["action"]["event"]["name"] == "mail_apply_plan")
+        self.agent.tap(first, apply)
+        got = sec()
+        self.assertEqual(got[first], "done")
+        self.assertEqual(sum(1 for v in got.values() if v == "decide"), 2, "答完的名额今天还占着")
+        # 第二天重新数
+        self.clock.t += 26 * HOUR
+        got = sec()
+        self.assertEqual(sum(1 for v in got.values() if v == "decide"), 3)
+
+    def test_a_withdrawn_ask_gives_its_place_back(self):
+        """工具撤回的不占今天的名额（#165：记忆换编号以后旧编号撤回，新编号被压到第二天）。"""
+        self.src.items = [item(k) for k in "abcde"]
+        self.agent.poll()
+        sec = lambda: {c["id"]: c["section"] for c in self.agent._feed()["cards"]}
+        asked = sorted(k for k, v in sec().items() if v == "decide")
+        self.assertEqual(len(asked), 3)
+        self.src.items = [i for i in self.src.items if "tool/" + i.key.split("/")[-1] not in asked]
+        self.agent.poll()
+        got = sec()
+        self.assertEqual(sorted(v for k, v in got.items() if k not in asked), ["decide"] * 2, "撤回的让出名额，攒着的顶上来")
+
     def test_menu_bar_dot_follows_the_mode_and_proactive(self):
         """菜单栏小点：急事那一段里有「当场说」的那几类，主动提醒开着；暂停着照旧有。"""
         self.assertFalse(self.agent._feed()["dot"])
@@ -974,6 +1133,75 @@ class FeedAndSettingsTest(_Base):
             with self.assertRaises(ValueError, msg=bad):
                 self.agent.update_settings(bad)
         self.assertEqual(self.agent.settings()["brief"], "twice", "值不对的什么都不改")
+
+
+class ActivityTest(_Base):
+    """右边栏的「历史」（docs/界面接口.md §5）：做过的事，从新到旧；卡片还在、能撤销的带上要点的按钮。不加表的列"""
+
+    def button(self, sid, event):
+        comps = self.agent.surfaces[sid][1].components
+        return next(cid for cid, c in comps.items() if c.get("component") == "Button" and c["action"]["event"]["name"] == event)
+
+    def test_what_was_done_newest_first(self):
+        self.src.items = [item("a"), item("b"), item("c", kind="auto-done", urgency="low")]
+        self.agent.poll()
+        self.clock.t = T0 + 60
+        self.agent.tap("tool/a", self.button("tool/a", "mail_apply_plan"))
+        self.clock.t = T0 + 120
+        self.src.items = [item("c", kind="auto-done", urgency="low")]      # b 被工具撤下了
+        self.agent.poll()
+        act = self.agent.activity()
+        self.assertFalse(act["more"])
+        rows = {r["id"]: r for r in act["rows"]}
+        self.assertEqual([r["id"] for r in act["rows"]], ["tool/a", "tool/c"], "工具撤下的 b 螺壳什么都没做：不列")
+        self.assertEqual((rows["tool/a"]["outcome"], rows["tool/a"]["text"]), ("done", "已归档 1 封"))
+        self.assertEqual((rows["tool/c"]["outcome"], rows["tool/c"]["text"]), ("auto", "标题 c"), "工具自己做了的，还开着也算")
+        self.assertEqual(rows["tool/a"]["app"], "tool")
+        self.assertTrue(rows["tool/a"]["time"])
+        undo = rows["tool/a"]["undo"]
+        self.assertEqual((undo["surfaceId"], undo["label"]), ("tool/a", "撤销"))
+        self.agent.tap(undo["surfaceId"], undo["componentId"])
+        row = next(r for r in self.agent.activity()["rows"] if r["id"] == "tool/a")
+        self.assertEqual((row["text"], row.get("undone")), ("已归档 1 封", True), "留原来做了什么，标上撤销过")
+        self.assertNotIn("undo", row, "撤销以后没有撤销了")
+        self.agent.undone.clear()              # 核心重启、卡片收走以后：从存下的事项里读回
+        row = next(r for r in self.agent.activity()["rows"] if r["id"] == "tool/a")
+        self.assertTrue(row.get("undone"))
+
+    def test_the_sentence_survives_a_restart(self):
+        self.src.items = [item("a")]
+        self.agent.poll()
+        self.agent.tap("tool/a", self.button("tool/a", "mail_apply_plan"))
+        self.agent.done_text.clear()           # 核心重启：那一句从存下的事项里读回
+        row = next(r for r in self.agent.activity()["rows"] if r["id"] == "tool/a")
+        self.assertEqual(row["text"], "已归档 1 封")
+
+    def test_a_one_word_reply_says_what_was_asked(self):
+        from luoke_agent.agent import done_line
+        self.assertEqual(done_line("好。", "以后「Cathay」的「通知」邮件，都自动归档？"),
+                         "以后「Cathay」的「通知」邮件，都自动归档 · 已选「好」")
+        self.assertEqual(done_line("已归档 1 封。", "标题"), "已归档 1 封", "说清了做什么的照原样，一句话的不带句号")
+        self.assertEqual(done_line("已归档 1 封。另有 2 封未处理。", "标题"), "已归档 1 封。另有 2 封未处理。")
+        ask = "记忆想问：你在关注「开源许可」吗？"
+        self.assertEqual(done_line("已确认", ask), "记忆想问：你在关注「开源许可」吗 · 已确认", "只说了怎么定的：带上问的是哪一条")
+        self.assertEqual(done_line("记下了：对。", ask), "记忆想问：你在关注「开源许可」吗 · 已确认", "以前存下的口语说法画的时候换掉")
+        self.assertEqual(done_line("好，不再提这个。", ask), "记忆想问：你在关注「开源许可」吗 · 不再询问")
+        self.assertEqual(done_line("已确认", ""), "已确认")
+        self.assertEqual(done_line("", "标题"), "标题")
+        self.assertEqual(done_line(None, "标题"), "标题")
+
+    def test_filter_and_pages(self):
+        self.src.items = [item("a"), item("b")]
+        self.agent.poll()
+        for i, k in enumerate(["a", "b"]):
+            self.clock.t = T0 + 60 * (i + 1)
+            self.agent.tap(f"tool/{k}", self.button(f"tool/{k}", "mail_apply_plan"))
+        first = self.agent.activity(limit=1)
+        self.assertEqual(([r["id"] for r in first["rows"]], first["more"]), (["tool/b"], True))
+        rest = self.agent.activity(before=T0 + 120, limit=5)
+        self.assertEqual(([r["id"] for r in rest["rows"]], rest["more"]), (["tool/a"], False))
+        self.assertEqual(self.agent.activity(app="luoke-mail")["rows"], [])
+        self.assertEqual(len(self.agent.activity(app="tool")["rows"]), 2)
 
 
 if __name__ == "__main__":

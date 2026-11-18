@@ -10,12 +10,17 @@
       },
       {
         "name": "mem_note",
-        "title": "确认、否定或忘掉记忆里的一条",
+        "title": "确认、否定、改写、拆出或忘掉记忆里的一条",
         "writes": true
       },
       {
         "name": "mem_forget_tool",
         "title": "忘掉某个应用写进记忆的",
+        "writes": true
+      },
+      {
+        "name": "mem_learn",
+        "title": "让记忆不再从某个应用学，或者再从它学",
         "writes": true
       },
       {
@@ -25,9 +30,27 @@
       },
       {
         "name": "mem_person",
-        "title": "说某个人不是一个人，或者从记忆里忘掉这个人",
+        "title": "给记忆里的人改名、并成一个、拆开，说不是一个人，或者忘掉这个人",
+        "writes": true
+      },
+      {
+        "name": "mem_archive",
+        "title": "把记忆想问的事、建议归档，或者放回去",
         "writes": true
       }
+    ],
+    "data": [
+      "recent",
+      "helped",
+      "asks",
+      "ask",
+      "notes",
+      "people",
+      "person",
+      "note",
+      "sources",
+      "data",
+      "forget"
     ],
     "protocol": 1,
     "reports": [
@@ -49,20 +72,43 @@
           "title": "概览"
         },
         {
-          "id": "guesses",
-          "title": "猜测"
-        },
-        {
-          "id": "kept",
-          "title": "记下的"
+          "id": "all",
+          "title": "全部记忆"
         },
         {
           "id": "people",
-          "title": "人"
+          "title": "人物"
         },
         {
+          "hidden": true,
+          "icon": "settings",
+          "id": "settings",
+          "title": "设置"
+        },
+        {
+          "hidden": true,
+          "id": "item",
+          "title": "一条理解"
+        },
+        {
+          "hidden": true,
+          "id": "asks",
+          "title": "归档的问题"
+        },
+        {
+          "hidden": true,
+          "id": "guesses",
+          "title": "待确认"
+        },
+        {
+          "hidden": true,
+          "id": "kept",
+          "title": "全部记忆"
+        },
+        {
+          "hidden": true,
           "id": "sources",
-          "title": "各应用写的"
+          "title": "设置"
         }
       ],
       "summary": true,
@@ -110,6 +156,7 @@
       "min_interval_minutes": 120,
       "name": "learn",
       "timeout_minutes": 30,
+      "title": "整理记忆",
       "uses_model": true
     }
   ],
@@ -130,5 +177,5 @@
   ],
   "type": "component",
   "ui_element": true,
-  "version": "$VERSION"
+  "version": "0.44.0"
 }

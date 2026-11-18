@@ -4,6 +4,7 @@
   `feed`（{order, open, notices, cards, brief, paused_until}；`cards` 是每张卡片在「今天」的哪一段）、
   `notify`（壳去发系统通知）、`busy`（卡片在处理）、`result`（点按的结果一句话）、`settings`（设置改了）、
   `apps`（{app}：这个应用的运行状态、概览、页列表、权限状态变了）。
+- `GET /activity?before=&app=&limit=`：做过的事，右边栏的「历史」（docs/界面接口.md §5）。
 - `GET /settings`、`POST /settings`：提醒的设置（docs/界面接口.md §9）；POST 只带要改的，答改完的全部。
 - `GET /apps`、`GET /apps/<id>/pages/<页>`：应用的页（docs/界面接口.md §6）；`POST /open` {"app", "page"} 打开工具自己的界面，
   窗口从 11-09 起不再调，接口留着。
@@ -40,8 +41,8 @@ from http.server import BaseHTTPRequestHandler
 from typing import Any, Callable, Optional
 
 from . import a2ui, apps
-from .agent import SEARCH_LIMIT, Agent
-from .mcp import _prepare_socket
+from .agent import SEARCH_LIMIT, Agent, parse_time
+from .mcp import LISTEN_BACKLOG, _prepare_socket
 
 KEEPALIVE = 15.0
 MAX_BODY = 1 << 20
@@ -135,6 +136,9 @@ class UIServer:
 
 class _Server(socketserver.ThreadingMixIn, socketserver.UnixStreamServer):
     daemon_threads = True
+    # 还没接下来的连接最多排几条。默认 5：窗口一屏的缩略图同时连过来（一格一条），macOS 上排不下的当场拒，
+    # 窗口不重连、那几格就一直是占位框。
+    request_queue_size = LISTEN_BACKLOG
     ui: UIServer
 
 
@@ -192,6 +196,17 @@ class _Handler(BaseHTTPRequestHandler):
         if self.path == "/permissions":
             return self._json(200, self.ui.agent.permissions())
         path, _, query = self.path.partition("?")
+        if path == "/activity":
+            q = urllib.parse.parse_qs(query)
+            before = q.get("before", [None])[0]
+            before_ts = parse_time(before) if before else None
+            try:
+                limit = int(q.get("limit", ["50"])[0])
+            except ValueError:
+                limit = 0
+            if (before and before_ts is None) or not 1 <= limit <= 200:
+                return self._json(400, {"error": "before 要是 ISO 8601 时间，limit 是 1 到 200"})
+            return self._json(200, self.ui.agent.activity(before_ts, q.get("app", [None])[0] or None, limit))
         if path == "/thumb":
             q = dict(urllib.parse.parse_qsl(query))
             app, ref = q.get("app"), q.get("ref")

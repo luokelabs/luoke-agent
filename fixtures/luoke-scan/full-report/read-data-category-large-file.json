@@ -1,0 +1,145 @@
+{
+  "reply": {
+    "id": 1008,
+    "jsonrpc": "2.0",
+    "result": {
+      "contents": [
+        {
+          "mimeType": "application/json",
+          "text": {
+            "auto": null,
+            "bytes": 65011712,
+            "count": 3,
+            "facts": {
+              "apps": [],
+              "appsInstalled": 0,
+              "appsMissing": 0,
+              "groups": {
+                "large-file": 3
+              },
+              "password": 0,
+              "rebuilds": 0,
+              "tools": [],
+              "userFiles": "yes"
+            },
+            "files": 3,
+            "id": "large-file",
+            "items": [
+              {
+                "bytes": 31457280,
+                "facts": {
+                  "lastOpened": "2025-09-15"
+                },
+                "finding": "stale.large-file/000000000012",
+                "group": "large-file",
+                "key": "i12",
+                "options": [
+                  "trash",
+                  "keep",
+                  "ignore"
+                ],
+                "password": false,
+                "path": "~/Downloads/macOS Sonoma 安装程序 备份 2023 年 3 月最终版 (1).dmg",
+                "paths": [
+                  "~/Downloads/macOS Sonoma 安装程序 备份 2023 年 3 月最终版 (1).dmg"
+                ],
+                "pathsMore": 0,
+                "plan": "p-000000000008",
+                "reason": "not-opened",
+                "rebuilds": false,
+                "restorable": true,
+                "reveal": "~/Downloads/macOS Sonoma 安装程序 备份 2023 年 3 月最终版 (1).dmg",
+                "rule": "stale.large-file",
+                "suggested": "keep",
+                "userFiles": "yes"
+              },
+              {
+                "bytes": 20971520,
+                "facts": {
+                  "lastOpened": "2025-02-27"
+                },
+                "finding": "stale.large-file/000000000013",
+                "group": "large-file",
+                "key": "i13",
+                "options": [
+                  "trash",
+                  "keep",
+                  "ignore"
+                ],
+                "password": false,
+                "path": "~/Movies/二零二三年大学毕业典礼全程录像（含校长致辞和学生代表发言）完整版.mp4",
+                "paths": [
+                  "~/Movies/二零二三年大学毕业典礼全程录像（含校长致辞和学生代表发言）完整版.mp4"
+                ],
+                "pathsMore": 0,
+                "plan": "p-000000000008",
+                "reason": "not-opened",
+                "rebuilds": false,
+                "restorable": true,
+                "reveal": "~/Movies/二零二三年大学毕业典礼全程录像（含校长致辞和学生代表发言）完整版.mp4",
+                "rule": "stale.large-file",
+                "suggested": "keep",
+                "userFiles": "yes"
+              },
+              {
+                "bytes": 12582912,
+                "facts": {
+                  "lastOpened": "2018-09-22"
+                },
+                "finding": "stale.large-file/000000000014",
+                "group": "large-file",
+                "key": "i14",
+                "options": [
+                  "trash",
+                  "keep",
+                  "ignore"
+                ],
+                "password": false,
+                "path": "~/Pictures/Trip/IMG_8519.MOV",
+                "paths": [
+                  "~/Pictures/Trip/IMG_8519.MOV"
+                ],
+                "pathsMore": 0,
+                "plan": "p-000000000008",
+                "reason": "not-opened",
+                "rebuilds": false,
+                "restorable": true,
+                "reveal": "~/Pictures/Trip/IMG_8519.MOV",
+                "rule": "stale.large-file",
+                "suggested": "keep",
+                "userFiles": "yes"
+              }
+            ],
+            "known": true,
+            "more": 0,
+            "scanned": {
+              "finished": "2026-10-20T12:00:00Z",
+              "started": "2026-10-20T12:00:00Z"
+            },
+            "schema": 1,
+            "suggested": 0,
+            "suggestedBytes": 0
+          },
+          "uri": "data/category?id=large-file"
+        }
+      ],
+      "resultType": "complete"
+    }
+  },
+  "request": {
+    "id": 1008,
+    "jsonrpc": "2.0",
+    "method": "resources/read",
+    "params": {
+      "_meta": {
+        "io.modelcontextprotocol/clientCapabilities": {},
+        "io.modelcontextprotocol/clientInfo": {
+          "name": "luoke-agent",
+          "version": "fixtures"
+        },
+        "io.modelcontextprotocol/protocolVersion": "2026-07-28"
+      },
+      "uri": "data/category?id=large-file"
+    }
+  }
+}

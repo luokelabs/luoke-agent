@@ -25,6 +25,12 @@
         "writes": true
       }
     ],
+    "data": [
+      "overview",
+      "category",
+      "history",
+      "settings"
+    ],
     "listing": {
       "category": "系统",
       "tagline": "它为这台 Mac 加护：拂去你不会想念的，无一不可复还。"
@@ -163,5 +169,5 @@
   ],
   "type": "app",
   "ui_element": true,
-  "version": "0.3.26"
+  "version": "0.3.40"
 }

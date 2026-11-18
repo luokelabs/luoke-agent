@@ -7,40 +7,76 @@ public struct Palette: Equatable {
     public var brand, brandSoft, success, successSoft, warning, warningSoft, danger, dangerSoft: Color
     /// 珊瑚红当字用（粉底小标签上、撤销、简报里能点的词下面那条线）
     public var brandText: Color
-    /// 实心红按钮的底色（上面是白字）
+    /// 实心红按钮的底色（destructive）；上面的字用 `dangerFillFg`，不用白字（§2「危险按钮上的字」）
     public var dangerFill: Color
     /// 卡片上的标签（邮箱地址）：浅蓝底、蓝字；快到期的橙色标签用的字色（比 warning 深，小字也到 4.5:1）
     public var info: Color = .hex(0x2F5E9E)
     public var infoSoft: Color = .hex(0xE7EEF8)
     public var warningText: Color = .hex(0x8A5A12)
+    /// 绿色当字用：浅色压深一档（#2F7A4F 在浅底、粉底上不到 4.5:1），深色就是 success
+    public var successText: Color = .hex(0x2C744B)
     public var dark: Bool
+    /// 卡片、一组行、横幅的圆角：工作台 12，首页 18（界面规范 v2 §2、§11）
+    public var cardRadius: CGFloat = 12
+    /// 按钮、输入框、侧栏选中的圆角：工作台 10，首页 12
+    public var controlRadius: CGFloat = 10
 
-    /// 字色在浅底、粉底上都到 4.5:1（红字 #B83C29、绿字 #2C744B 在急事卡的粉底上 4.8；11-07 实测）
+    /// 工作台那一组（界面规范 v2 §2 的表）：设置、应用页、活动、搜索结果，和主控画的页是同一份值，两边都照抄，不各自调。
+    /// `danger`、`brandText`、`warningText` 是 §2「用状态色写的字」压深一档的值；`dangerFill` 就是 destructive。
+    /// 标签的蓝（`info`、`infoSoft`）规范里还没有
     public static let light = Palette(
-        bg: .hex(0xFCFAF7), fg: .hex(0x3A1F14), card: .hex(0xFFFFFF), sidebar: .hex(0xF7F2EB),
-        primary: .hex(0x3A1F14), primaryFg: .hex(0xFFF8EE), muted: .hex(0xF4EEE6), mutedFg: .hex(0x7A6558),
+        bg: .hex(0xFCFAF7), fg: .hex(0x2B1A12), card: .hex(0xFFFFFF), sidebar: .hex(0xF7F2EB),
+        primary: .hex(0x3A1F14), primaryFg: .hex(0xFDF8F1), muted: .hex(0xF4EEE6), mutedFg: .hex(0x7A6558),
         border: .hex(0xECE4DA), input: .hex(0xE2D8CC), brand: .hex(0xE8556B), brandSoft: .hex(0xFCE8EA),
-        success: .hex(0x2C744B), successSoft: .hex(0xE4F2E8), warning: .hex(0xA86A12), warningSoft: .hex(0xFBF0D9),
-        danger: .hex(0xB83C29), dangerSoft: .hex(0xFBE9E5), brandText: .hex(0xB4364C), dangerFill: .hex(0xC2412D), dark: false)
+        success: .hex(0x2F7A4F), successSoft: .hex(0xE4F2E8), warning: .hex(0xA86A12), warningSoft: .hex(0xFBF0D9),
+        danger: .hex(0xB33A27), dangerSoft: .hex(0xF9ECEA), brandText: .hex(0xBF2D45), dangerFill: .hex(0xC2412D),
+        warningText: .hex(0x8F590C), dark: false)
 
+    /// 深色是暖色：深棕的底、奶油色的字，不用中性灰（v2）。深色下用状态色写的字直接用原色
     public static let dark = Palette(
-        bg: .hex(0x15110E), fg: .hex(0xFFF8EE), card: .hex(0x201A16), sidebar: .hex(0x1A1512),
-        primary: .hex(0xFFF8EE), primaryFg: .hex(0x3A1F14), muted: .hex(0x29221D), mutedFg: .hex(0xBFB2A6),
-        border: .hex(0x322A24), input: .hex(0x40362F), brand: .hex(0xF2707F), brandSoft: .hex(0x3B1F24),
+        bg: .hex(0x1F1511), fg: .hex(0xFBF3E8), card: .hex(0x2C1F19), sidebar: .hex(0x261A15),
+        primary: .hex(0xFDF4E4), primaryFg: .hex(0x2B1A12), muted: .hex(0x372720), mutedFg: .hex(0xBBA596),
+        border: .hex(0x3B2A22), input: .hex(0x4A382E), brand: .hex(0xF2707F), brandSoft: .hex(0x4A2329),
         success: .hex(0x5CC98A), successSoft: .hex(0x16301F), warning: .hex(0xE8B45A), warningSoft: .hex(0x33280F),
-        danger: .hex(0xF07A66), dangerSoft: .hex(0x3A1A15), brandText: .hex(0xF58A97), dangerFill: .hex(0xB8412F),
-        info: .hex(0x9DBCEB), infoSoft: .hex(0x1C2737), warningText: .hex(0xE8B45A), dark: true)
+        danger: .hex(0xF07A66), dangerSoft: .hex(0x472C24), brandText: .hex(0xF2707F), dangerFill: .hex(0xF07A66),
+        info: .hex(0x9DBCEB), infoSoft: .hex(0x1C2737), warningText: .hex(0xE8B45A), successText: .hex(0x5CC98A), dark: true)
 
+    /// 首页那一组（v2 §2「首页和小精灵换的值」）：首页和共用的侧栏。底更暖；别的同工作台。主按钮原来用品牌粉，负责人 11-17 定回深棕（粉的像删除、提示条像报错），品牌粉只留给吉祥物和强调
+    public static let homeLight = Palette.light.with(bg: 0xFFF8EE, sidebar: 0xFBEEDC, card: 0xFFFFFF, muted: 0xF6ECDF,
+                                                     border: 0xF0E4D4)
+    public static let homeDark = Palette.dark.with(bg: 0x241713, sidebar: 0x1D120E, card: 0x32221B, muted: 0x3B2921,
+                                                   border: 0x402D24)
+
+    private func with(bg: UInt32, sidebar: UInt32, card: UInt32, muted: UInt32, border: UInt32) -> Palette {
+        var p = self
+        p.bg = .hex(bg); p.sidebar = .hex(sidebar); p.card = .hex(card); p.muted = .hex(muted)
+        p.border = .hex(border)
+        p.cardRadius = 18; p.controlRadius = 12
+        return p
+    }
+
+    /// 哪一组：首页和侧栏用首页那组，内容区里别的页用工作台那组（v2 §11，和 luoke-core 11-12 商定）
+    public enum Layer: Sendable { case home, workbench }
+
+    public static func of(_ layer: Layer, dark: Bool) -> Palette {
+        switch layer {
+        case .home: return dark ? .homeDark : .homeLight
+        case .workbench: return dark ? .dark : .light
+        }
+    }
+
+    /// 实心红按钮上的字：工作台的 primary-foreground（浅色奶白、深色墨棕），首页那组也是这个
+    public var dangerFillFg: Color { dark ? .hex(0x2B1A12) : .hex(0xFDF8F1) }
     /// 次一级按钮、分段的底：字色的 6 %（深色 8 %）
-    public var tint: Color { (dark ? Color.hex(0xFFF8EE) : Color.hex(0x3A1F14)).opacity(dark ? 0.08 : 0.06) }
+    public var tint: Color { fg.opacity(dark ? 0.08 : 0.06) }
     /// 悬停：字色的 10 %
-    public var soft: Color { (dark ? Color.hex(0xFFF8EE) : Color.hex(0x3A1F14)).opacity(0.10) }
+    public var soft: Color { fg.opacity(0.10) }
     /// 侧栏选中的底：字色的 7 %（深色 8 %）
-    public var selection: Color { (dark ? Color.hex(0xFFF8EE) : Color.hex(0x3A1F14)).opacity(dark ? 0.08 : 0.07) }
+    public var selection: Color { fg.opacity(dark ? 0.08 : 0.07) }
     /// 卡片的影子（浅色）
-    public var shadow: Color { Color.hex(0x3A1F14) }
+    public var shadow: Color { Color.hex(0x2B1A12) }
     /// 分段里选中的那一块
-    public var thumb: Color { dark ? .hex(0x3A302A) : card }
+    public var thumb: Color { dark ? input : card }
 }
 
 extension Color {
@@ -51,9 +87,9 @@ extension Color {
 
 /// 字号：只用这五档；字重只用常规、中等、半粗
 enum LKType {
-    /// 页面标题、一件件处理的标题
+    /// 页面标题、逐件处理的标题
     static let title: CGFloat = 26
-    /// 卡片标题、简报、一件件处理的正文
+    /// 卡片标题、简报、逐件处理的正文
     static let lead: CGFloat = 15
     static let body: CGFloat = 14
     static let small: CGFloat = 13
@@ -74,17 +110,13 @@ enum LKSpace {
     static let x14: CGFloat = 56
 }
 
-/// 圆角
+/// 圆角。卡片和按钮的圆角跟着哪一组走，在 `Palette.cardRadius`、`Palette.controlRadius`
 enum LKRadius {
     /// 小按钮、小标签、键帽
     static let small: CGFloat = 6
-    /// 按钮、输入框、侧栏选中
-    static let control: CGFloat = 8
-    /// 卡片、一组行、横幅
-    static let card: CGFloat = 14
     /// 浮在上面的面板（要权限）
     static let sheet: CGFloat = 20
-    /// 一件件处理的面板
+    /// 逐件处理的面板
     static let focus: CGFloat = 16
 }
 
@@ -108,8 +140,9 @@ public extension EnvironmentValues {
         set { self[PaletteKey.self] = newValue }
     }
 
-    /// 在画截图：滚动区平铺、输入框画成静态的、窗口的红黄绿自己画、不放动画
-    var lkSnapshot: Bool {
+    /// 在画截图：滚动区平铺、输入框画成静态的、窗口的红黄绿自己画、不放动画（进场的一下也没有）。
+    /// 公开给本体离屏截主窗口用（`--render-ui`）：设了就不用等动画走完
+    public var lkSnapshot: Bool {
         get { self[SnapshotKey.self] }
         set { self[SnapshotKey.self] = newValue }
     }
@@ -142,15 +175,17 @@ func lkCardFont(_ variant: String?) -> Font {
     }
 }
 
-/// 按深浅色挑一套颜色，把卡片渲染器的样式也接上。窗口里所有东西都包在它里面。
+/// 按深浅色和哪一组（首页、工作台）挑一套颜色，把卡片渲染器的样式也接上。窗口里所有东西都包在它里面；
+/// 侧栏和首页再包一层首页那组。
 struct Themed<Content: View>: View {
+    var layer: Palette.Layer = .workbench
     @Environment(\.colorScheme) private var scheme
     @Environment(\.lkSnapshot) private var snapshot
     @Environment(\.lkLiveControls) private var live
     @ViewBuilder var content: Content
 
     var body: some View {
-        let p = scheme == .dark ? Palette.dark : Palette.light
+        let p = Palette.of(layer, dark: scheme == .dark)
         content
             .environment(\.lk, p)
             .environment(\.a2uiButtonStyle, { AnyA2UIButtonStyle(LKButtonStyle(kind: LKButtonKind(a2ui: $0))) })

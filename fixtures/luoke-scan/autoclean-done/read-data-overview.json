@@ -1,0 +1,184 @@
+{
+  "reply": {
+    "id": 1001,
+    "jsonrpc": "2.0",
+    "result": {
+      "contents": [
+        {
+          "mimeType": "application/json",
+          "text": {
+            "attention": {
+              "count": 4,
+              "items": [
+                {
+                  "category": null,
+                  "finding": "posture.filevault",
+                  "path": null,
+                  "reveal": null,
+                  "rule": "posture.filevault",
+                  "severity": "high",
+                  "urgent": false
+                },
+                {
+                  "category": null,
+                  "finding": "process.deleted-binary/000000000003",
+                  "path": "~/Applications/Gone.app/Contents/MacOS/gone",
+                  "reveal": "~/Applications/Gone.app/Contents/MacOS/gone",
+                  "rule": "process.deleted-binary",
+                  "severity": "medium",
+                  "urgent": false
+                },
+                {
+                  "category": null,
+                  "finding": "permission.stale-grant/000000000004",
+                  "path": "/opt/gone/tool",
+                  "reveal": "/opt/gone/tool",
+                  "rule": "permission.stale-grant",
+                  "severity": "medium",
+                  "urgent": false
+                },
+                {
+                  "category": null,
+                  "finding": "permission.stale-grant/000000000005",
+                  "path": null,
+                  "reveal": null,
+                  "rule": "permission.stale-grant",
+                  "severity": "medium",
+                  "urgent": false
+                }
+              ],
+              "urgent": 0
+            },
+            "autoCleaned": [
+              {
+                "at": "2026-10-20T12:00:00Z",
+                "batch": "auto-2026-10-20T12:00:00Z",
+                "bytes": 181489664,
+                "failed": [],
+                "kinds": [
+                  {
+                    "bytes": 62914560,
+                    "count": 1,
+                    "kind": "cache",
+                    "partial": [],
+                    "restorable": 0,
+                    "restored": 0,
+                    "tools": [
+                      "pip"
+                    ]
+                  },
+                  {
+                    "bytes": 6291456,
+                    "count": 1,
+                    "kind": "installer",
+                    "restorable": 1,
+                    "restored": 0
+                  },
+                  {
+                    "bytes": 2097152,
+                    "count": 1,
+                    "kind": "duplicate",
+                    "restorable": 1,
+                    "restored": 0
+                  },
+                  {
+                    "bytes": 110186496,
+                    "count": 21,
+                    "kind": "temp",
+                    "restorable": 21,
+                    "restored": 0
+                  }
+                ],
+                "restorable": 23,
+                "unrecorded": 0
+              }
+            ],
+            "autoclean": true,
+            "disk": {
+              "free": 182000000000,
+              "total": 494000000000
+            },
+            "fullDiskAccess": "granted",
+            "largeFiles": {
+              "bytes": 0,
+              "count": 0
+            },
+            "reclaimable": [
+              {
+                "auto": "temp",
+                "bytes": 131072000,
+                "count": 1,
+                "facts": {
+                  "apps": [],
+                  "appsInstalled": 0,
+                  "appsMissing": 0,
+                  "groups": {
+                    "temp": 1
+                  },
+                  "password": 0,
+                  "rebuilds": 0,
+                  "tools": [],
+                  "userFiles": "none"
+                },
+                "files": 25,
+                "id": "temp",
+                "suggested": 0,
+                "suggestedBytes": 0
+              },
+              {
+                "auto": null,
+                "bytes": 147456,
+                "count": 1,
+                "facts": {
+                  "apps": [],
+                  "appsInstalled": 0,
+                  "appsMissing": 0,
+                  "groups": {
+                    "project": 1
+                  },
+                  "password": 0,
+                  "rebuilds": 0,
+                  "tools": [],
+                  "userFiles": "maybe"
+                },
+                "files": 1,
+                "id": "project",
+                "suggested": 0,
+                "suggestedBytes": 0
+              }
+            ],
+            "scanned": {
+              "finished": "2026-10-20T12:00:00Z",
+              "started": "2026-10-20T12:00:00Z"
+            },
+            "scanning": null,
+            "schema": 1,
+            "skipped": [],
+            "virusDb": {
+              "date": "2026-10-20",
+              "version": "27000"
+            }
+          },
+          "uri": "data/overview"
+        }
+      ],
+      "resultType": "complete"
+    }
+  },
+  "request": {
+    "id": 1001,
+    "jsonrpc": "2.0",
+    "method": "resources/read",
+    "params": {
+      "_meta": {
+        "io.modelcontextprotocol/clientCapabilities": {},
+        "io.modelcontextprotocol/clientInfo": {
+          "name": "luoke-agent",
+          "version": "fixtures"
+        },
+        "io.modelcontextprotocol/protocolVersion": "2026-07-28"
+      },
+      "uri": "data/overview"
+    }
+  }
+}

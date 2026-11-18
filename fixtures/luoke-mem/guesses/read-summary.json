@@ -7,8 +7,17 @@
         {
           "mimeType": "application/json",
           "text": {
-            "count": 2,
-            "text": "记下了 2 条，有 2 条猜测等你确认。"
+            "count": 0,
+            "kept": 2,
+            "pending": 2,
+            "recent": {
+              "formed_at": "2026-11-05 20:45:00",
+              "id": 3,
+              "kind": "fact",
+              "text": "在读研究生，导师是王老师"
+            },
+            "state": "recent",
+            "text": "最近了解到：在读研究生，导师是王老师"
           },
           "uri": "summary"
         }

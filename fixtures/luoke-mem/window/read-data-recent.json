@@ -1,0 +1,94 @@
+{
+  "reply": {
+    "id": 15,
+    "jsonrpc": "2.0",
+    "result": {
+      "contents": [
+        {
+          "mimeType": "application/json",
+          "text": {
+            "items": [
+              {
+                "cites": 2,
+                "confidence": "likely",
+                "decided_at": null,
+                "entity": null,
+                "formed_at": "2026-11-05 20:45:00",
+                "fresh": null,
+                "id": 25,
+                "kind": "fact",
+                "origin": "inferred",
+                "pending": false,
+                "sources": [
+                  "luoke-mail"
+                ],
+                "status": "active",
+                "text": "学校：某大学计算机系",
+                "topic": "学校",
+                "why_data": {
+                  "code": "sent_mail",
+                  "waiting": false
+                }
+              },
+              {
+                "cites": 2,
+                "confidence": "likely",
+                "decided_at": null,
+                "entity": null,
+                "formed_at": "2026-11-04 08:15:00",
+                "fresh": null,
+                "id": 24,
+                "kind": "fact",
+                "origin": "inferred",
+                "pending": false,
+                "sources": [
+                  "luoke-mail"
+                ],
+                "status": "active",
+                "text": "在读研究生，导师是王老师",
+                "topic": "学业",
+                "why_data": {
+                  "code": "sent_mail",
+                  "waiting": false
+                }
+              }
+            ],
+            "ready": true,
+            "since": "2026-10-07 10:00:00",
+            "v": 1
+          },
+          "uri": "data/recent"
+        }
+      ],
+      "resultType": "complete"
+    }
+  },
+  "request": {
+    "id": 15,
+    "jsonrpc": "2.0",
+    "method": "resources/read",
+    "params": {
+      "_meta": {
+        "io.modelcontextprotocol/clientCapabilities": {
+          "experimental": {
+            "ai.luoke/a2ui": {
+              "features": [
+                "openPage",
+                "pageArgs",
+                "confirm",
+                "rowOpen",
+                "fieldSubmit"
+              ]
+            }
+          }
+        },
+        "io.modelcontextprotocol/clientInfo": {
+          "name": "luoke-agent",
+          "version": "fixtures"
+        },
+        "io.modelcontextprotocol/protocolVersion": "2026-07-28"
+      },
+      "uri": "data/recent"
+    }
+  }
+}

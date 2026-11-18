@@ -1,0 +1,210 @@
+{
+  "reply": {
+    "id": 8,
+    "jsonrpc": "2.0",
+    "result": {
+      "contents": [
+        {
+          "mimeType": "application/json",
+          "text": [
+            {
+              "createSurface": {
+                "catalogId": "ai.luoke/a2ui/agent/1",
+                "surfaceId": "people"
+              },
+              "version": "v0.9"
+            },
+            {
+              "updateComponents": {
+                "components": [
+                  {
+                    "children": [
+                      "i6",
+                      "i12"
+                    ],
+                    "component": "Column",
+                    "id": "root"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "t1",
+                    "text": "王磊"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "t2",
+                    "text": "同事、合作方",
+                    "variant": "caption"
+                  },
+                  {
+                    "children": [
+                      "t1",
+                      "t2"
+                    ],
+                    "component": "Column",
+                    "id": "c3"
+                  },
+                  {
+                    "action": {
+                      "event": {
+                        "context": {
+                          "args": {
+                            "id": "1"
+                          },
+                          "page": "people"
+                        },
+                        "name": "agent.open_page"
+                      }
+                    },
+                    "child": "b4-label",
+                    "component": "Button",
+                    "id": "b4",
+                    "variant": "borderless"
+                  },
+                  {
+                    "children": [
+                      "b4-icon",
+                      "b4-text"
+                    ],
+                    "component": "Row",
+                    "id": "b4-label"
+                  },
+                  {
+                    "component": "Icon",
+                    "id": "b4-icon",
+                    "name": "chevron-right"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "b4-text",
+                    "text": "详细"
+                  },
+                  {
+                    "children": [
+                      "b4"
+                    ],
+                    "component": "Row",
+                    "id": "r5"
+                  },
+                  {
+                    "children": [
+                      "c3",
+                      "r5"
+                    ],
+                    "component": "Row",
+                    "id": "i6",
+                    "justify": "spaceBetween",
+                    "open": "b4"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "t7",
+                    "text": "林晓"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "t8",
+                    "text": "你写信给的人，最近一次在 2026年10月",
+                    "variant": "caption"
+                  },
+                  {
+                    "children": [
+                      "t7",
+                      "t8"
+                    ],
+                    "component": "Column",
+                    "id": "c9"
+                  },
+                  {
+                    "action": {
+                      "event": {
+                        "context": {
+                          "args": {
+                            "id": "2"
+                          },
+                          "page": "people"
+                        },
+                        "name": "agent.open_page"
+                      }
+                    },
+                    "child": "b10-label",
+                    "component": "Button",
+                    "id": "b10",
+                    "variant": "borderless"
+                  },
+                  {
+                    "children": [
+                      "b10-icon",
+                      "b10-text"
+                    ],
+                    "component": "Row",
+                    "id": "b10-label"
+                  },
+                  {
+                    "component": "Icon",
+                    "id": "b10-icon",
+                    "name": "chevron-right"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "b10-text",
+                    "text": "详细"
+                  },
+                  {
+                    "children": [
+                      "b10"
+                    ],
+                    "component": "Row",
+                    "id": "r11"
+                  },
+                  {
+                    "children": [
+                      "c9",
+                      "r11"
+                    ],
+                    "component": "Row",
+                    "id": "i12",
+                    "justify": "spaceBetween",
+                    "open": "b10"
+                  }
+                ],
+                "surfaceId": "people"
+              },
+              "version": "v0.9"
+            }
+          ],
+          "uri": "page/people"
+        }
+      ],
+      "resultType": "complete"
+    }
+  },
+  "request": {
+    "id": 8,
+    "jsonrpc": "2.0",
+    "method": "resources/read",
+    "params": {
+      "_meta": {
+        "io.modelcontextprotocol/clientCapabilities": {
+          "experimental": {
+            "ai.luoke/a2ui": {
+              "features": [
+                "openPage",
+                "pageArgs",
+                "confirm",
+                "rowOpen",
+                "fieldSubmit"
+              ]
+            }
+          }
+        },
+        "io.modelcontextprotocol/clientInfo": {
+          "name": "luoke-agent",
+          "version": "fixtures"
+        },
+        "io.modelcontextprotocol/protocolVersion": "2026-07-28"
+      },
+      "uri": "page/people"
+    }
+  }
+}

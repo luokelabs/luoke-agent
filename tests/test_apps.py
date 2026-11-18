@@ -148,7 +148,7 @@ class AppsTest(_Base):
         self.assertEqual(status, 200)
         self.assertEqual([a["id"] for a in data["apps"]], [APP, "bare-tool"], "每个连着的工具一项")
         self.assertEqual(data["apps"][0], {
-            "id": APP, "running": True, "summary": {"count": 2, "text": "2 件等你处理"},
+            "id": APP, "running": True, "summary": {"count": 2, "text": "2 件待处理"},
             "pages": [{"id": "overview", "title": "概览"}, {"id": "rules", "title": "规则"}],
             "ui": {"pages": [{"id": "accounts", "title": "账号"}]}, "needs": []})
         self.assertEqual(data["apps"][1], {"id": "bare-tool", "running": False, "summary": None, "pages": [],
@@ -200,7 +200,7 @@ class AppsTest(_Base):
                             for m in msgs), "surfaceId 是 <id>/page/<页 id>")
         a2ui.build(msgs)
         texts = [c.get("text") for m in msgs for c in (m.get("updateComponents") or {}).get("components") or []]
-        self.assertIn("2 件等你处理", texts)
+        self.assertIn("2 件待处理", texts)
         self.assertIn("帮助", texts)
         sites = [c.get("site") for m in msgs for c in (m.get("updateComponents") or {}).get("components") or []
                  if c.get("component") == "Button" and c["action"]["event"]["name"] == "agent.open_url"]
@@ -223,6 +223,15 @@ class AppsTest(_Base):
         item = Item(key=f"{APP}/x", source=APP, kind="k", urgency="normal", title="", summary="", why_now="", card=[], extra={})
         self.assertEqual(self.agent._agent_action(item, "s", "agent.open_page", {"page": "rules", "args": {"item": "r1"}})["page"],
                          {"app": APP, "page": "rules", "args": {"item": "r1"}})
+        # 2026-11-12：hidden 的页可以带一个图标（应用页右上角的图标按钮）；不是 hidden 的、不认得的图标名不带
+        pages = [{"id": "overview", "title": "概览", "icon": "settings"},
+                 {"id": "settings", "title": "设置", "hidden": True, "icon": "settings"},
+                 {"id": "log", "title": "处理记录", "hidden": True, "icon": "no-such-icon"}]
+        self.src.set_manifest(dict(SERVICE, pages=pages), PERMISSIONS)
+        self.agent.app_changed(APP)
+        self.assertEqual(self.apps_entry()["pages"], [{"id": "overview", "title": "概览"},
+                                                      {"id": "settings", "title": "设置", "hidden": True, "icon": "settings"},
+                                                      {"id": "log", "title": "处理记录", "hidden": True}])
         self.src.set_manifest(dict(SERVICE, pages=[{"id": "rules", "title": "一条规则", "hidden": True}]), PERMISSIONS)
         self.agent.app_changed(APP)
         self.assertEqual(self.apps_entry()["pages"], [{"id": "rules", "title": "一条规则", "hidden": True}],
@@ -267,13 +276,26 @@ class AppsTest(_Base):
         for name, override in (("不在目录里的组件", bad_kind), ("超过 400 个组件（页的上限，§4 bigPages）", too_many), ("超过 2000 字", too_long),
                                ("超过 1 MB", huge), ("不是 JSON", "<html>"), ("不是消息数组", {"a": 1})):
             with self.subTest(name):
-                self.assertEqual(self._fallback(override), ["概览", "这一页画不了。"], "退回纯文本，不带工具的内容")
+                self.assertEqual(self._fallback(override), ["概览", "此页无法显示"], "退回纯文本，不带工具的内容")
 
     def test_page_of_a_tool_not_running(self):
         self.stop_tool()
         status, data = get(self.home, f"/apps/{APP}/pages/overview")
         self.assertEqual(status, 503)
-        self.assertEqual(data["error"], "假邮件现在没在运行。")
+        self.assertEqual(data["error"], "假邮件未运行")
+
+    def test_page_of_a_slow_tool_is_not_called_stopped(self):
+        # #167：读页超时是工具在、只是慢，不写「未运行」，也不把它记成停了
+        from luoke_agent.mcp import NoAnswer
+
+        def slow(*a, **k):
+            raise NoAnswer("timeout")
+        with mock.patch.object(self.src.client, "read_json", slow):
+            status, data = get(self.home, f"/apps/{APP}/pages/overview")
+            self.src.refresh_app()
+        self.assertEqual(status, 503)
+        self.assertEqual(data["error"], "假邮件未响应")
+        self.assertTrue(self.src.running)
 
     def test_page_buttons_go_through_action(self):
         _, data = get(self.home, f"/apps/{APP}/pages/overview")
@@ -281,7 +303,7 @@ class AppsTest(_Base):
         auto_id, _ = buttons(data["messages"])["mail_auto"]
         status, r = post(self.home, "/action", {"surfaceId": sid, "sourceComponentId": auto_id, "context": {"on": False}})
         self.assertEqual(status, 200)
-        self.assertEqual(r, {"text": "好，以后促销邮件不用点就归档，每次都告诉你。", "error": False})
+        self.assertEqual(r, {"text": "已设为自动归档促销邮件，每次在「今天」中列出", "error": False})
         self.assertTrue(self.fake.auto, "写死的值只认页上的：界面送来的 false 不算")
         ua = self.fake.user_actions[-1]
         self.assertEqual((ua["surfaceId"], ua["componentId"]), ("overview", auto_id), "user_action 的 surfaceId 是页 id")
@@ -293,7 +315,7 @@ class AppsTest(_Base):
         self.assertFalse(r["error"], r)
         self.assertEqual(self.fake.opened, ["settings"])
         self.assertEqual(len(self.fake.user_actions), n, "只读的不带 user_action")
-        self.assertEqual(self.agent.tap(sid, "nope", {})["text"], "这个按钮已经不在了。")
+        self.assertEqual(self.agent.tap(sid, "nope", {})["text"], "此按钮已失效")
 
     def test_open_page_opens_only_a_page_of_this_app(self):
         """agent.open_page：页上、卡片上的按钮只开这个应用自己登记的页；别的应用的页、没登记的页都拒（工具协议 §5）。"""
@@ -314,7 +336,7 @@ class AppsTest(_Base):
                          "页 id 只认按钮上写死的，界面送来的不算")
         for cid in ids[1:]:       # 扫描的页（别的应用的），邮件助手自己界面里的页（不在 service.pages 里）
             status, r = post(self.home, "/action", {"surfaceId": sid, "sourceComponentId": cid, "context": {}})
-            self.assertEqual((status, r), (200, {"text": "这一页打不开。", "error": True}))
+            self.assertEqual((status, r), (200, {"text": "此页无法打开", "error": True}))
         self.assertEqual(self.fake.user_actions, [], "不转给工具")
         # 卡片上的：同样只开出这张卡片的应用自己的页
         from luoke_agent.items import Item
@@ -333,7 +355,7 @@ class AppsTest(_Base):
         self.agent.tap(sid, buttons(data["messages"])["mail_auto"][0], {})
         got = self.events()
         self.assertEqual([e for e, _ in got], ["busy", "result", "apps"])
-        self.assertEqual(got[1][1], {"surfaceId": sid, "text": "好，以后促销邮件不用点就归档，每次都告诉你。", "error": False,
+        self.assertEqual(got[1][1], {"surfaceId": sid, "text": "已设为自动归档促销邮件，每次在「今天」中列出", "error": False,
                                      "replaced": False}, "工具回的卡片不画：窗口点完重新取这一页")
         self.assertEqual(got[2][1], {"app": APP})
 
@@ -341,7 +363,7 @@ class AppsTest(_Base):
         _, data = get(self.home, f"/apps/{APP}/pages/overview")
         self.stop_tool()
         r = self.agent.tap(f"{APP}/page/overview", buttons(data["messages"])["mail_auto"][0], {})
-        self.assertEqual(r, {"text": "假邮件现在没在运行。", "error": True})
+        self.assertEqual(r, {"text": "假邮件未运行", "error": True})
 
     def test_open(self):
         status, r = post(self.home, "/open", {"app": APP})
@@ -360,7 +382,7 @@ class AppsTest(_Base):
         self.assertEqual(post(self.home, "/open", {"app": APP})[1], {"text": "假邮件没有自己的界面。", "error": True})
         self.src.set_manifest(SERVICE, PERMISSIONS)
         self.stop_tool()
-        self.assertEqual(post(self.home, "/open", {"app": APP})[1], {"text": "假邮件现在没在运行。", "error": True})
+        self.assertEqual(post(self.home, "/open", {"app": APP})[1], {"text": "假邮件未运行", "error": True})
 
 
 class PageAdditionsTest(_Base):
@@ -450,14 +472,14 @@ class PageAdditionsTest(_Base):
         self.assertEqual(r["page"]["args"], {"q": ""}, "界面没送就用这边的数据模型")
         status, r = post(self.home, "/action", {"surfaceId": self.SID, "sourceComponentId": search,
                                                  "context": {"args": {"q": "长" * 201}}})
-        self.assertEqual(r, {"text": "填的字太长了，最多 200 个字。", "error": True})
+        self.assertEqual(r, {"text": "输入过长，最多 200 个字", "error": True})
         status, r = post(self.home, "/action", {"surfaceId": self.SID, "sourceComponentId": search,
                                                  "context": {"args": {"q": ["x"]}}})
-        self.assertEqual(r, {"text": "这一页打不开。", "error": True})
+        self.assertEqual(r, {"text": "此页无法打开", "error": True})
         status, r = post(self.home, "/action", {"surfaceId": self.SID, "sourceComponentId": nxt, "context": {"args": {"cursor": "9"}}})
         self.assertEqual(r["page"], {"app": APP, "page": "rules", "args": {"cursor": "2"}}, "写死的值只认页上的")
         status, r = post(self.home, "/action", {"surfaceId": self.SID, "sourceComponentId": other, "context": {}})
-        self.assertEqual(r, {"text": "这一页打不开。", "error": True})
+        self.assertEqual(r, {"text": "此页无法打开", "error": True})
         self.assertEqual(self.fake.user_actions, [], "不转给工具")
         from luoke_agent.items import Item
         item = Item(key=f"{APP}/x", source=APP, kind="k", urgency="normal", title="", summary="", why_now="", card=[], extra={})
@@ -519,7 +541,7 @@ class PageAdditionsTest(_Base):
         with contextlib.redirect_stderr(io.StringIO()):
             msgs = self.page_with(card)
         texts = [c.get("text") for m in msgs for c in (m.get("updateComponents") or {}).get("components") or []]
-        self.assertIn("这一页画不了。", texts)
+        self.assertIn("此页无法显示", texts)
         self.assertNotIn("mail_find", buttons(msgs), "没有能点的按钮")
         card = cards.Card("rules")
         card.text_field("code", "IMAP 授权码", secure=True)
@@ -593,7 +615,7 @@ class PageAdditionsTest(_Base):
             card.text(f"第 {i} 封")
         texts = [c.get("text") for m in self.page_with(card) for c in (m.get("updateComponents") or {}).get("components") or []
                  if c.get("component") == "Text"]
-        self.assertEqual(texts, ["规则", "这一页画不了。"], "超过 400 个照旧退回纯文本")
+        self.assertEqual(texts, ["规则", "此页无法显示"], "超过 400 个照旧退回纯文本")
 
     def test_file_in_the_answer(self):
         card = cards.Card("rules")
@@ -645,7 +667,7 @@ class SearchTest(_Base):
         card.text("换了一张")
         self.fake.find_override = {"text": "找到 1 封。", "hits": [{"id": "x", "title": "x"}], "card": card.messages()}
         post(self.home, "/search", {"query": "别的"})
-        self.assertEqual(self.agent.tap(f"{APP}/search", old, {})["text"], "这个按钮已经不在了。")
+        self.assertEqual(self.agent.tap(f"{APP}/search", old, {})["text"], "此按钮已失效")
 
     def test_nothing_found(self):
         card = cards.Card("find")
@@ -927,7 +949,7 @@ class SearchTest(_Base):
     def test_no_tool_can_search(self):
         self.src.service["search"] = None
         data = post(self.home, "/search", {"query": "账单"})[1]
-        self.assertEqual(data, {"results": [], "failed": [], "text": "还没有能搜的应用。"})
+        self.assertEqual(data, {"results": [], "failed": [], "text": "暂无可搜索的应用"})
         self.assertEqual(self.fake.finds, [])
 
     def test_refusals(self):
@@ -954,8 +976,8 @@ class PermissionsTest(_Base):
             {"app": APP, "id": "contacts", "kind": "system", "tcc": "AddressBook", "title": "读通讯录", "state": "ask",
              "can": ["request"]},
             {"app": APP, "id": "mailbox", "kind": "account", "title": "邮箱", "state": "granted", "can": ["open", "remove"]},
-            {"app": APP, "id": "auto", "kind": "delegate", "title": "促销邮件不用点就归档", "state": "off", "can": ["on"]},
-            {"app": APP, "id": "send", "kind": "each-time", "title": "以你的名义发信", "state": "ask"},
+            {"app": APP, "id": "auto", "kind": "delegate", "title": "自动归档促销邮件", "state": "off", "can": ["on"]},
+            {"app": APP, "id": "send", "kind": "each-time", "title": "以用户名义发信", "state": "ask"},
         ])
         self.assertNotIn("can", data["rows"][-1], "每次都问的只列出来")
         self.assertEqual(self.fake.fda, "denied", "螺壳名下的不看工具自己报的")
@@ -968,7 +990,7 @@ class PermissionsTest(_Base):
 
     def test_delegate_on_off(self):
         r = self.op("auto", "on")
-        self.assertEqual(r, {"text": "好，以后促销邮件不用点就归档，每次都告诉你。", "error": False})
+        self.assertEqual(r, {"text": "已设为自动归档促销邮件，每次在「今天」中列出", "error": False})
         self.assertTrue(self.fake.auto)
         ua = self.fake.user_actions[-1]
         self.assertEqual((ua["surfaceId"], ua["componentId"]), ("permissions", "auto"), "带 ai.luoke/user-action")
@@ -1032,8 +1054,8 @@ class PermissionsTest(_Base):
         self.assertEqual({k: (r["state"], r.get("can")) for k, r in rows.items()}, {
             "fda": (None, ["settings"]), "contacts": (None, ["settings"]), "mailbox": (None, []), "auto": (None, []),
             "send": (None, None)}, "工具没在运行：不知道状态，只能去系统设置")
-        self.assertEqual(self.op("auto", "off"), {"text": "假邮件现在没在运行。", "error": True})
-        self.assertEqual(self.op("mailbox", "open"), {"text": "假邮件现在没在运行。", "error": True})
+        self.assertEqual(self.op("auto", "off"), {"text": "假邮件未运行", "error": True})
+        self.assertEqual(self.op("mailbox", "open"), {"text": "假邮件未运行", "error": True})
         self.assertFalse(self.op("fda", "settings")["error"], "系统设置的地址由 agent 给，工具不用在运行")
 
     def test_host_reports_luoke_permissions(self):
@@ -1219,7 +1241,7 @@ class ManifestTest(unittest.TestCase):
         reports = [{"kind": "security", "title": "安全问题", "urgency": "urgent"},
                    {"kind": "space", "title": "空间被吃掉", "urgency": "normal"},
                    {"kind": "findings", "title": "扫描结果", "urgency": "low"},
-                   {"kind": "needs-access", "title": "需要你允许", "urgency": "low"},
+                   {"kind": "needs-access", "title": "需要允许权限", "urgency": "low"},
                    {"kind": "auto-done", "title": "自动清掉的", "urgency": "normal"}]
         caps = {"protocol": 1, "transport": "stdio", "reports": reports}
         hub.answers = {"/accessories": {"accessories": [{"accessory": "luoke-scan", "capabilities": caps}]}}
@@ -1227,11 +1249,15 @@ class ManifestTest(unittest.TestCase):
         pushed = [data for event, data in [q.get_nowait() for _ in range(q.qsize())] if event == "settings"]
         self.assertTrue(pushed, "名字到了：推一次 settings，窗口不用再取")
         after = {k["id"]: k["label"] for k in pushed[-1]["kinds"] if k["app"] == "luoke-scan"}
-        self.assertEqual(after, {f"luoke-scan:{r['kind']}": r["title"] for r in reports}, "每一行是清单里的名字")
+        self.assertEqual(after, {"luoke-scan:security": "安全问题", "luoke-scan:space": "磁盘空间", "luoke-scan:findings": "扫描结果",
+                                 "luoke-scan:needs-access": "权限申请", "luoke-scan:auto-done": "自动清理结果"},
+                         "每一行的名字由 agent 按代号起（负责人 11-17），不照清单里写的")
         self.assertNotIn("这一类事", [k["label"] for k in pushed[-1]["kinds"]])
         Runner(agent, hub=sock, home=d, host=object()).refresh_tools()
         self.assertFalse([e for e, _ in [q.get_nowait() for _ in range(q.qsize())] if e == "settings"],
                          "名字没变：不再推")
+        agent.set_labels("some-tool", [{"kind": "x", "title": "它自己的名字"}])
+        self.assertEqual(agent.labels["some-tool:x"], "它自己的名字", "agent 不认识的应用、没起名的类别：照清单")
 
     def test_urgency_is_capped_by_the_manifest(self):
         """H8：一件事急不急不超过清单 reports 里那一类的；清单里没有的那一类最多 normal。没有清单（开发时显式给的）照工具说的。"""
@@ -1280,7 +1306,7 @@ class ManifestTest(unittest.TestCase):
         self.assertIsNone(apps.states(["granted"]))
 
 
-DOWN = "假邮件现在没在运行，它的事恢复后会自动列回来，不用你做什么。"
+DOWN = "假邮件未运行"
 
 
 class OutboxErrorTest(_Base):

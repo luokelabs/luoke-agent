@@ -23,7 +23,7 @@ from luoke_agent.memsource import MemorySource
 from luoke_agent.state import State
 
 T0 = 1_800_000_000.0
-REPORTS = {"question": {"kind": "question", "title": "记忆想问的事", "urgency": "normal"},
+REPORTS = {"question": {"kind": "question", "title": "记忆的待确认事项", "urgency": "normal"},
            "suggestion": {"kind": "suggestion", "title": "记忆的建议", "urgency": "normal"}}
 
 
@@ -123,7 +123,7 @@ class MemoryToolTest(unittest.TestCase):
         kinds = {k["id"]: k for k in self.agent.settings()["kinds"]}
         self.assertNotIn("memory:question", kinds)
         self.assertNotIn("memory:suggestion", kinds)
-        self.assertEqual(kinds[f"{MEMORY_TOOL}:question"]["label"], "记忆想问的事")
+        self.assertEqual(kinds[f"{MEMORY_TOOL}:question"]["label"], "记忆的待确认事项")
         self.assertEqual(kinds[f"{MEMORY_TOOL}:question"]["mode"], "window")
         self.assertIn(f"{MEMORY_TOOL}:suggestion", kinds)
 

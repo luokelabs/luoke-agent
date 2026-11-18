@@ -1,0 +1,92 @@
+{
+  "reply": {
+    "id": 1004,
+    "jsonrpc": "2.0",
+    "result": {
+      "contents": [
+        {
+          "mimeType": "application/json",
+          "text": {
+            "auto": "cache",
+            "bytes": 62914560,
+            "count": 1,
+            "facts": {
+              "apps": [],
+              "appsInstalled": 0,
+              "appsMissing": 0,
+              "groups": {
+                "tool-cache": 1
+              },
+              "password": 0,
+              "rebuilds": 1,
+              "tools": [
+                "pip"
+              ],
+              "userFiles": "none"
+            },
+            "files": 1,
+            "id": "cache",
+            "items": [
+              {
+                "bytes": 62914560,
+                "facts": {
+                  "cache": "pip",
+                  "tool": "pip"
+                },
+                "finding": "cache.rebuildable.pip/000000000006",
+                "group": "tool-cache",
+                "key": "i2",
+                "options": [
+                  "remove",
+                  "keep",
+                  "ignore"
+                ],
+                "password": false,
+                "path": "~/Library/Caches/pip",
+                "paths": [
+                  "~/Library/Caches/pip"
+                ],
+                "pathsMore": 0,
+                "plan": "p-000000000002",
+                "reason": "rebuilds",
+                "rebuilds": true,
+                "restorable": false,
+                "reveal": "~/Library/Caches/pip",
+                "rule": "cache.rebuildable.pip",
+                "suggested": "remove",
+                "userFiles": "none"
+              }
+            ],
+            "known": true,
+            "more": 0,
+            "scanned": {
+              "finished": "2026-10-20T12:00:00Z",
+              "started": "2026-10-20T12:00:00Z"
+            },
+            "schema": 1,
+            "suggested": 1,
+            "suggestedBytes": 62914560
+          },
+          "uri": "data/category?id=cache"
+        }
+      ],
+      "resultType": "complete"
+    }
+  },
+  "request": {
+    "id": 1004,
+    "jsonrpc": "2.0",
+    "method": "resources/read",
+    "params": {
+      "_meta": {
+        "io.modelcontextprotocol/clientCapabilities": {},
+        "io.modelcontextprotocol/clientInfo": {
+          "name": "luoke-agent",
+          "version": "fixtures"
+        },
+        "io.modelcontextprotocol/protocolVersion": "2026-07-28"
+      },
+      "uri": "data/category?id=cache"
+    }
+  }
+}

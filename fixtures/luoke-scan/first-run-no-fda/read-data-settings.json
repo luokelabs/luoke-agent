@@ -1,0 +1,62 @@
+{
+  "reply": {
+    "id": 1003,
+    "jsonrpc": "2.0",
+    "result": {
+      "contents": [
+        {
+          "mimeType": "application/json",
+          "text": {
+            "autoclean": {
+              "neverOn": true,
+              "offSince": null,
+              "on": false
+            },
+            "ignored": [],
+            "kinds": [
+              {
+                "kind": "cache",
+                "off": false,
+                "offSince": null
+              },
+              {
+                "kind": "installer",
+                "off": false,
+                "offSince": null
+              },
+              {
+                "kind": "duplicate",
+                "off": false,
+                "offSince": null
+              },
+              {
+                "kind": "temp",
+                "off": false,
+                "offSince": null
+              }
+            ],
+            "schema": 1
+          },
+          "uri": "data/settings"
+        }
+      ],
+      "resultType": "complete"
+    }
+  },
+  "request": {
+    "id": 1003,
+    "jsonrpc": "2.0",
+    "method": "resources/read",
+    "params": {
+      "_meta": {
+        "io.modelcontextprotocol/clientCapabilities": {},
+        "io.modelcontextprotocol/clientInfo": {
+          "name": "luoke-agent",
+          "version": "fixtures"
+        },
+        "io.modelcontextprotocol/protocolVersion": "2026-07-28"
+      },
+      "uri": "data/settings"
+    }
+  }
+}

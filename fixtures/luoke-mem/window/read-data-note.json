@@ -1,0 +1,108 @@
+{
+  "reply": {
+    "id": 23,
+    "jsonrpc": "2.0",
+    "result": {
+      "contents": [
+        {
+          "mimeType": "application/json",
+          "text": {
+            "cites": [
+              {
+                "happened_at": "2026-11-04 08:15:00",
+                "id": 9,
+                "kind": "statement",
+                "recorded_at": "2026-11-04 08:15:00",
+                "sensitive": null,
+                "speaker": "user",
+                "text": "答辩的时间我再和王老师确认",
+                "tool": "luoke-mail",
+                "topic": "sent-mail"
+              },
+              {
+                "happened_at": "2026-10-27 21:10:00",
+                "id": 6,
+                "kind": "statement",
+                "recorded_at": "2026-10-27 21:10:00",
+                "sensitive": null,
+                "speaker": "user",
+                "text": "王老师您好，论文初稿下周三前发您",
+                "tool": "luoke-mail",
+                "topic": "sent-mail"
+              }
+            ],
+            "family": null,
+            "found": true,
+            "merged": [
+              {
+                "id": 3,
+                "text": "学校：某大学"
+              }
+            ],
+            "note": {
+              "cites": 2,
+              "confidence": "likely",
+              "decided_at": null,
+              "entity": null,
+              "formed_at": "2026-11-05 20:45:00",
+              "fresh": null,
+              "id": 25,
+              "kind": "fact",
+              "origin": "inferred",
+              "pending": false,
+              "sources": [
+                "luoke-mail"
+              ],
+              "status": "active",
+              "superseded_by": null,
+              "text": "学校：某大学计算机系",
+              "topic": "学校",
+              "valid_from": null,
+              "valid_to": null,
+              "why": "发出的邮件里说到",
+              "why_data": {
+                "code": "sent_mail",
+                "waiting": false
+              }
+            },
+            "page": 1,
+            "pages": 1,
+            "ready": true,
+            "total": 2,
+            "v": 1
+          },
+          "uri": "data/note?id=25"
+        }
+      ],
+      "resultType": "complete"
+    }
+  },
+  "request": {
+    "id": 23,
+    "jsonrpc": "2.0",
+    "method": "resources/read",
+    "params": {
+      "_meta": {
+        "io.modelcontextprotocol/clientCapabilities": {
+          "experimental": {
+            "ai.luoke/a2ui": {
+              "features": [
+                "openPage",
+                "pageArgs",
+                "confirm",
+                "rowOpen",
+                "fieldSubmit"
+              ]
+            }
+          }
+        },
+        "io.modelcontextprotocol/clientInfo": {
+          "name": "luoke-agent",
+          "version": "fixtures"
+        },
+        "io.modelcontextprotocol/protocolVersion": "2026-07-28"
+      },
+      "uri": "data/note?id=25"
+    }
+  }
+}

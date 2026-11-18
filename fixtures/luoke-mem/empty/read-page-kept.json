@@ -1,6 +1,6 @@
 {
   "reply": {
-    "id": 8,
+    "id": 13,
     "jsonrpc": "2.0",
     "result": {
       "contents": [
@@ -19,21 +19,14 @@
                 "components": [
                   {
                     "children": [
-                      "h1",
-                      "t2"
+                      "t1"
                     ],
                     "component": "Column",
                     "id": "root"
                   },
                   {
                     "component": "Text",
-                    "id": "h1",
-                    "text": "记下的",
-                    "variant": "h4"
-                  },
-                  {
-                    "component": "Text",
-                    "id": "t2",
+                    "id": "t1",
                     "text": "还没有记下什么。各应用用起来以后，记忆会从你打的字、发的邮件里慢慢记下关于你的事。"
                   }
                 ],
@@ -49,7 +42,7 @@
     }
   },
   "request": {
-    "id": 8,
+    "id": 13,
     "jsonrpc": "2.0",
     "method": "resources/read",
     "params": {

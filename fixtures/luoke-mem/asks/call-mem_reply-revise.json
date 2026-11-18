@@ -1,6 +1,6 @@
 {
   "reply": {
-    "id": 13,
+    "id": 33,
     "jsonrpc": "2.0",
     "result": {
       "content": [
@@ -12,6 +12,7 @@
       "isError": false,
       "resultType": "complete",
       "structuredContent": {
+        "answer": "在读硕士，明年毕业",
         "card": [
           {
             "updateComponents": {
@@ -34,12 +35,14 @@
             "version": "v0.9"
           }
         ],
-        "done": true
+        "done": true,
+        "result": "revise",
+        "stale": false
       }
     }
   },
   "request": {
-    "id": 13,
+    "id": 33,
     "jsonrpc": "2.0",
     "method": "tools/call",
     "params": {

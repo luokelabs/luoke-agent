@@ -10,12 +10,38 @@ public final class SurfaceModel: ObservableObject, Identifiable {
     @Published public var busy = false
     /// 正在等答复的是哪个按钮（busy 时宿主设的组件 id）：它画一个转圈，看得出点下去了、在做（luoke-scan#152：只是灰掉，看不出在清理）
     @Published public var pressed: String?
+    /// 这一份上的点按排队做（宿主给应用的页设）：一个动作在等答复时别的按钮不灰，再点的由宿主排在后面
+    public var queues = false
+    /// 排着队、还没发出去的按钮：和正在等答复的那个一样画转圈、不能再点
+    @Published public var queued: Set<String> = []
+    /// 点开了的可折叠段（`Column` 的 `collapsed`）。记在这里，不记在视图里：同一份画在两处时（弹窗「放得下照内容高、放不下就滚」
+    /// 是两份视图）点开的一样；不然点开后内容变高、换到能滚的那一份，那一份还是收着的，要再点一次（#165）
+    @Published public var opened: Set<String> = []
+
+    /// 整份都不能点：在等答复，又不排队（卡片）
+    public var locked: Bool { busy && !queues }
+    /// 这个按钮点下去了：正在等答复，或排着队
+    public func waiting(_ id: String) -> Bool { (busy && pressed == id) || queued.contains(id) }
     /// 用户改了数据模型（给整份）；宿主去抖、存起来
     public var onDataChange: ((JSONValue) -> Void)?
+
+    /// 建出来时的数据模型（工具给的）。应用页每取一次新建一份，所以就是这一次工具给的；和现在的比，看得出用户改过哪些
+    public let given: JSONValue
 
     public init(surface: Surface) {
         self.id = surface.surfaceId
         self.surface = surface
+        self.given = surface.data
+    }
+
+    /// 用户改过这个路径上的值（和工具给的不一样）
+    public func changed(_ path: String) -> Bool { value(path) != (try? given.value(at: path)) }
+
+    /// 用户改过、没交出去的选择和输入框里的字放回工具给的。离开这一页时调（界面接口 §6）：回来再取照工具新给的，不当成同一页重新取
+    public func forgetChoices() {
+        for p in Array(surface.choiceShapes.keys) + Array(surface.textFieldLabels.keys) where changed(p) {
+            if let v = try? given.value(at: p) { set(p, v) }
+        }
     }
 
     /// 运行中的一组更新（updateComponents / updateDataModel / deleteSurface）：整组查过才换上，查不过抛错、原样不动。
@@ -66,8 +92,6 @@ public struct SurfaceView: View {
     @Environment(\.a2uiFont) private var fontHook
     @Environment(\.a2uiIcon) private var iconHook
     @Environment(\.a2uiFirstLineInset) private var firstLineInset
-    /// 点开了的可折叠段（`Column` 的 `collapsed`）
-    @State private var opened: Set<String> = []
 
     public init(model: SurfaceModel, part: SurfacePart = .all,
                 onAction: @escaping (_ componentId: String, _ name: String, _ context: JSONValue) -> Void) {
@@ -90,6 +114,8 @@ public struct SurfaceView: View {
     /// 主栏里紧跟在挪走的侧栏段后面的分隔线也不画（它隔开的是挪走的那段）
     private func shownKids(_ id: String, _ c: [String: JSONValue], depth: Int) -> [String] {
         var kids = children(c)
+        // §4 headerPlacement：根下面写了 placement header 的那一样画在应用页标题那一行，页里不再画
+        if depth == 0 && id == "root" { kids.removeAll { model.surface.headerItems.contains($0) } }
         if case .section(let sid, let skip) = part {
             guard depth == 0 && id == sid else { return kids }
             // 一段一张卡片：开头、结尾的分隔线不画（卡片之间本来就隔开了）
@@ -146,7 +172,7 @@ public struct SurfaceView: View {
             if comps[ids[i]]?["component"]?.string == "Text", k0 == "body" || (k0 == "caption" && prevKind != "body" && i > 0) {
                 var j = i + 1
                 if k0 == "body", j < ids.count, Self.kind(comps[ids[j]]) == "caption" { j += 1 }
-                if j < ids.count, isButtonRow(ids[j]) {
+                if j < ids.count, isButtonRow(ids[j]) || pickRow(ids[j]) != nil {   // 选项组和按钮一样放到这一条右边，放不下回到下面
                     out.append(Array(i...j))
                     i = j + 1
                     continue
@@ -165,7 +191,7 @@ public struct SurfaceView: View {
         // 紧跟在卡片标题后面的正文是标题的说明（急事卡「病毒库认出了它…」），不算条目标题
         let afterHeading = k > 0 && Self.kind(comps[kids[k - 1]]) == "heading"
         if drawn != nil, !afterHeading, c?["component"]?.string == "Text", Self.kind(c) == "body", !next.isEmpty,
-           Self.kind(comps[next]) == "caption" || isButtonRow(next) {
+           Self.kind(comps[next]) == "caption" || isButtonRow(next) || pickRow(next) != nil {
             return AnyView(styled(Text(text(c?["text"])).fontWeight(.medium), c?["variant"]?.string).textSelection(.enabled)
                 .frame(maxWidth: .infinity, alignment: .leading).fixedSize(horizontal: false, vertical: true))
         }
@@ -183,6 +209,22 @@ public struct SurfaceView: View {
     }
 
     /// 一行里是一两个按钮（没有打开网页的：去哪个网站要写在按钮下面，见 Row）
+    /// 一排同一个动作的按钮、其中正好一个是主按钮：n 选 1，答选中的那个；不是就答 nil。只在应用页上认
+    /// 每项的字放宽到 10 个（输入法「各应用」的「跟随全局（候选窗口）」：同一页上别的选项是分段，它不能单独画成一排按钮）
+    private func pickRow(_ id: String) -> String? {
+        guard model.surface.page, drawn != nil, let c = comps[id], c["component"]?.string == "Row" else { return nil }
+        let kids = children(c)
+        guard kids.count >= 2, kids.count <= 7,
+              kids.allSatisfy({ comps[$0]?["component"]?.string == "Button" && !model.surface.opensURL($0) && comps[$0]?["confirm"] == nil })
+        else { return nil }
+        let names = Set(kids.compactMap { comps[$0]?["action"]?["event"]?["name"]?.string })
+        let picked = kids.filter { comps[$0]?["variant"]?.string == "primary" }
+        let labels = kids.map { model.surface.buttonLabel($0) }
+        guard names.count == 1, picked.count == 1, labels.allSatisfy({ $0.1 == nil }),
+              ChoiceChips.fits(labels.map(\.0), each: 10) else { return nil }
+        return picked[0]
+    }
+
     private func isButtonRow(_ id: String) -> Bool {
         guard let c = comps[id], c["component"]?.string == "Row" else { return false }
         let kids = children(c)
@@ -197,8 +239,10 @@ public struct SurfaceView: View {
         return isButtonRow(last)
     }
 
+    /// 子组件，不画的不算（§4 countLabel：数出 0 项的按钮、只装着它的那一行）
     private func children(_ c: [String: JSONValue]) -> [String] {
-        c["children"]?.array?.compactMap { $0.string } ?? []
+        let s = model.surface
+        return (c["children"]?.array?.compactMap { $0.string } ?? []).filter { !s.drawsNothing($0) }
     }
 
     /// 图标：宿主给了 Lucide 的图就用它（模板图，跟着字色），不然用最接近的系统符号
@@ -288,6 +332,47 @@ public struct SurfaceView: View {
     }
 
     /// 一条后面的按钮：一列里紧跟在一条（正文开头，可再跟一行小字）后面的一排一两个按钮
+    /// 一项一行（spaceBetween 的 Row）右边的次要按钮：只有一个也只画图标（设计规范 §18.1 第 5 条：一行里的动作只有一个时直接放那个图标）。
+    /// 主按钮、危险的（「移到废纸篓」）照旧画成按钮，不缩成图标
+    private var chipButtons: Set<String> {
+        guard model.surface.page else { return [] }
+        var out = Set<String>()
+        for (id, c) in comps where model.surface.chipRow(id) { out.formUnion(children(c)) }
+        return out
+    }
+
+    /// 一项一行（spaceBetween 的 Row）右边的按钮，直接放的和包在一行里的都算
+    private var rowTrailButtons: Set<String> {
+        var out = Set<String>()
+        for (_, c) in comps where c["component"]?.string == "Row" && c["justify"]?.string == "spaceBetween" {
+            for k in children(c).dropFirst() {
+                if comps[k]?["component"]?.string == "Button" { out.insert(k) }
+                else if let r = comps[k], r["component"]?.string == "Row" {
+                    out.formUnion(children(r).filter { comps[$0]?["component"]?.string == "Button" })
+                }
+            }
+        }
+        return out
+    }
+
+    private var rowEndButtons: Set<String> {
+        var out = Set<String>()
+        func minor(_ id: String) -> Bool {
+            guard comps[id]?["component"]?.string == "Button" else { return false }
+            let v = comps[id]?["variant"]?.string
+            return v == nil || v == "borderless"
+        }
+        for (_, c) in comps where c["component"]?.string == "Row" && c["justify"]?.string == "spaceBetween" {
+            let kids = children(c)
+            guard kids.count >= 2, let lead = comps[kids[0]], lead["component"]?.string == "Column" else { continue }
+            for k in kids.dropFirst() {
+                if let r = comps[k], r["component"]?.string == "Row" { out.formUnion(children(r).filter(minor)) }
+                else if minor(k) { out.insert(k) }
+            }
+        }
+        return out
+    }
+
     private var itemActionButtons: Set<String> {
         var out = Set<String>()
         for (_, c) in comps where c["component"]?.string == "Column" {
@@ -299,26 +384,47 @@ public struct SurfaceView: View {
                 if titled { out.formUnion(children(comps[kids[i]] ?? [:])) }
             }
         }
+        // 一项一行（§4 itemIcons 那样排）：`"justify": "spaceBetween"` 的 Row，左边是标题那一列（第一项是字），
+        // 右边是这一项的按钮（一个按钮行，或直接几个按钮）
+        for (_, c) in comps where c["component"]?.string == "Row" && c["justify"]?.string == "spaceBetween" {
+            let kids = children(c)
+            // 标题那一列的第一样是字、勾选框（扫描详情里勾的那个文件），或一行「字 + 标签」（「LoRA 是一种微调方法 待确认」）
+            guard kids.count >= 2, let lead = comps[kids[0]], lead["component"]?.string == "Column",
+                  let first = children(lead).first,
+                  ["Text", "CheckBox"].contains(comps[first]?["component"]?.string ?? "")
+                    || (comps[first]?["component"]?.string == "Row" && children(comps[first] ?? [:]).first.map { comps[$0]?["component"]?.string == "Text" } == true)
+            else { continue }
+            for k in kids.dropFirst() {
+                // 右边那一排按钮：几个都行（全部记忆一条后面有对、不对、看依据、忘掉四个），打开网页的不算
+                // 打开网页的那个按钮照旧带字（底线：链接先写明去哪个网站），同一排别的按钮照样只画图标
+                // （负责人 11-16 的实例：收件箱一行有「Gmail」，「加星标」「归档」就都带着字）
+                if let r = comps[k], r["component"]?.string == "Row", !children(r).isEmpty,
+                   children(r).allSatisfy({ comps[$0]?["component"]?.string == "Button" }) {
+                    out.formUnion(children(r).filter { !model.surface.opensURL($0) })
+                }
+                else if comps[k]?["component"]?.string == "Button" { out.insert(k) }
+            }
+        }
         return out
     }
 
     /// 写了 `collapsed` 的一列：先收起，只画那一句和一个箭头，点开才画里面的（工具协议 §4）
     private func collapsible(_ id: String, _ c: [String: JSONValue], _ inner: AnyView) -> AnyView {
         guard let summary = c["collapsed"]?.string, !summary.isEmpty else { return inner }
-        let open = opened.contains(id)
+        let open = model.opened.contains(id)
         return AnyView(VStack(alignment: .leading, spacing: 6) {
             Button {
-                withAnimation(.easeOut(duration: 0.15)) { if open { opened.remove(id) } else { opened.insert(id) } }
+                withAnimation(.easeOut(duration: 0.15)) { if open { model.opened.remove(id) } else { model.opened.insert(id) } }
             } label: {
-                HStack(spacing: 4) {
-                    iconView("chevron-right", size: 14).rotationEffect(.degrees(open ? 90 : 0))
+                HStack(spacing: 2) {                       // 「还有 3 个 ›」：箭头在字后面
                     Text(summary)
+                    iconView("chevron-right", size: 13).rotationEffect(.degrees(open ? 90 : 0))
                 }
                 .font(fontHook?("caption") ?? .callout)
                 .foregroundStyle(drawn?.mutedFg ?? .secondary)
                 .contentShape(Rectangle())
             }
-            .buttonStyle(.plain)
+            .buttonStyle(.plainPointer)
             .accessibilityLabel(summary)
             .accessibilityValue(open ? "已展开" : "已收起")
             if open { inner }
@@ -335,64 +441,15 @@ public struct SurfaceView: View {
         case "Column", "List":
             return collapsible(id, c, column(id, c, type, allowed: allowed, depth: depth))
         case "Row":
-            let kids = children(c)
-            if isChips(id) {
-                return AnyView(FlowLayout(spacing: 4) {
-                    ForEach(kids, id: \.self) { textView(comps[$0] ?? [:], inline: true).fixedSize() }
-                }
-                .frame(maxWidth: .infinity, alignment: .leading))
+            let row = rowNode(id, c, allowed: allowed, depth: depth)
+            // §4 rowOpen：整行可点，点了就是点 `open` 指的那个按钮（那个按钮本身不画）
+            if let target = c["open"]?.string, comps[target]?["component"]?.string == "Button" {
+                let others = model.surface.subtree(id).filter { $0 != target && comps[$0]?["component"]?.string == "Button" && !hiddenTargets.contains($0) }
+                return AnyView(OpenRow(label: model.surface.buttonLabel(target).0, colors: drawn, inline: c["justify"]?.string != "spaceBetween",
+                                       chevron: true,     // 行里有别的按钮也画：不画看不出整行能点开（负责人 11-16）
+                                       disabled: model.locked, run: { fire(target) }) { row })
             }
-            if isInlineLine(id) {
-                // 一行里并排的几段字（发件人、主题、截止标签；卡片标题和邮箱标签）：写了 maxLines 的那段放不下就省略，别的照原样
-                return AnyView(HStack(alignment: .center, spacing: 6) {
-                    ForEach(kids, id: \.self) { k in
-                        let kc = comps[k] ?? [:]
-                        if kc["component"]?.string == "Icon" {
-                            iconView(kc["name"]?.string, size: 14).foregroundStyle(drawn?.mutedFg ?? .secondary)
-                        } else if kc["maxLines"] != nil {
-                            textView(kc, inline: true).layoutPriority(-1)
-                        } else if kc["variant"]?.string == "strong" || kc["variant"]?.string == "badge" {
-                            textView(kc, inline: true).fixedSize()
-                        } else {
-                            textView(kc, inline: true).fixedSize(horizontal: false, vertical: true)
-                        }
-                    }
-                }
-                .frame(maxWidth: .infinity, alignment: .leading))
-            }
-            if kids.count == 2, comps[kids[0]]?["component"]?.string == "Icon", comps[kids[1]]?["component"]?.string == "Column" {
-                // 一项前面的图标（§4 itemIcons，扫描页）：图标在左、和第一行字对齐，右边一列（标题、说明）占满。
-                // 只认「图标 + 一列」：「图标 + 一段字」是一块的小标题
-                return AnyView(HStack(alignment: .top, spacing: 10) {
-                    iconView(comps[kids[0]]?["name"]?.string, size: 16).foregroundStyle(drawn?.mutedFg ?? .secondary).padding(.top, 2)
-                    node(kids[1], allowed: allowed, depth: depth + 1).frame(maxWidth: .infinity, alignment: .leading)
-                }
-                .frame(maxWidth: .infinity, alignment: .leading))
-            }
-            if c["justify"]?.string == "spaceEvenly", kids.count > 1 {   // 几块一样宽、各自靠左（一排数：扫描页顶上的三个数）
-                return AnyView(HStack(alignment: .top, spacing: 16) {
-                    ForEach(kids, id: \.self) { node($0, allowed: allowed, depth: depth + 1).frame(maxWidth: .infinity, alignment: .leading) }
-                })
-            }
-            if c["justify"]?.string == "spaceBetween", let first = kids.first {   // 左边一块、右边一块（A2UI Row 的 justify）
-                return AnyView(SpaceBetweenRow {   // 上下居中：标题和右边的按钮、文字和图标对齐；放不下时右边那块折到下一行
-                    node(first, allowed: allowed, depth: depth + 1)
-                    HStack(spacing: 6) {   // 右边一块按自己的宽度：选择框、小按钮挨着
-                        ForEach(Array(kids.dropFirst()), id: \.self) { node($0, allowed: allowed, depth: depth + 1).fixedSize() }
-                    }
-                })
-            }
-            // 一段字后面跟按钮（「另外 1 样照建议处理」「按这个处理」）：字在左，按钮靠右
-            if let first = kids.first, comps[first]?["component"]?.string == "Text", kids.count > 1,
-               kids.dropFirst().allSatisfy({ comps[$0]?["component"]?.string == "Button" }) {
-                return AnyView(HStack(alignment: .center, spacing: 12) {
-                    node(first, allowed: allowed, depth: depth + 1)
-                    ForEach(Array(kids.dropFirst()), id: \.self) { node($0, allowed: allowed, depth: depth + 1).fixedSize() }
-                })
-            }
-            return AnyView(FlowLayout(spacing: 8) {
-                ForEach(kids, id: \.self) { node($0, allowed: allowed, depth: depth + 1) }
-            })
+            return row
         case "Card":
             let inner = node(c["child"]?.string ?? "", allowed: allowed, depth: depth + 1)
             if !cardChrome { return inner }
@@ -406,18 +463,130 @@ public struct SurfaceView: View {
         case "Icon":
             return AnyView(iconView(c["name"]?.string, size: 16).foregroundStyle(drawn?.mutedFg ?? .secondary))
         case "Button":
+            if hiddenTargets.contains(id) { return AnyView(EmptyView()) }
             return AnyView(button(id, c))
         case "CheckBox":
             return AnyView(checkBox(c))
         case "ChoicePicker":
             return AnyView(choice(id, c))
         case "TextField", "DateTimeInput":
+            if let t = c["submit"]?.string, comps[t]?["component"]?.string == "Button" {
+                return AnyView(field(c).onSubmit { fire(t) })   // §4 fieldSubmit：回车就是点那个按钮
+            }
             return AnyView(field(c))
         case "Slider":
             return AnyView(slider(c))
         default:
             return AnyView(EmptyView())
         }
+    }
+
+    /// 左右两块、整行能点开的一行（箭头在最右边）
+    private func opensAcross(_ id: String) -> Bool {
+        guard let c = comps[id], c["component"]?.string == "Row", c["justify"]?.string == "spaceBetween",
+              let target = c["open"]?.string else { return false }
+        return comps[target]?["component"]?.string == "Button"
+    }
+
+    /// 一行（Row）怎么画：名字小块、一行几段字、一项前面的图标、一排数、左右两块、字后面跟按钮，别的照排
+    private func rowNode(_ id: String, _ c: [String: JSONValue], allowed: Set<String>, depth: Int) -> AnyView {
+        let kids = children(c)
+        // 一排同一个动作的按钮、其中正好一个是主按钮（输入法页的「全拼 / 小鹤双拼 / 自然码双拼」：选中的那个标成 primary）：
+        // 这是 n 选 1，画成和别处一样的分段选择，选中的是主按钮那一个，点一段就是点那个按钮
+        // （负责人 11-15：输入法页的选项是红底实心，像主按钮，别处的选项是描边分段，两种样子）
+        // 只在应用页上认（卡片上「归档 / 暂不处理」那样的一排是动作，不是选项）
+        if let d = drawn, let picked = pickRow(id) {
+            let opts = kids.map { ChoiceBox.Option(value: $0, label: model.surface.buttonLabel($0).0) }
+            return AnyView(ChoiceChips(options: opts, selected: picked, label: "", colors: d) { k in
+                if k != picked { fire(k) }
+            }.disabled(model.locked))
+        }
+        if isChips(id) {
+            return AnyView(FlowLayout(spacing: 4) {
+                ForEach(kids, id: \.self) { textView(comps[$0] ?? [:], inline: true).fixedSize() }
+            }
+            .frame(maxWidth: .infinity, alignment: .leading))
+        }
+        if isInlineLine(id) {
+            // 一行里并排的几段字（发件人、主题、截止标签；卡片标题和邮箱标签）：写了 maxLines 的那段放不下就省略，别的照原样
+            return AnyView(HStack(alignment: .center, spacing: 6) {
+                ForEach(kids, id: \.self) { k in
+                    let kc = comps[k] ?? [:]
+                    if kc["component"]?.string == "Icon" {
+                        iconView(kc["name"]?.string, size: 14).foregroundStyle(drawn?.mutedFg ?? .secondary)
+                    } else if kc["maxLines"] != nil {
+                        textView(kc, inline: true).layoutPriority(-1)
+                    } else if kc["variant"]?.string == "strong" {
+                        // 加粗的那段（发件人）：一行，实在放不下才省略（先省略写了 maxLines 的主题）
+                        textView(kc, inline: true).lineLimit(1)
+                    } else if kc["variant"]?.string == "badge" || kc["variant"]?.string == "caption" {
+                        // 标签、小字（截止日、来信时间）：照原样一行，不被挤成竖排（负责人 11-16 的实例：时间一个字一行）
+                        textView(kc, inline: true).fixedSize().layoutPriority(1)
+                    } else {
+                        textView(kc, inline: true).fixedSize(horizontal: false, vertical: true)
+                    }
+                }
+            }
+            .frame(maxWidth: .infinity, alignment: .leading))
+        }
+        if kids.count == 2, comps[kids[0]]?["component"]?.string == "Icon", comps[kids[1]]?["component"]?.string == "Column" {
+            // 一项前面的图标（§4 itemIcons，扫描页）：图标在左、和第一行字对齐，右边一列（标题、说明）占满。
+            // 只认「图标 + 一列」：「图标 + 一段字」是一块的小标题
+            return AnyView(HStack(alignment: .top, spacing: 10) {
+                iconView(comps[kids[0]]?["name"]?.string, size: 16).foregroundStyle(drawn?.mutedFg ?? .secondary).padding(.top, 2)
+                node(kids[1], allowed: allowed, depth: depth + 1).frame(maxWidth: .infinity, alignment: .leading)
+            }
+            .frame(maxWidth: .infinity, alignment: .leading))
+        }
+        if c["justify"]?.string == "spaceEvenly", kids.count > 1 {   // 几块一样宽、各自靠左（一排数：扫描页顶上的三个数）
+            return AnyView(HStack(alignment: .top, spacing: 16) {
+                ForEach(kids, id: \.self) { node($0, allowed: allowed, depth: depth + 1).frame(maxWidth: .infinity, alignment: .leading) }
+            })
+        }
+        if c["justify"]?.string == "spaceBetween", let first = kids.first {   // 左边一块、右边一块（A2UI Row 的 justify）
+            return AnyView(SpaceBetweenRow {   // 上下居中：标题和右边的按钮、文字和图标对齐；放不下时右边那块折到下一行
+                node(first, allowed: allowed, depth: depth + 1)
+                HStack(spacing: 6) {   // 右边一块按自己的宽度：选择框、小按钮挨着
+                    ForEach(Array(kids.dropFirst()), id: \.self) { node($0, allowed: allowed, depth: depth + 1).fixedSize() }
+                }
+            })
+        }
+        // 一段字后面跟按钮（「另外 1 样照建议处理」「按这个处理」）：字在左，按钮靠右
+        if let first = kids.first, comps[first]?["component"]?.string == "Text", kids.count > 1,
+           kids.dropFirst().allSatisfy({ comps[$0]?["component"]?.string == "Button" }) {
+            return AnyView(HStack(alignment: .center, spacing: 12) {
+                node(first, allowed: allowed, depth: depth + 1)
+                ForEach(Array(kids.dropFirst()), id: \.self) { node($0, allowed: allowed, depth: depth + 1).fixedSize() }
+            })
+        }
+        // 页底一行几个链接（「这台 Mac 状态正常 › · 大文件（不会自动清）› · 其他 6 项 ›」）：中间隔一个点
+        if kids.count > 1, kids.allSatisfy({ comps[$0]?["component"]?.string == "Row" && comps[$0]?["open"] != nil }) {
+            return AnyView(FlowLayout(spacing: 12) {
+                ForEach(Array(kids.enumerated()), id: \.offset) { i, k in
+                    if i > 0 { Text("·").font(fontHook?("caption") ?? .callout).foregroundStyle(drawn?.mutedFg ?? .secondary) }
+                    node(k, allowed: allowed, depth: depth + 1)
+                }
+            })
+        }
+        return AnyView(FlowLayout(spacing: 8) {
+            ForEach(kids, id: \.self) { node($0, allowed: allowed, depth: depth + 1) }
+        })
+    }
+
+    /// 点一个按钮（`open`、`submit` 指的那个，§4 rowOpen、fieldSubmit）：和点按钮一样交给宿主
+    private func fire(_ id: String) {
+        guard !model.locked, !model.waiting(id), let (name, ctx) = try? model.surface.action(id) else { return }
+        onAction(id, name, ctx)
+    }
+
+    /// `open`、`submit` 指的按钮：窗口不画（整行可点、回车就提交）
+    private var hiddenTargets: Set<String> {
+        var out = Set<String>()
+        for (_, c) in comps {
+            if c["component"]?.string == "Row", let t = c["open"]?.string { out.insert(t) }
+            if c["component"]?.string == "TextField" || c["component"]?.string == "ChoicePicker", let t = c["submit"]?.string { out.insert(t) }
+        }
+        return out
     }
 
     /// 一列（Column、List）
@@ -431,9 +600,24 @@ public struct SurfaceView: View {
         if type == "List", let d = drawn {
             // 一项一行，项和项之间一条细线（逐封列的邮件，工具协议 §4）
             return AnyView(VStack(alignment: .leading, spacing: 0) {
+                // 有的行整行能点开（行尾有箭头）、有的不能：不能点的行尾也留出箭头那么宽，右边的数和比例条才对得齐（负责人 11-18）
+                let anyOpen = kids.contains { opensAcross($0) }
                 ForEach(Array(kids.enumerated()), id: \.element) { i, kid in
-                    node(kid, allowed: allowed, depth: depth + 1)
-                        .padding(.vertical, 9)
+                    Group {
+                        if anyOpen, !opensAcross(kid), comps[kid]?["component"]?.string == "Row", comps[kid]?["justify"]?.string == "spaceBetween" {
+                            HStack(spacing: 8) {
+                                node(kid, allowed: allowed, depth: depth + 1).frame(maxWidth: .infinity, alignment: .leading)
+                                OpenChevron(inline: false, colors: d).hidden().accessibilityHidden(true)
+                            }
+                        } else {
+                            node(kid, allowed: allowed, depth: depth + 1)
+                        }
+                    }
+                        // 整行能点开的：线和线之间这一整格都能点，不只是字那一条（负责人 11-18）
+                        .environment(\.openRowBleed, 9)
+                        // 线上下各空 9；第一项上面、最后一项下面不空，卡片四周的边距和别的卡片一样
+                        .padding(.top, i == 0 ? 0 : 9)
+                        .padding(.bottom, i == kids.count - 1 ? 0 : 9)
                         .overlay(alignment: .top) { if i > 0 { Rectangle().fill(d.border).frame(height: 1) } }
                 }
             })
@@ -533,13 +717,24 @@ public struct SurfaceView: View {
     private func button(_ id: String, _ c: [String: JSONValue]) -> AnyView {
         let (label, icon) = model.surface.buttonLabel(id)
         // 一项右边的小按钮（「加入日程 11-12 16:00」）画小一号
-        let variant = trailingIds.contains(id) ? "mini" : c["variant"]?.string
+        // 一行一项右边的主按钮（收件箱每行的「回复」）：一屏几十个实底的品牌色太重（界面规范 §2：品牌色一屏两三处），
+        // 画成次要按钮；只画图标的、危险的照旧
+        let rowPrimary = c["variant"]?.string == "primary" && rowTrailButtons.contains(id) && icon == nil
+        let variant = trailingIds.contains(id) ? "mini" : rowPrimary ? nil : c["variant"]?.string
         // 画成开关的按钮：点了还是按钮的动作，开没开听工具重画的页面。打开网页的按钮不画成开关
         if c["variant"]?.string == "switch", let on = c["on"]?.bool, !model.surface.opensURL(id) {
-            return AnyView(DrawnSwitch(label: label, on: on, colors: drawn) {
+            let flip = {
                 guard let (name, ctx) = try? model.surface.action(id) else { return }
                 onAction(id, name, ctx)
-            }.disabled(model.busy))
+            }
+            // 开关也可以带 confirm（§4）：打开定时整理之类，先把说明给用户看，点了确认才扳
+            if let o = c["confirm"]?.object, let title = o["title"]?.string {
+                let ask = ConfirmAsk(title: title, text: o["text"]?.string, label: o["label"]?.string ?? label)
+                return AnyView(ConfirmGate(ask: ask, colors: drawn, run: flip) { open in
+                    AnyView(DrawnSwitch(label: label, on: on, colors: drawn, tap: open).disabled(model.locked).accessibilityHint("要确认"))
+                })
+            }
+            return AnyView(DrawnSwitch(label: label, on: on, colors: drawn, tap: flip).disabled(model.locked))
         }
         // 打开网页的按钮：去哪个网站用 agent 核心写的 `site`（工具协议 §5），写进悬停提示和读屏念的字（「加入日程 · 会打开 …」）；
         // 没写就不让点
@@ -552,16 +747,24 @@ public struct SurfaceView: View {
             onAction(id, name, ctx)
         }
         let content: AnyView
-        if model.busy, model.pressed == id {
+        // 一条后面只画图标的按钮：一个浅底的小方块（走查重画稿），不再套按钮的样式
+        let iconOnly = icon != nil && !opens && itemActionButtons.contains(id) && (model.surface.buttonsInRow(id) > 1 || rowEndButtons.contains(id))
+        // 主按钮（「移到废纸篓」这类）只画图标时照旧是实底的按钮；次要的是浅底小方块
+        let plainIcon = iconOnly && variant != "primary"
+        if model.waiting(id) {
             // 点下去了、在等答复：转圈换掉图标，字照旧
-            let iconOnly = icon != nil && !opens && itemActionButtons.contains(id) && model.surface.buttonsInRow(id) > 1
             content = AnyView(HStack(spacing: 6) {
                 BusySpinner().frame(width: 14, height: 14)
                 if !iconOnly { Text(label) }
             })
-        } else if let icon, !opens, itemActionButtons.contains(id), model.surface.buttonsInRow(id) > 1 {
+        } else if let icon, iconOnly {
             // 一条后面的几个按钮（扫描页的「移到废纸篓」「不是病毒」）：有图标的只画图标，字放在悬停提示里、给读屏念（工具协议 §4）
-            content = AnyView(iconView(icon, size: 14).frame(minWidth: 14))
+            content = plainIcon
+                ? AnyView(iconView(icon, size: 14)
+                    .frame(width: 28, height: 28)
+                    .background(RoundedRectangle(cornerRadius: 7, style: .continuous).fill((drawn?.fg ?? .primary).opacity(0.06)))
+                    .contentShape(Rectangle()))
+                : AnyView(iconView(icon, size: 14).frame(minWidth: 14))
         } else if let icon {
             content = AnyView(HStack(spacing: 6) { iconView(icon, size: 14); Text(label) })
         } else if opens {
@@ -573,10 +776,47 @@ public struct SurfaceView: View {
         } else {
             content = AnyView(Text(label))
         }
+        // 按钮要交一组选项里选的那个（上下文绑着一个 ChoicePicker 的值），而现在一个都没选：先禁用，选了才亮
+        // （负责人 11-16：记忆「待确认」默认都不选，选了「确定」才亮）
+        let choicePaths = Set(comps.values.filter { $0["component"]?.string == "ChoicePicker" }.compactMap { $0["value"]?.bindingPath })
+        let unpicked = ((c["action"]?["event"]?["context"]?.object ?? [:]).values).contains { v in
+            guard let p = v.bindingPath else { return false }
+            let base = choicePaths.first { p == $0 || p.hasPrefix($0 + "/") }
+            return base.map { model.value($0)?.array?.isEmpty ?? false } ?? false
+        }
+        let disabled = model.locked || model.waiting(id) || unpicked || (opens && site == nil) || !model.surface.buttonCountAllows(id)   // §4 countLabel：0 项的不画（children 里就去掉了），这里只是保险
+        // 一排小标签里的（「最近搜过」「检索范围」）：小圆角标签，选了的实底加粗（走查重画稿 .m-tag、.m-tag.on）
+        if let d = drawn, chipButtons.contains(id), !model.waiting(id) {
+            let on = c["variant"]?.string == "selected"
+            let tag = AnyView(Text(label)
+                .font(.system(size: 12, weight: on ? .semibold : .regular))
+                .foregroundStyle(on ? d.fg : d.mutedFg)
+                .padding(.horizontal, 10).padding(.vertical, 3)
+                .background(Capsule().fill(on ? d.fg.opacity(0.16) : .clear))
+                .overlay(Capsule().strokeBorder(on ? .clear : d.input, lineWidth: 1))
+                .contentShape(Capsule()))
+            if let o = c["confirm"]?.object, let title = o["title"]?.string {
+                let ask = ConfirmAsk(title: title, text: o["text"]?.string, label: o["label"]?.string ?? label)
+                return AnyView(ConfirmGate(ask: ask, colors: drawn, run: run) { open in
+                    AnyView(Button(action: open) { tag }.buttonStyle(.plainPointer).disabled(disabled).help(help).accessibilityLabel(help)
+                        .accessibilityHint("要确认").fixedSize())
+                })
+            }
+            return AnyView(Button(action: run) { tag }.buttonStyle(.plainPointer).disabled(disabled).help(help).accessibilityLabel(help).fixedSize())
+        }
+        // §4 confirm：点了先在按钮下面弹确认，用户再点一次才做（忘掉、删除这类）。读屏念的字带上「要确认」
+        if let o = c["confirm"]?.object, let title = o["title"]?.string, !opens {
+            let ask = ConfirmAsk(title: title, text: o["text"]?.string, label: o["label"]?.string ?? label)
+            return AnyView(ConfirmGate(ask: ask, colors: drawn, run: run) { open in
+                let b = Button(action: open) { content }.disabled(disabled).help(help).accessibilityLabel(help).accessibilityHint("要确认")
+                return plainIcon ? AnyView(b.buttonStyle(.plainPointer).fixedSize()) : AnyView(styledButton(b, variant).fixedSize())
+            })
+        }
         let b = Button(action: run) { content }
-            .disabled(model.busy || (opens && site == nil) || !model.surface.buttonCountAllows(id))   // §4 countLabel：0 项时灰掉（countAlso：选了别的值时不灰）
+            .disabled(disabled)
             .help(help)
             .accessibilityLabel(help)
+        if plainIcon && !model.waiting(id) { return AnyView(b.buttonStyle(.plainPointer).fixedSize()) }
         return AnyView(styledButton(b, variant).fixedSize())   // 字不截断：放不下整行换行
     }
 
@@ -584,7 +824,7 @@ public struct SurfaceView: View {
         Group {
             if let hook = buttonStyleHook {
                 // 焦点环在按钮上画（按钮样式里读不到焦点）：深色的「按这个处理」原来拿到焦点看不出来
-                b.buttonStyle(hook(variant)).modifier(KeyFocusable(radius: 7))
+                b.buttonStyle(hook(variant)).modifier(KeyFocusable(radius: 7)).pointerOnHover()
             } else {
                 switch variant {
             case "primary": b.buttonStyle(.borderedProminent)
@@ -601,7 +841,7 @@ public struct SurfaceView: View {
         let binding = Binding<Bool>(
             get: { path.flatMap { model.value($0)?.bool } ?? c["value"]?.bool ?? false },
             set: { if let p = path { model.set(p, .bool($0)) } })
-        if let d = drawn { return AnyView(DrawnCheckBox(label: text(c["label"]), on: binding, colors: d)) }
+        if let d = drawn { return AnyView(DrawnCheckBox(label: text(c["label"]), on: binding, colors: d, strong: model.surface.page)) }
         let t = Toggle(text(c["label"]), isOn: binding)
         #if os(macOS)
         return AnyView(t.toggleStyle(.checkbox))
@@ -625,17 +865,57 @@ public struct SurfaceView: View {
             // n 选 1 画成一个小框：写着现在选的（工具建议的），点开再改。不画成一排分段（像切换标签页，负责人 11-06）。
             // 框放在这一项的同一行、靠右：一项一行，看得出框是哪一项的（之前框在下一行，像下一项的开头）。
             // 真窗口和截图是同一个框，点了弹出菜单（现在选的那一项打勾）
-            let pill = ChoiceBox(options: zip(labels, options).map { ChoiceBox.Option(value: $0.value, label: $0.label, icon: $1["icon"]?.string) },
-                                 selected: binding.wrappedValue, label: label, colors: d) { binding.wrappedValue = $0 }
-                .disabled(model.busy)
+            let opts = zip(labels, options).map { ChoiceBox.Option(value: $0.value, label: $0.label, icon: $1["icon"]?.string, tooltip: $1["tooltip"]?.string) }
+            // §4 choiceSubmit：选了就是点 submit 指的按钮（选的值先写进数据模型）
+            let pick: (String) -> Void = { v in
+                binding.wrappedValue = v
+                if let t = c["submit"]?.string { fire(t) }
+            }
+            // 选了就交、又没有选中的（§4 choiceSubmit，记忆的「好 / 不用 / 别再提」）：点一下就做了，画成一排按钮，
+            // 不画成选项组（负责人 11-14：和选项组一个样子，以为是选一个，点了卡片就没了）。
+            // 有选中的（筛选「等回复 / 全部」、「今天 / 本周」）是切换看哪一种，照旧是选项组
+            if c["submit"]?.string != nil, binding.wrappedValue.isEmpty, ChoiceChips.fits(labels.map(\.label)) {
+                let suggested = binding.wrappedValue
+                let row = HStack(spacing: 8) {
+                    ForEach(opts, id: \.value) { o in
+                        styledButton(Button { pick(o.value) } label: {
+                            if model.busy && binding.wrappedValue == o.value {
+                                HStack(spacing: 6) { BusySpinner().frame(width: 14, height: 14); Text(o.label) }
+                            } else if let icon = o.icon {
+                                HStack(spacing: 6) { iconView(icon, size: 14); Text(o.label) }
+                            } else {
+                                Text(o.label)
+                            }
+                        }
+                        .disabled(model.locked).help(o.tooltip ?? o.label).accessibilityLabel(o.label),
+                        o.value == suggested ? "primary" : nil).fixedSize()
+                    }
+                }
+                return AnyView(VStack(alignment: .leading, spacing: 8) {
+                    if !shownLabel.isEmpty {
+                        styled(Text(shownLabel), nil).frame(maxWidth: .infinity, alignment: .leading).fixedSize(horizontal: false, vertical: true)
+                    }
+                    row
+                }.frame(maxWidth: .infinity, alignment: .leading))
+            }
+            // 几个选项都摆出来（11-12 改了 11-06 的做法：处理方式要一眼看到，建议的那个已选中）：这一项只有 2～4 个短选项时并排，
+            // 否则还是一个框
+            let pill: AnyView = ChoiceChips.fits(labels.map(\.label))
+                ? AnyView(ChoiceChips(options: opts, selected: binding.wrappedValue, label: label, colors: d,
+                                      iconsOnly: trailingIds.contains(id), onPick: pick).disabled(model.locked))
+                : AnyView(ChoiceBox(options: opts, selected: binding.wrappedValue, label: label, colors: d, onPick: pick).disabled(model.locked))
             return AnyView(HStack(alignment: .center, spacing: 12) {
                 if !shownLabel.isEmpty {
                     // 这一项的标题：字体和正文一样走宿主的 a2uiFont（一件件处理里正文大一号，说明小一号，#52）
                     styled(Text(shownLabel), nil).frame(maxWidth: .infinity, alignment: .leading).fixedSize(horizontal: false, vertical: true)
+                    pill
+                } else if trailingIds.contains(id) {
+                    Spacer(minLength: 0)
+                    pill
                 } else {
+                    pill     // 没写标题的一组（走查重画稿：处理方式排在说明下面）：靠左
                     Spacer(minLength: 0)
                 }
-                pill
             }.frame(minHeight: 28))
         }
         return AnyView(VStack(alignment: .leading, spacing: 4) {
@@ -656,15 +936,36 @@ public struct SurfaceView: View {
             set: { if let p = path { model.set(p, .string($0)) } })
         // 密码框（工具协议 §4 secureField，只在应用页上）：填的字画成圆点
         let secure = model.surface.page && c["component"]?.string == "TextField" && c["variant"]?.string == "obscured"
+        // 回车就搜的框（§4 fieldSubmit）：画成搜索框，前面一个放大镜，高一点、圆一点（走查重画稿「搜记忆」「搜人物」「告诉螺壳你要找什么」）
+        let search = c["component"]?.string == "TextField" && c["submit"] != nil && !secure && (text(c["label"]).contains("搜") || text(c["label"]).contains("找"))
+        if let d = drawn, search {
+            let input: AnyView = d.staticFields
+                ? AnyView(Text(binding.wrappedValue.isEmpty ? text(c["label"]) : binding.wrappedValue)
+                    .foregroundStyle(binding.wrappedValue.isEmpty ? d.mutedFg : d.fg).frame(maxWidth: .infinity, alignment: .leading))
+                : AnyView(TextField(text(c["label"]), text: binding).textFieldStyle(.plain).modifier(KeyFocusRevealing()))
+            return AnyView(HStack(spacing: 8) {
+                hostIcon("search", fallback: "magnifyingglass", size: 15).foregroundStyle(d.mutedFg)   // 放大镜（组件目录里没有 search）
+                input
+            }
+            // 走查重画稿 .m-big：字大一号、高 48、圆角 12，底色同卡片
+            .font(.system(size: 15))
+            .padding(.horizontal, 14).frame(minHeight: 46)
+            .background(RoundedRectangle(cornerRadius: 12, style: .continuous).fill(d.card))
+            .overlay(RoundedRectangle(cornerRadius: 12, style: .continuous).strokeBorder(d.input, lineWidth: 1)))
+        }
         if let d = drawn, d.staticFields {
             let v = binding.wrappedValue
             let shown = secure ? String(repeating: "•", count: min(v.count, 12)) : v
             return AnyView(DrawnBox(text: v.isEmpty ? text(c["label"]) : shown, placeholder: v.isEmpty, chevron: false, colors: d))
         }
+        // 长文字（A2UI 的 longText：回信草稿）：几行高，往下长，最多十几行
+        let long = !secure && c["component"]?.string == "TextField" && c["variant"]?.string == "longText"
         if let d = drawn {
-            let input = secure ? AnyView(SecureField(text(c["label"]), text: binding)) : AnyView(TextField(text(c["label"]), text: binding))
+            let input = secure ? AnyView(SecureField(text(c["label"]), text: binding))
+                : long ? AnyView(TextField(text(c["label"]), text: binding, axis: .vertical).lineLimit(4...14))
+                : AnyView(TextField(text(c["label"]), text: binding))
             return AnyView(input.textFieldStyle(.plain).font(.system(size: 13)).modifier(KeyFocusRevealing())
-                .padding(.horizontal, 10).frame(minHeight: 30)
+                .padding(.horizontal, 10).padding(.vertical, long ? 8 : 0).frame(minHeight: 30)
                 .background(RoundedRectangle(cornerRadius: 8).fill(d.card))
                 .overlay(RoundedRectangle(cornerRadius: 8).strokeBorder(d.input, lineWidth: 1)))
         }
@@ -725,6 +1026,12 @@ public struct SurfaceView: View {
         case "calendar": return "calendar"
         case "calendar-plus": return "calendar.badge.plus"
         case "check": return "checkmark"
+        case "undo-2": return "arrow.uturn.backward"
+        case "history": return "clock.arrow.circlepath"
+        case "thumbs-up": return "hand.thumbsup"
+        case "thumbs-down": return "hand.thumbsdown"
+        case "mail-x": return "envelope.badge.shield.half.filled"
+        case "bell-off": return "bell.slash"
         case "chevron-down": return "chevron.down"
         case "chevron-right": return "chevron.right"
         case "circle-help": return "questionmark.circle"
@@ -804,11 +1111,12 @@ struct FlowLayout: Layout {
         var y = bounds.minY
         for line in lines(sizes, width: proposal.width ?? .infinity) {
             var x = bounds.minX
-            for i in line {
-                subviews[i].place(at: CGPoint(x: x, y: y), proposal: ProposedViewSize(sizes[i]))
+            let h = line.map { sizes[$0].height }.max() ?? 0
+            for i in line {   // 一行里高矮不一的上下居中（图标按钮 30、开关 20 并排时对齐）
+                subviews[i].place(at: CGPoint(x: x, y: y + (h - sizes[i].height) / 2), proposal: ProposedViewSize(sizes[i]))
                 x += sizes[i].width + spacing
             }
-            y += (line.map { sizes[$0].height }.max() ?? 0) + spacing
+            y += h + spacing
         }
     }
 }
@@ -875,5 +1183,116 @@ struct BusySpinner: View {
             .animation(still ? nil : .linear(duration: 0.9).repeatForever(autoreverses: false), value: turning)
             .onAppear { turning = true }
             .accessibilityLabel("正在处理")
+    }
+}
+
+
+/// 按钮的确认（工具协议 §4 confirm）：标题、一句说明、确认按钮的字
+struct ConfirmAsk {
+    let title: String
+    let text: String?
+    let label: String
+}
+
+/// 点了先弹确认的按钮：`button` 拿到「打开确认」的动作画出按钮；确认里点「取消」或在外面点就收起，点确认才 `run`
+struct ConfirmGate: View {
+    let ask: ConfirmAsk
+    let colors: A2UIDrawn?
+    let run: () -> Void
+    let button: (@escaping () -> Void) -> AnyView
+    @State private var open = false
+    @Environment(\.a2uiButtonStyle) private var styles
+    @Environment(\.a2uiFont) private var fonts
+
+    var body: some View {
+        button { open = true }
+            .popover(isPresented: $open, arrowEdge: .bottom) {
+                VStack(alignment: .leading, spacing: 12) {
+                    Text(ask.title).font(fonts?("h5") ?? .system(size: 13, weight: .semibold))
+                        .foregroundStyle(colors?.fg ?? .primary)
+                    if let t = ask.text {
+                        Text(t).font(fonts?("caption") ?? .system(size: 12)).foregroundStyle(colors?.mutedFg ?? .secondary)
+                            .fixedSize(horizontal: false, vertical: true)
+                    }
+                    HStack(spacing: 8) {
+                        Spacer(minLength: 0)
+                        styled(Button("取消") { open = false }, nil)
+                            .keyboardShortcut(.cancelAction)
+                        // 宿主给了按钮样式（螺壳的窗口）就照它画成红的危险按钮，和别处的确认框一样；没给用系统的
+                        if styles != nil {
+                            styled(Button(ask.label) { open = false; run() }, "destructive")
+                        } else {
+                            Button(ask.label) { open = false; run() }
+                                .tint(colors?.danger ?? .red)
+                                .buttonStyle(.borderedProminent)
+                        }
+                    }
+                }
+                .padding(16)
+                .frame(width: 280)
+            }
+    }
+
+    @ViewBuilder private func styled(_ b: Button<Text>, _ variant: String?) -> some View {
+        if let styles { b.buttonStyle(styles(variant)) } else { b }
+    }
+}
+
+
+/// 整行能点开的一行行尾的箭头
+struct OpenChevron: View {
+    let inline: Bool
+    let colors: A2UIDrawn?
+
+    var body: some View {
+        Image(systemName: "chevron.right").font(.system(size: inline ? 10 : 11, weight: .semibold))
+            .foregroundStyle(colors?.mutedFg ?? .secondary)
+    }
+}
+
+/// 列表里整行能点开的一行，能点的范围上下各多出多少（到分隔线）
+private struct OpenRowBleedKey: EnvironmentKey { static let defaultValue: CGFloat = 0 }
+extension EnvironmentValues {
+    var openRowBleed: CGFloat {
+        get { self[OpenRowBleedKey.self] }
+        set { self[OpenRowBleedKey.self] = newValue }
+    }
+}
+
+/// 整行可点的一项（工具协议 §4 rowOpen）：鼠标停上去底下浮一层淡灰，行尾一个向右的箭头；行里别的按钮照常点
+struct OpenRow<Content: View>: View {
+    let label: String
+    let colors: A2UIDrawn?
+    /// 一句话那样的一行（不是左右两块的一项）：箭头紧跟在字后面（「收件箱里有 4 封在等你回复 ›」）
+    var inline = false
+    /// 行尾画不画箭头：能点开的行一律画，放在最右边、按钮的右边（负责人 11-16）
+    var chevron = true
+    let disabled: Bool
+    let run: () -> Void
+    @ViewBuilder let content: () -> Content
+    @State private var hover = false
+    @Environment(\.openRowBleed) private var bleed
+
+    var body: some View {
+        HStack(spacing: inline ? 3 : 8) {
+            if inline { content().fixedSize() } else { content().frame(maxWidth: .infinity, alignment: .leading) }
+            if chevron { OpenChevron(inline: inline, colors: colors) }
+            if inline { Spacer(minLength: 0) }
+        }
+        // 能点的范围和停上去的底色比排版占的地方大：左右各 8；在列表里上下一直到分隔线（`openRowBleed`）
+        .padding(.horizontal, 8).padding(.vertical, 4 + bleed)
+        .background(RoundedRectangle(cornerRadius: 8, style: .continuous)
+            .fill(hover && !disabled ? (colors?.fg ?? .primary).opacity(0.05) : .clear))
+        .padding(.horizontal, -8).padding(.vertical, -bleed)
+        .contentShape(Rectangle())
+        .onHover { hover = $0 }
+        .modifier(PointerIf(on: !disabled))
+        .onTapGesture { if !disabled { run() } }
+        .accessibilityElement(children: .contain)
+        .accessibilityAddTraits(.isButton)
+        // 默认动作也是打开：读屏的「激活」、辅助功能的按下都走这里（以前只有带名字的动作，按下没反应）
+        .accessibilityAction { if !disabled { run() } }
+        .accessibilityAction(named: label.isEmpty ? "打开" : label) { if !disabled { run() } }
+        .help(label)
     }
 }

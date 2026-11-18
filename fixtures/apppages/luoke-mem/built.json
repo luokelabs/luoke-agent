@@ -1,0 +1,916 @@
+{
+ "_about": "luoke-mem e8fdb2c 的 window 场景录的 data/…（人物详细和想确认的取自 people 场景）；记忆的清单列了 capabilities.data 以后改用场景样例",
+ "base": "window",
+ "data": {
+  "data/asks": {
+   "items": [
+    {
+     "answer": {
+      "type": "yes_no"
+     },
+     "basis": "name_inside",
+     "created_at": "2026-11-05 21:00:00",
+     "expires_at": "2026-11-19 21:00:00",
+     "id": 1,
+     "kind": "question",
+     "people": [
+      {
+       "addresses": [],
+       "by": {
+        "name": "mira"
+       },
+       "entity": 2,
+       "name": "Mira",
+       "relations": [
+        "上级"
+       ]
+      },
+      {
+       "addresses": [],
+       "by": {
+        "name": "mira chen"
+       },
+       "entity": 3,
+       "name": "Mira Chen",
+       "relations": [
+        "客户"
+       ]
+      }
+     ],
+     "rank": 2,
+     "type": "same_person"
+    }
+   ],
+   "ready": true,
+   "v": 1
+  },
+  "data/data": {
+   "archived_asks": 0,
+   "kept": 19,
+   "next": "idle",
+   "ready": true,
+   "terms": 4,
+   "tidied": {
+    "at": null,
+    "counts": {}
+   },
+   "typing": {
+    "at": null,
+    "outcome": null
+   },
+   "v": 1
+  },
+  "data/helped": {
+   "items": [],
+   "ready": true,
+   "recorded": false,
+   "v": 1
+  },
+  "data/note?id=25": {
+   "cites": [
+    {
+     "happened_at": "2026-11-04 08:15:00",
+     "id": 9,
+     "kind": "statement",
+     "recorded_at": "2026-11-04 08:15:00",
+     "sensitive": null,
+     "speaker": "user",
+     "text": "答辩的时间我再和王老师确认",
+     "tool": "luoke-mail",
+     "topic": "sent-mail"
+    },
+    {
+     "happened_at": "2026-10-27 21:10:00",
+     "id": 6,
+     "kind": "statement",
+     "recorded_at": "2026-10-27 21:10:00",
+     "sensitive": null,
+     "speaker": "user",
+     "text": "王老师您好，论文初稿下周三前发您",
+     "tool": "luoke-mail",
+     "topic": "sent-mail"
+    }
+   ],
+   "found": true,
+   "merged": [
+    {
+     "id": 3,
+     "text": "学校：某大学"
+    }
+   ],
+   "note": {
+    "cites": 2,
+    "confidence": "likely",
+    "decided_at": null,
+    "entity": null,
+    "formed_at": "2026-11-05 20:45:00",
+    "fresh": null,
+    "id": 25,
+    "kind": "fact",
+    "origin": "inferred",
+    "pending": false,
+    "sources": [
+     "luoke-mail"
+    ],
+    "status": "active",
+    "superseded_by": null,
+    "text": "学校：某大学计算机系",
+    "topic": "学校",
+    "valid_from": null,
+    "valid_to": null,
+    "why": "发出的邮件里说到"
+   },
+   "page": 1,
+   "pages": 1,
+   "ready": true,
+   "total": 2,
+   "v": 1
+  },
+  "data/notes": {
+   "counts": {
+    "all": 22,
+    "dislike": 0,
+    "fact": 5,
+    "interest": 17,
+    "past": 1,
+    "pending": 3,
+    "preference": 0,
+    "rejected": 0,
+    "taste": 1,
+    "term": 4
+   },
+   "filter": "all",
+   "items": [
+    {
+     "cites": 2,
+     "confidence": "likely",
+     "decided_at": null,
+     "entity": null,
+     "formed_at": "2026-11-05 20:45:00",
+     "fresh": "2026-11-04 08:15:00",
+     "id": 25,
+     "kind": "fact",
+     "origin": "inferred",
+     "pending": false,
+     "sources": [
+      "luoke-mail"
+     ],
+     "status": "active",
+     "text": "学校：某大学计算机系",
+     "topic": "学校"
+    },
+    {
+     "cites": 3,
+     "confidence": "sure",
+     "decided_at": "2026-11-05 22:00:00",
+     "entity": null,
+     "formed_at": "2026-11-05 20:45:00",
+     "fresh": "2026-11-05 22:00:00",
+     "id": 23,
+     "kind": "fact",
+     "origin": "inferred",
+     "pending": false,
+     "sources": [
+      "luoke-mail",
+      "luoke-mem"
+     ],
+     "status": "active",
+     "text": "住在北京",
+     "topic": "城市"
+    },
+    {
+     "cites": 2,
+     "confidence": "likely",
+     "decided_at": null,
+     "entity": null,
+     "formed_at": "2026-11-04 08:15:00",
+     "fresh": "2026-11-04 08:15:00",
+     "id": 24,
+     "kind": "fact",
+     "origin": "inferred",
+     "pending": false,
+     "sources": [
+      "luoke-mail"
+     ],
+     "status": "active",
+     "text": "在读研究生，导师是王老师",
+     "topic": "学业"
+    },
+    {
+     "cites": 2,
+     "confidence": "guess",
+     "decided_at": null,
+     "entity": null,
+     "formed_at": "2026-10-30 09:30:00",
+     "fresh": "2026-10-30 09:30:00",
+     "id": 1,
+     "kind": "interest",
+     "origin": "inferred",
+     "pending": true,
+     "sources": [
+      "luoke-ime"
+     ],
+     "status": "proposed",
+     "text": "本地大模型",
+     "topic": null
+    },
+    {
+     "cites": 2,
+     "confidence": "guess",
+     "decided_at": null,
+     "entity": 1,
+     "formed_at": "2026-10-28 18:00:00",
+     "fresh": "2026-11-03 18:00:00",
+     "id": 27,
+     "kind": "fact",
+     "origin": "inferred",
+     "pending": true,
+     "sources": [
+      "luoke-mail"
+     ],
+     "status": "proposed",
+     "text": "合作方：Wang Lei（wanglei@corp.example）",
+     "topic": "合作方:Wang Lei"
+    },
+    {
+     "cites": 2,
+     "confidence": "guess",
+     "decided_at": null,
+     "entity": 1,
+     "formed_at": "2026-10-28 18:00:00",
+     "fresh": "2026-11-03 18:00:00",
+     "id": 26,
+     "kind": "fact",
+     "origin": "inferred",
+     "pending": true,
+     "sources": [
+      "luoke-mail"
+     ],
+     "status": "proposed",
+     "text": "同事：王磊（wanglei@corp.example）",
+     "topic": "同事:王磊"
+    },
+    {
+     "cites": 1,
+     "confidence": "sure",
+     "decided_at": "2026-10-25 09:00:00",
+     "entity": null,
+     "formed_at": "2026-10-25 09:00:00",
+     "fresh": "2026-10-25 09:00:00",
+     "id": 21,
+     "kind": "interest",
+     "origin": "user",
+     "pending": false,
+     "sources": [
+      "luoke-mem"
+     ],
+     "status": "active",
+     "text": "隐私计算",
+     "topic": null
+    },
+    {
+     "cites": 1,
+     "confidence": "sure",
+     "decided_at": "2026-10-24 09:00:00",
+     "entity": null,
+     "formed_at": "2026-10-24 09:00:00",
+     "fresh": "2026-10-24 09:00:00",
+     "id": 20,
+     "kind": "interest",
+     "origin": "user",
+     "pending": false,
+     "sources": [
+      "luoke-mem"
+     ],
+     "status": "active",
+     "text": "量子计算",
+     "topic": null
+    },
+    {
+     "cites": 1,
+     "confidence": "sure",
+     "decided_at": "2026-10-23 09:00:00",
+     "entity": null,
+     "formed_at": "2026-10-23 09:00:00",
+     "fresh": "2026-10-23 09:00:00",
+     "id": 19,
+     "kind": "interest",
+     "origin": "user",
+     "pending": false,
+     "sources": [
+      "luoke-mem"
+     ],
+     "status": "active",
+     "text": "嵌入式",
+     "topic": null
+    },
+    {
+     "cites": 1,
+     "confidence": "sure",
+     "decided_at": "2026-10-22 09:00:00",
+     "entity": null,
+     "formed_at": "2026-10-22 09:00:00",
+     "fresh": "2026-10-22 09:00:00",
+     "id": 18,
+     "kind": "interest",
+     "origin": "user",
+     "pending": false,
+     "sources": [
+      "luoke-mem"
+     ],
+     "status": "active",
+     "text": "图形学",
+     "topic": null
+    },
+    {
+     "cites": 1,
+     "confidence": "sure",
+     "decided_at": "2026-10-21 09:00:00",
+     "entity": null,
+     "formed_at": "2026-10-21 09:00:00",
+     "fresh": "2026-10-21 09:00:00",
+     "id": 17,
+     "kind": "interest",
+     "origin": "user",
+     "pending": false,
+     "sources": [
+      "luoke-mem"
+     ],
+     "status": "active",
+     "text": "知识图谱",
+     "topic": null
+    },
+    {
+     "cites": 1,
+     "confidence": "sure",
+     "decided_at": "2026-10-20 09:00:00",
+     "entity": null,
+     "formed_at": "2026-10-20 09:00:00",
+     "fresh": "2026-10-20 09:00:00",
+     "id": 16,
+     "kind": "interest",
+     "origin": "user",
+     "pending": false,
+     "sources": [
+      "luoke-mem"
+     ],
+     "status": "active",
+     "text": "强化学习",
+     "topic": null
+    },
+    {
+     "cites": 1,
+     "confidence": "sure",
+     "decided_at": "2026-10-19 09:00:00",
+     "entity": null,
+     "formed_at": "2026-10-19 09:00:00",
+     "fresh": "2026-10-19 09:00:00",
+     "id": 15,
+     "kind": "interest",
+     "origin": "user",
+     "pending": false,
+     "sources": [
+      "luoke-mem"
+     ],
+     "status": "active",
+     "text": "推荐系统",
+     "topic": null
+    },
+    {
+     "cites": 1,
+     "confidence": "sure",
+     "decided_at": "2026-10-18 09:00:00",
+     "entity": null,
+     "formed_at": "2026-10-18 09:00:00",
+     "fresh": "2026-10-18 09:00:00",
+     "id": 14,
+     "kind": "interest",
+     "origin": "user",
+     "pending": false,
+     "sources": [
+      "luoke-mem"
+     ],
+     "status": "active",
+     "text": "语音识别",
+     "topic": null
+    },
+    {
+     "cites": 1,
+     "confidence": "sure",
+     "decided_at": "2026-10-17 09:00:00",
+     "entity": null,
+     "formed_at": "2026-10-17 09:00:00",
+     "fresh": "2026-10-17 09:00:00",
+     "id": 13,
+     "kind": "interest",
+     "origin": "user",
+     "pending": false,
+     "sources": [
+      "luoke-mem"
+     ],
+     "status": "active",
+     "text": "计算机视觉",
+     "topic": null
+    },
+    {
+     "cites": 1,
+     "confidence": "sure",
+     "decided_at": "2026-10-16 09:00:00",
+     "entity": null,
+     "formed_at": "2026-10-16 09:00:00",
+     "fresh": "2026-10-16 09:00:00",
+     "id": 12,
+     "kind": "interest",
+     "origin": "user",
+     "pending": false,
+     "sources": [
+      "luoke-mem"
+     ],
+     "status": "active",
+     "text": "网络安全",
+     "topic": null
+    },
+    {
+     "cites": 1,
+     "confidence": "sure",
+     "decided_at": "2026-10-15 09:00:00",
+     "entity": null,
+     "formed_at": "2026-10-15 09:00:00",
+     "fresh": "2026-10-15 09:00:00",
+     "id": 11,
+     "kind": "interest",
+     "origin": "user",
+     "pending": false,
+     "sources": [
+      "luoke-mem"
+     ],
+     "status": "active",
+     "text": "操作系统",
+     "topic": null
+    },
+    {
+     "cites": 1,
+     "confidence": "sure",
+     "decided_at": "2026-10-14 09:00:00",
+     "entity": null,
+     "formed_at": "2026-10-14 09:00:00",
+     "fresh": "2026-10-14 09:00:00",
+     "id": 10,
+     "kind": "interest",
+     "origin": "user",
+     "pending": false,
+     "sources": [
+      "luoke-mem"
+     ],
+     "status": "active",
+     "text": "分布式存储",
+     "topic": null
+    },
+    {
+     "cites": 1,
+     "confidence": "sure",
+     "decided_at": "2026-10-13 09:00:00",
+     "entity": null,
+     "formed_at": "2026-10-13 09:00:00",
+     "fresh": "2026-10-13 09:00:00",
+     "id": 9,
+     "kind": "interest",
+     "origin": "user",
+     "pending": false,
+     "sources": [
+      "luoke-mem"
+     ],
+     "status": "active",
+     "text": "数据库",
+     "topic": null
+    },
+    {
+     "cites": 1,
+     "confidence": "sure",
+     "decided_at": "2026-10-12 09:00:00",
+     "entity": null,
+     "formed_at": "2026-10-12 09:00:00",
+     "fresh": "2026-10-12 09:00:00",
+     "id": 8,
+     "kind": "interest",
+     "origin": "user",
+     "pending": false,
+     "sources": [
+      "luoke-mem"
+     ],
+     "status": "active",
+     "text": "编译器",
+     "topic": null
+    }
+   ],
+   "page": 1,
+   "pages": 2,
+   "q": "",
+   "ready": true,
+   "total": 22,
+   "v": 1,
+   "waiting": 3
+  },
+  "data/people": {
+   "items": [
+    {
+     "contact": {
+      "count": 15,
+      "first": "2026-09",
+      "lapsed": false,
+      "last": "2026-10",
+      "months": 2,
+      "together": []
+     },
+     "id": 1,
+     "name": "王磊",
+     "notes": 5,
+     "relations": [
+      {
+       "note": 26,
+       "relation": "同事",
+       "status": "proposed"
+      },
+      {
+       "note": 27,
+       "relation": "合作方",
+       "status": "proposed"
+      }
+     ],
+     "status": "active",
+     "top": null
+    },
+    {
+     "contact": {
+      "count": 5,
+      "first": "2026-09",
+      "lapsed": false,
+      "last": "2026-10",
+      "months": 2,
+      "together": []
+     },
+     "id": 2,
+     "name": "林晓",
+     "notes": 1,
+     "relations": [],
+     "status": "active",
+     "top": null
+    }
+   ],
+   "page": 1,
+   "pages": 1,
+   "q": "",
+   "ready": true,
+   "total": 2,
+   "v": 1
+  },
+  "data/recent": {
+   "items": [
+    {
+     "cites": 2,
+     "confidence": "likely",
+     "decided_at": null,
+     "entity": null,
+     "formed_at": "2026-11-05 20:45:00",
+     "fresh": null,
+     "id": 25,
+     "kind": "fact",
+     "origin": "inferred",
+     "pending": false,
+     "sources": [
+      "luoke-mail"
+     ],
+     "status": "active",
+     "text": "学校：某大学计算机系",
+     "topic": "学校"
+    },
+    {
+     "cites": 2,
+     "confidence": "likely",
+     "decided_at": null,
+     "entity": null,
+     "formed_at": "2026-11-04 08:15:00",
+     "fresh": null,
+     "id": 24,
+     "kind": "fact",
+     "origin": "inferred",
+     "pending": false,
+     "sources": [
+      "luoke-mail"
+     ],
+     "status": "active",
+     "text": "在读研究生，导师是王老师",
+     "topic": "学业"
+    }
+   ],
+   "ready": true,
+   "since": "2026-10-07 10:00:00",
+   "v": 1
+  },
+  "data/sources": {
+   "items": [
+    {
+     "last": "2026-11-05 20:45:00",
+     "notes": 0,
+     "on": true,
+     "records": 5,
+     "stopped_at": null,
+     "tool": "luoke-ime",
+     "topics": [
+      {
+       "records": 5,
+       "topic": "ime-commit"
+      }
+     ]
+    },
+    {
+     "last": "2026-11-05 20:45:00",
+     "notes": 6,
+     "on": true,
+     "records": 14,
+     "stopped_at": null,
+     "tool": "luoke-mail",
+     "topics": [
+      {
+       "records": 10,
+       "topic": "sent-mail"
+      },
+      {
+       "records": 4,
+       "topic": "mail-contact"
+      }
+     ]
+    }
+   ],
+   "ready": true,
+   "v": 1
+  },
+  "data/person?id=1": {
+   "about": [
+    {
+     "cites": 6,
+     "confidence": "likely",
+     "decided_at": null,
+     "entity": 1,
+     "formed_at": "2026-11-05 21:00:00",
+     "fresh": null,
+     "id": 8,
+     "kind": "term",
+     "origin": "inferred",
+     "pending": false,
+     "sources": [
+      "luoke-mail"
+     ],
+     "status": "active",
+     "text": "Lei Wang",
+     "topic": null
+    },
+    {
+     "cites": 6,
+     "confidence": "likely",
+     "decided_at": null,
+     "entity": 1,
+     "formed_at": "2026-11-05 21:00:00",
+     "fresh": null,
+     "id": 7,
+     "kind": "term",
+     "origin": "inferred",
+     "pending": false,
+     "sources": [
+      "luoke-mail"
+     ],
+     "status": "active",
+     "text": "Wang Lei",
+     "topic": null
+    },
+    {
+     "cites": 6,
+     "confidence": "likely",
+     "decided_at": null,
+     "entity": 1,
+     "formed_at": "2026-11-05 21:00:00",
+     "fresh": null,
+     "id": 6,
+     "kind": "term",
+     "origin": "inferred",
+     "pending": false,
+     "sources": [
+      "luoke-mail"
+     ],
+     "status": "active",
+     "text": "王磊",
+     "topic": null
+    },
+    {
+     "cites": 2,
+     "confidence": "likely",
+     "decided_at": null,
+     "entity": 1,
+     "formed_at": "2026-11-05 20:45:00",
+     "fresh": null,
+     "id": 2,
+     "kind": "fact",
+     "origin": "inferred",
+     "pending": false,
+     "sources": [
+      "luoke-mail"
+     ],
+     "status": "active",
+     "text": "合作方：Wang Lei（wanglei@corp.example）",
+     "topic": "合作方:Wang Lei"
+    },
+    {
+     "cites": 2,
+     "confidence": "likely",
+     "decided_at": null,
+     "entity": 1,
+     "formed_at": "2026-11-05 20:45:00",
+     "fresh": null,
+     "id": 1,
+     "kind": "fact",
+     "origin": "inferred",
+     "pending": false,
+     "sources": [
+      "luoke-mail"
+     ],
+     "status": "active",
+     "text": "同事：王磊（wanglei@corp.example）",
+     "topic": "同事:王磊"
+    }
+   ],
+   "aliases": [
+    {
+     "name": "王磊"
+    },
+    {
+     "address": "wanglei@corp.example"
+    },
+    {
+     "name": "Wang Lei"
+    },
+    {
+     "name": "Lei Wang"
+    }
+   ],
+   "contact": {
+    "count": 15,
+    "first": "2026-09",
+    "lapsed": false,
+    "last": "2026-10",
+    "months": 2,
+    "together": [
+     "主控"
+    ]
+   },
+   "found": true,
+   "id": 1,
+   "name": "王磊",
+   "notes": 5,
+   "profile": {
+    "cc": 0,
+    "count": 15,
+    "first": "2026-09",
+    "lapsed": false,
+    "last": "2026-10",
+    "last_at": "2026-10-30 18:00:00",
+    "months": 2,
+    "recent": {
+     "2026-09": 6,
+     "2026-10": 9
+    },
+    "records": [
+     7,
+     8
+    ],
+    "subjects": [
+     "再看一下主控的启动",
+     "论文初稿",
+     "主控的内存预算"
+    ],
+    "to": 15,
+    "together": [
+     {
+      "mails": 2,
+      "note": 5,
+      "text": "主控"
+     }
+    ]
+   },
+   "ready": true,
+   "relations": [
+    {
+     "note": 1,
+     "relation": "同事",
+     "status": "active"
+    },
+    {
+     "note": 2,
+     "relation": "合作方",
+     "status": "active"
+    }
+   ],
+   "status": "active",
+   "top": null,
+   "v": 1
+  },
+  "data/ask?id=1": {
+   "affects": [
+    {
+     "tool": "luoke-mem",
+     "use": "merge_people"
+    }
+   ],
+   "answer": {
+    "type": "yes_no"
+   },
+   "basis": "name_inside",
+   "cites": [
+    {
+     "happened_at": "2026-11-05 20:45:00",
+     "id": 6,
+     "kind": "statement",
+     "recorded_at": "2026-11-05 20:45:00",
+     "sensitive": null,
+     "speaker": "user",
+     "text": "客户：Mira Chen",
+     "tool": "luoke-mail",
+     "topic": "sent-mail"
+    },
+    {
+     "happened_at": "2026-11-05 20:45:00",
+     "id": 5,
+     "kind": "statement",
+     "recorded_at": "2026-11-05 20:45:00",
+     "sensitive": null,
+     "speaker": "user",
+     "text": "上级：Mira",
+     "tool": "luoke-mail",
+     "topic": "sent-mail"
+    }
+   ],
+   "cites_total": 2,
+   "created_at": "2026-11-05 21:00:00",
+   "expires_at": "2026-11-19 21:00:00",
+   "facts": {},
+   "found": true,
+   "id": 1,
+   "kind": "question",
+   "people": [
+    {
+     "addresses": [],
+     "by": {
+      "name": "mira"
+     },
+     "entity": 2,
+     "name": "Mira",
+     "relations": [
+      "上级"
+     ]
+    },
+    {
+     "addresses": [],
+     "by": {
+      "name": "mira chen"
+     },
+     "entity": 3,
+     "name": "Mira Chen",
+     "relations": [
+      "客户"
+     ]
+    }
+   ],
+   "rank": 2,
+   "ready": true,
+   "replies": [
+    {
+     "choice": "answer",
+     "text": "是"
+    },
+    {
+     "choice": "answer",
+     "text": "不是"
+    },
+    {
+     "choice": "later"
+    },
+    {
+     "choice": "archive"
+    }
+   ],
+   "status": "open",
+   "text": "「Mira」和「Mira Chen」是同一个人吗？",
+   "type": "same_person",
+   "v": 1,
+   "why": "两个称呼，一个里带着另一个。",
+   "write": []
+  }
+ },
+ "args": {
+  "item": {
+   "id": "25"
+  },
+  "person": {
+   "id": "1"
+  }
+ }
+}

@@ -1,0 +1,17 @@
+{
+ "type": "object",
+ "additionalProperties": false,
+ "required": [
+  "about",
+  "text"
+ ],
+ "properties": {
+  "about": {
+   "type": "integer",
+   "minimum": 0
+  },
+  "text": {
+   "type": "string"
+  }
+ }
+}

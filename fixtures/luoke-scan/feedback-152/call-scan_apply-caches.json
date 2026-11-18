@@ -41,6 +41,37 @@
             "version": "v0.9"
           }
         ],
+        "data": {
+          "cloned": {
+            "bytes": 0,
+            "count": 0
+          },
+          "gone": 0,
+          "ignored": 0,
+          "left": [
+            "Xcode 的缓存：未删完，1 个文件已锁定，剩 1 MB"
+          ],
+          "links": 0,
+          "moved": {
+            "bytes": 0,
+            "count": 0
+          },
+          "partly": 1,
+          "password": false,
+          "removed": {
+            "bytes": 119541760,
+            "count": 2
+          },
+          "restore": null,
+          "retry": null,
+          "round": null,
+          "scriptsOff": 0,
+          "skipped": 0,
+          "trashed": false,
+          "type": "applied",
+          "unchanged": 0,
+          "unrecorded": []
+        },
         "done": false
       }
     }

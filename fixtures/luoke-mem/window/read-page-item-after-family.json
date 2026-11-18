@@ -1,0 +1,211 @@
+{
+  "reply": {
+    "id": 42,
+    "jsonrpc": "2.0",
+    "result": {
+      "contents": [
+        {
+          "mimeType": "application/json",
+          "text": [
+            {
+              "createSurface": {
+                "catalogId": "ai.luoke/a2ui/agent/1",
+                "surfaceId": "item"
+              },
+              "version": "v0.9"
+            },
+            {
+              "updateComponents": {
+                "components": [
+                  {
+                    "children": [
+                      "t1",
+                      "t2",
+                      "t3",
+                      "t4",
+                      "r6",
+                      "d7",
+                      "t8",
+                      "t9",
+                      "t10",
+                      "t11",
+                      "t12",
+                      "t13",
+                      "r15"
+                    ],
+                    "component": "Column",
+                    "id": "root"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "t1",
+                    "text": "某银行的信用卡"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "t2",
+                    "text": "关于你 · 不对 · 10月30日 · 依据 2 条",
+                    "variant": "caption"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "t3",
+                    "text": "理由：发出的邮件里说到",
+                    "variant": "caption"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "t4",
+                    "text": "你说过不对，以后不再提。留着是为了不再猜一遍；忘掉以后可能又猜出来。",
+                    "variant": "caption"
+                  },
+                  {
+                    "action": {
+                      "event": {
+                        "context": {
+                          "note": 4,
+                          "op": "forget",
+                          "sure": true
+                        },
+                        "name": "mem_note"
+                      }
+                    },
+                    "child": "b5-label",
+                    "component": "Button",
+                    "confirm": {
+                      "label": "忘掉",
+                      "text": "连它的依据一起删掉，找不回来。",
+                      "title": "忘掉这一条？"
+                    },
+                    "id": "b5",
+                    "variant": "borderless"
+                  },
+                  {
+                    "children": [
+                      "b5-icon",
+                      "b5-text"
+                    ],
+                    "component": "Row",
+                    "id": "b5-label"
+                  },
+                  {
+                    "component": "Icon",
+                    "id": "b5-icon",
+                    "name": "trash-2"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "b5-text",
+                    "text": "忘掉"
+                  },
+                  {
+                    "children": [
+                      "b5"
+                    ],
+                    "component": "Row",
+                    "id": "r6"
+                  },
+                  {
+                    "component": "Divider",
+                    "id": "d7"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "t8",
+                    "text": "依据 2 条",
+                    "variant": "caption"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "t9",
+                    "text": "否定：某银行的信用卡"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "t10",
+                    "text": "你说的 · 螺壳记忆 · 11月6日 10:14",
+                    "variant": "caption"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "t11",
+                    "text": "信用卡账单的问题我再打电话问"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "t12",
+                    "text": "你说的 · 邮件助手 · 10月30日 09:30",
+                    "variant": "caption"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "t13",
+                    "text": "subject：账单 · by：user",
+                    "variant": "caption"
+                  },
+                  {
+                    "action": {
+                      "event": {
+                        "context": {
+                          "page": "all"
+                        },
+                        "name": "agent.open_page"
+                      }
+                    },
+                    "child": "b14-text",
+                    "component": "Button",
+                    "id": "b14"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "b14-text",
+                    "text": "回到「全部记忆」"
+                  },
+                  {
+                    "children": [
+                      "b14"
+                    ],
+                    "component": "Row",
+                    "id": "r15"
+                  }
+                ],
+                "surfaceId": "item"
+              },
+              "version": "v0.9"
+            }
+          ],
+          "uri": "page/item?id=4"
+        }
+      ],
+      "resultType": "complete"
+    }
+  },
+  "request": {
+    "id": 42,
+    "jsonrpc": "2.0",
+    "method": "resources/read",
+    "params": {
+      "_meta": {
+        "io.modelcontextprotocol/clientCapabilities": {
+          "experimental": {
+            "ai.luoke/a2ui": {
+              "features": [
+                "openPage",
+                "pageArgs",
+                "confirm",
+                "rowOpen",
+                "fieldSubmit"
+              ]
+            }
+          }
+        },
+        "io.modelcontextprotocol/clientInfo": {
+          "name": "luoke-agent",
+          "version": "fixtures"
+        },
+        "io.modelcontextprotocol/protocolVersion": "2026-07-28"
+      },
+      "uri": "page/item?id=4"
+    }
+  }
+}

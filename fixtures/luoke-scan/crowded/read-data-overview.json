@@ -1,0 +1,370 @@
+{
+  "reply": {
+    "id": 1001,
+    "jsonrpc": "2.0",
+    "result": {
+      "contents": [
+        {
+          "mimeType": "application/json",
+          "text": {
+            "attention": {
+              "count": 10,
+              "items": [
+                {
+                  "category": "malware",
+                  "finding": "malware.clamav/000000000003",
+                  "path": "~/Downloads/eicar-test.com",
+                  "reveal": "~/Downloads/eicar-test.com",
+                  "rule": "malware.clamav",
+                  "severity": "high",
+                  "urgent": true
+                },
+                {
+                  "category": "malware",
+                  "finding": "malware.yara.luoke_fake_password_dialog/000000000006",
+                  "path": "~/Downloads/update.scpt",
+                  "reveal": "~/Downloads/update.scpt",
+                  "rule": "malware.yara.luoke_fake_password_dialog",
+                  "severity": "high",
+                  "urgent": true
+                },
+                {
+                  "category": null,
+                  "finding": "posture.filevault",
+                  "path": null,
+                  "reveal": null,
+                  "rule": "posture.filevault",
+                  "severity": "high",
+                  "urgent": false
+                },
+                {
+                  "category": null,
+                  "finding": "apps.unsigned/000000000014",
+                  "path": "~/Applications/Clipper.Pro.app",
+                  "reveal": "~/Applications/Clipper.Pro.app",
+                  "rule": "apps.unsigned",
+                  "severity": "medium",
+                  "urgent": false
+                },
+                {
+                  "category": null,
+                  "finding": "apps.unsigned/000000000015",
+                  "path": "~/Applications/Notes Lite.app",
+                  "reveal": "~/Applications/Notes Lite.app",
+                  "rule": "apps.unsigned",
+                  "severity": "medium",
+                  "urgent": false
+                },
+                {
+                  "category": null,
+                  "finding": "apps.unsigned/000000000016",
+                  "path": "~/Applications/Snap Tool 2.1.app",
+                  "reveal": "~/Applications/Snap Tool 2.1.app",
+                  "rule": "apps.unsigned",
+                  "severity": "medium",
+                  "urgent": false
+                },
+                {
+                  "category": null,
+                  "finding": "apps.unsigned/000000000017",
+                  "path": "~/Applications/Viewer.app",
+                  "reveal": "~/Applications/Viewer.app",
+                  "rule": "apps.unsigned",
+                  "severity": "medium",
+                  "urgent": false
+                },
+                {
+                  "category": null,
+                  "finding": "process.deleted-binary/000000000018",
+                  "path": "~/Applications/Gone.app/Contents/MacOS/gone",
+                  "reveal": "~/Applications/Gone.app/Contents/MacOS/gone",
+                  "rule": "process.deleted-binary",
+                  "severity": "medium",
+                  "urgent": false
+                },
+                {
+                  "category": null,
+                  "finding": "permission.stale-grant/000000000019",
+                  "path": "/opt/gone/tool",
+                  "reveal": "/opt/gone/tool",
+                  "rule": "permission.stale-grant",
+                  "severity": "medium",
+                  "urgent": false
+                },
+                {
+                  "category": null,
+                  "finding": "permission.stale-grant/000000000020",
+                  "path": null,
+                  "reveal": null,
+                  "rule": "permission.stale-grant",
+                  "severity": "medium",
+                  "urgent": false
+                }
+              ],
+              "urgent": 2
+            },
+            "autoCleaned": [],
+            "autoclean": false,
+            "disk": {
+              "free": 182000000000,
+              "total": 494000000000
+            },
+            "fullDiskAccess": "granted",
+            "largeFiles": {
+              "bytes": 0,
+              "count": 0
+            },
+            "reclaimable": [
+              {
+                "auto": "cache",
+                "bytes": 392167424,
+                "count": 7,
+                "facts": {
+                  "apps": [],
+                  "appsInstalled": 0,
+                  "appsMissing": 0,
+                  "groups": {
+                    "tool-cache": 7
+                  },
+                  "password": 0,
+                  "rebuilds": 7,
+                  "tools": [
+                    "Cargo",
+                    "Composer",
+                    "Go",
+                    "Gradle",
+                    "node-gyp",
+                    "pip"
+                  ],
+                  "userFiles": "none"
+                },
+                "files": 7,
+                "id": "cache",
+                "suggested": 7,
+                "suggestedBytes": 392167424
+              },
+              {
+                "auto": "installer",
+                "bytes": 215121920,
+                "count": 41,
+                "facts": {
+                  "apps": [
+                    "AsterChat",
+                    "AsterCode",
+                    "AsterDraw",
+                    "AsterMail",
+                    "AsterNote",
+                    "AsterSync",
+                    "BirchChat",
+                    "BirchCode",
+                    "BirchDraw",
+                    "BirchMail",
+                    "BirchNote",
+                    "BirchSync",
+                    "CedarChat",
+                    "CedarCode",
+                    "CedarDraw",
+                    "CedarMail",
+                    "CedarNote",
+                    "CedarSync",
+                    "DeltaChat",
+                    "DeltaCode",
+                    "DeltaDraw",
+                    "DeltaMail",
+                    "DeltaNote",
+                    "DeltaSync",
+                    "EmberChat",
+                    "EmberCode",
+                    "EmberDraw",
+                    "EmberMail",
+                    "EmberNote",
+                    "EmberSync",
+                    "FableChat",
+                    "FableCode",
+                    "FableDraw",
+                    "FableMail",
+                    "FableNote",
+                    "FableSync",
+                    "GroveChat",
+                    "GroveDraw",
+                    "GroveMail",
+                    "GroveNote",
+                    "GroveSync"
+                  ],
+                  "appsInstalled": 41,
+                  "appsMissing": 0,
+                  "groups": {
+                    "installer": 41
+                  },
+                  "password": 0,
+                  "rebuilds": 0,
+                  "tools": [],
+                  "userFiles": "none"
+                },
+                "files": 41,
+                "id": "installer",
+                "suggested": 41,
+                "suggestedBytes": 215121920
+              },
+              {
+                "auto": "duplicate",
+                "bytes": 14680064,
+                "count": 7,
+                "facts": {
+                  "apps": [],
+                  "appsInstalled": 0,
+                  "appsMissing": 0,
+                  "groups": {
+                    "duplicate": 7
+                  },
+                  "password": 0,
+                  "rebuilds": 0,
+                  "tools": [],
+                  "userFiles": "none"
+                },
+                "files": 7,
+                "id": "duplicate",
+                "suggested": 7,
+                "suggestedBytes": 14680064
+              },
+              {
+                "auto": "temp",
+                "bytes": 131072000,
+                "count": 1,
+                "facts": {
+                  "apps": [],
+                  "appsInstalled": 0,
+                  "appsMissing": 0,
+                  "groups": {
+                    "temp": 1
+                  },
+                  "password": 0,
+                  "rebuilds": 0,
+                  "tools": [],
+                  "userFiles": "none"
+                },
+                "files": 25,
+                "id": "temp",
+                "suggested": 0,
+                "suggestedBytes": 0
+              },
+              {
+                "auto": null,
+                "bytes": 147456,
+                "count": 1,
+                "facts": {
+                  "apps": [],
+                  "appsInstalled": 0,
+                  "appsMissing": 0,
+                  "groups": {
+                    "project": 1
+                  },
+                  "password": 0,
+                  "rebuilds": 0,
+                  "tools": [],
+                  "userFiles": "maybe"
+                },
+                "files": 1,
+                "id": "project",
+                "suggested": 0,
+                "suggestedBytes": 0
+              },
+              {
+                "auto": null,
+                "bytes": 0,
+                "count": 1,
+                "facts": {
+                  "apps": [],
+                  "appsInstalled": 0,
+                  "appsMissing": 0,
+                  "groups": {
+                    "launch-agent": 1
+                  },
+                  "password": 0,
+                  "rebuilds": 0,
+                  "tools": [],
+                  "userFiles": "none"
+                },
+                "files": 1,
+                "id": "startup",
+                "suggested": 0,
+                "suggestedBytes": 0
+              },
+              {
+                "auto": null,
+                "bytes": 0,
+                "count": 5,
+                "facts": {
+                  "apps": [],
+                  "appsInstalled": 0,
+                  "appsMissing": 0,
+                  "groups": {
+                    "skill": 5
+                  },
+                  "password": 0,
+                  "rebuilds": 0,
+                  "tools": [],
+                  "userFiles": "none"
+                },
+                "files": 5,
+                "id": "ai-plugin",
+                "suggested": 5,
+                "suggestedBytes": 0
+              },
+              {
+                "auto": null,
+                "bytes": 8192,
+                "count": 2,
+                "facts": {
+                  "apps": [],
+                  "appsInstalled": 0,
+                  "appsMissing": 0,
+                  "groups": {
+                    "malware": 2
+                  },
+                  "password": 0,
+                  "rebuilds": 0,
+                  "tools": [],
+                  "userFiles": "none"
+                },
+                "files": 2,
+                "id": "malware",
+                "suggested": 0,
+                "suggestedBytes": 0
+              }
+            ],
+            "scanned": {
+              "finished": "2026-10-20T12:00:00Z",
+              "started": "2026-10-20T12:00:00Z"
+            },
+            "scanning": null,
+            "schema": 1,
+            "skipped": [],
+            "virusDb": {
+              "date": "2026-10-20",
+              "version": "27000"
+            }
+          },
+          "uri": "data/overview"
+        }
+      ],
+      "resultType": "complete"
+    }
+  },
+  "request": {
+    "id": 1001,
+    "jsonrpc": "2.0",
+    "method": "resources/read",
+    "params": {
+      "_meta": {
+        "io.modelcontextprotocol/clientCapabilities": {},
+        "io.modelcontextprotocol/clientInfo": {
+          "name": "luoke-agent",
+          "version": "fixtures"
+        },
+        "io.modelcontextprotocol/protocolVersion": "2026-07-28"
+      },
+      "uri": "data/overview"
+    }
+  }
+}

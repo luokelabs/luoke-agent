@@ -25,7 +25,7 @@ OUT = os.path.join(ROOT, "window", "Sources", "LuokeWindow", "Resources", "templ
 DAY = "2026-11-04"
 
 OPT = {"flag": ("加星标", "star"), "draft": ("写草稿", "pencil-line"), "archive": ("归档", "archive"),
-       "keep": ("先不动", "circle-minus"), "spam": ("移到垃圾邮件", "shield-alert")}
+       "keep": ("暂不处理", "circle-minus"), "spam": ("移到垃圾邮件", "shield-alert")}
 
 
 def options(*values: str) -> List[Tuple[str, str, str]]:
@@ -63,8 +63,8 @@ def urgent_card(sid: str) -> List[dict]:
     c.text("发件人地址非 Mosaic 官方域名，且邮件直接提供安全代码并诱导用户输入，属于典型钓鱼行为。", caption=True)
     c.buttons(button("移到垃圾邮件", "mail_apply_plan", {"plan_id": "sus-1", "choices": {"m1": ["spam"]}},
                      icon="shield-alert", variant="destructive"),
-              button("先不动", "mail_apply_plan", {"plan_id": "sus-1", "choices": {"m1": ["keep"]}}, icon="circle-minus"),
-              button("在邮件助手里看", "mail_open", {"view": "suspicious"}, icon="inbox"))
+              button("暂不处理", "mail_apply_plan", {"plan_id": "sus-1", "choices": {"m1": ["keep"]}}, icon="circle-minus"),
+              button("在邮件助手中查看", "mail_open", {"view": "suspicious"}, icon="inbox"))
     return c.messages()
 
 
@@ -126,11 +126,11 @@ def mailbox_harbor(sid: str) -> List[dict]:
         {"icon": "inbox", "title": "待处理", "items": todo,
          "buttons": [button("加星标 3", "mail_apply_plan", {"plan_id": "p-harbor-low", "choices": cards.CHOICES},
                             primary=True, icon="check"), more(137)]},
-        {"icon": "archive", "title": "可以整理", "note": "多是 CoinDigest、Pinlane、Tasklane",
+        {"icon": "archive", "title": "待整理", "note": "多是 CoinDigest、Pinlane、Tasklane",
          "buttons": [button("归档 2089 · 移到垃圾箱 24", "mail_apply_plan", {"plan_id": "tidy-harbor"}, primary=True,
                             icon="archive"),
-                     button("先不动", "mail_dismiss", {"plan_id": "tidy-harbor"}, icon="circle-minus")]},
-        {"icon": "shield-alert", "title": "判为可疑", "collapsed": "206 封，都先不动", "items": sus,
+                     button("暂不处理", "mail_dismiss", {"plan_id": "tidy-harbor"}, icon="circle-minus")]},
+        {"icon": "shield-alert", "title": "判为可疑", "collapsed": "206 封，都暂不处理", "items": sus,
          "buttons": [button("按选的处理", "mail_apply_plan", {"plan_id": "sus-harbor", "choices": cards.CHOICES},
                             primary=True, icon="check"),
                      button("其余 202 封去邮件助手看", "mail_open", {"view": "suspicious"}, icon="inbox")]},
@@ -139,11 +139,11 @@ def mailbox_harbor(sid: str) -> List[dict]:
 
 
 def mailbox_small(sid: str, badge: str, note: str, label: str, n_sus: int = 0) -> List[dict]:
-    parts = [{"icon": "archive", "title": "可以整理", "note": note,
+    parts = [{"icon": "archive", "title": "待整理", "note": note,
               "buttons": [button(label, "mail_apply_plan", {"plan_id": "tidy-" + sid}, primary=True, icon="archive"),
-                          button("先不动", "mail_dismiss", {"plan_id": "tidy-" + sid}, icon="circle-minus")]}]
+                          button("暂不处理", "mail_dismiss", {"plan_id": "tidy-" + sid}, icon="circle-minus")]}]
     if n_sus:
-        parts.append({"icon": "shield-alert", "title": "判为可疑", "collapsed": f"{n_sus} 封，都先不动",
+        parts.append({"icon": "shield-alert", "title": "判为可疑", "collapsed": f"{n_sus} 封，都暂不处理",
                       "items": [sus_item("s1", "北辰银行", "50元刷卡金期待与你相遇！[AD]",
                                          "邮件主题为促销广告，包含可疑短链接，且用户习惯归档此类促销邮件。")],
                       "buttons": [button("按选的处理", "mail_apply_plan", {"plan_id": "sus-" + sid, "choices": cards.CHOICES},
@@ -154,7 +154,7 @@ def mailbox_small(sid: str, badge: str, note: str, label: str, n_sus: int = 0) -
 def scan_card(sid: str) -> List[dict]:
     c = cards.Card(sid)
     c.heading("照建议清理能清出 45.67 GB")
-    c.text("「清理」会删掉 9 样会自动重建的缓存。另外 101 样在「螺壳扫描」里等你看，其中 21 样先不动，等你定。", caption=True)
+    c.text("「清理」会删掉 9 样会自动重建的缓存。另外 101 样在「螺壳扫描」里等你看，其中 21 样暂不处理，等你定。", caption=True)
     c.buttons(button("清理 9 样缓存", "scan_apply", {"plan_id": "scan-1"}, primary=True, icon="trash-2"),
               button("打开自动清理", "scan_autoclean", {"on": True}, icon="sparkles"))
     return c.messages()
