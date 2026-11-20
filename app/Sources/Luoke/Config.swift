@@ -2,7 +2,7 @@ import AppKit
 import Foundation
 
 /// 去哪儿找核心、记忆、主控和工具。正式版（ai.luoke.agent）用固定的位置；开发版（.dev）必须全部显式给，
-/// 不退回日常在用的位置（顶层 CLAUDE.md「不碰日常在用的实例」）。
+/// 不退回日常在用的位置（开发和测试不碰日常在用的实例）。
 struct Config {
     static let releaseBundleId = "ai.luoke.agent"
     static let hubBundleId = "ai.luoke.core"

@@ -338,6 +338,52 @@
   "ok": true
  },
  {
+  "name": "update_after_delete",
+  "catalog": "ai.luoke/a2ui/agent/1",
+  "messages": [
+   {
+    "version": "v0.9",
+    "createSurface": {
+     "surfaceId": "s",
+     "catalogId": "ai.luoke/a2ui/agent/1"
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateComponents": {
+     "surfaceId": "s",
+     "components": [
+      {
+       "id": "root",
+       "component": "Text",
+       "text": "hi"
+      }
+     ]
+    }
+   },
+   {
+    "version": "v0.9",
+    "deleteSurface": {
+     "surfaceId": "s"
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateComponents": {
+     "surfaceId": "s",
+     "components": [
+      {
+       "id": "root",
+       "component": "Button",
+       "child": "nope"
+      }
+     ]
+    }
+   }
+  ],
+  "ok": false
+ },
+ {
   "name": "empty",
   "catalog": "ai.luoke/a2ui/agent/1",
   "messages": [],
@@ -6389,6 +6435,233 @@
    }
   ],
   "ok": true
+ },
+ {
+  "name": "count_checks_ok",
+  "catalog": "ai.luoke/a2ui/agent/1",
+  "messages": [
+   {
+    "version": "v0.9",
+    "createSurface": {
+     "surfaceId": "s",
+     "catalogId": "ai.luoke/a2ui/agent/1"
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateComponents": {
+     "surfaceId": "s",
+     "components": [
+      {
+       "id": "root",
+       "component": "Button",
+       "child": "t",
+       "count": {
+        "path": "/checks",
+        "value": true
+       },
+       "action": {
+        "event": {
+         "name": "scan_apply",
+         "context": {
+          "selected": {
+           "path": "/checks"
+          }
+         }
+        }
+       }
+      },
+      {
+       "id": "t",
+       "component": "Text",
+       "text": "移到废纸篓 {n} 项"
+      }
+     ]
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateDataModel": {
+     "surfaceId": "s",
+     "path": "/",
+     "value": {
+      "checks": {
+       "i0": true,
+       "i1": false
+      }
+     }
+    }
+   }
+  ],
+  "ok": true
+ },
+ {
+  "name": "count_checks_not_bools",
+  "catalog": "ai.luoke/a2ui/agent/1",
+  "messages": [
+   {
+    "version": "v0.9",
+    "createSurface": {
+     "surfaceId": "s",
+     "catalogId": "ai.luoke/a2ui/agent/1"
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateComponents": {
+     "surfaceId": "s",
+     "components": [
+      {
+       "id": "root",
+       "component": "Button",
+       "child": "t",
+       "count": {
+        "path": "/choices",
+        "value": true
+       },
+       "action": {
+        "event": {
+         "name": "scan_apply",
+         "context": {}
+        }
+       }
+      },
+      {
+       "id": "t",
+       "component": "Text",
+       "text": "{n} 项"
+      }
+     ]
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateDataModel": {
+     "surfaceId": "s",
+     "path": "/",
+     "value": {
+      "choices": {
+       "i0": [
+        "trash"
+       ]
+      }
+     }
+    }
+   }
+  ],
+  "ok": false
+ },
+ {
+  "name": "count_checks_with_also",
+  "catalog": "ai.luoke/a2ui/agent/1",
+  "messages": [
+   {
+    "version": "v0.9",
+    "createSurface": {
+     "surfaceId": "s",
+     "catalogId": "ai.luoke/a2ui/agent/1"
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateComponents": {
+     "surfaceId": "s",
+     "components": [
+      {
+       "id": "root",
+       "component": "Button",
+       "child": "t",
+       "count": {
+        "path": "/checks",
+        "value": true,
+        "also": [
+         "ignore"
+        ],
+        "alsoLabel": "x"
+       },
+       "action": {
+        "event": {
+         "name": "scan_apply",
+         "context": {}
+        }
+       }
+      },
+      {
+       "id": "t",
+       "component": "Text",
+       "text": "{n} 项"
+      }
+     ]
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateDataModel": {
+     "surfaceId": "s",
+     "path": "/",
+     "value": {
+      "checks": {
+       "i0": true
+      }
+     }
+    }
+   }
+  ],
+  "ok": false
+ },
+ {
+  "name": "count_false_value",
+  "catalog": "ai.luoke/a2ui/agent/1",
+  "messages": [
+   {
+    "version": "v0.9",
+    "createSurface": {
+     "surfaceId": "s",
+     "catalogId": "ai.luoke/a2ui/agent/1"
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateComponents": {
+     "surfaceId": "s",
+     "components": [
+      {
+       "id": "root",
+       "component": "Button",
+       "child": "t",
+       "count": {
+        "path": "/checks",
+        "value": false
+       },
+       "action": {
+        "event": {
+         "name": "scan_apply",
+         "context": {}
+        }
+       }
+      },
+      {
+       "id": "t",
+       "component": "Text",
+       "text": "{n} 项"
+      }
+     ]
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateDataModel": {
+     "surfaceId": "s",
+     "path": "/",
+     "value": {
+      "checks": {
+       "i0": true
+      }
+     }
+    }
+   }
+  ],
+  "ok": false
  },
  {
   "name": "count_bad_shape",

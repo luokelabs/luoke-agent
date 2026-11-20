@@ -1,0 +1,122 @@
+{
+  "reply" : {
+    "id" : 1,
+    "jsonrpc" : "2.0",
+    "result" : {
+      "contents" : [
+        {
+          "mimeType" : "application/json",
+          "text" : [
+            {
+              "createSurface" : {
+                "catalogId" : "ai.luoke/a2ui/agent/1",
+                "surfaceId" : "apps"
+              },
+              "version" : "v0.9"
+            },
+            {
+              "updateComponents" : {
+                "components" : [
+                  {
+                    "children" : [
+                      "s-list",
+                      "s-list-end"
+                    ],
+                    "component" : "Column",
+                    "id" : "root"
+                  },
+                  {
+                    "component" : "Text",
+                    "id" : "s-list-h",
+                    "text" : "应用单独设置",
+                    "variant" : "h4"
+                  },
+                  {
+                    "action" : {
+                      "event" : {
+                        "context" : {
+                          "app" : "com.apple.Notes",
+                          "page" : "apps"
+                        },
+                        "name" : "ime_page"
+                      }
+                    },
+                    "child" : "app-com_apple_Notes-t",
+                    "component" : "Button",
+                    "id" : "app-com_apple_Notes"
+                  },
+                  {
+                    "component" : "Text",
+                    "id" : "app-com_apple_Notes-t",
+                    "text" : "备忘录"
+                  },
+                  {
+                    "action" : {
+                      "event" : {
+                        "context" : {
+                          "app" : "com.apple.Terminal",
+                          "page" : "apps"
+                        },
+                        "name" : "ime_page"
+                      }
+                    },
+                    "child" : "app-com_apple_Terminal-t",
+                    "component" : "Button",
+                    "id" : "app-com_apple_Terminal"
+                  },
+                  {
+                    "component" : "Text",
+                    "id" : "app-com_apple_Terminal-t",
+                    "text" : "终端"
+                  },
+                  {
+                    "children" : [
+                      "s-list-h",
+                      "app-com_apple_Notes",
+                      "app-com_apple_Terminal"
+                    ],
+                    "component" : "Column",
+                    "id" : "s-list"
+                  },
+                  {
+                    "component" : "Divider",
+                    "id" : "s-list-end-div"
+                  },
+                  {
+                    "component" : "Text",
+                    "id" : "list-note",
+                    "text" : "为其他应用单独设置：在该应用中打开输入法菜单，选择「此应用设置」",
+                    "variant" : "caption"
+                  },
+                  {
+                    "children" : [
+                      "s-list-end-div",
+                      "list-note"
+                    ],
+                    "component" : "Column",
+                    "id" : "s-list-end"
+                  }
+                ],
+                "surfaceId" : "apps"
+              },
+              "version" : "v0.9"
+            }
+          ],
+          "uri" : "page/apps"
+        }
+      ],
+      "resultType" : "complete"
+    }
+  },
+  "request" : {
+    "id" : 1,
+    "jsonrpc" : "2.0",
+    "method" : "resources/read",
+    "params" : {
+      "_meta" : {
+        "io.modelcontextprotocol/protocolVersion" : "2026-07-28"
+      },
+      "uri" : "page/apps"
+    }
+  }
+}

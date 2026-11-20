@@ -223,6 +223,21 @@ class BuilderTest(unittest.TestCase):
         self.assertEqual(mem.action("mem_reply", {"ask": 7, "choice": "answer", "text": "是"}),
                          ("mem_reply", {"ask": 7, "choice": "answer", "text": "是"}))
 
+    def test_scan_overview_says_how_many_attention_items_it_left_out(self):
+        """「安全」先列 8 项、收起来的再列 8 项；再多的写明还有几项，不悄悄不画，整页也不超过组件上限"""
+        with open(os.path.join(ROOT, "fixtures", "apppages", "luoke-scan", "built.json"), encoding="utf-8") as f:
+            spec = json.load(f)
+        over = json.loads(json.dumps(spec["data"]["data/overview"]))
+        one = over["attention"]["items"][0]
+        over["attention"]["items"] = [dict(one, finding=f"{one['finding']}-{i}") for i in range(30)]
+        over["attention"]["count"] = 30
+        msgs = scan.build("overview", {}, lambda u: over if u == "data/overview" else spec["data"][u])
+        a2ui.build(msgs, page=True)
+        texts = [c.get("text") for c in _components(msgs).values() if c["component"] == "Text"]
+        self.assertIn("另有 14 项未列出", texts)
+        folds = [c.get("collapsed") for c in _components(msgs).values() if c.get("collapsed")]
+        self.assertIn("其余 22 项", folds)
+
     def test_scan_overview_and_detail_follow_the_mockup(self):
         with open(os.path.join(ROOT, "fixtures", "apppages", "luoke-scan", "built.json"), encoding="utf-8") as f:
             spec = json.load(f)
@@ -620,6 +635,46 @@ class MailRound3Test(unittest.TestCase):
         mail.build("inbox", {"list": "reply"}, read)
         self.assertFalse(any("list=needs" in u for u in asked), "用户自己选了「待回复」：空的也停在这里")
 
+    def test_a_mail_archived_before_its_date_offers_done_and_the_calendar(self):
+        """邮件助手 0.19.72：截止日没到就归档了的照样提醒；不在收件箱里，移动邮件的按钮没有意义"""
+        def fixture(name):
+            path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "fixtures", "luoke-mail", "due", name)
+            with open(path, encoding="utf-8") as f:
+                return json.load(f)["reply"]["result"]["contents"][0]["text"]
+        got = {"data/inbox": fixture("read-data-inbox-archived.json"), "data/mail": fixture("read-data-mail-archived.json"),
+               "data/accounts": fixture("read-data-accounts.json")}
+
+        def read(u):
+            return next((v for k, v in got.items() if u.startswith(k)), None)
+
+        def buttons(msgs):
+            a2ui.build(msgs, page=True)
+            comps = _components(msgs)
+            out = []
+            for c in comps.values():
+                ev = ((c.get("action") or {}).get("event") or {}) if c["component"] == "Button" else {}
+                if ev.get("name", "").startswith("mail_") and ev["name"] != "mail_sync":
+                    word = c.get("tooltip") or comps.get(f"{c['id']}-text", comps.get(c.get("child"), {})).get("text")
+                    out.append((word, ev["name"], (ev.get("context") or {}).get("op")))
+            return out, [c.get("text") for c in comps.values() if c["component"] == "Text"]
+        row, texts = buttons(mail.build("inbox", {"list": "archived", "account": "me@example.com"}, read))
+        self.assertEqual([(n, o) for _, n, o in row], [("mail_act", "complete"), ("mail_calendar", None)],
+                         "已归档的行：只有完成（只改本机记录）和加入日程，没有归档、加星标")
+        self.assertIn("10-21 截止", texts)
+        one, texts = buttons(mail.build("mail", {"id": "2", "account": "me@example.com"}, read))
+        self.assertEqual(one, [("完成", "mail_act", "complete"), ("加入日程", "mail_calendar", None)],
+                         "打开这封：照 ways；已经归档了的「完成」不写「并归档」")
+        self.assertNotIn("更改处理方式，可同时保存为规则", texts, "不在收件箱里的没有可改的处理方式")
+        # 还在收件箱里的照旧两个按钮
+        inbox = dict(got["data/inbox"], items=[dict(got["data/inbox"]["items"][0], archived=False)])
+        got["data/inbox"] = inbox
+        row, _ = buttons(mail.build("inbox", {"list": "archived", "account": "me@example.com"}, read))
+        self.assertEqual([(n, o) for _, n, o in row], [("mail_act", "flag"), ("mail_act", "archive")])
+        got["data/inbox"] = dict(inbox, items=[dict(inbox["items"][0], archived=True, calendar_added=True)])
+        row, _ = buttons(mail.build("inbox", {"list": "archived", "account": "me@example.com"}, read))
+        self.assertEqual([(n, o) for _, n, o in row], [("mail_act", "complete")], "已经交给过日历的不再出加入日程")
+        self.assertEqual(apppages.kind_name("luoke-mail", "due"), "即将截止的邮件")
+
     def test_the_last_group_is_tried_first_and_left_when_empty(self):
         def read(u):
             if u.startswith("data/accounts"):
@@ -838,7 +893,7 @@ class MailFeaturesBackTest(unittest.TestCase):
         self.assertIn("mail_sender_reset", self.events(msgs), "已处理的能撤回")
         self.assertIn("退订后仍在发送", json.dumps(msgs, ensure_ascii=False))
         clean = json.dumps(self.page("clean"), ensure_ascii=False)
-        self.assertIn("建议退订 3、无法退订 1、可疑 1、已处理 1、建议保留 1", clean)
+        self.assertIn("建议退订 3、可疑 1", clean)
 
     def test_sender_says_how_much_history_and_how_to_unsubscribe_by_mail(self):
         msgs = self.page("sender", {"account": "me@mail.example", "key": "from:notice@forum.example"})
@@ -1014,6 +1069,9 @@ class MailOldPagesTest(unittest.TestCase):
             source = "luoke-mail"
             data = sorted({n for needs in mail.PAGE_NEEDS.values() for n in needs})
         self.assertEqual(apppages.alias(Src, "legacy-settings"), "settings")
+        self.assertEqual(apppages.alias(Src, "inbox", {"id": "2"}), "mail", "卡片只讲一封时带 id 去收件箱：直接打开这一封")
+        self.assertEqual(apppages.alias(Src, "inbox", {"id": "2", "plan": "p"}), "inbox")
+        self.assertEqual(apppages.alias(Src, "inbox", {"list": "needs"}), "inbox")
         self.assertEqual(apppages.alias(Src, "sweep"), "clean")
         self.assertEqual(apppages.alias(Src, "inbox"), "inbox")
         Src.data = []
@@ -1039,7 +1097,7 @@ class ScanDiskRowTest(unittest.TestCase):
         self.assertIn("防火墙未开启", text)
         self.assertNotIn("疑似病毒", text, "不是系统设置的不在这一页")
         self.assertIn("14 个，共 23.07 GB", text)
-        self.assertIn("27812 · 2026-11-09", text)
+        self.assertIn("版本 27812 · 2026年11月9日更新", text)
         self.assertIn("状态", [p["title"] for p in scan.PAGES if not p.get("hidden")])
         self.assertNotIn("硬盘", json.dumps(scan.build("overview", {}, lambda u: d), ensure_ascii=False), "概览里不重复")
         empty = json.dumps(scan.build("status", {}, lambda u: {}), ensure_ascii=False)
@@ -1277,3 +1335,220 @@ class SearchDataCardsTest(unittest.TestCase):
         out = {"text": "归档了 1 封。", "done": True, "card": ["theirs"]}
         mail_src._own_said(out, "mail_apply_plan", {}, "m-1")
         self.assertEqual(out, {"text": "归档了 1 封。", "done": True, "card": ["theirs"]}, "没声明的应用：卡片上的点按照它自己的")
+
+
+class ImeSettingsTest(unittest.TestCase):
+    """输入法的设置页照它录的 data/settings 拼（fixtures/luoke-ime，设置页归主窗口：负责人 11-19）"""
+
+    def _scenario(self, name: str, file: str = "read-data-settings.json") -> dict:
+        with open(os.path.join(ROOT, "fixtures", "luoke-ime", name, file), encoding="utf-8") as f:
+            return json.load(f)["reply"]["result"]["contents"][0]["text"]
+
+    def _page(self, data: dict):
+        from luoke_agent.apppages import ime
+        msgs = ime.build("settings", {}, lambda uri: data if uri == "data/settings" else None)
+        a2ui.build(msgs, page=True)
+        comps = _components(msgs)
+        texts = [c["text"] for c in comps.values() if c["component"] == "Text"]
+        buttons = [(c["action"]["event"]["name"], c["action"]["event"]["context"], c) for c in comps.values()
+                   if c["component"] == "Button"]
+        return texts, buttons
+
+    def test_every_recorded_tap_has_its_button_on_the_page(self):
+        """输入法录的每一次点按（call-*.json），页上都有一个按钮交回同样的工具和参数"""
+        from luoke_agent.apppages import ime
+        steps = [("normal", "read-data-settings.json", "call-ime_do-restore.json"),
+                 ("normal", "read-data-settings-after-restore.json", "call-ime_do-clear_learned.json"),
+                 ("normal", "read-data-settings-after-restore.json", "call-ime_do-reset_usage.json"),
+                 ("normal", "read-data-settings-after-restore.json", "call-ime_do-dev_mode.json"),
+                 ("normal", "read-data-settings-after-restore.json", "call-ime_set-fontSize.json"),
+                 ("empty", "read-data-settings.json", "call-ime_do-clear_learned-not-running.json")]
+        for sc, read, call in steps:
+            with self.subTest(call):
+                with open(os.path.join(ROOT, "fixtures", "luoke-ime", sc, call), encoding="utf-8") as f:
+                    want = json.load(f)["request"]["params"]
+                _texts, buttons = self._page(self._scenario(sc, read))
+                sent = [ime.action(name, ctx) for name, ctx, _c in buttons]
+                if call == "call-ime_set-fontSize.json":     # 录的是一次改到 18；页上一格一格调，16 的两边是 15、17
+                    self.assertIn(("ime_set", {"key": "fontSize", "value": 17}), sent)
+                    self.assertEqual(sorted(want["arguments"]), ["key", "value"])
+                else:
+                    self.assertIn((want["name"], want["arguments"]), sent)
+
+    def test_names_groups_and_what_is_left_out(self):
+        texts, buttons = self._page(self._scenario("normal"))
+        for word in ("输入方式", "输入方案", "模糊音", "语音输入", "进入应用时的默认模式", "候选窗口", "字号", "每页候选数", "翻页键",
+                     "拼音显示位置", "记忆记录", "「小鹤双拼」的词语", "已学词语", "已忘记词语", "另有 3 个较早忘记的词语未列出",
+                     "使用统计", "1111 次", "89%", "7%", "显示 65 次，展开 18 次，选用 13 次（共 37 字）", "开发模式",
+                     "记录「小鹤双拼」的输入", "记录文件夹", "引擎文件夹", "设置文件"):
+            self.assertIn(word, texts)
+        # 主开关关着：下面的细项不画（模糊音的六组、语音的按键和整理）
+        self.assertNotIn("z = zh", texts)
+        self.assertNotIn("语音输入按键", texts)
+        # 每页候选数已经是 9（最大）：只剩往小调的
+        sizes = [ctx for name, ctx, _c in buttons if ctx.get("key") == "pageSize"]
+        self.assertEqual(sizes, [{"key": "pageSize", "value": 8}])
+        # 真假两个值的选项交回真假
+        from luoke_agent.apppages import ime
+        self.assertEqual(ime.action("ime_set", {"key": "inline", "value": ["false"], "bool": True}),
+                         ("ime_set", {"key": "inline", "value": False}))
+        # 在访达中显示：核心自己做，路径取数据里给的
+        reveals = [ctx["item"] for name, ctx, _c in buttons if name == "agent.reveal"]
+        self.assertEqual(reveals, ["~/.luoke/ime/records", "~/.luoke/ime/engines", "~/.luoke/ime/settings.json"])
+
+    def test_confirms(self):
+        """清除、清零、开启开发模式要确认；关闭开发模式、恢复一个词不用"""
+        _texts, buttons = self._page(self._scenario("normal"))
+        by = {json.dumps(ctx, sort_keys=True, ensure_ascii=False): c for name, ctx, c in buttons if name == "ime_do"}
+        confirm = lambda ctx: by[json.dumps(ctx, sort_keys=True, ensure_ascii=False)].get("confirm")   # noqa: E731
+        self.assertEqual(confirm({"op": "clear_learned", "engine": "xiaohe"})["title"], "清除「小鹤双拼」的已学词语？")
+        self.assertEqual(by[json.dumps({"engine": "xiaohe", "op": "clear_learned"}, sort_keys=True)]["variant"], "destructive")
+        self.assertEqual(confirm({"op": "reset_usage"})["title"], "清零使用统计？")
+        self.assertEqual(confirm({"op": "dev_mode", "engine": "quanpin", "on": True})["title"], "开启「全拼」的开发模式？")
+        self.assertIsNone(confirm({"op": "dev_mode", "engine": "xiaohe", "on": False}))
+        self.assertIsNone(confirm({"op": "restore", "id": "[\"wo\",\"窝\"]"}))
+
+    def test_empty(self):
+        texts, buttons = self._page(self._scenario("empty"))
+        self.assertIn("在候选上按 Shift+⌫ 可忘记词语", texts)
+        self.assertIn("暂无统计", texts)
+        self.assertIn("尚无记录", texts)
+        self.assertNotIn({"op": "reset_usage"}, [ctx for _n, ctx, _c in buttons], "没有统计时不放「清零」")
+        self.assertEqual([ctx["item"] for name, ctx, _c in buttons if name == "agent.reveal"],
+                         ["~/.luoke/ime/engines", "~/.luoke/ime/settings.json"], "记录文件夹不在：不放「在访达中显示」")
+
+    def test_states_and_odd_data(self):
+        from luoke_agent.apppages import ime
+        d = self._scenario("normal")
+        texts, buttons = self._page(dict(d, state="not_ready"))
+        self.assertIn("设置文件尚未升级", texts)
+        self.assertFalse([1 for name, _ctx, _c in buttons if name == "ime_set"], "没升级时改不了：不放开关")
+        self.assertFalse([1 for _n, ctx, _c in buttons if ctx.get("op") == "dev_mode"])
+        texts, buttons = self._page({"state": "unreadable", "paths": d["paths"]})
+        self.assertIn("设置文件无法读取", texts)
+        self.assertEqual([name for name, _ctx, _c in buttons], ["agent.reveal", "agent.reveal"])
+        for bad in (None, {}, {"settings": "x", "forgotten": [], "usage": {"days": [1, {"date": 3}]}, "dev": {"engines": [1]},
+                               "learned": {"engine": 1}, "paths": []}):
+            a2ui.build(ime.build("settings", {}, lambda uri: bad), page=True)
+        # 语音开着才有按键和整理
+        texts, _b = self._page({"state": "ok", "settings": [{"key": "voiceOn", "value": True},
+                                                            {"key": "voiceTidy", "value": False, "default": False}]})
+        self.assertIn("去除口头禅、修正改口、整理列表和分段", texts)
+        self.assertIn("按住所选按键说话，松开后上屏；识别和整理均由螺壳在本机完成；首次使用时系统将请求麦克风权限", texts,
+                      "隐私和权限的几句留着（负责人 11-19）")
+        # 认不出的键不画，不出错
+        texts, _b = self._page({"state": "ok", "settings": [{"key": "future", "value": 1}, {"key": "predict", "value": True}]})
+        self.assertIn("联想", texts)
+        self.assertNotIn("future", texts)
+
+    def test_words_after_a_tap(self):
+        from luoke_agent.apppages import ime
+        self.assertEqual(ime.result("ime_do", {"op": "clear_learned", "engine": "xiaohe"}, "settings", False), {"text": "已清除已学词语"})
+        self.assertEqual(ime.result("ime_do", {"op": "dev_mode", "engine": "xiaohe", "on": False}, "settings", False),
+                         {"text": "已关闭开发模式"})
+        self.assertEqual(ime.result("ime_set", {"key": "fontSize", "value": 18}, "settings", True), {"text": "已更改"})
+        self.assertEqual(ime.said("ime_do", {"op": "clear_learned"}, {"error": True, "code": "not_running", "text": "not_running"}),
+                         "输入法未运行，切换到螺壳输入法后重试")
+        self.assertIsNone(ime.said("ime_do", {}, {"error": False, "text": "已恢复"}))
+
+    def test_old_input_methods_keep_their_own_pages(self):
+        from luoke_agent.apppages import ime
+
+        class S:
+            source = "luoke-ime"
+            data = ["settings"]
+        self.assertIs(apppages.builds(S(), "settings"), ime)
+        self.assertIsNone(apppages.builds(S(), "apps"), "0.1.109 只列了 data/settings：「各应用」照旧画它自己的页")
+        self.assertEqual([(p["id"], p.get("hidden")) for p in apppages.pages(S(), [{"id": "settings", "title": "设置"},
+                                                                                {"id": "apps", "title": "各应用"}])],
+                         [("settings", None), ("apps", None)])
+        S.data = ["settings", "apps"]
+        self.assertIs(apppages.builds(S(), "apps"), ime)
+        S.data = []
+        self.assertIsNone(apppages.builds(S(), "settings"), "旧版输入法没列 data/settings：照旧画它自己的页")
+
+    def _apps(self, data):
+        from luoke_agent.apppages import ime
+        msgs = ime.build("apps", {}, lambda uri: data if uri == "data/apps" else None)
+        a2ui.build(msgs, page=True)
+        comps = _components(msgs)
+        return ([c["text"] for c in comps.values() if c["component"] == "Text"],
+                [(c["action"]["event"]["context"], c) for c in comps.values() if c["component"] == "Button"],
+                [[o["label"] for o in c["options"]] for c in comps.values() if c["component"] == "ChoicePicker"], msgs)
+
+    def test_apps_page(self):
+        d = self._scenario("normal", "read-data-apps.json")
+        texts, buttons, choices, msgs = self._apps(d)
+        for word in ("备忘录", "终端", "默认输入模式", "拼音显示位置", "联想", "在此应用中禁止记录", "恢复跟随全局", "为其他应用单独设置"):
+            self.assertIn(word, texts)
+        self.assertIn(["跟随全局", "中文", "英文"], choices)
+        self.assertIn(["跟随全局", "输入框", "候选窗口"], choices)
+        self.assertIn(["跟随默认", "开启", "关闭"], choices, "终端里联想默认关")
+        self.assertIn(["跟随全局", "开启", "关闭"], choices)
+        for word in ("全局：中文", "全局：输入框", "全局：开启", "终端中默认关闭"):
+            self.assertIn(word, texts)
+        picked = next(m["updateDataModel"]["value"]["choices"] for m in msgs if "updateDataModel" in m)
+        self.assertEqual([picked["a0-english"], picked["a1-inline"], picked["a1-predict"]], [["on"], ["off"], ["follow"]])
+        ctxs = [ctx for ctx, _c in buttons]
+        # 录的两次点按：终端里打开联想（选了就交）、备忘录恢复跟随全局（要确认）
+        self.assertIn({"key": "apps.com.apple.Terminal.predict", "value": {"path": "/choices/a1-predict/0"}}, ctxs)
+        reset = next(c for ctx, c in buttons if ctx == {"key": "apps.com.apple.Notes.reset", "value": True})
+        self.assertEqual(reset["confirm"]["title"], "将「备忘录」恢复为跟随全局？")
+        self.assertIn({"key": "apps.com.apple.Notes.noRecord", "value": False}, ctxs)
+        for call in ("call-ime_set-app-predict.json", "call-ime_set-app-reset.json"):
+            with open(os.path.join(ROOT, "fixtures", "luoke-ime", "normal", call), encoding="utf-8") as f:
+                self.assertEqual(sorted(json.load(f)["request"]["params"]["arguments"]), ["key", "value"])
+
+    def test_apps_page_for_the_app_the_menu_came_from(self):
+        """从输入法菜单的「此应用的设置」带 `app` 进来：带着它读，还没单独设置过的排最前、写明、没有「恢复跟随全局」"""
+        from luoke_agent.apppages import ime
+        asked = []
+
+        def read(uri):
+            asked.append(uri)
+            name = {"data/apps?app=com.apple.Safari": "read-data-apps-target.json", "data/apps": "read-data-apps.json"}.get(uri)
+            return self._scenario("normal", name) if name else None
+        msgs = ime.build("apps", {"app": "com.apple.Safari"}, read)
+        a2ui.build(msgs, page=True)
+        self.assertEqual(asked, ["data/apps?app=com.apple.Safari"])
+        comps = _components(msgs)
+        texts = [c["text"] for c in comps.values() if c["component"] == "Text"]
+        heads = [t for t in texts if t in ("Safari", "终端", "备忘录")]
+        self.assertEqual(heads[0], "Safari")
+        self.assertIn("尚未单独设置", texts)
+        ctxs = [c["action"]["event"]["context"] for c in comps.values() if c["component"] == "Button"]
+        self.assertNotIn({"key": "apps.com.apple.Safari.reset", "value": True}, ctxs)
+        self.assertIn({"key": "apps.com.apple.Safari.english", "value": {"path": "/choices/a0-english/0"}}, ctxs)   # 录的那次点按
+        # 已经在列表里的应用点进来：挪到最前，照常有「恢复跟随全局」
+        asked.clear()
+        read2 = lambda uri: self._scenario("normal", "read-data-apps.json")   # noqa: E731
+        texts = [c["text"] for c in _components(ime.build("apps", {"app": "com.apple.Terminal"}, read2)).values()
+                 if c["component"] == "Text"]
+        self.assertEqual([t for t in texts if t in ("终端", "备忘录")], ["终端", "备忘录"])
+        self.assertNotIn("尚未单独设置", texts)
+        # 写法不对的不带着读；旧版输入法不认参数时退回不带参数的
+        ime.build("apps", {"app": "../x y"}, read)
+        self.assertEqual(asked, ["data/apps"])
+        asked.clear()
+        ime.build("apps", {"app": "a.b"}, read)
+        self.assertEqual(asked, ["data/apps?app=a.b", "data/apps"])
+
+    def test_apps_page_empty_many_and_odd(self):
+        texts, buttons, _choices, _m = self._apps(self._scenario("empty", "read-data-apps.json"))
+        self.assertIn("暂无单独设置的应用", texts)
+        self.assertEqual(buttons, [])
+        d = self._scenario("normal", "read-data-apps.json")
+        many = dict(d, apps=[dict(d["apps"][1], id=f"x.y{i}", name=f"应用 {i}",
+                                  settings=[dict(s, key=s["key"].replace("com.apple.Terminal", f"x.y{i}")) for s in d["apps"][1]["settings"]])
+                             for i in range(30)])
+        texts, _b, _c, _m = self._apps(many)
+        self.assertIn("另有 20 个应用未列出", texts)
+        # 没有个人化组件：只有两项；别的应用的键、认不出的值不画
+        texts, buttons, choices, _m = self._apps({"state": "ok", "apps": [{"id": "a.b", "name": "甲", "settings": [
+            {"key": "apps.a.b.english", "value": "follow", "follow": True}, {"key": "apps.a.b.inline", "value": "maybe"},
+            {"key": "apps.c.d.predict", "value": "on"}, 7]}, {"name": "没有编号"}, 3]})
+        self.assertEqual(choices, [["跟随全局", "中文", "英文"]])
+        self.assertIn("全局：英文", texts)
+        self.assertNotIn("没有编号", texts)
+        for bad in (None, {}, {"apps": "x"}, {"state": "unreadable"}, {"state": "not_ready", "apps": d["apps"]}):
+            self.assertFalse(self._apps(bad)[1], "读不了、没升级时不放按钮")

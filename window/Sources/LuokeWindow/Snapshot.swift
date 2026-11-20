@@ -45,7 +45,8 @@ public enum Snapshot {
         /// `flood`：邮件助手的急事复制几份，每份带一句不同的副标题（#54 的回放，`StressSample.urgentFlood`）；
         /// `decide`：邮件助手要你决定的卡片复制几份（#51 的 `stress-brief-many`）
         func fed(_ m: WindowModel, scan: String, mail: String, beta2: Bool, scale: Int = 1, flood: Int = 0, decide: Int = 0,
-                 openURL: Bool = false, pages: Bool = true, mem: String? = nil, search: String? = nil) {
+                 openURL: Bool = false, pages: Bool = true, mem: String? = nil, search: String? = nil,
+                 ime: String? = nil) {
             for (app, sc) in [("luoke-scan", scan), ("luoke-mail", mail)] where ToolSample.load(app, sc) == nil {
                 missingSamples.insert("\(app)/\(sc)")
             }
@@ -58,7 +59,7 @@ public enum Snapshot {
             if decide > 0 { events = StressSample.decideFlood(events, app: "luoke-mail", times: decide) }
             for (e, d) in events { feed.handle(e, d) }
             if pages {
-                Sample.applyAgentApps(feed, scan: scan, mail: mail, mem: mem, search: search)
+                Sample.applyAgentApps(feed, scan: scan, mail: mail, mem: mem, search: search, ime: ime)
             } else {   // 应用清单拿到了，页面一次也没拿到（没连上核心）
                 if let v = try? JSONValue.parse(Sample.agentApps(scan: scan, mail: mail)) { feed.applyApps(v) }
                 for a in m.agentApps ?? [] {
@@ -69,7 +70,8 @@ public enum Snapshot {
             m.features = .beta2
             // 螺壳.app 报装了哪些应用（beta 2 随包带邮件助手和螺壳扫描），侧栏「应用」照它列
             m.setInstalledApps(([("luoke-mail", mail), ("luoke-scan", scan)] + (mem.map { [("luoke-mem", $0)] } ?? [])
-                                + (search.map { [("luoke-search", $0)] } ?? [])).map { app, sc in
+                                + (search.map { [("luoke-search", $0)] } ?? [])
+                                + (ime.map { [("luoke-ime", $0)] } ?? [])).map { app, sc in
                 InstalledApp(accessory: app, version: ToolSample.load(app, sc)?.version ?? "")
             })
         }
@@ -156,7 +158,7 @@ public enum Snapshot {
             s.busy = true
             s.pressed = id
         }
-        // 设置类的页上「标题 + 一排 n 选 1」：选项组放在这一条右边，和开关一样（#165；输入法的设置页是这个写法，它没有录的样例，
+        // 设置类的页上「标题 + 一排 n 选 1」：选项组放在这一条右边，和开关一样（#165；输入法「各应用」那页是这个写法，
         // 这里手写一页只看画法，借扫描的位置放）
         let pickRows = shipped("render-pick-rows", "画法 · 设置页的选项组在右边") { m in
             m.go(.scan)
@@ -235,6 +237,32 @@ public enum Snapshot {
                 m.go(.searchApp)
             },
         ]
+        /// 输入法的设置页和「各应用」，核心照它录的 data/settings、data/apps 拼（ADR 0028；设置页归主窗口，负责人 11-19）：平常的、空的，各带一张整页
+        let imeBuilt: [Screen] = ToolSample.scenarios("luoke-ime").flatMap { sc -> [Screen] in
+            guard let s = ToolSample.load("luoke-ime", sc) else { return [] }
+            return [("settings", "设置", "", "", windowSize),
+                    ("settings", "设置", "-whole", " · 整页", CGSize(width: windowSize.width, height: 2200)),
+                    ("apps", "各应用", "", "", windowSize)].map { page, tab, suffix, note, size in
+                window("ime-\(page)-\(sc)\(suffix)", "输入法 · \(tab)：\(s.title)\(note)", size: size) { m in
+                    fed(m, scan: ToolSample.fullScan, mail: ToolSample.defaultMail, beta2: true, ime: sc)
+                    if !m.appsExpanded { m.toggleApps() }
+                    m.go(.ime)
+                    m.selectAppTab(page)
+                }
+            }
+        }
+        /// 从输入法菜单的「此应用的设置」带着应用进来、它还没单独设置过：排在最前，写明尚未单独设置
+        let imeTarget: [Screen] = (ToolSample.load("luoke-ime", "normal")?.views["apps-target"]).map { view in
+            [window("ime-apps-target", "输入法 · 各应用：从菜单点进来的应用还没单独设置过") { m in
+                fed(m, scan: ToolSample.fullScan, mail: ToolSample.defaultMail, beta2: true, ime: "normal")
+                if !m.appsExpanded { m.toggleApps() }
+                m.go(.ime)
+                m.selectAppTab(view.page)
+                if let s = try? Surface.build(view.messages, page: true) {
+                    m.agentPages[AgentFeed.pageKey("luoke-ime", view.page)]?.surface = SurfaceModel(surface: s)
+                }
+            }]
+        } ?? []
         /// 核心照记忆的原始数据拼的页（ADR 0028）
         let memBuilt: [Screen] = ToolSample.load("luoke-mem", "built") == nil ? [] :
             [("overview", "概览"), ("all", "全部记忆"), ("people", "人物"), ("settings", "设置（弹窗）"), ("item", "一条记忆（弹窗）"),
@@ -383,7 +411,7 @@ public enum Snapshot {
             end(shipped("today", "今天")),
             end(shipped("today-mini", "侧栏收成图标") { $0.setSidebar(mini: true) }),
             shipped("mail", "邮件助手") { $0.go(.mail) },
-        ] + mailPages + mailBuilt + memBuilt + scanBuilt + scanStatusWhole + searchBuilt + dialogNarrow + memPages + scanScenes + macScenes + macExtra + [scanBusy, pickRows] + scanScenes.filter { (x: Screen) -> Bool in x.name == "scan-agent-decide-3" }.map { (x: Screen) -> Screen in end(x) }
+        ] + mailPages + mailBuilt + memBuilt + scanBuilt + scanStatusWhole + searchBuilt + imeBuilt + imeTarget + dialogNarrow + memPages + scanScenes + macScenes + macExtra + [scanBusy, pickRows] + scanScenes.filter { (x: Screen) -> Bool in x.name == "scan-agent-decide-3" }.map { (x: Screen) -> Screen in end(x) }
           + scanScenes.filter { (x: Screen) -> Bool in x.name == "scan-agent-decide-3" }.map { (x: Screen) -> Screen in live(x) } + [
             shipped("apps", "应用管理") { $0.go(.apps) },
             shipped("apps-open", "应用管理 · 展开两个应用（权限、去权限设置和应用设置的入口）") { m in
@@ -407,8 +435,8 @@ public enum Snapshot {
             whole("prefs-general-more", "设置 · 通用 · 有新版本、登录项要允许、逐类设置提醒（弹窗）", height: 1700) { m in
                 m.sampleSettings?.general.latestVersion = "0.9.4"
                 m.sampleSettings?.general.loginItem = .requiresApproval
-                m.settingsDialog = .alerts
                 m.go(.prefs, tab: "general")
+                m.settingsDialog = .alerts
             },
             shipped("prefs-models", "设置 · 模型") { $0.go(.prefs, tab: "model") },
             whole("prefs-models-more", "设置 · 模型 · 下载中、下载出错、已下载能切换、按流量计费、高级（弹窗）", height: 1300) { m in
@@ -419,13 +447,13 @@ public enum Snapshot {
                                                                state: .available(needGB: 0), kind: .lighter))
                 m.sampleSettings?.models.metered = true
                 m.sampleSettings?.models.advanced.enabled = true
-                m.settingsDialog = .advanced
                 m.go(.prefs, tab: "model")
+                m.settingsDialog = .advanced
             },
             shipped("prefs-privacy", "设置 · 隐私与权限") { $0.go(.prefs, tab: "privacy") },
             whole("prefs-privacy", "设置 · 隐私与权限 · 系统权限检查（弹窗）", height: 1400) { m in
-                m.settingsDialog = .checks
                 m.go(.prefs, tab: "privacy")
+                m.settingsDialog = .checks
             },
             stress("prefs-privacy-empty", "设置 · 隐私与权限 · 没有权限的行（没有行的一节不画标题）") { m in
                 m.agentPermissions = nil

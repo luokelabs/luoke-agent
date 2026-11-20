@@ -8,7 +8,7 @@
     python3 -m luoke_agent presence --home 目录 --idle 秒 [--locked]
     python3 -m luoke_agent window --home 目录 open|close
 
-位置都要显式给，不退回默认位置（顶层 CLAUDE.md「不碰日常在用的实例」）：壳在正式版里替你给好。
+位置都要显式给，不退回默认位置（开发和测试不碰日常在用的实例）：壳在正式版里替你给好。
 
 核心的 agent.sock 只认起它的那个进程（`--parent-pid`，没给就是父进程）。feed、tap、presence、window 这几个命令行
 是别的进程，只对带 `--dev` 起的核心管用；`--tool` 也只在 `--dev` 时认。`--dev` 只能写在命令行上，正式版的壳不给。

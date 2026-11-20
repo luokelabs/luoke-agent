@@ -86,6 +86,60 @@ class FolderPageTest(unittest.TestCase):
         gone = scan.build("folder", {"dir": "/etc"}, lambda u: {"state": "gone", "items": []})
         self.assertIn("无法打开此文件夹", json.dumps(gone, ensure_ascii=False))
 
+    def test_a_folder_macos_wont_let_us_read_is_not_called_empty(self):
+        # #169：没有完全磁盘访问时点开「文稿」，写的是「此文件夹为空」
+        tmp = os.path.realpath(tempfile.mkdtemp())
+        self.addCleanup(shutil.rmtree, tmp, True)
+        home = os.path.join(tmp, "home")
+        usage = diskuse.Usage(home=home)
+        locked = os.path.join(home, "Documents")
+        write(os.path.join(locked, "a.txt"), 10)
+        os.chmod(locked, 0)
+        self.addCleanup(os.chmod, locked, 0o700)
+        usage.look("~/Documents")
+        usage.wait()
+        u = usage.look("~/Documents")
+        self.assertEqual((u["state"], u["denied"], u["items"]), ("done", True, []))
+        msgs = scan.build("folder", {"dir": "~/Documents"}, lambda x: u if x.startswith("agent/usage") else {})
+        a2ui.build(msgs, page=True)
+        text = json.dumps(msgs, ensure_ascii=False)
+        self.assertIn("无权限查看此文件夹的内容", text)
+        self.assertNotIn("此文件夹为空", text)
+        os.makedirs(os.path.join(home, "Empty"))
+        usage.look("~/Empty")
+        usage.wait()
+        empty = usage.look("~/Empty")
+        self.assertFalse(empty["denied"])
+        self.assertIn("此文件夹为空", json.dumps(scan.build("folder", {"dir": "~/Empty"}, lambda x: empty), ensure_ascii=False))
+
+    def test_folders_come_from_the_scans_usage_data(self):
+        # #169：标题写「不含文稿」，第一行却是以前量过的文稿。照 data/usage：不是这一轮量的行写明哪天统计的
+        usage = {"schema": 1, "scanned": {"started": "2026-11-18T03:00:00Z", "finished": "2026-11-18T03:04:00Z"},
+                 "complete": False, "unseen": ["Desktop", "Documents", "Downloads", "Music", "Movies/TV", "Library/Photos"],
+                 "more": 0, "listedBytes": 200_000_000_000, "measuredBytes": 200_000_000_000, "folders": [
+                     {"kind": "known", "id": "Documents", "paths": ["/Users/me/Documents"], "pathsMore": 0,
+                      "bytes": 114_400_000_000, "grew7d": None, "day": "2026-11-10", "top": []},
+                     {"kind": "folder", "name": "Codes", "paths": ["~/Codes"], "pathsMore": 0, "bytes": 60_000_000_000,
+                      "grew7d": 10_300_000_000, "day": "2026-11-18", "top": []},
+                     {"kind": "app", "name": "微信", "holds": "data", "paths": ["~/Library/A", "~/Library/B"], "pathsMore": 0,
+                      "bytes": 20_000_000_000, "grew7d": 5_000_000, "day": "2026-11-18", "top": []},
+                     {"kind": "dev-caches", "paths": ["~/.cache/uv"], "pathsMore": 0, "bytes": 5_600_000_000, "grew7d": None,
+                      "day": "2026-11-18", "top": []}]}
+        note, rows, total = scan._usage_folders(lambda u: usage)
+        self.assertEqual(rows[0], ("文稿", "114.4 GB", 0.572, "", "~/Documents", "2026年11月10日统计，本轮未重新统计"))
+        self.assertEqual(rows[1], ("Codes", "60 GB", 0.3, "", "~/Codes", "近 7 天增加 10.3 GB"))
+        self.assertEqual(rows[2], ("微信数据", "20 GB", 0.1, "", "", ""), "合并的行不点开，涨得少的不写")
+        self.assertEqual(rows[3][:4], ("开发工具缓存", "5.6 GB", 0.028, "cache"))
+        self.assertEqual(note, "未开启完全磁盘访问，桌面、文稿、下载、音乐等位置本轮未统计")
+        self.assertEqual(total, "200 GB")
+        data = dict(self.spec["data"])
+        data["data/usage"] = usage
+        text = json.dumps(scan.build("status", {}, lambda u: data[u]), ensure_ascii=False)
+        self.assertIn("2026年11月10日统计，本轮未重新统计", text)
+        self.assertIn(note, text)
+        self.assertNotIn("不含", text)
+        self.assertIsNone(scan._usage_folders(lambda u: (_ for _ in ()).throw(KeyError(u))), "旧版本没有这份数据：照旧")
+
     def test_growth_is_a_line_of_its_own(self):
         page = [{"updateComponents": {"components": [
             {"id": "root", "component": "Column", "children": ["t", "r"]},

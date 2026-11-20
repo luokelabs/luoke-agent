@@ -1,0 +1,45 @@
+{
+  "situation" : "空的：没学到词、没有忘掉过的词、没有使用计数，没开开发模式，记录文件夹不在；输入法没在运行",
+  "steps" : [
+    {
+      "clock" : "2026-11-19T12:00:00+08:00",
+      "do" : "核心接上来先问能做什么",
+      "file" : "server-discover.json"
+    },
+    {
+      "clock" : "2026-11-19T12:00:00+08:00",
+      "do" : "列工具",
+      "file" : "tools-list.json"
+    },
+    {
+      "clock" : "2026-11-19T12:00:00+08:00",
+      "do" : "列资源",
+      "file" : "resources-list.json"
+    },
+    {
+      "clock" : "2026-11-19T12:00:00+08:00",
+      "do" : "核心每分钟读一次 outbox（输入法没有要报的事，答空列表）",
+      "file" : "read-outbox.json"
+    },
+    {
+      "clock" : "2026-11-19T12:00:00+08:00",
+      "do" : "打开「各应用」页（还是输入法画的 A2UI 页，没有单独设置的应用）",
+      "file" : "read-page-apps.json"
+    },
+    {
+      "clock" : "2026-11-19T12:00:00+08:00",
+      "do" : "打开设置页，读数据",
+      "file" : "read-data-settings.json"
+    },
+    {
+      "clock" : "2026-11-19T12:00:00+08:00",
+      "do" : "打开「各应用」页，读数据",
+      "file" : "read-data-apps.json"
+    },
+    {
+      "clock" : "2026-11-19T12:00:00+08:00",
+      "do" : "确认后清除已学词语：输入法没在运行，答 not_running",
+      "file" : "call-ime_do-clear_learned-not-running.json"
+    }
+  ]
+}

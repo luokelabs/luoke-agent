@@ -11,6 +11,9 @@ public struct MainWindowView: View {
     public var body: some View {
         Themed { WindowBody(model: model) }
             .modifier(AppearanceOverride(appearance: model.appearance))
+            // 「显示」菜单里那一项写「进入」还是「退出」全屏幕
+            .onReceive(NotificationCenter.default.publisher(for: NSWindow.didEnterFullScreenNotification)) { _ in model.fullScreen = true }
+            .onReceive(NotificationCenter.default.publisher(for: NSWindow.didExitFullScreenNotification)) { _ in model.fullScreen = false }
     }
 }
 
@@ -327,8 +330,17 @@ struct LKDialog<Content: View>: View {
     @Environment(\.lk) private var p
     @Environment(\.lkSnapshot) private var snapshot
 
+    /// 卡片的上沿离内容区顶上多远：定在一处，卡片往下长。照内容的高矮上下居中的话，同一个弹窗里换标签、内容变高变矮，
+    /// 标题和标签栏跟着上下挪，连着点会点空（#175）
+    static func top(in height: CGFloat) -> CGFloat { max(LKSpace.x8, (height * 0.12).rounded()) }
+
     var body: some View {
-        ZStack {
+        GeometryReader { geo in card(top: LKDialog.top(in: geo.size.height)) }
+            .accessibilityAddTraits(.isModal)
+    }
+
+    private func card(top: CGFloat) -> some View {
+        ZStack(alignment: .top) {
             Color(red: 20 / 255, green: 12 / 255, blue: 8 / 255).opacity(0.32)
                 .contentShape(Rectangle())
                 .onTapGesture { close() }
@@ -361,9 +373,8 @@ struct LKDialog<Content: View>: View {
             .background(RoundedRectangle(cornerRadius: LKRadius.sheet, style: .continuous).fill(p.card)
                 .shadow(color: p.shadow.opacity(p.dark ? 0.6 : 0.35), radius: 20, y: 18))
             .overlay { if p.dark { RoundedRectangle(cornerRadius: LKRadius.sheet, style: .continuous).strokeBorder(p.border, lineWidth: 1) } }
-            .padding(LKSpace.x8)
+            .padding(EdgeInsets(top: top, leading: LKSpace.x8, bottom: LKSpace.x8, trailing: LKSpace.x8))
         }
-        .accessibilityAddTraits(.isModal)
     }
 }
 

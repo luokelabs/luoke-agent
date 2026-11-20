@@ -21,6 +21,8 @@ public struct ToolSample {
     public let permissions: [JSONValue]
     /// 用户点了卡片上的按钮、工具答复的卡片（样例里的 call-*.json）：（文件名，窗口里的卡片 id，A2UI 消息，答复的那句话）
     public var replies: [(file: String, surface: String, card: [JSONValue], text: String)] = []
+    /// 带参数才看得到的页（`scripts/window_samples.py` 的 `views`）：名字 →（页，A2UI 消息）
+    public var views: [String: (page: String, messages: [JSONValue])] = [:]
     /// 螺壳.app 报的、在螺壳名下的权限（`POST /host`）
     public let host: [String: String]
 
@@ -71,6 +73,9 @@ public struct ToolSample {
         sample.replies = (v["replies"]?.array ?? []).compactMap { r in
             guard let f = r["file"]?.string, let sid = r["surface"]?.string, let card = r["card"]?.array else { return nil }
             return (f, sid, card, r["text"]?.string ?? "")
+        }
+        for (name, w) in v["views"]?.object ?? [:] {
+            if let page = w["page"]?.string, let msgs = w["messages"]?.array { sample.views[name] = (page, msgs) }
         }
         return sample
     }

@@ -1,5 +1,5 @@
 #!/bin/sh
-# 打出「螺壳 agent.app」到 build.noindex/（不进 Spotlight，打完从 LaunchServices 注销，顶层 CLAUDE.md）。
+# 打出「螺壳 agent.app」到 build.noindex/（不进 Spotlight，打完从 LaunchServices 注销）。
 # 默认开发版：bundle id ai.luoke.agent.dev，名字「螺壳 agent（开发）」（10-24 起用户看到的「螺壳」是主控，agent 并进它；之前先叫这个，不和主控撞名），ad-hoc 签名。
 # --release：正式的 bundle id ai.luoke.agent；Developer ID 签名和公证照 luoke-core 的 tools/release_sign.sh 另做。
 set -eu
@@ -17,7 +17,7 @@ cp "$bin" "$app/Contents/MacOS/Luoke"
 # 核心：只带源码和自带的 luoke_mem，不带 __pycache__（往 .app 里写会弄坏签名）
 rsync -a --include='*/' --include='*.py' --include='*.html' --exclude='*' "$here/luoke_agent" "$here/vendor" "$app/Contents/Resources/core/"
 cp "$here/vendor/luoke_mem.VERSION" "$app/Contents/Resources/core/vendor/"
-# 应用图标（app/icon/，从 luoke-brand 拷来的 1024 图）做成 .icns
+# 应用图标（app/icon/ 里的 1024 图）做成 .icns
 iconset=$(mktemp -d)/AppIcon.iconset
 mkdir -p "$iconset"
 for s in 16 32 128 256 512; do

@@ -1,0 +1,134 @@
+{
+  "reply": {
+    "id": 8,
+    "jsonrpc": "2.0",
+    "result": {
+      "contents": [
+        {
+          "mimeType": "application/json",
+          "text": [
+            {
+              "createSurface": {
+                "catalogId": "ai.luoke/a2ui/agent/1",
+                "surfaceId": "today"
+              },
+              "version": "v0.9"
+            },
+            {
+              "updateComponents": {
+                "components": [
+                  {
+                    "children": [
+                      "g1-t1",
+                      "g1-r4"
+                    ],
+                    "component": "Column",
+                    "id": "root",
+                    "layout": "sections"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "g1-t1",
+                    "text": "今天还没有新邮件要处理。",
+                    "variant": "caption"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "g1-t2",
+                    "text": "还有 1 封等你回复。",
+                    "variant": "caption"
+                  },
+                  {
+                    "component": "Text",
+                    "id": "g1-b3-t",
+                    "text": "去收件箱"
+                  },
+                  {
+                    "action": {
+                      "event": {
+                        "context": {
+                          "args": {
+                            "box": "me@example.com",
+                            "list": "reply"
+                          },
+                          "page": "inbox"
+                        },
+                        "name": "agent.open_page"
+                      }
+                    },
+                    "child": "g1-b3-t",
+                    "component": "Button",
+                    "id": "g1-b3",
+                    "variant": "borderless"
+                  },
+                  {
+                    "children": [
+                      "g1-t2",
+                      "g1-b3"
+                    ],
+                    "component": "Row",
+                    "id": "g1-r4"
+                  }
+                ],
+                "surfaceId": "today"
+              },
+              "version": "v0.9"
+            }
+          ],
+          "uri": "page/today"
+        }
+      ],
+      "resultType": "complete"
+    }
+  },
+  "request": {
+    "id": 8,
+    "jsonrpc": "2.0",
+    "method": "resources/read",
+    "params": {
+      "_meta": {
+        "io.modelcontextprotocol/clientCapabilities": {
+          "experimental": {
+            "ai.luoke/a2ui": {
+              "features": [
+                "placement",
+                "badge",
+                "strong",
+                "maxLines",
+                "optionIcons",
+                "collapsed",
+                "lucide",
+                "tooltip",
+                "doneGroup",
+                "itemIcons",
+                "countLabel",
+                "openPage",
+                "subtitle",
+                "countAlso",
+                "countWeights",
+                "pageArgs",
+                "bigPages",
+                "secureField",
+                "pageRefresh",
+                "saveFile",
+                "neutralBadge",
+                "chips",
+                "pageSections",
+                "confirm",
+                "rowOpen",
+                "fieldSubmit",
+                "lucide2"
+              ]
+            }
+          }
+        },
+        "io.modelcontextprotocol/clientInfo": {
+          "name": "luoke-agent",
+          "version": "fixtures"
+        },
+        "io.modelcontextprotocol/protocolVersion": "2026-07-28"
+      },
+      "uri": "page/today"
+    }
+  }
+}

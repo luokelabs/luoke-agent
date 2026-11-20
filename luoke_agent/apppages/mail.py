@@ -16,7 +16,7 @@ APP = "luoke-mail"
 # 清单里给界面用的固定名字（提醒的类别 `reports`、权限 `permissions`）：按代号在这里起名（负责人 11-17：用语由 agent 定）；
 # 这里没有的代号照清单写的
 KIND_NAMES = {"new-mail": "待处理邮件", "suspicious": "可疑邮件", "mailbox": "不紧急的邮件", "auto-done": "自动处理的邮件",
-              "needs-access": "邮箱连接"}
+              "needs-access": "邮箱连接", "due": "即将截止的邮件"}
 PERMISSION_NAMES = {"mailbox": "邮箱"}
 # 每一页要邮件助手给哪几样原始数据（清单 capabilities.data 里列了才由核心拼；没列的照旧读邮件助手自己的页，一页一页换）
 PAGE_NEEDS = {
@@ -60,6 +60,9 @@ PAGES = [
 ]
 # 邮件助手自己的旧页（它的卡片上的「打开设置」「去设置」还指着）→ 核心拼的哪一页：旧页不再去（负责人 11-17：不该还有旧样子的页）
 PAGE_ALIASES = {"legacy-settings": "settings", "rules": "settings", "sweep": "clean"}
+# 带着这个参数去这一页的，换成另一页：卡片只讲一封时「在邮件助手中查看」带 `id` 去收件箱（邮件助手 new-mail、mailbox、due），
+# 直接打开这一封（它可能不在收件箱的任何一组里：已归档的）。带 plan、list 的照旧去收件箱
+ARG_PAGES = {("inbox", "id", ("plan", "list")): "mail"}
 RULE_KIND = {"sender": "发件人是", "domain": "发件人域名是", "list": "邮件列表", "subject": "主题包含", "from": "发件人包含"}
 
 # 动作代号 → 做过以后怎么说（「归档了 6 封」）、可选时按钮上的字
@@ -444,20 +447,33 @@ def _row_buttons(kit: PageKit, it: dict, acct: str) -> List[str]:
     """一行两个按钮，照分拣的建议：主按钮是建议做的那件，次按钮是归档（或留在收件箱）。界面规范：一个主按钮加一个次按钮。
     都带图标：行尾只画图标，字在悬停提示里（负责人 11-16：带字的按钮占掉一大块，主题被截断）"""
     ids, kind, act = [it["id"]], it.get("kind"), it.get("action")
-    icons = {"spam": "shield-alert", "skip": "inbox", "archive": "archive", "flag": "star", "trash": "trash-2"}
+    icons = {"spam": "shield-alert", "skip": "inbox", "archive": "archive", "flag": "star", "trash": "trash-2",
+             "complete": "check"}
 
     def op(label: str, o: str, primary: bool = False) -> str:
         return kit.button(label, "mail_act", {"account": acct, "ids": ids, "op": o}, icon=icons[o],
                           variant="primary" if primary else "borderless")
 
+    def calendar(primary: bool = False) -> str:
+        return kit.button("加入日程", "mail_calendar", {"account": acct, "id": it["id"]}, icon="calendar-plus",
+                          variant="primary" if primary else "borderless")
+
+    if it.get("archived"):
+        # 有截止日、还没过的可以把截止日加进日程（邮件助手 0.19.72）。在收件箱里的行照旧两个按钮，加入日程在打开的那封信里
+        dated = isinstance(it.get("due"), str) and len(it["due"]) >= 10 and not it.get("overdue")
+        # 已经不在收件箱里的（在别处归档的、截止日没到就归档的）：移动邮件的动作没有意义，只给「完成」（只改本机记录，可撤销），
+        # 是日程或有没过的截止日的再给加入日程
+        # 已经交给过「日历」的不再出（邮件助手 0.19.74 的 calendar_added）
+        if (kind == "schedule" or act == "schedule" or dated) and not it.get("calendar_added"):
+            return [op("完成", "complete", True), calendar()]
+        return [op("完成", "complete", True)]
     if it.get("suspicious") or kind == "suspicious":
         return [op("移到垃圾邮件", "spam", True), op("留在收件箱", "skip")]
     if kind == "reply" or act == "reply":
         return [kit.button("回复", "mail_draft", {"account": acct, "id": it["id"]}, icon="reply", variant="primary"),
                 op("归档", "archive")]
     if kind == "schedule" or act == "schedule":
-        return [kit.button("加入日程", "mail_calendar", {"account": acct, "id": it["id"]}, icon="calendar-plus", variant="primary"),
-                op("归档", "archive")]
+        return [calendar(True), op("归档", "archive")]
     if kind == "follow_up" or act == "follow_up":
         return [op("加星标", "flag", True), op("归档", "archive")]
     if act == "ignore":
@@ -561,7 +577,8 @@ def one_mail(args: Dict[str, str], read: Read) -> List[dict]:
     有草稿的给草稿（能改，存进邮箱的草稿箱）；有网页版地址的「在邮箱网页里打开」；
     改成别的处理方式并记成规则收起来"""
     account, mid = args.get("account") or "all", args.get("id") or ""
-    d = read(uri("mail", account=account, id=mid)) or {}
+    # 卡片上带 id 来的没有邮箱：不写 account（邮件助手照 id 找，样例里录的就是 data/mail?id=）
+    d = read(uri("mail", account=None if account == "all" else account, id=mid)) or {}
     kit = PageKit("mail")
     bad = _problem(kit, d)
     if bad:
@@ -586,6 +603,8 @@ def one_mail(args: Dict[str, str], read: Read) -> List[dict]:
         top.append(kit.text("附件：" + "、".join(str(a) for a in d["attachments"]), "caption"))
     events = [e for e in d.get("events") or [] if isinstance(e, dict)]
     btns = []
+    # 截止日没到就归档了的（邮件助手 0.19.72）：能做的只有完成、把截止日加入日程，没有移动邮件的动作
+    gone = bool(d.get("ways")) and "archive" not in d["ways"]
     for i, w in enumerate(d.get("ways") or []):
         kw: Dict[str, Any] = {"variant": "primary"} if i == 0 else {}
         if w == "draft":
@@ -594,7 +613,9 @@ def one_mail(args: Dict[str, str], read: Read) -> List[dict]:
             if len(events) < 2:     # 几个日程的在下面一个一个加
                 btns.append(kit.button("加入日程", "mail_calendar", {"account": acct, "id": the_id}, **kw))
         elif w in WAYS:
-            btns.append(kit.button(WAYS[w], "mail_act", {"account": acct, "ids": [the_id], "op": w}, **kw))
+            # 已经不在收件箱里的（ways 里没有归档）「完成」只改本机记录，不写「并归档」
+            label = "完成" if w == "complete" and gone else WAYS[w]
+            btns.append(kit.button(label, "mail_act", {"account": acct, "ids": [the_id], "op": w}, **kw))
     url = d.get("open_url")
     if isinstance(url, str) and url.startswith("https://"):
         btns.append(kit.button("在邮箱网页中打开", "agent.open_url", {"url": url}, icon="square-arrow-out-up-right",
@@ -626,7 +647,7 @@ def one_mail(args: Dict[str, str], read: Read) -> List[dict]:
                          "value": {"path": "/fields/draft"}})
         save = kit.button("保存到草稿箱", "mail_draft_save", {"account": acct, "id": the_id, "text": {"path": "/fields/draft"}})
         top += [kit.heading("草稿"), field, kit.row([save])]
-    if d.get("ways"):
+    if d.get("ways") and not gone:
         do = kit.button("更改", "mail_change", {"account": acct, "ids": [the_id], "action": {"path": "/choices/change/0"},
                                               "remember": {"path": "/choices/remember/0"}})
         top.append(kit.fold("更改处理方式，可同时保存为规则", [
@@ -965,9 +986,8 @@ def _old_row(kit: PageKit, g: dict, scope: str, mode: Optional[bool] = None) -> 
         else:
             btns.append(kit.button("归档", "mail_old_archive", {"account": acct, "keys": [g["key"]], "count": n},
                                    tooltip=ARCHIVE_TIP))
-    unread = int(g.get("unread") or 0)
-    sub = "，".join(x for x in (KIND_WORD.get(g.get("kind"), ""), f"{n} 封", _size(g.get("size")), f"{unread} 封未读" if unread else "",
-                                _since(g.get("earliest"))) if x)
+    # 一组一句：是哪一类、几封、多大。未读几封、从哪年起不影响归不归档，不写（负责人 11-19：说明不把知道的都列上去）
+    sub = "，".join(x for x in (KIND_WORD.get(g.get("kind"), ""), f"{n} 封", _size(g.get("size"))) if x)
     return kit.item(g.get("name") or g.get("address") or KIND_WORD.get(g.get("kind"), "旧邮件"), sub, btns)
 
 
@@ -1106,9 +1126,10 @@ def clean(args: Dict[str, str], read: Read) -> List[dict]:
         for sd in subs_.get("senders") or []:
             if sd.get("group") in counts:
                 counts[sd["group"]] += 1
-        what = "、".join(f"{w} {counts[g]}" for g, w in SUB_GROUPS if counts[g])
+        # 只写要动手的两样（建议退订、可疑）；无法退订、已处理、建议保留的个数点进去才看（界面规范：数字只留对用户有意义的）
+        what = "、".join(f"{w} {counts[g]}" for g, w in SUB_GROUPS if counts[g] and g in ("unsubscribe", "suspicious"))
         go = kit.open_page("订阅体检", "subs", {} if account == "all" else {"account": account})
-        when = f"上次检查：{_day(subs_.get('checked_at'))}，最近 {subs_.get('days') or 60} 天的订阅"
+        when = f"上次检查：{_day(subs_.get('checked_at'))}"
         again = kit.button("重新检查", "mail_subscriptions_check", {"account": account}, icon="refresh-cw", variant="borderless")
         top.append(kit.heading("订阅体检"))
         top.append(kit.list([kit.item("全部结果", what or None, [go], open=go, strong=False),
@@ -1176,8 +1197,7 @@ def subs(args: Dict[str, str], read: Read) -> List[dict]:
             top.append(kit.text(f"还有 {len(mine) - SUB_ROWS} 个未列出，请先处理以上各项", "caption"))
     else:
         top.append(kit.text("订阅邮件已全部检查，暂无待处理项", "caption"))
-    scanned = f" {s['scanned']} 封" if isinstance(s.get("scanned"), int) and s["scanned"] else "的订阅"
-    when = f"上次检查：{_day(s.get('checked_at'))}，最近 {s.get('days') or 60} 天{scanned}"
+    when = f"上次检查：{_day(s.get('checked_at'))}"
     big = _size(sum(int(x.get("size") or 0) for x in senders if x.get("group") == "unsubscribe"))
     if big:
         when += f"，建议退订的约占 {big}"
@@ -1221,8 +1241,7 @@ def old(args: Dict[str, str], read: Read) -> List[dict]:
     total, judged = int(d.get("total") or 0), int(d.get("judged") or 0)
     held = int(d.get("held") or 0)
     where = f"收件箱中超过 {d['days']} 天的邮件" if scope == "inbox" and d.get("days") else ""
-    head = "，".join(x for x in (f"{where}共 {total} 封" if total else "", _size(d.get("size")) and f"占 {_size(d.get('size'))}",
-                                 f"本机模型已分析 {judged} 封" if total else "") if x)
+    head = "，".join(x for x in (f"{where}共 {total} 封" if total else "", _size(d.get("size")) and f"占 {_size(d.get('size'))}") if x)
     if held:
         head += f"；星标和按标签保留的 {held} 封不处理"
     if head:
@@ -1681,7 +1700,7 @@ def _remind(kit: PageKit, d: dict) -> List[str]:
                                                               label="整理间隔", submit=go2)], justify="spaceBetween"))
     out = [kit.list(rows)]
     if (auto.get("notify") or {}).get("authorization") == "denied":
-        out.append(kit.text("系统未允许螺壳发送通知，提醒不会弹出。请在螺壳「设置 · 隐私与权限」中开启", "caption"))
+        out.append(kit.text("系统未允许螺壳发送通知，提醒不会弹出。请在螺壳「设置 · 通用」的「提醒」中开启", "caption"))
     return out
 
 

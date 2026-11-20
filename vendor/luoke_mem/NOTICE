@@ -1,0 +1,8 @@
+螺壳记忆（luoke-mem）
+Copyright 2026 螺壳实验室 Luoke Labs
+
+以 Apache License 2.0 发布，见 LICENSE。「螺壳」「Luoke」的名称、图标（luoke_mem/icon.png）和品牌素材不随许可授予（Apache-2.0 第 6 条），用它们发布改版要另经同意。
+
+0.27.3 及以前发出的版本按 MIT 许可发布，仍按 MIT。
+
+只用 Python 标准库，仓库里不带第三方代码。

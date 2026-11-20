@@ -133,6 +133,11 @@
       "file": "read-data-category-malware.json"
     },
     {
+      "clock": "2026-10-20T12:00:00Z",
+      "do": "读占地方最多的文件夹 data/usage",
+      "file": "read-data-usage.json"
+    },
+    {
       "clock": "2026-10-20T12:05:00Z",
       "do": "用户在扫描页上点缓存那一行的「清理」",
       "file": "call-scan_apply-caches.json"

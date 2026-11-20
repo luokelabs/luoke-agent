@@ -569,6 +569,7 @@
                   "decide": {
                     "bytes": 621969408,
                     "caches": 7,
+                    "cachesBytes": 392167424,
                     "cleaned": 0,
                     "freed": 0,
                     "offerAuto": true,

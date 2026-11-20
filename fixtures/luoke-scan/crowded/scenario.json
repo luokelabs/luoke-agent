@@ -131,6 +131,11 @@
       "clock": "2026-10-20T12:00:00Z",
       "do": "读一类的详情 data/category?id=malware",
       "file": "read-data-category-malware.json"
+    },
+    {
+      "clock": "2026-10-20T12:00:00Z",
+      "do": "读占地方最多的文件夹 data/usage",
+      "file": "read-data-usage.json"
     }
   ],
   "title": "用了很久的 Mac：能清的有几十项",

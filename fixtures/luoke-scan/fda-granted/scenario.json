@@ -75,6 +75,11 @@
       "file": "read-data-settings-before-fda.json"
     },
     {
+      "clock": "2026-10-20T12:00:00Z",
+      "do": "读占地方最多的文件夹 data/usage",
+      "file": "read-data-usage-before-fda.json"
+    },
+    {
       "clock": "2026-10-20T14:00:00Z",
       "do": "查一轮（agent 叫的那种，只读、不自动清）：luoke-scan scan --fixture $FIXTURE --clock 2026-10-20T14:00:00Z --for-agent"
     },
@@ -172,6 +177,11 @@
       "clock": "2026-10-20T14:00:00Z",
       "do": "读一类的详情 data/category?id=malware",
       "file": "read-data-category-malware.json"
+    },
+    {
+      "clock": "2026-10-20T14:00:00Z",
+      "do": "读占地方最多的文件夹 data/usage",
+      "file": "read-data-usage.json"
     }
   ],
   "title": "允许了完全磁盘访问以后再查一轮",

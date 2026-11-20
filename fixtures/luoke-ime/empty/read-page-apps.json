@@ -1,0 +1,70 @@
+{
+  "reply" : {
+    "id" : 1,
+    "jsonrpc" : "2.0",
+    "result" : {
+      "contents" : [
+        {
+          "mimeType" : "application/json",
+          "text" : [
+            {
+              "createSurface" : {
+                "catalogId" : "ai.luoke/a2ui/agent/1",
+                "surfaceId" : "apps"
+              },
+              "version" : "v0.9"
+            },
+            {
+              "updateComponents" : {
+                "components" : [
+                  {
+                    "children" : [
+                      "s-empty"
+                    ],
+                    "component" : "Column",
+                    "id" : "root"
+                  },
+                  {
+                    "component" : "Text",
+                    "id" : "empty-t",
+                    "text" : "暂无单独设置的应用",
+                    "variant" : "h4"
+                  },
+                  {
+                    "component" : "Text",
+                    "id" : "empty-c",
+                    "text" : "在应用中打开输入法菜单，选择「此应用设置」",
+                    "variant" : "caption"
+                  },
+                  {
+                    "children" : [
+                      "empty-t",
+                      "empty-c"
+                    ],
+                    "component" : "Column",
+                    "id" : "s-empty"
+                  }
+                ],
+                "surfaceId" : "apps"
+              },
+              "version" : "v0.9"
+            }
+          ],
+          "uri" : "page/apps"
+        }
+      ],
+      "resultType" : "complete"
+    }
+  },
+  "request" : {
+    "id" : 1,
+    "jsonrpc" : "2.0",
+    "method" : "resources/read",
+    "params" : {
+      "_meta" : {
+        "io.modelcontextprotocol/protocolVersion" : "2026-07-28"
+      },
+      "uri" : "page/apps"
+    }
+  }
+}

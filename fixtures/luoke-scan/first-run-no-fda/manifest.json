@@ -29,7 +29,8 @@
       "overview",
       "category",
       "history",
-      "settings"
+      "settings",
+      "usage"
     ],
     "listing": {
       "category": "系统",
@@ -169,5 +170,5 @@
   ],
   "type": "app",
   "ui_element": true,
-  "version": "0.3.40"
+  "version": "0.3.42"
 }

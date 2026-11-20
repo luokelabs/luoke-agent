@@ -113,6 +113,11 @@
     },
     {
       "clock": "2026-10-20T12:00:00Z",
+      "do": "读占地方最多的文件夹 data/usage",
+      "file": "read-data-usage.json"
+    },
+    {
+      "clock": "2026-10-20T12:00:00Z",
       "do": "对话里问「扫描怎么样了」：模型调 scan_status（只读，答一张新卡片）",
       "file": "call-scan_status.json"
     }

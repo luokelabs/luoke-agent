@@ -429,6 +429,46 @@ class AgentTest(_Base):
         self.assertNotIn("tool:new-mail", self.state.setting("modes"))
         self.assertNotIn(sid, self.agent.order())
 
+    def test_a_second_tap_while_the_first_is_running_is_not_sent(self):
+        """同一张卡片上一次点按还没做完，再点一次不交给工具（窗口会灰掉按钮；直接连上来的别的进程不会）"""
+        self.src.items = [item("a")]
+        self.agent.poll()
+        s = self.agent.surfaces["tool/a"][1]
+        ok = next(c for c in s.components if s.components[c].get("component") == "Button"
+                  and s.components[c]["action"]["event"]["name"] == "mail_apply_plan")
+        inner = []
+        handle = self.src.handle
+
+        def slow(it, name, ctx, ua):
+            inner.append(self.agent.tap("tool/a", ok, {}))     # 第一次还在工具那里：这时又点了一次
+            return handle(it, name, ctx, ua)
+        self.src.handle = slow
+        r = self.agent.tap("tool/a", ok, {})
+        self.assertEqual(r["text"], "已归档 1 封。")
+        self.assertEqual(inner, [{"text": "正在处理", "error": True}])
+        self.assertEqual(len(self.src.calls), 1, "工具只收到一次")
+
+    def test_a_result_that_deletes_the_card_withdraws_it(self):
+        """结果是把卡片删掉（deleteSurface）：撤卡，不留在表里；同一组里跟在后面的更新不认，原卡片不变"""
+        self.src.items = [item("a"), item("b")]
+        self.agent.poll()
+        for key, extra in (("a", []), ("b", [{"version": "v0.9", "updateComponents": {"surfaceId": "b", "components": [
+                {"id": "root", "component": "Button", "child": "x"}]}}])):
+            sid = "tool/" + key
+            s = self.agent.surfaces[sid][1]
+            ok = next(c for c in s.components if s.components[c].get("component") == "Button"
+                      and s.components[c]["action"]["event"]["name"] == "mail_apply_plan")
+            card = [{"version": "v0.9", "deleteSurface": {"surfaceId": s.surface_id}}] + \
+                [dict(m, updateComponents=dict(m["updateComponents"], surfaceId=s.surface_id)) for m in extra]
+            self.src.handle = lambda it, name, ctx, ua, card=card: {"text": "好了", "card": card}
+            self.agent.tap(sid, ok, {})
+            if not extra:
+                self.assertNotIn(sid, self.agent.surfaces, "删掉的卡片撤了")
+            else:
+                self.assertIn(sid, self.agent.surfaces)
+                self.assertFalse(self.agent.surfaces[sid][1].deleted, "带着坏更新的那一组整组不认，原卡片不变")
+                self.assertIsNone(self.agent._undo_button(sid))
+
     def test_tap_keeps_written_values(self):
         self.src.items = [item("a")]
         self.agent.poll()
@@ -1112,6 +1152,21 @@ class FeedAndSettingsTest(_Base):
                 self.assertNotEqual((self.state.setting("modes") or {}).get("tool:picks"), "window")
         self.assertEqual(self.state.setting("modes"), {"tool:picks": "window"})
         self.assertTrue(any(sid.startswith("agent/less-") for sid in self.agent.order()), "说一次：以后只放这里")
+
+    def test_settings_do_not_list_kinds_the_app_no_longer_declares(self):
+        """应用清单里已经没有的旧类别（事项库里还留着几件）不列：列出来没有名字，只有一行「这一类事」（11-19 走查）"""
+        self.src.items = [item("old", kind="tidy"), item("a")]
+        self.agent.poll()
+        self.src.items = [item("a")]            # 旧类别的那件撤了，库里还记着这一类
+        self.agent.poll()
+        ids = lambda: {k["id"] for k in self.agent.settings()["kinds"]}   # noqa: E731
+        self.assertIn("tool:tidy", ids(), "清单还没拿到（一类名字都没有）：照旧全列")
+        self.agent.set_labels("tool", [{"kind": "new-mail", "title": "新邮件"}])
+        self.assertEqual(ids(), {"tool:new-mail"})
+        self.assertFalse([k for k in self.agent.settings()["kinds"] if k["label"] == "这一类事"])
+        self.src.items = [item("a"), item("again", kind="tidy")]          # 这一类现在又有开着的事：留着
+        self.agent.poll()
+        self.assertIn("tool:tidy", ids())
 
     def test_settings_round_trip_and_validation(self):
         q = self.q

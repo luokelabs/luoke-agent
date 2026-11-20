@@ -35,7 +35,7 @@ python3 scripts/record_agent_fixtures.py --only decide-3 --keep   # 只录一个
 | `read-summary*.json` | `resources/read` `summary` |
 | `read-permissions*.json` | `resources/read` `permissions` |
 | `read-page-<页>*.json` | `resources/read` `page/overview`、`page/mac`、`page/cleaned` |
-| `read-data-<资源>*.json` | `resources/read` `data/overview`、`data/history`、`data/settings`；`read-data-category-<类>.json` 是 `data/category?id=<类>`（概览里列出的每一类）。只读的原始数据，字段见 [docs/data-resources.md](../../docs/data-resources.md) |
+| `read-data-<资源>*.json` | `resources/read` `data/overview`、`data/history`、`data/settings`、`data/usage`；`read-data-category-<类>.json` 是 `data/category?id=<类>`（概览里列出的每一类）。只读的原始数据，字段见 [docs/data-resources.md](../../docs/data-resources.md) |
 | `call-<工具>*.json` | `tools/call`：卡片、页上的点按（带 `ai.luoke/user-action`），或对话里模型调的只读工具 |
 
 带 `-after-…` 的是点完以后再读的。每个文件是 `{"request": …, "reply": …}`：`request` 是 agent 发的那条 JSON-RPC
@@ -246,6 +246,7 @@ JSON 按键排序、缩进两格。
 | `read-data-category-leftover.json` | resources/read `data/category?id=leftover` | 2026-10-20T12:00:00Z：读一类的详情 data/category?id=leftover |
 | `read-data-category-project.json` | resources/read `data/category?id=project` | 2026-10-20T12:00:00Z：读一类的详情 data/category?id=project |
 | `read-data-category-startup.json` | resources/read `data/category?id=startup` | 2026-10-20T12:00:00Z：读一类的详情 data/category?id=startup |
+| `read-data-usage.json` | resources/read `data/usage` | 2026-10-20T12:00:00Z：读占地方最多的文件夹 data/usage |
 | `call-scan_status.json` | tools/call `scan_status` | 2026-10-20T12:00:00Z：对话里问「扫描怎么样了」：模型调 scan_status（只读，答一张新卡片） |
 
 `call-scan_status.json` 答：「上一轮：2026-10-20T12:00:00Z，用了 0 秒；发现：放心删 1、要确认 5、仅供参考 15；放心删的能腾出 62.9 MB；病毒库 daily 27000（2026-10-20）；没查成：space、space.system、space.duplicates、leftover.app-data、leftover.installer、stale.large-file、secrets、permission.stale-grant、malware；自动清：关」（新卡片）
@@ -414,6 +415,7 @@ JSON 按键排序、缩进两格。
 | `read-data-overview-before-fda.json` | resources/read `data/overview` | 2026-10-20T12:00:00Z：读扫描页的数据 data/overview |
 | `read-data-history-before-fda.json` | resources/read `data/history` | 2026-10-20T12:00:00Z：读清理记录的数据 data/history |
 | `read-data-settings-before-fda.json` | resources/read `data/settings` | 2026-10-20T12:00:00Z：读设置的数据 data/settings |
+| `read-data-usage-before-fda.json` | resources/read `data/usage` | 2026-10-20T12:00:00Z：读占地方最多的文件夹 data/usage |
 | `server-discover.json` | server/discover | 2026-10-20T14:00:00Z：server/discover |
 | `tools-list.json` | tools/list | 2026-10-20T14:00:00Z：列工具（agent 认 readOnlyHint） |
 | `resources-list.json` | resources/list | 2026-10-20T14:00:00Z：列资源 |
@@ -433,6 +435,7 @@ JSON 按键排序、缩进两格。
 | `read-data-category-large-file.json` | resources/read `data/category?id=large-file` | 2026-10-20T14:00:00Z：读一类的详情 data/category?id=large-file |
 | `read-data-category-startup.json` | resources/read `data/category?id=startup` | 2026-10-20T14:00:00Z：读一类的详情 data/category?id=startup |
 | `read-data-category-malware.json` | resources/read `data/category?id=malware` | 2026-10-20T14:00:00Z：读一类的详情 data/category?id=malware |
+| `read-data-usage.json` | resources/read `data/usage` | 2026-10-20T14:00:00Z：读占地方最多的文件夹 data/usage |
 
 ## `decide-3`：要你决定 3 项的清理方案
 
@@ -578,6 +581,7 @@ JSON 按键排序、缩进两格。
 | `read-data-category-temp.json` | resources/read `data/category?id=temp` | 2026-10-20T12:00:00Z：读一类的详情 data/category?id=temp |
 | `read-data-category-leftover.json` | resources/read `data/category?id=leftover` | 2026-10-20T12:00:00Z：读一类的详情 data/category?id=leftover |
 | `read-data-category-project.json` | resources/read `data/category?id=project` | 2026-10-20T12:00:00Z：读一类的详情 data/category?id=project |
+| `read-data-usage.json` | resources/read `data/usage` | 2026-10-20T12:00:00Z：读占地方最多的文件夹 data/usage |
 | `call-scan_findings.json` | tools/call `scan_findings` | 2026-10-20T12:00:00Z：对话里问「要我看的是哪些」：模型调 scan_findings（只读） |
 | `call-scan_apply.json` | tools/call `scan_apply`（带 user-action） | 2026-10-20T12:05:00Z：用户在一轮的卡片上点「清理 1 项缓存」（只删会重建的缓存） |
 | `read-outbox-after-apply.json` | resources/read `luoke://luoke-scan/outbox` | 2026-10-20T12:05:00Z：点完再读 outbox |
@@ -757,6 +761,7 @@ JSON 按键排序、缩进两格。
 | `read-data-category-project.json` | resources/read `data/category?id=project` | 2026-10-20T12:00:00Z：读一类的详情 data/category?id=project |
 | `read-data-category-startup.json` | resources/read `data/category?id=startup` | 2026-10-20T12:00:00Z：读一类的详情 data/category?id=startup |
 | `read-data-category-malware.json` | resources/read `data/category?id=malware` | 2026-10-20T12:00:00Z：读一类的详情 data/category?id=malware |
+| `read-data-usage.json` | resources/read `data/usage` | 2026-10-20T12:00:00Z：读占地方最多的文件夹 data/usage |
 | `call-outbox_ack-shown.json` | tools/call `outbox_ack` | 2026-10-20T12:02:00Z：agent 把急事说给用户以后记一下（outbox_ack shown） |
 | `call-scan_apply.json` | tools/call `scan_apply`（带 user-action） | 2026-10-20T12:02:00Z：用户在 eicar 那张急事卡片上点「移到废纸篓」 |
 | `call-scan_ignore.json` | tools/call `scan_ignore`（带 user-action） | 2026-10-20T12:02:00Z：用户在 update.scpt 那张上点「不是病毒」：卡片换成一行「已记下：「update.scpt」以后不再提醒。」和「撤销」 |
@@ -906,6 +911,7 @@ JSON 按键排序、缩进两格。
 | `read-data-category-temp.json` | resources/read `data/category?id=temp` | 2026-10-20T12:05:00Z：读一类的详情 data/category?id=temp |
 | `read-data-category-leftover.json` | resources/read `data/category?id=leftover` | 2026-10-20T12:05:00Z：读一类的详情 data/category?id=leftover |
 | `read-data-category-project.json` | resources/read `data/category?id=project` | 2026-10-20T12:05:00Z：读一类的详情 data/category?id=project |
+| `read-data-usage-before.json` | resources/read `data/usage` | 2026-10-20T12:05:00Z：读占地方最多的文件夹 data/usage |
 | `call-scan_apply.json` | tools/call `scan_apply`（带 user-action） | 2026-10-20T12:05:00Z：用户在扫描页上把临时文件夹改成移到废纸篓，点「按上面的选择清理」 |
 | `read-outbox.json` | resources/read `luoke://luoke-scan/outbox` | 2026-10-20T13:00:00Z：读 outbox（每分钟一次） |
 | `read-summary.json` | resources/read `summary` | 2026-10-20T13:00:00Z：读概览（侧栏的计数和一句话） |
@@ -916,6 +922,7 @@ JSON 按键排序、缩进两格。
 | `read-data-overview.json` | resources/read `data/overview` | 2026-10-20T13:00:00Z：读扫描页的数据 data/overview |
 | `read-data-history.json` | resources/read `data/history` | 2026-10-20T13:00:00Z：读清理记录的数据 data/history |
 | `read-data-settings.json` | resources/read `data/settings` | 2026-10-20T13:00:00Z：读设置的数据 data/settings |
+| `read-data-usage.json` | resources/read `data/usage` | 2026-10-20T13:00:00Z：读占地方最多的文件夹 data/usage |
 | `call-scan_restore.json` | tools/call `scan_restore`（带 user-action） | 2026-10-20T13:05:00Z：用户在「清理记录」页上点那一批的「放回」 |
 | `read-page-cleaned-after-restore.json` | resources/read `page/cleaned` | 2026-10-20T13:05:00Z：点完窗口重新读这一页 |
 | `read-permissions-after-restore.json` | resources/read `permissions` | 2026-10-20T13:05:00Z：点完再读权限（点的方案放回不关自动清） |
@@ -1074,6 +1081,7 @@ JSON 按键排序、缩进两格。
 | `read-data-settings.json` | resources/read `data/settings` | 2026-10-20T12:01:00Z：读设置的数据 data/settings |
 | `read-data-category-temp.json` | resources/read `data/category?id=temp` | 2026-10-20T12:01:00Z：读一类的详情 data/category?id=temp |
 | `read-data-category-project.json` | resources/read `data/category?id=project` | 2026-10-20T12:01:00Z：读一类的详情 data/category?id=project |
+| `read-data-usage.json` | resources/read `data/usage` | 2026-10-20T12:01:00Z：读占地方最多的文件夹 data/usage |
 | `call-scan_restore.json` | tools/call `scan_restore`（带 user-action） | 2026-10-20T12:10:00Z：用户在自动清的卡片上点「放回」（整批放回，放回过的那几类以后先问） |
 | `read-permissions-after-restore.json` | resources/read `permissions` | 2026-10-20T12:10:00Z：点完再读权限 |
 | `read-outbox-after-restore.json` | resources/read `luoke://luoke-scan/outbox` | 2026-10-20T12:10:00Z：点完再读 outbox |
@@ -1283,6 +1291,7 @@ JSON 按键排序、缩进两格。
 | `read-data-category-startup.json` | resources/read `data/category?id=startup` | 2026-10-20T12:00:00Z：读一类的详情 data/category?id=startup |
 | `read-data-category-ai-plugin.json` | resources/read `data/category?id=ai-plugin` | 2026-10-20T12:00:00Z：读一类的详情 data/category?id=ai-plugin |
 | `read-data-category-malware.json` | resources/read `data/category?id=malware` | 2026-10-20T12:00:00Z：读一类的详情 data/category?id=malware |
+| `read-data-usage.json` | resources/read `data/usage` | 2026-10-20T12:00:00Z：读占地方最多的文件夹 data/usage |
 
 ## `crowded`：用了很久的 Mac：能清的有几十项
 
@@ -1471,6 +1480,7 @@ JSON 按键排序、缩进两格。
 | `read-data-category-startup.json` | resources/read `data/category?id=startup` | 2026-10-20T12:00:00Z：读一类的详情 data/category?id=startup |
 | `read-data-category-ai-plugin.json` | resources/read `data/category?id=ai-plugin` | 2026-10-20T12:00:00Z：读一类的详情 data/category?id=ai-plugin |
 | `read-data-category-malware.json` | resources/read `data/category?id=malware` | 2026-10-20T12:00:00Z：读一类的详情 data/category?id=malware |
+| `read-data-usage.json` | resources/read `data/usage` | 2026-10-20T12:00:00Z：读占地方最多的文件夹 data/usage |
 
 ## `data-actions`：agent 自己拼扫描页：只读数据，照数据点按
 
@@ -1624,6 +1634,7 @@ JSON 按键排序、缩进两格。
 | `read-data-category-duplicate.json` | resources/read `data/category?id=duplicate` | 2026-10-20T12:00:00Z：读一类的详情 data/category?id=duplicate |
 | `read-data-category-temp.json` | resources/read `data/category?id=temp` | 2026-10-20T12:00:00Z：读一类的详情 data/category?id=temp |
 | `read-data-category-project.json` | resources/read `data/category?id=project` | 2026-10-20T12:00:00Z：读一类的详情 data/category?id=project |
+| `read-data-usage.json` | resources/read `data/usage` | 2026-10-20T12:00:00Z：读占地方最多的文件夹 data/usage |
 | `call-scan_apply-selected.json` | tools/call `scan_apply`（带 user-action） | 2026-10-20T12:05:00Z：用户在「临时文件夹」这一类的详情里取消了最大的一项，点「把选中的移到废纸篓」：scan_apply 的 plan_id 和 choices 的键取自 data/category 每一项的 plan、key |
 | `read-data-category-temp-after-apply.json` | resources/read `data/category?id=temp` | 2026-10-20T12:05:00Z：点完再读这一类：移走的不再列 |
 | `read-data-history-after-apply.json` | resources/read `data/history` | 2026-10-20T12:05:00Z：点完读清理记录的数据：多了这一批 |
@@ -1701,7 +1712,7 @@ JSON 按键排序、缩进两格。
   - 选项：已经删掉的应用「removed」留下的数据（4.2 MB）（trash/keep/ignore，默认 keep）
   - 选项：已经删掉的应用「stillused」留下的数据（2.1 MB）（trash/keep/ignore，默认 keep）
   - 选项：很久没动过的项目「old-pushed」（147 KB）（trash/keep/ignore，默认 keep）
-  - 选项：本机模型的对话模板里多了给模型的话，一共 4 项（trash/keep/ignore，默认 trash）
+  - 选项：本机模型的对话模板里多了给模型的话，一共 4 项（49 KB）（trash/keep/ignore，默认 trash）
   - 「MiniCPM-V-4_6」、「Qwen3.5-0.8B-Base」、「Qwen3.5-2B-Base」、「Qwen3.5-4B-MLX-4bit」，这 4 项一起处理 / 每次和它们对话都会悄悄带上这些话，可能让它们瞒着你或把回答带偏。删掉这些模型，从可信的地方重新下载。 / 包含：外发对话内容、对你隐瞒。
   - 在访达里逐个看（4 个）
   - 按钮：「在访达里显示「MiniCPM-V-4_6」的模板」→ `scan_reveal`、「在访达里显示「Qwen3.5-0.8B-Base」的模板」→ `scan_reveal`、「在访达里显示「Qwen3.5-2B-Base」的模板」→ `scan_reveal`、「在访达里显示「Qwen3.5-4B-MLX-4bit」的模板」→ `scan_reveal`
@@ -1798,7 +1809,7 @@ JSON 按键排序、缩进两格。
   - **清理记录**
   - 还没清理过。
 - 数据 `data/overview`：
-  - 可以清的（`reclaimable`）：`cache` 3 项 176164864 字节、`temp` 1 项 131072000 字节、`leftover` 2 项 6295552 字节、`project` 1 项 147456 字节、`startup` 1 项 0 字节、`ai-plugin` 7 项 0 字节、`install-scripts` 2 项 0 字节、`malware` 2 项 8192 字节
+  - 可以清的（`reclaimable`）：`cache` 3 项 176164864 字节、`temp` 1 项 131072000 字节、`leftover` 2 项 6295552 字节、`project` 1 项 147456 字节、`startup` 1 项 0 字节、`ai-plugin` 7 项 49152 字节、`install-scripts` 2 项 0 字节、`malware` 2 项 8192 字节
   - 要看的（`attention`）：9 项，急的 2 项；大文件（`largeFiles`）0 个；自动清（`autoCleaned`）0 次
 - 数据 `data/history`：0 批
 
@@ -1831,6 +1842,7 @@ JSON 按键排序、缩进两格。
 | `read-data-category-ai-plugin.json` | resources/read `data/category?id=ai-plugin` | 2026-10-20T12:00:00Z：读一类的详情 data/category?id=ai-plugin |
 | `read-data-category-install-scripts.json` | resources/read `data/category?id=install-scripts` | 2026-10-20T12:00:00Z：读一类的详情 data/category?id=install-scripts |
 | `read-data-category-malware.json` | resources/read `data/category?id=malware` | 2026-10-20T12:00:00Z：读一类的详情 data/category?id=malware |
+| `read-data-usage.json` | resources/read `data/usage` | 2026-10-20T12:00:00Z：读占地方最多的文件夹 data/usage |
 | `call-scan_apply-caches.json` | tools/call `scan_apply`（带 user-action） | 2026-10-20T12:05:00Z：用户在扫描页上点缓存那一行的「清理」 |
 | `read-page-overview-after-caches.json` | resources/read `page/overview` | 2026-10-20T12:05:00Z：点完再读扫描页 |
 | `read-outbox-after-caches.json` | resources/read `luoke://luoke-scan/outbox` | 2026-10-20T12:05:00Z：点完再读 outbox |

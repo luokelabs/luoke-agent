@@ -115,6 +115,11 @@
     },
     {
       "clock": "2026-10-20T12:00:00Z",
+      "do": "读占地方最多的文件夹 data/usage",
+      "file": "read-data-usage.json"
+    },
+    {
+      "clock": "2026-10-20T12:00:00Z",
       "do": "对话里问「要我看的是哪些」：模型调 scan_findings（只读）",
       "file": "call-scan_findings.json"
     },

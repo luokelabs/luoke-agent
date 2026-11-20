@@ -1,0 +1,276 @@
+{
+  "reply" : {
+    "id" : 1,
+    "jsonrpc" : "2.0",
+    "result" : {
+      "contents" : [
+        {
+          "mimeType" : "application/json",
+          "text" : {
+            "dev" : {
+              "engines" : [
+                {
+                  "id" : "quanpin",
+                  "name" : "全拼",
+                  "on" : false
+                },
+                {
+                  "id" : "xiaohe",
+                  "name" : "小鹤双拼",
+                  "on" : true
+                }
+              ],
+              "log_dir" : "~/.luoke/ime/records",
+              "log_dir_exists" : true
+            },
+            "forgotten" : {
+              "older" : 3,
+              "recent" : [
+                {
+                  "id" : "[\"wo\",\"窝\"]",
+                  "input" : "wo",
+                  "text" : "窝"
+                },
+                {
+                  "id" : "[\"ui\",\"数\"]",
+                  "input" : "ui",
+                  "text" : "数"
+                }
+              ]
+            },
+            "learned" : {
+              "engine" : {
+                "id" : "xiaohe",
+                "name" : "小鹤双拼"
+              }
+            },
+            "paths" : {
+              "engines" : "~/.luoke/ime/engines",
+              "settings" : "~/.luoke/ime/settings.json"
+            },
+            "settings" : [
+              {
+                "key" : "currentEngine",
+                "options" : [
+                  {
+                    "name" : "全拼",
+                    "value" : "quanpin"
+                  },
+                  {
+                    "name" : "小鹤双拼",
+                    "value" : "xiaohe"
+                  }
+                ],
+                "value" : "xiaohe"
+              },
+              {
+                "key" : "fuzzyOn",
+                "value" : false
+              },
+              {
+                "key" : "fuzzyPairs.z_zh",
+                "value" : true
+              },
+              {
+                "key" : "fuzzyPairs.s_sh",
+                "value" : true
+              },
+              {
+                "key" : "fuzzyPairs.c_ch",
+                "value" : true
+              },
+              {
+                "key" : "fuzzyPairs.an_ang",
+                "value" : true
+              },
+              {
+                "key" : "fuzzyPairs.en_eng",
+                "value" : true
+              },
+              {
+                "key" : "fuzzyPairs.in_ing",
+                "value" : true
+              },
+              {
+                "key" : "voiceOn",
+                "value" : false
+              },
+              {
+                "key" : "voiceKey",
+                "options" : [
+                  "right_option",
+                  "right_command",
+                  "right_control"
+                ],
+                "value" : "right_option"
+              },
+              {
+                "default" : false,
+                "key" : "voiceTidy",
+                "value" : false
+              },
+              {
+                "key" : "defaultEnglish",
+                "value" : false
+              },
+              {
+                "key" : "rememberMode",
+                "value" : true
+              },
+              {
+                "key" : "shiftToggles",
+                "value" : true
+              },
+              {
+                "key" : "autoSpace",
+                "value" : false
+              },
+              {
+                "key" : "cornerBraces",
+                "value" : true
+              },
+              {
+                "key" : "fontSize",
+                "max" : 40,
+                "min" : 10,
+                "step" : 1,
+                "value" : 16
+              },
+              {
+                "key" : "orientation",
+                "options" : [
+                  "horizontal",
+                  "vertical"
+                ],
+                "value" : "horizontal"
+              },
+              {
+                "key" : "pageSize",
+                "max" : 9,
+                "min" : 1,
+                "step" : 1,
+                "value" : 9
+              },
+              {
+                "key" : "pagingKeys",
+                "options" : [
+                  "-=",
+                  ",."
+                ],
+                "value" : "-="
+              },
+              {
+                "key" : "inline",
+                "value" : true
+              },
+              {
+                "key" : "predict",
+                "value" : true
+              },
+              {
+                "key" : "memory",
+                "value" : true
+              },
+              {
+                "key" : "recordingPaused",
+                "value" : false
+              }
+            ],
+            "state" : "ok",
+            "usage" : {
+              "days" : [
+                {
+                  "counts" : {
+                    "backspace_after_commit" : 15,
+                    "commit" : 210,
+                    "pick_first" : 230,
+                    "pick_other" : 28,
+                    "predict_chars" : 14,
+                    "predict_opened" : 7,
+                    "predict_picked" : 5,
+                    "predict_shown" : 24
+                  },
+                  "date" : "2026-11-13"
+                },
+                {
+                  "counts" : {
+                    "backspace_after_commit" : 12,
+                    "commit" : 180,
+                    "pick_first" : 196,
+                    "pick_other" : 22
+                  },
+                  "date" : "2026-11-14"
+                },
+                {
+                  "counts" : {
+
+                  },
+                  "date" : "2026-11-15"
+                },
+                {
+                  "counts" : {
+                    "backspace_after_commit" : 6,
+                    "commit" : 95,
+                    "pick_first" : 101,
+                    "pick_other" : 13,
+                    "predict_chars" : 6,
+                    "predict_opened" : 2,
+                    "predict_picked" : 2,
+                    "predict_shown" : 11
+                  },
+                  "date" : "2026-11-16"
+                },
+                {
+                  "counts" : {
+                    "backspace_after_commit" : 19,
+                    "commit" : 260,
+                    "pick_first" : 281,
+                    "pick_other" : 35
+                  },
+                  "date" : "2026-11-17"
+                },
+                {
+                  "counts" : {
+                    "backspace_after_commit" : 22,
+                    "commit" : 312,
+                    "pick_first" : 330,
+                    "pick_other" : 41,
+                    "predict_chars" : 17,
+                    "predict_opened" : 9,
+                    "predict_picked" : 6,
+                    "predict_shown" : 30
+                  },
+                  "date" : "2026-11-18"
+                },
+                {
+                  "counts" : {
+                    "backspace_after_commit" : 3,
+                    "commit" : 54,
+                    "pick_first" : 60,
+                    "pick_other" : 6
+                  },
+                  "date" : "2026-11-19"
+                }
+              ],
+              "personal" : true
+            },
+            "version" : 1
+          },
+          "uri" : "data/settings"
+        }
+      ],
+      "resultType" : "complete"
+    }
+  },
+  "request" : {
+    "id" : 1,
+    "jsonrpc" : "2.0",
+    "method" : "resources/read",
+    "params" : {
+      "_meta" : {
+        "io.modelcontextprotocol/protocolVersion" : "2026-07-28"
+      },
+      "uri" : "data/settings"
+    }
+  }
+}

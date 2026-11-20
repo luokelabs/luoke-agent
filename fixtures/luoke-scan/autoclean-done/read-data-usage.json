@@ -1,0 +1,295 @@
+{
+  "reply": {
+    "id": 1006,
+    "jsonrpc": "2.0",
+    "result": {
+      "contents": [
+        {
+          "mimeType": "application/json",
+          "text": {
+            "complete": true,
+            "folders": [
+              {
+                "apps": null,
+                "bundleId": null,
+                "bytes": 372342784,
+                "day": "2026-10-20",
+                "grew7d": null,
+                "holds": null,
+                "id": null,
+                "kind": "temp",
+                "name": null,
+                "paths": [
+                  "$TMPDIR"
+                ],
+                "pathsMore": 0,
+                "top": [
+                  {
+                    "bytes": 5246976,
+                    "dir": true,
+                    "name": "puppeteer_dev_chrome_profile-P00000",
+                    "path": "$TMPDIR/puppeteer_dev_chrome_profile-P00000"
+                  },
+                  {
+                    "bytes": 5246976,
+                    "dir": true,
+                    "name": "puppeteer_dev_chrome_profile-P00001",
+                    "path": "$TMPDIR/puppeteer_dev_chrome_profile-P00001"
+                  },
+                  {
+                    "bytes": 5246976,
+                    "dir": true,
+                    "name": "puppeteer_dev_chrome_profile-P00002",
+                    "path": "$TMPDIR/puppeteer_dev_chrome_profile-P00002"
+                  },
+                  {
+                    "bytes": 5246976,
+                    "dir": true,
+                    "name": "puppeteer_dev_chrome_profile-P00003",
+                    "path": "$TMPDIR/puppeteer_dev_chrome_profile-P00003"
+                  },
+                  {
+                    "bytes": 5246976,
+                    "dir": true,
+                    "name": "puppeteer_dev_chrome_profile-P00004",
+                    "path": "$TMPDIR/puppeteer_dev_chrome_profile-P00004"
+                  }
+                ]
+              },
+              {
+                "apps": null,
+                "bundleId": null,
+                "bytes": 63963136,
+                "day": "2026-10-20",
+                "grew7d": null,
+                "holds": null,
+                "id": null,
+                "kind": "dev-caches",
+                "name": null,
+                "paths": [
+                  "~/Library/Caches/pip",
+                  "~/.cargo"
+                ],
+                "pathsMore": 0,
+                "top": [
+                  {
+                    "bytes": 62914560,
+                    "dir": true,
+                    "name": "pip",
+                    "path": "~/Library/Caches/pip"
+                  },
+                  {
+                    "bytes": 1048576,
+                    "dir": true,
+                    "name": ".cargo",
+                    "path": "~/.cargo"
+                  }
+                ]
+              },
+              {
+                "apps": 5,
+                "bundleId": null,
+                "bytes": 11534336,
+                "day": "2026-10-17",
+                "grew7d": null,
+                "holds": null,
+                "id": null,
+                "kind": "removed-apps",
+                "name": null,
+                "paths": [
+                  "~/Library/Application Support/io.example.removed",
+                  "~/Library/Application Support/io.parity.ethereum",
+                  "~/Library/Application Support/org.present.oldhelper",
+                  "~/Library/Caches/com.apple.example",
+                  "~/Library/Caches/io.example.stillused",
+                  "~/Library/Containers/ABCDE12345.io.example.removed"
+                ],
+                "pathsMore": 0,
+                "top": [
+                  {
+                    "bytes": 2097152,
+                    "dir": true,
+                    "name": "io.example.removed",
+                    "path": "~/Library/Application Support/io.example.removed"
+                  },
+                  {
+                    "bytes": 2097152,
+                    "dir": true,
+                    "name": "io.parity.ethereum",
+                    "path": "~/Library/Application Support/io.parity.ethereum"
+                  },
+                  {
+                    "bytes": 2097152,
+                    "dir": true,
+                    "name": "org.present.oldhelper",
+                    "path": "~/Library/Application Support/org.present.oldhelper"
+                  },
+                  {
+                    "bytes": 2097152,
+                    "dir": true,
+                    "name": "com.apple.example",
+                    "path": "~/Library/Caches/com.apple.example"
+                  },
+                  {
+                    "bytes": 2097152,
+                    "dir": true,
+                    "name": "io.example.stillused",
+                    "path": "~/Library/Caches/io.example.stillused"
+                  }
+                ]
+              },
+              {
+                "apps": null,
+                "bundleId": null,
+                "bytes": 8392704,
+                "day": "2026-10-20",
+                "grew7d": null,
+                "holds": null,
+                "id": "Downloads",
+                "kind": "known",
+                "name": null,
+                "paths": [
+                  "~/Downloads"
+                ],
+                "pathsMore": 0,
+                "top": [
+                  {
+                    "bytes": 6291456,
+                    "dir": false,
+                    "name": "Fixtureapp-2.0.dmg",
+                    "path": "~/Downloads/Fixtureapp-2.0.dmg"
+                  },
+                  {
+                    "bytes": 2097152,
+                    "dir": false,
+                    "name": "report-2026.pdf",
+                    "path": "~/Downloads/report-2026.pdf"
+                  }
+                ]
+              },
+              {
+                "apps": null,
+                "bundleId": null,
+                "bytes": 3371008,
+                "day": "2026-10-20",
+                "grew7d": null,
+                "holds": null,
+                "id": null,
+                "kind": "folder",
+                "name": "Projects",
+                "paths": [
+                  "~/Projects"
+                ],
+                "pathsMore": 0,
+                "top": [
+                  {
+                    "bytes": 2101248,
+                    "dir": true,
+                    "name": "unpacked",
+                    "path": "~/Projects/unpacked"
+                  }
+                ]
+              },
+              {
+                "apps": null,
+                "bundleId": "org.present.app",
+                "bytes": 2097152,
+                "day": "2026-10-20",
+                "grew7d": null,
+                "holds": "cache",
+                "id": null,
+                "kind": "app",
+                "name": "Present",
+                "paths": [
+                  "~/Library/Caches/org.present.app"
+                ],
+                "pathsMore": 0,
+                "top": [
+                  {
+                    "bytes": 2097152,
+                    "dir": false,
+                    "name": "c.bin",
+                    "path": "~/Library/Caches/org.present.app/c.bin"
+                  }
+                ]
+              },
+              {
+                "apps": null,
+                "bundleId": null,
+                "bytes": 2097152,
+                "day": "2026-10-20",
+                "grew7d": null,
+                "holds": null,
+                "id": "Documents",
+                "kind": "known",
+                "name": null,
+                "paths": [
+                  "~/Documents"
+                ],
+                "pathsMore": 0,
+                "top": [
+                  {
+                    "bytes": 2097152,
+                    "dir": false,
+                    "name": "report-2026.pdf",
+                    "path": "~/Documents/report-2026.pdf"
+                  }
+                ]
+              },
+              {
+                "apps": null,
+                "bundleId": null,
+                "bytes": 2097152,
+                "day": "2026-10-20",
+                "grew7d": null,
+                "holds": null,
+                "id": "Library/Group Containers",
+                "kind": "known",
+                "name": null,
+                "paths": [
+                  "~/Library/Group Containers"
+                ],
+                "pathsMore": 0,
+                "top": [
+                  {
+                    "bytes": 2097152,
+                    "dir": true,
+                    "name": "group.org.present.app.shared",
+                    "path": "~/Library/Group Containers/group.org.present.app.shared"
+                  }
+                ]
+              }
+            ],
+            "listedBytes": 465895424,
+            "measuredBytes": 465895424,
+            "more": 0,
+            "scanned": {
+              "finished": "2026-10-20T12:00:00Z",
+              "started": "2026-10-20T12:00:00Z"
+            },
+            "schema": 1,
+            "unseen": []
+          },
+          "uri": "data/usage"
+        }
+      ],
+      "resultType": "complete"
+    }
+  },
+  "request": {
+    "id": 1006,
+    "jsonrpc": "2.0",
+    "method": "resources/read",
+    "params": {
+      "_meta": {
+        "io.modelcontextprotocol/clientCapabilities": {},
+        "io.modelcontextprotocol/clientInfo": {
+          "name": "luoke-agent",
+          "version": "fixtures"
+        },
+        "io.modelcontextprotocol/protocolVersion": "2026-07-28"
+      },
+      "uri": "data/usage"
+    }
+  }
+}

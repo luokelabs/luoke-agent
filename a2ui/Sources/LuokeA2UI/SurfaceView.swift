@@ -364,13 +364,23 @@ public struct SurfaceView: View {
         }
         for (_, c) in comps where c["component"]?.string == "Row" && c["justify"]?.string == "spaceBetween" {
             let kids = children(c)
-            guard kids.count >= 2, let lead = comps[kids[0]], lead["component"]?.string == "Column" else { continue }
+            guard kids.count >= 2, leadColumn(kids[0]) != nil else { continue }
             for k in kids.dropFirst() {
                 if let r = comps[k], r["component"]?.string == "Row" { out.formUnion(children(r).filter(minor)) }
                 else if minor(k) { out.insert(k) }
             }
         }
         return out
+    }
+
+    /// 一项一行左边标题的那一列：直接是一列，或前面带一个图标的一行（§4 itemIcons：一行里只有一个图标和一列）
+    private func leadColumn(_ id: String) -> [String: JSONValue]? {
+        guard let c = comps[id] else { return nil }
+        if c["component"]?.string == "Column" { return c }
+        let kids = children(c)
+        guard c["component"]?.string == "Row", kids.count == 2, comps[kids[0]]?["component"]?.string == "Icon",
+              let col = comps[kids[1]], col["component"]?.string == "Column" else { return nil }
+        return col
     }
 
     private var itemActionButtons: Set<String> {
@@ -389,7 +399,7 @@ public struct SurfaceView: View {
         for (_, c) in comps where c["component"]?.string == "Row" && c["justify"]?.string == "spaceBetween" {
             let kids = children(c)
             // 标题那一列的第一样是字、勾选框（扫描详情里勾的那个文件），或一行「字 + 标签」（「LoRA 是一种微调方法 待确认」）
-            guard kids.count >= 2, let lead = comps[kids[0]], lead["component"]?.string == "Column",
+            guard kids.count >= 2, let lead = leadColumn(kids[0]),
                   let first = children(lead).first,
                   ["Text", "CheckBox"].contains(comps[first]?["component"]?.string ?? "")
                     || (comps[first]?["component"]?.string == "Row" && children(comps[first] ?? [:]).first.map { comps[$0]?["component"]?.string == "Text" } == true)

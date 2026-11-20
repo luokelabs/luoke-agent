@@ -1,0 +1,76 @@
+{
+  "accessory" : "luoke-ime",
+  "bundle_id" : "ai.luoke.inputmethod.Luoke",
+  "capabilities" : {
+    "actions" : [
+      {
+        "name" : "ime_set",
+        "title" : "修改输入法设置",
+        "writes" : true
+      },
+      {
+        "name" : "ime_do",
+        "title" : "输入法数据操作",
+        "writes" : true
+      }
+    ],
+    "data" : [
+      "settings",
+      "apps"
+    ],
+    "listing" : {
+      "category" : "输入",
+      "tagline" : "支持小鹤双拼、自然码双拼和全拼，本机模型排序候选、联想后文、学习输入习惯"
+    },
+    "protocol" : 1,
+    "service" : {
+      "pages" : [
+        {
+          "id" : "settings",
+          "title" : "设置"
+        },
+        {
+          "id" : "apps",
+          "title" : "各应用"
+        }
+      ]
+    },
+    "transport" : "stdio"
+  },
+  "contract" : 1,
+  "data" : [
+    "~/.luoke/ime"
+  ],
+  "entry" : [
+
+  ],
+  "memory" : true,
+  "min_macos" : "26.2",
+  "name" : "螺壳输入法",
+  "resident" : false,
+  "tasks" : [
+    {
+      "kind" : "score",
+      "main" : false,
+      "name" : "luoke-ime.rerank"
+    },
+    {
+      "kind" : "predict",
+      "main" : false,
+      "name" : "luoke-ime.predict"
+    },
+    {
+      "kind" : "transcribe",
+      "main" : false,
+      "name" : "luoke-ime.transcribe"
+    },
+    {
+      "kind" : "generate",
+      "main" : false,
+      "name" : "luoke-ime.tidy"
+    }
+  ],
+  "type" : "input-method",
+  "ui_element" : true,
+  "version" : "0.0.0"
+}

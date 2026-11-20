@@ -402,6 +402,43 @@ final class BehaviourTests: XCTestCase {
         XCTAssertEqual(m.cards.first?.tool, .core)
     }
 
+    func testStartingUpIsNotCalledUnresponsive() {
+        // #176：刚打开的头两三秒核心还在起，「今天」先写「螺壳暂时没响应」
+        let m = WindowModel()
+        var t = Date(timeIntervalSince1970: 1_800_000_000)
+        m.now = { t }
+        m.setReachable(false)
+        XCTAssertTrue(m.coreReachable, "还没连上过、刚开始连：算正在启动")
+        t += 3
+        m.setReachable(true)
+        XCTAssertTrue(m.coreReachable)
+        m.setReachable(false)
+        XCTAssertFalse(m.coreReachable, "连上过以后断了：照旧说没响应")
+        XCTAssertNotNil(m.offlineSince)
+        let slow = WindowModel()
+        slow.now = { t }
+        slow.setReachable(false)
+        t += WindowModel.startGrace + 1
+        slow.setReachable(false)
+        XCTAssertFalse(slow.coreReachable, "一直连不上：过了宽限照旧说没响应")
+    }
+
+    func testLeavingSettingsClosesItsDialog() {
+        // #170：「关于螺壳」开着去「今天」，再回设置还盖着
+        let m = WindowModel()
+        m.go(.prefs)
+        m.settingsDialog = .about
+        m.go(.today)
+        m.go(.prefs)
+        XCTAssertNil(m.settingsDialog)
+        m.settingsDialog = .about
+        m.go(.prefs, tab: PrefsTab.permissions.rawValue)
+        XCTAssertNil(m.settingsDialog, "从别处跳到设置的某一栏，不带着上次开着的弹窗")
+        m.settingsDialog = .alerts
+        m.selectPrefsTab(.general)
+        XCTAssertNil(m.settingsDialog)
+    }
+
     func testGoingSomewhereClosesAsk() {
         m.openAsk()
         m.go(.search)

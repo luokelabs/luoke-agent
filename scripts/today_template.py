@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""「今天」新模板的示例：照对照稿右边那页（luoke-brand `ui/issues/2026-11-09-today/`，70c7e1e，
-内容是虚构的），用 `luoke_agent/cards.py` 拼出每张卡片，存成窗口拿得到的一串 `/feed` 事件：
+"""「今天」新模板的示例：照品牌素材里 2026-11-09「今天」对照稿右边那页（内容是虚构的），用 `luoke_agent/cards.py` 拼出每张卡片，存成窗口拿得到的一串 `/feed` 事件：
 window/Sources/LuokeWindow/Resources/template/today.json。截图 `today-template` 照它画，看窗口能不能照对照稿画出来。
 
     python3 scripts/today_template.py            # 重新生成

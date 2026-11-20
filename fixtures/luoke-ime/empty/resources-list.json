@@ -1,0 +1,41 @@
+{
+  "reply" : {
+    "id" : 1,
+    "jsonrpc" : "2.0",
+    "result" : {
+      "resources" : [
+        {
+          "mimeType" : "application/json",
+          "name" : "设置",
+          "uri" : "page/settings"
+        },
+        {
+          "mimeType" : "application/json",
+          "name" : "各应用",
+          "uri" : "page/apps"
+        },
+        {
+          "mimeType" : "application/json",
+          "name" : "settings",
+          "uri" : "data/settings"
+        },
+        {
+          "mimeType" : "application/json",
+          "name" : "apps",
+          "uri" : "data/apps"
+        }
+      ],
+      "resultType" : "complete"
+    }
+  },
+  "request" : {
+    "id" : 1,
+    "jsonrpc" : "2.0",
+    "method" : "resources/list",
+    "params" : {
+      "_meta" : {
+        "io.modelcontextprotocol/protocolVersion" : "2026-07-28"
+      }
+    }
+  }
+}

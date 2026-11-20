@@ -1,6 +1,6 @@
 {
   "reply": {
-    "id": 1011,
+    "id": 1012,
     "jsonrpc": "2.0",
     "result": {
       "contents": [
@@ -52,7 +52,7 @@
     }
   },
   "request": {
-    "id": 1011,
+    "id": 1012,
     "jsonrpc": "2.0",
     "method": "resources/read",
     "params": {

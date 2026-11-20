@@ -1,0 +1,43 @@
+{
+  "reply" : {
+    "id" : 1,
+    "jsonrpc" : "2.0",
+    "result" : {
+      "content" : [
+        {
+          "text" : "not_running",
+          "type" : "text"
+        }
+      ],
+      "isError" : true,
+      "resultType" : "complete",
+      "structuredContent" : {
+        "code" : "not_running",
+        "data" : {
+          "code" : "not_running",
+          "op" : "clear_learned"
+        }
+      }
+    }
+  },
+  "request" : {
+    "id" : 1,
+    "jsonrpc" : "2.0",
+    "method" : "tools/call",
+    "params" : {
+      "_meta" : {
+        "ai.luoke/user-action" : {
+          "at" : "2026-11-19T12:00:00+08:00",
+          "componentId" : "x",
+          "surfaceId" : "settings"
+        },
+        "io.modelcontextprotocol/protocolVersion" : "2026-07-28"
+      },
+      "arguments" : {
+        "engine" : "xiaohe",
+        "op" : "clear_learned"
+      },
+      "name" : "ime_do"
+    }
+  }
+}

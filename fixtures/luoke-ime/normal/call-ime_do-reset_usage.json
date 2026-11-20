@@ -1,0 +1,40 @@
+{
+  "reply" : {
+    "id" : 1,
+    "jsonrpc" : "2.0",
+    "result" : {
+      "content" : [
+        {
+          "text" : "reset_usage",
+          "type" : "text"
+        }
+      ],
+      "isError" : false,
+      "resultType" : "complete",
+      "structuredContent" : {
+        "data" : {
+          "op" : "reset_usage"
+        }
+      }
+    }
+  },
+  "request" : {
+    "id" : 1,
+    "jsonrpc" : "2.0",
+    "method" : "tools/call",
+    "params" : {
+      "_meta" : {
+        "ai.luoke/user-action" : {
+          "at" : "2026-11-19T12:00:00+08:00",
+          "componentId" : "x",
+          "surfaceId" : "settings"
+        },
+        "io.modelcontextprotocol/protocolVersion" : "2026-07-28"
+      },
+      "arguments" : {
+        "op" : "reset_usage"
+      },
+      "name" : "ime_do"
+    }
+  }
+}

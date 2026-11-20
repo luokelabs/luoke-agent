@@ -61,7 +61,17 @@ class StatusPageTest(unittest.TestCase):
         self.assertIn("开发工具缓存", text)
         self.assertIn("已卸载应用的残留数据（5 个应用）", text)
         self.assertIn("358.6 MB", text)
-        self.assertIn("以上合计约 712 MB", text)
+        self.assertIn("以上合计约 718.5 MB", text)
+        self.assertIn("微信数据", text)
+        self.assertIn("版本 27000 · 2026年10月20日更新", text, "病毒库那一行写明两个数各是什么（#173）")
+        self.assertEqual(scan._summary({"id": "cache", "count": 3, "facts": {"tools": ["Go", "SwiftPM", "npm"]}}).split("，")[0],
+                         "Go、SwiftPM、npm 缓存", "英文名字后面空一格（#173）")
+        self.assertTrue(scan._summary({"id": "cache", "count": 1, "facts": {"apps": ["微信"]}}).startswith("微信缓存，"))
+        self.assertIn("Microsoft Teams 缓存", text)
+        # 旧版本的扫描没有 data/usage：照旧从它原来那一页读
+        old = self.page({k: v for k, v in self.data.items() if k != "data/usage"})
+        self.assertIn("以上合计约 712 MB", old)
+        self.assertIn("已卸载应用的残留数据（5 个应用）", old)
         self.assertIn("macOS 系统安装程序的备份 · 可清理，需要时可重新获取", text)
         self.assertIn("下载 · 2025年9月15日后未打开", text, "日期带年份")
         self.assertIn("scan_reveal", text)
@@ -82,7 +92,7 @@ class StatusPageTest(unittest.TestCase):
         self.assertEqual(scan._folder_cat("图片"), "", "用户自己的文件夹没有能点的")
 
     def test_without_the_old_page_or_explanations_the_rows_are_plain(self):
-        data = {k: v for k, v in self.data.items() if k not in ("page/mac", "agent/explained")}
+        data = {k: v for k, v in self.data.items() if k not in ("page/mac", "data/usage", "agent/explained")}
         text = self.page(data)
         self.assertNotIn("占用最多的文件夹", text)
         self.assertNotIn("可清理，需要时可重新获取", text)

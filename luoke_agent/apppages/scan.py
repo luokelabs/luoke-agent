@@ -56,6 +56,10 @@ GROUP = {"tool-cache": "工具缓存", "app-cache": "应用缓存", "logs": "日
          "intel-homebrew": "旧版 Homebrew", "duplicate": "重复文件", "temp": "临时文件夹", "project": "项目",
          "build-artifacts": "构建产物", "large-file": "大文件", "launch-agent": "启动项", "skill": "AI 插件",
          "chat-template": "对话模板", "install-scripts": "自动运行的脚本", "malware": "病毒"}
+# 每一类一个图标（概览里一类一行，最左边）；没列的用「其他」的
+CAT_ICON = {"cache": "refresh-cw", "installer": "package", "duplicate": "copy", "temp": "folder", "leftover": "archive",
+            "project": "folder-open", "large-file": "file", "startup": "power", "ai-plugin": "puzzle",
+            "install-scripts": "settings", "malware": "shield-alert", "other": "hard-drive"}
 # 安全和清理是两件事，分开列，安全在上（负责人 11-16）：这几类归「安全」，别的归「清理」
 SECURITY_CATS = ("malware", "startup", "ai-plugin", "install-scripts")
 # 「要注意的」一项的名字：照规则代号的前缀（扫描只给代号，data-resources「不足」）
@@ -151,23 +155,29 @@ def _when(s: Optional[str]) -> str:
 
 
 def _summary(c: dict) -> str:
-    """一类下面那一句：说清是什么，后面是大小"""
+    """一类下面那一句：为什么能清，后面是大小。一句话，不列条数（界面规范：说明一句话、只留对用户有意义的数；
+    负责人 11-19：灰色说明不要把知道的都列上去）"""
     f = c.get("facts") or {}
     n, kind = c.get("count") or 0, c.get("id")
     tools, apps = f.get("tools") or [], f.get("apps") or []
     if kind == "cache":
-        who = "、".join((tools or apps)[:3]) + (" 等" if len(tools or apps) > 3 else "")
-        text = f"{who}的缓存，可自动重建" if who else f"{n} 项缓存，可自动重建"
+        names = [str(x) for x in (tools or apps)[:3]]
+        more = len(tools or apps) > 3
+        # 英文名字和后面的字之间空一格（#173：「npm的缓存」）
+        gap = " " if names and names[-1][-1:].isascii() and not more else ""
+        who = "、".join(names) + (" 等" if more else "")
+        text = f"{who}{gap}缓存，可自动重建" if who else f"{n} 项缓存，可自动重建"
     elif kind == "installer":
-        text = f"{n} 个安装包，其中 {f.get('appsInstalled', 0)} 个对应的应用已安装" if f.get("appsInstalled") else f"{n} 个较早下载的安装包"
+        got = f.get("appsInstalled") or 0
+        text = "对应的应用均已安装" if got and got >= n else f"其中 {got} 个对应的应用已安装" if got else "较早下载的安装包"
     elif kind == "duplicate":
-        text = f"{n} 个，其他位置仍保留一份"
+        text = "其他位置仍保留一份"
     elif kind == "temp":
-        text = f"{c.get('files') or n} 个文件夹，测试工具运行后未删除"
+        text = "测试工具运行后未删除"
     elif kind == "leftover":
-        text = f"{f.get('appsMissing', 0)} 个已删除应用的残留数据" if f.get("appsMissing") else f"{n} 项不再使用的数据"
+        text = "应用已删除" if f.get("appsMissing") else "不再使用的数据"
     elif kind == "project":
-        text = f"{n} 项，均已推送或可重新生成"
+        text = "均已推送或可重新生成"
     else:
         text = f"{n} 项"
     return f"{text} · {size(c.get('bytes'))}" if c.get("bytes") else text
@@ -218,7 +228,11 @@ def overview(args: Dict[str, str], read: Read) -> List[dict]:
     top.append(kit.heading(f"安全 · {n_att}" if n_att else "安全"))
     rows = [_attention_row(kit, a) for a in items[:SHOW_ATTENTION]]
     if len(items) > SHOW_ATTENTION:
-        rows.append(kit.fold(f"其余 {len(items) - SHOW_ATTENTION} 项", [kit.list([_attention_row(kit, a) for a in items[SHOW_ATTENTION:SHOW_ATTENTION * 3]])]))
+        # 一行约 15 个组件，一页最多 400 个：一共列 16 项（原来列到 24 项，项一多整页就画不出来）；再多的写明还有几项
+        more = [_attention_row(kit, a) for a in items[SHOW_ATTENTION:SHOW_ATTENTION * 2]]
+        if len(items) > SHOW_ATTENTION * 2:
+            more.append(kit.item(f"另有 {len(items) - SHOW_ATTENTION * 2} 项未列出", "处理上面的项目后重新检查", strong=False))
+        rows.append(kit.fold(f"其余 {len(items) - SHOW_ATTENTION} 项", [kit.list(more)]))
     listed = {a.get("category") for a in items}
     rows += [_cat_row(kit, c) for c in sec_cats if c.get("id") not in listed]
     if not rows:
@@ -234,7 +248,8 @@ def overview(args: Dict[str, str], read: Read) -> List[dict]:
         rows = [_cat_row(kit, c) for c in clean_cats[:SHOW_CATS]]
         if lf.get("count"):
             go = kit.open_page("大文件", "category", {"id": "large-file"})
-            rows.append(kit.item(CAT["large-file"], f"{lf['count']} 个 · {size(lf.get('bytes'))} · 不会自动清理", [go], open=go))
+            rows.append(kit.item(CAT["large-file"], f"{size(lf.get('bytes'))} · 不会自动清理", [go], open=go,
+                                 icon=CAT_ICON["large-file"]))
         if len(clean_cats) > SHOW_CATS:
             go = kit.open_page("其他", "more")
             rest = clean_cats[SHOW_CATS:]
@@ -376,6 +391,109 @@ def _mac_folders(read: Read) -> Tuple[str, List[Tuple[str, str, float, str, str,
     return scope, rows[:8], total
 
 
+# `data/usage` 里 `known` 的代号（相对家目录的路径）→ 页上的叫法
+USAGE_KNOWN = {"Desktop": "桌面", "Documents": "文稿", "Downloads": "下载", "Movies": "影片", "Music": "音乐", "Pictures": "图片",
+               "Public": "公共", "Applications": "用户安装的应用", "Library/Caches": "应用缓存",
+               "Library/Application Support": "应用数据", "Library/Containers": "应用数据（沙盒）",
+               "Library/Developer": "开发工具数据", "Library/Mail": "邮件", "Library/Messages": "信息",
+               "Library/Photos": "照片数据", "Library/Mobile Documents": "iCloud 云盘", ".cache": "命令行工具缓存",
+               ".local/share": "命令行工具数据", ".Trash": "废纸篓", ".ollama": "Ollama 模型", ".docker": "Docker 数据",
+               "Library/Group Containers": "多个应用共用的数据", "Library/Logs": "日志",
+               "Library/Saved Application State": "应用窗口状态", "Library/Fonts": "字体", "Library/Safari": "Safari 数据",
+               "Library/Calendars": "日历", "Library/Metadata": "系统索引数据"}
+# `unseen` 的代号 → 页上的叫法（没有完全磁盘访问时上一轮没量的地方）
+USAGE_UNSEEN = {"Desktop": "桌面", "Documents": "文稿", "Downloads": "下载", "Music": "音乐", "Movies/TV": "视频 App 的资料库",
+                "Library/Photos": "照片数据", "Library/Mobile Documents": "iCloud 云盘", "Library/CloudStorage": "云盘同步文件夹",
+                "Library/Containers": "应用数据（沙盒）", "Library/Daemon Containers": "系统服务数据",
+                "Library/Group Containers": "多个应用共用的数据"}
+USAGE_GREW = 1_000_000_000      # 近 7 天涨了不到这么多的不写
+
+
+def _usage_name(f: dict) -> str:
+    kind, name = f.get("kind"), str(f.get("name") or "")
+    if kind == "known":
+        return USAGE_KNOWN.get(str(f.get("id") or ""), str(f.get("id") or "").rsplit("/", 1)[-1])
+    gap = " " if name and name[-1].isascii() else ""       # 英文名字后面空一格，中文的不空（「微信数据」「Teams 缓存」）
+    if kind == "app":
+        return f"{name}{gap}缓存" if f.get("holds") == "cache" else f"{name}{gap}数据"
+    if kind == "hidden":
+        return f"{name}{gap}文件夹"
+    if kind == "library":
+        return f"资源库中的「{name}」"
+    if kind == "folder":
+        return name
+    if kind == "removed-apps":
+        n = f.get("apps")
+        return "已卸载应用的残留数据" + (f"（{n} 个应用）" if isinstance(n, int) and not isinstance(n, bool) and n > 0 else "")
+    return {"temp": "临时文件", "dev-caches": "开发工具缓存"}.get(str(kind), name)
+
+
+def _usage_cat(f: dict) -> str:
+    kind, fid = f.get("kind"), f.get("id")
+    if kind == "temp":
+        return "temp"
+    if kind == "removed-apps":
+        return "leftover"
+    if kind == "known" and fid == "Downloads":
+        return "installer"
+    if kind == "dev-caches" or (kind == "app" and f.get("holds") == "cache") or (kind == "known" and fid in ("Library/Caches", ".cache")):
+        return "cache"
+    return ""
+
+
+def _usage_path(f: dict) -> str:
+    """这一行背后只有一个家目录里的文件夹时是 `~/…`（点开看里面）；合并的行、临时文件夹是空的"""
+    paths = [x for x in f.get("paths") or [] if isinstance(x, str)]
+    if len(paths) != 1 or f.get("pathsMore") or f.get("kind") == "temp":
+        return ""
+    path = paths[0]
+    if path.startswith("/Users/"):
+        rest = path[len("/Users/"):].split("/", 1)
+        path = "~/" + rest[1] if len(rest) == 2 and rest[1] else ""
+    return path if path.startswith("~/") and ".." not in path else ""
+
+
+def _usage_folders(read: Read) -> Optional[Tuple[str, List[Tuple[str, str, float, str, str, str]], str]]:
+    """占用最多的文件夹，照扫描的 `data/usage` 写（名字、类别、路径、近 7 天涨了多少都由这里照代号和数写）：
+    （这一轮没量的地方的说明，各行，合计）。不是这一轮量的行写明是哪天统计的（#169：没有完全磁盘访问时，
+    以前量过的文稿照样列着，页上要看得出它不是这一轮的数）。扫描没有这份数据（旧版本）：None，照旧从 `page/mac` 读"""
+    try:
+        u = read(uri("usage"))
+    except Exception:
+        return None
+    if not isinstance(u, dict) or not isinstance(u.get("folders"), list):
+        return None
+    listed = u.get("listedBytes") if isinstance(u.get("listedBytes"), int) and u["listedBytes"] > 0 else 0
+    round_day = ""
+    try:
+        fin = (u.get("scanned") or {}).get("finished")
+        round_day = (dt.datetime.strptime(fin[:19], "%Y-%m-%dT%H:%M:%S").replace(tzinfo=dt.timezone.utc).astimezone()
+                     .strftime("%Y-%m-%d"))
+    except (TypeError, ValueError, AttributeError):
+        round_day = ""
+    rows: List[Tuple[str, str, float, str, str, str]] = []
+    for f in u["folders"]:
+        if not isinstance(f, dict) or not isinstance(f.get("bytes"), int) or isinstance(f.get("bytes"), bool):
+            continue
+        name = _usage_name(f)
+        if not name:
+            continue
+        notes = []
+        day = f.get("day") if isinstance(f.get("day"), str) else ""
+        if day and round_day and day < round_day and _ymd(day):
+            notes.append(f"{_ymd(day)}统计，本轮未重新统计")
+        grew = f.get("grew7d")
+        if isinstance(grew, int) and not isinstance(grew, bool) and grew >= USAGE_GREW:
+            notes.append(f"近 7 天增加 {size(grew)}")
+        rows.append((name[:60], size(f["bytes"]), min(max(f["bytes"] / listed, 0.0), 1.0) if listed else 0.0, _usage_cat(f),
+                     _usage_path(f), " · ".join(notes)))
+    note = ""
+    if u.get("complete") is False:
+        names = [USAGE_UNSEEN[x] for x in u.get("unseen") or [] if x in USAGE_UNSEEN]
+        note = "未开启完全磁盘访问，" + ("、".join(names[:4]) + ("等位置" if len(names) > 4 else "") if names else "部分位置") + "本轮未统计"
+    return note, rows[:8], size(listed) if listed else ""
+
+
 def _ymd(s: Any) -> str:
     """「2025年9月15日」：带年份（#165：只写月日的像是今年）"""
     try:
@@ -439,7 +557,9 @@ def folder(args: Dict[str, str], read: Read) -> List[dict]:
         else:
             rows.append(kit.row([kit.column(left), kit.row(right)], justify="spaceBetween"))
     if not items and not measuring:
-        rows.append(kit.item("此文件夹为空", None, strong=False))
+        # 系统不让读的不说成空的（#169）
+        rows.append(kit.item("无权限查看此文件夹的内容", "需在「系统设置 › 隐私与安全性 › 完全磁盘访问权限」中允许螺壳", strong=False)
+                    if u.get("denied") else kit.item("此文件夹为空", None, strong=False))
     if rows:
         top.append(kit.list(rows))
     if len(items) > FOLDER_ROWS:
@@ -488,7 +608,8 @@ def status(args: Dict[str, str], read: Read) -> List[dict]:
                              [kit.button("立即检查", "scan_now", {}, icon="refresh-cw", variant="borderless")], strong=False))
     top.append(kit.list(rows))
 
-    scope, folders, total = _mac_folders(read)
+    usage = _usage_folders(read)
+    scope, folders, total = _mac_folders(read) if usage is None else ("", usage[1], usage[2])
     if folders:
         top.append(kit.heading("占用最多的文件夹" + (f"（{scope}）" if scope else "")))
         # 能清的那几行点进那一类的清单（在那里勾选、清理）；用户自己的文件夹扫描还没给里面有什么，只能看
@@ -507,6 +628,10 @@ def status(args: Dict[str, str], read: Read) -> List[dict]:
         top.append(kit.list(rows))
         if total:
             top.append(kit.text(f"以上合计约 {total}，其余为未列出的小文件夹、系统和应用", "caption"))
+    if usage is not None and usage[0]:
+        if not folders:
+            top.append(kit.heading("占用最多的文件夹"))
+        top.append(kit.text(usage[0], "caption"))
 
     lf = d.get("largeFiles") or {}
     top.append(kit.heading("长期未打开的大文件"))
@@ -559,8 +684,10 @@ def status(args: Dict[str, str], read: Read) -> List[dict]:
         top.append(kit.list([kit.item("未发现未开启的安全设置" if scanned.get("finished") else "尚未检查", None, strong=False)]))
     db = d.get("virusDb") or {}
     if db.get("version") or db.get("date"):
-        top += [kit.heading("病毒库"),
-                kit.list([kit.item(" · ".join(str(x) for x in (db.get("version"), db.get("date")) if x), None, strong=False)])]
+        # 写明两个数各是什么（#173：只有「28186 · 2026-11-18」看不懂）
+        words = [f"版本 {db['version']}" if db.get("version") else "",
+                 f"{_ymd(db.get('date'))}更新" if _ymd(db.get("date")) else ""]
+        top += [kit.heading("病毒库"), kit.list([kit.item(" · ".join(x for x in words if x) or "已安装", None, strong=False)])]
     return kit.messages(top)
 
 
@@ -578,7 +705,8 @@ def _attention_row(kit: PageKit, a: dict) -> str:
     opened = kit.open_page("查看详情", "category", {"id": a["category"]}) if a.get("category") else None
     if opened:
         btns.append(opened)
-    return kit.item(name, sub or None, btns, open=opened)
+    return kit.item(name, sub or None, btns, open=opened,
+                    icon="shield-alert" if a.get("urgent") or a.get("severity") == "high" else "triangle-alert")
 
 
 def _cats(d: dict) -> List[dict]:
@@ -589,7 +717,7 @@ def _cats(d: dict) -> List[dict]:
 
 def _cat_row(kit: PageKit, c: dict) -> str:
     go = kit.open_page("查看详情", "category", {"id": c["id"]})
-    return kit.item(CAT.get(c["id"], c["id"]), _summary(c), [go], open=go)
+    return kit.item(CAT.get(c["id"], c["id"]), _summary(c), [go], open=go, icon=CAT_ICON.get(c["id"], CAT_ICON["other"]))
 
 
 def more(args: Dict[str, str], read: Read) -> List[dict]:
@@ -636,13 +764,17 @@ def _where(path: str) -> str:
 SKILL_KINDS = {"download-exec": "会下载并执行代码", "exfil": "会向外发送对话内容", "md": "说明文件含可疑指令"}
 
 
-def _why(it: dict) -> str:
+CHIPS = 6       # 一项下面最多画几个名字小块
+
+
+def _why(it: dict, with_size: bool = True) -> str:
     """一项为什么列在这里：在哪 · 多大 · 原因。每一类都写原因（负责人 11-15：病毒、开机自启、AI 插件这几类只剩位置和大小）"""
     f, r = it.get("facts") or {}, it.get("reason")
     where = _where(it.get("path") or "")
-    why = {"installed": f"{_day(f.get('added'))}下载，应用已安装" + (f"，当前版本 {f['appVersion']}" if f.get("appVersion") else ""),
+    # 一项一句：在哪 · 为什么能清。下载日期、版本号、个数这些不影响决定的不写
+    why = {"installed": "应用已安装",
            "old-download": f"{f.get('days', 0)} 天前下载", "rebuilds": "可自动重建", "app-rebuilds": "可自动重建",
-           "copy-kept": "其他位置仍保留一份", "left-behind": f"{f.get('count', 1)} 个，测试工具运行后未删除",
+           "copy-kept": "其他位置仍保留一份", "left-behind": "测试工具运行后未删除",
            "app-removed": "应用已删除", "unfinished": "下载未完成", "pushed": "已推送", "regenerable": "可重新生成",
            "not-opened": f"{_day(f.get('lastOpened'))}后未打开" if f.get("lastOpened") else "从未打开",
            "redownload": "需要时可重新下载", "logs": "日志", "newer-version": "已有更新的版本",
@@ -654,7 +786,9 @@ def _why(it: dict) -> str:
     if not why and r in SKILL_KINDS:
         kinds = [SKILL_KINDS[k] for k in f.get("kinds") or [r] if k in SKILL_KINDS]
         why = "、".join(kinds) or SKILL_KINDS[r]
-    return " · ".join(x for x in (where, size(it.get("bytes")) if it.get("bytes") is not None else "", why) if x)
+    if where == GROUP.get(it.get("group") or ""):      # 位置和上面的组名是同一个词：不重复
+        where = ""
+    return " · ".join(x for x in (where, size(it.get("bytes")) if with_size and it.get("bytes") is not None else "", why) if x)
 
 
 # 一项怎么处理（扫描 data-resources 的 `options`）：按钮和确认框照实际会做的写
@@ -723,7 +857,8 @@ def category(args: Dict[str, str], read: Read) -> List[dict]:
     ignore_word = "标为误报" if cid == "malware" else "不再提醒"
     for g, its in groups.items():
         total = sum(i.get("bytes") or 0 for i in whole[g])
-        top.append(kit.heading(" · ".join([GROUP.get(g, g), f"{len(whole[g])} 个"] + ([size(total)] if total else []))))
+        # 只有一组时合计已经在标题上，这里不重复
+        top.append(kit.heading(" · ".join([GROUP.get(g, g), f"{len(whole[g])} 个"] + ([size(total)] if total and len(groups) > 1 else []))))
         rows = []
         for it in its:
             key = it["key"]
@@ -731,7 +866,19 @@ def category(args: Dict[str, str], read: Read) -> List[dict]:
                            "value": {"path": f"/checks/{key}"}})
             btns = [kit.button("在访达中显示", "scan_reveal", {"finding_id": it["finding"]}, icon="folder", variant="borderless"),
                     kit.button(ignore_word, "scan_ignore", {"finding_id": it["finding"]}, icon="bell-off", variant="borderless")]
-            rows.append(kit.row([kit.column([box, kit.text(_why(it), "caption")]), kit.row(btns)], justify="spaceBetween"))
+            # 大小画成这一项右边的米色标签（§4 neutralBadge；负责人 11-19：没有它看不出这个文件占多少），不再混在下面那行小字里；一项含好几处时名字画成一组小块（§4 chips）
+            badge = [kit.add({"id": kit._id("t"), "component": "Text", "text": size(it["bytes"]), "variant": "badge",
+                              "tone": "neutral"})] if it.get("bytes") is not None else []
+            left = [box]
+            names = [p.rstrip("/").split("/")[-1] for p in it.get("paths") or [] if isinstance(p, str) and p]
+            if len(names) > 1:
+                chips = [kit.text(n[:40], "badge") for n in names[:CHIPS]]
+                if len(names) > CHIPS:
+                    chips.append(kit.text(f"等 {len(names)} 个", "caption"))
+                left.append(kit.row(chips))
+            left.append(kit.text(_why(it, with_size=False), "caption"))
+            # 标签单独一块、按钮一排单独一块：按钮那一排里只有按钮，窗口才把它们画成只有图标（字是悬停提示）
+            rows.append(kit.row([kit.column(left)] + badge + [kit.row(btns)], justify="spaceBetween"))
         first, rest = rows[:SHOW_FIRST], rows[SHOW_FIRST:]
         if rest:
             first.append(kit.fold(f"其余 {len(rest)} 个", rest))
@@ -751,11 +898,16 @@ def category(args: Dict[str, str], read: Read) -> List[dict]:
         word, note = _apply_words(its)
         needs_pw = any(i.get("password") for i in its)
         label = f"{word}（需输入密码的 {len(its)} 项）" if needs_pw and len(plans) > 1 else word
-        btns.append(kit.button(label, "scan_apply", {"plan_id": plan, "selected": {"path": "/checks"},
-                                                     "how": {i["key"]: _how(i) for i in its}},
-                               variant="primary" if not btns else None,
-                               confirm={"title": TITLES.get(word, f"{word}所选项目？"), "text": note + ("；需要输入 Mac 密码" if needs_pw else ""),
-                                        "label": word}))
+        # 只有一个方案时按钮上写勾了几项、跟着勾选变（§4 countChecks），一项没勾时不画；几个方案各管一部分的照旧不写数
+        counted = len(plans) == 1
+        bid = kit.button(f"{label} {{n}} 项" if counted else label, "scan_apply",
+                         {"plan_id": plan, "selected": {"path": "/checks"}, "how": {i["key"]: _how(i) for i in its}},
+                         variant="primary" if not btns else None,
+                         confirm={"title": TITLES.get(word, f"{word}所选项目？"), "text": note + ("；需要输入 Mac 密码" if needs_pw else ""),
+                                  "label": word})
+        if counted:
+            next(c for c in kit.components if c["id"] == bid)["count"] = {"path": "/checks", "value": True}
+        btns.append(bid)
         clones = [i for i in its if "clone" in (i.get("options") or [])]
         if clones:      # 重复文件：换成克隆（不占空间，两份都留着）
             btns.append(kit.button("替换为克隆", "scan_apply", {"plan_id": plan, "selected": {"path": "/checks"},

@@ -264,7 +264,7 @@ public final class AgentFeed {
         } else {
             out.error = v?["error"]?.string ?? "此页暂时无法读取"
         }
-        model.coreReachable = status != 0
+        model.setReachable(status != 0)
         if out.surface == nil, model.agentPages[key]?.surface != nil, status == 0 { return }   // 断了：先留着上次的
         old?.clearSecureFields()          // 换下来的那份不留填的字（要留的上面已经搬到新的里）
         model.agentPages[key] = out
@@ -358,7 +358,9 @@ public final class AgentFeed {
                 let g = s.surface.doneGroup.map { DoneGroup(key: $0.key, text: $0.text, n: $0.n, label: $0.label, badge: $0.badge) }
                 done.append(DoneRow(id: c.id, tool: tool, text: c.title, time: time, undoLabel: nil, surface: s, group: g))
             case "later":
-                later.append(QuietRow(id: c.id, tool: tool, text: c.title, surface: s))
+                // 扫描一轮的结论卡（种类 findings）：右上角写检查完成的时间。别的不急的卡片（每个邮箱一张的）不写
+                later.append(QuietRow(id: c.id, tool: tool, text: c.title, surface: s,
+                                      time: tool == .scan && c.kind == "findings" ? c.time.map(Self.display) : nil))
             case "held":
                 heldCount += 1      // 今天的名额满了，先攒着：不画，只数个数
             case "undone", "past":
@@ -513,12 +515,12 @@ public final class AgentConnection: WindowBackend {
     func setConnected(_ ok: Bool) {
         let was = connected
         connected = ok
-        model.coreReachable = ok
+        model.setReachable(ok)
         if ok && !was {
             reloadSettings()
             reloadApps()          // 来了以后，正看着的应用页没取过就取
             if !host.isEmpty { postHost(host) }
-            if let w = lastWindow { send("POST", "/window", w.serialized()) { _, _ in } }
+            if let w = lastWindow { sendInOrder("POST", "/window", w.serialized()) }
             if let n = lastNotifications { send("POST", "/notifications", n.serialized()) { _, _ in } }
             reportPresenceNow()
             model.loadVisible()   // 重连：正看着的那一页、权限再取一遍
@@ -841,7 +843,7 @@ public final class AgentConnection: WindowBackend {
         if open { body["page"] = .string(model.hostShowing ? "host" : Self.wirePage(model.page)) }   // 本体的界面盖着：不算看着「今天」
         let v = JSONValue.object(body)
         lastWindow = v
-        send("POST", "/window", v.serialized()) { _, _ in }
+        sendInOrder("POST", "/window", v.serialized())
     }
 
     public func windowPageChanged() {
@@ -915,6 +917,13 @@ public final class AgentConnection: WindowBackend {
     static func segment(_ s: String) -> String {
         let ok = CharacterSet(charactersIn: "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-._~")
         return s.addingPercentEncoding(withAllowedCharacters: ok) ?? s
+    }
+
+    /// 窗口状态（开没开、在不在最前面、在哪一页）一条一条按先后发：并发着发可能乱序，核心最后留下的就不是真的那一条
+    private static let ordered = DispatchQueue(label: "ai.luoke.window.ordered", qos: .userInitiated)
+    private func sendInOrder(_ method: String, _ path: String, _ body: Data?) {
+        let transport = self.transport
+        Self.ordered.async { _ = try? transport(method, path, body) }
     }
 
     /// 在后台发请求，答复回到主线程；连不上时状态码是 0

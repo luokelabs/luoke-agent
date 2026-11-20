@@ -252,6 +252,8 @@ public struct Surface {
         switch kind {
         case "createSurface":
             throw A2UIError(["这张卡片已经建过了"])
+        case _ where deleted:      // 删了以后同一组里再来的更新不认：删掉的卡片不查，后面的会不经校验混进来
+            throw A2UIError(["这张卡片已经删除，不能再更新"])
         case "deleteSurface":
             deleted = true
         case "updateComponents":
@@ -644,7 +646,11 @@ public struct Surface {
     /// 按钮上的数（工具协议 §4 countLabel）：`count` 指的那组选择里，选了 `value` 的有几项；按钮没写 count 是 nil。
     /// §4 countWeights：写了 `weights` 的键按它算几样（不写算 1），`weights` 里有、选择里没有的键不管
     public func buttonCount(_ id: String) -> Int? {
-        guard let count = components[id]?["count"]?.object, let p = count["path"]?.string, let v = count["value"]?.string else { return nil }
+        guard let count = components[id]?["count"]?.object, let p = count["path"]?.string else { return nil }
+        if count["value"]?.bool == true {       // §4 countChecks：一组勾选框（键 → true / false）里勾上的有几个
+            return ((try? data.value(at: p))?.object ?? [:]).values.filter { $0.bool == true }.count
+        }
+        guard let v = count["value"]?.string else { return nil }
         guard let chosen = (try? data.value(at: p))?.object else { return 0 }
         let weights = count["weights"]?.object ?? [:]
         return chosen.filter { ($0.value.array ?? []).contains { $0.string == v } }
@@ -892,9 +898,11 @@ public struct Surface {
     func checkCount(_ v: JSONValue, _ id: String, _ problems: inout [String]) {
         guard let o = v.object, Set(["path", "value"]).isSubset(of: o.keys),
               Set(o.keys).isSubset(of: ["path", "value", "also", "alsoLabel", "weights"]), let p = o["path"]?.string,
-              let val = o["value"]?.string, !val.isEmpty else {
+              !(o["value"]?.string ?? "").isEmpty || o["value"]?.bool == true else {
             problems.append("按钮 \(id)：count 要是 {\"path\", \"value\"}（数一组选择里选了 value 的项）"); return
         }
+        let checks = o["value"]?.bool == true      // §4 countChecks：数勾选框时只有 path 和 value
+        if checks && o.count != 2 { problems.append("按钮 \(id)：count 数勾选框（value 是 true）时不能写 also、alsoLabel、weights") }
         // §4 countAlso：also（不空的一组值）和 alsoLabel（一句不空的文字）一起写
         if (o["also"] != nil) != (o["alsoLabel"] != nil) { problems.append("按钮 \(id)：count 的 also 和 alsoLabel 要一起写") }
         if let also = o["also"], !(also.array.map { !$0.isEmpty && $0.allSatisfy { !($0.string ?? "").isEmpty } } ?? false) {
@@ -913,6 +921,9 @@ public struct Surface {
         }
         guard let chosen = try? data.value(at: p) else { problems.append("按钮 \(id)：count 绑定的 \(p) 在数据模型里没有"); return }
         if chosen.object == nil { problems.append("按钮 \(id)：count 的 path 要指向一组选择（键 → 选了的值的数组）") }
+        else if checks, !(chosen.object ?? [:]).values.allSatisfy({ $0.bool != nil }) {
+            problems.append("按钮 \(id)：count 数勾选框时 path 要指向一组勾选（键 → true / false）")
+        }
     }
 
     /// 一个组件碰没碰密码框（§4 secureField）的路径。同 `luoke_agent/a2ui.py` 的 `_secure_problems`：

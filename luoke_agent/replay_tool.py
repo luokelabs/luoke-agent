@@ -287,6 +287,10 @@ class Session:
             rec = next((r for r in self.replay.writes() if r["stage"] == self.replay.stage), None)
             before = self.replay.stage
             r = self.tap_recorded(rec) if rec else {"text": "这一段没有录点按", "error": True}
+            if self.replay.stage == before and rec and self._on_page(rec):
+                # 在页上点的、照录音之前读页的参数打开的那一页上没有这个按钮（场景一开头用户就在收件箱的别的分组里归档了一封，
+                # 之前没录读页）：这是窗口该看的那一段之前的铺垫，直接照录的发给工具。卡片上的点按不走这条，必须点得到
+                self.replay.handle(dict(rec["request"], id=f"setup-{before}"))
             if self.replay.stage == before:
                 raise RuntimeError(f"走不到窗口该看的那一段：{rec and rec['file']}：{r.get('text')}")
         first = next((r for r in self.replay.records if r["stage"] == target), None)
@@ -329,6 +333,11 @@ class Session:
         if sid is None:
             return {"text": f"核心交给窗口的东西里没有 {ua['surfaceId']}", "error": True}
         return self.agent.tap(sid, self._button(sid, ua["componentId"], params), params.get("arguments") or {})
+
+    def _on_page(self, rec: dict) -> bool:
+        """这次录的点按是不是在应用页上点的（不是卡片）"""
+        ua = rec["request"]["params"]["_meta"].get(USER_ACTION) or {}
+        return any(p["id"] == ua.get("surfaceId") for p in self.source.service["pages"])
 
     def _button(self, sid: str, recorded: str, params: dict) -> str:
         """要点的那个按钮的编号。录的是工具自己那张卡片上的编号；核心照 `data` 重画过的卡片（顶层 ADR 0028）编号不一样，

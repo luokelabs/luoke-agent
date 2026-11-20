@@ -1,0 +1,59 @@
+{
+  "reply" : {
+    "id" : 1,
+    "jsonrpc" : "2.0",
+    "result" : {
+      "contents" : [
+        {
+          "mimeType" : "application/json",
+          "text" : {
+            "apps" : [
+              {
+                "id" : "com.apple.Terminal",
+                "name" : "终端",
+                "settings" : [
+                  {
+                    "follow" : false,
+                    "key" : "apps.com.apple.Terminal.english",
+                    "value" : "follow"
+                  },
+                  {
+                    "follow" : true,
+                    "key" : "apps.com.apple.Terminal.inline",
+                    "value" : "off"
+                  },
+                  {
+                    "follow" : false,
+                    "key" : "apps.com.apple.Terminal.predict",
+                    "terminal" : true,
+                    "value" : "on"
+                  },
+                  {
+                    "key" : "apps.com.apple.Terminal.noRecord",
+                    "value" : false
+                  }
+                ]
+              }
+            ],
+            "personal" : true,
+            "state" : "ok",
+            "version" : 1
+          },
+          "uri" : "data/apps"
+        }
+      ],
+      "resultType" : "complete"
+    }
+  },
+  "request" : {
+    "id" : 1,
+    "jsonrpc" : "2.0",
+    "method" : "resources/read",
+    "params" : {
+      "_meta" : {
+        "io.modelcontextprotocol/protocolVersion" : "2026-07-28"
+      },
+      "uri" : "data/apps"
+    }
+  }
+}

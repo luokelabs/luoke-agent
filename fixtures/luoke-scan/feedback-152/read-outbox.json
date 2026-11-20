@@ -417,8 +417,9 @@
                 "data": {
                   "cleans": [],
                   "decide": {
-                    "bytes": 176164864,
+                    "bytes": 176214016,
                     "caches": 3,
+                    "cachesBytes": 176164864,
                     "cleaned": 0,
                     "freed": 0,
                     "offerAuto": true,

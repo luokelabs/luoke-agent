@@ -1,0 +1,105 @@
+{
+  "situation" : "平常：小鹤双拼，忘掉过两个词、另有三个列不出原文；最近七天里 11-15 没有打字；小鹤开着开发模式，记录文件夹在；输入法在运行",
+  "steps" : [
+    {
+      "clock" : "2026-11-19T12:00:00+08:00",
+      "do" : "核心接上来先问能做什么",
+      "file" : "server-discover.json"
+    },
+    {
+      "clock" : "2026-11-19T12:00:00+08:00",
+      "do" : "列工具",
+      "file" : "tools-list.json"
+    },
+    {
+      "clock" : "2026-11-19T12:00:00+08:00",
+      "do" : "列资源",
+      "file" : "resources-list.json"
+    },
+    {
+      "clock" : "2026-11-19T12:00:00+08:00",
+      "do" : "核心每分钟读一次 outbox（输入法没有要报的事，答空列表）",
+      "file" : "read-outbox.json"
+    },
+    {
+      "clock" : "2026-11-19T12:00:00+08:00",
+      "do" : "打开「各应用」页（还是输入法画的 A2UI 页，没有单独设置的应用）",
+      "file" : "read-page-apps.json"
+    },
+    {
+      "clock" : "2026-11-19T12:00:00+08:00",
+      "do" : "打开设置页，读数据",
+      "file" : "read-data-settings.json"
+    },
+    {
+      "clock" : "2026-11-19T12:00:00+08:00",
+      "do" : "打开「各应用」页，读数据",
+      "file" : "read-data-apps.json"
+    },
+    {
+      "clock" : "2026-11-19T12:00:00+08:00",
+      "do" : "恢复已忘记的「窝」",
+      "file" : "call-ime_do-restore.json"
+    },
+    {
+      "clock" : "2026-11-19T12:00:00+08:00",
+      "do" : "重读：「窝」不在已忘记的列表里了",
+      "file" : "read-data-settings-after-restore.json"
+    },
+    {
+      "clock" : "2026-11-19T12:00:00+08:00",
+      "do" : "确认后清除小鹤双拼的已学词语",
+      "file" : "call-ime_do-clear_learned.json"
+    },
+    {
+      "clock" : "2026-11-19T12:00:00+08:00",
+      "do" : "确认后清零使用统计",
+      "file" : "call-ime_do-reset_usage.json"
+    },
+    {
+      "clock" : "2026-11-19T12:00:00+08:00",
+      "do" : "关掉小鹤双拼的开发模式",
+      "file" : "call-ime_do-dev_mode.json"
+    },
+    {
+      "clock" : "2026-11-19T12:00:00+08:00",
+      "do" : "字号改成 18",
+      "file" : "call-ime_set-fontSize.json"
+    },
+    {
+      "clock" : "2026-11-19T12:00:00+08:00",
+      "do" : "重读：字号 18，开发模式关了",
+      "file" : "read-data-settings-after-set.json"
+    },
+    {
+      "clock" : "2026-11-19T12:00:00+08:00",
+      "do" : "终端里打开联想",
+      "file" : "call-ime_set-app-predict.json"
+    },
+    {
+      "clock" : "2026-11-19T12:00:00+08:00",
+      "do" : "备忘录恢复跟随全局",
+      "file" : "call-ime_set-app-reset.json"
+    },
+    {
+      "clock" : "2026-11-19T12:00:00+08:00",
+      "do" : "重读：终端联想开，备忘录各项跟随全局",
+      "file" : "read-data-apps-after-set.json"
+    },
+    {
+      "clock" : "2026-11-19T12:00:00+08:00",
+      "do" : "在 Safari 里从输入法菜单点「此应用设置」：带 app 读，Safari 还没有单独设置，多给一项 new",
+      "file" : "read-data-apps-target.json"
+    },
+    {
+      "clock" : "2026-11-19T12:00:00+08:00",
+      "do" : "Safari 默认英文",
+      "file" : "call-ime_set-new-app.json"
+    },
+    {
+      "clock" : "2026-11-19T12:00:00+08:00",
+      "do" : "不带参数重读：Safari 进了列表",
+      "file" : "read-data-apps-after-new.json"
+    }
+  ]
+}

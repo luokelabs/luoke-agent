@@ -65,6 +65,13 @@ class HandleTest(unittest.TestCase):
         self.assertEqual(self.s.handle(rpc("nope"))["error"]["code"], mcp.METHOD_NOT_FOUND)
         self.assertIsNone(self.s.handle({"jsonrpc": "2.0", "method": "notifications/x"}))
 
+    def test_a_tool_can_carry_meta(self):
+        s = make_server()
+        s.tool("open_it", lambda **kw: {"text": "ok"}, title="打开", meta={"ai.luoke/where": "mac"})
+        tools = {t["name"]: t for t in s.handle(rpc("tools/list"))["result"]["tools"]}
+        self.assertEqual(tools["open_it"]["_meta"], {"ai.luoke/where": "mac"})
+        self.assertNotIn("_meta", tools["read_it"], "没给的不写这一项")
+
     def test_tools_list_annotations(self):
         tools = {t["name"]: t for t in self.s.handle(rpc("tools/list"))["result"]["tools"]}
         self.assertTrue(tools["read_it"]["annotations"]["readOnlyHint"])

@@ -62,7 +62,8 @@ TONES = frozenset({"danger", "warning", "neutral"})
 A2UI_FEATURES = ("placement", "badge", "strong", "maxLines", "optionIcons", "collapsed", "lucide", "tooltip",
                  "doneGroup", "itemIcons", "countLabel", "openPage", "subtitle", "countAlso",
                  "countWeights", "pageArgs", "bigPages", "secureField", "pageRefresh", "saveFile",
-                 "neutralBadge", "chips", "pageSections", "confirm", "rowOpen", "fieldSubmit", "lucide2", "choiceSubmit", "headerPlacement")
+                 "neutralBadge", "chips", "pageSections", "confirm", "rowOpen", "fieldSubmit", "lucide2", "choiceSubmit", "headerPlacement",
+                 "countChecks")
 # 应用页里一段的位置（§4「宽窗口的侧栏」）：只有 aside，写在根 Column 下面一层的 Column 上
 PLACEMENTS = frozenset({"aside", "header"})
 MAX_TOOLTIP = 200              # 选项的 tooltip（§4 choiceSubmit：切换邮箱时停在上面写地址）最多几个字
@@ -346,6 +347,8 @@ class Surface:
             raise CardError([f"{kind} 的 surfaceId 不是 {self.surface_id}"])
         if kind == "createSurface":
             raise CardError(["这张卡片已经建过了"])
+        if self.deleted:        # 删了以后同一组里再来的更新不认：删掉的卡片不查，后面的会不经校验混进来
+            raise CardError(["这张卡片已经删除，不能再更新"])
         if kind == "deleteSurface":
             self.deleted = True
         elif kind == "updateComponents":
@@ -888,9 +891,12 @@ def _check_count(count: Any, cid: str, data: dict, problems: List[str]) -> None:
     §4 countAlso：可以再带 `"also": [别的值]` 和 `"alsoLabel": "按钮的另一句字"`（两样一起写）。
     §4 countWeights：可以再带 `"weights": {选择的键: 正整数}`（一项合了好几样时它算几样）。"""
     if not (isinstance(count, dict) and {"path", "value"} <= set(count) <= {"path", "value", "also", "alsoLabel", "weights"}
-            and isinstance(count["path"], str) and isinstance(count["value"], str) and count["value"]):
+            and isinstance(count["path"], str)
+            and ((isinstance(count["value"], str) and count["value"]) or count["value"] is True)):
         problems.append(f"按钮 {cid}：count 要是 {{\"path\", \"value\"}}（数一组选择里选了 value 的项）")
         return
+    if count["value"] is True and len(count) != 2:      # §4 countChecks：数勾选框时只有 path 和 value
+        problems.append(f"按钮 {cid}：count 数勾选框（value 是 true）时不能写 also、alsoLabel、weights")
     if ("also" in count) != ("alsoLabel" in count):
         problems.append(f"按钮 {cid}：count 的 also 和 alsoLabel 要一起写")
     if "also" in count:
@@ -914,6 +920,8 @@ def _check_count(count: Any, cid: str, data: dict, problems: List[str]) -> None:
         return
     if not isinstance(chosen, dict):
         problems.append(f"按钮 {cid}：count 的 path 要指向一组选择（键 → 选了的值的数组）")
+    elif count["value"] is True and not all(isinstance(v, bool) for v in chosen.values()):
+        problems.append(f"按钮 {cid}：count 数勾选框时 path 要指向一组勾选（键 → true / false）")
 
 
 def count_chosen(data: Any, count: dict) -> int:
@@ -925,6 +933,8 @@ def count_chosen(data: Any, count: dict) -> int:
         return 0
     if not isinstance(chosen, dict):
         return 0
+    if count.get("value") is True:          # §4 countChecks：一组勾选框（键 → true / false）里勾上的有几个
+        return sum(1 for v in chosen.values() if v is True)
     weights = count.get("weights") if isinstance(count.get("weights"), dict) else {}
     return sum(weights.get(k, 1) for k, v in chosen.items() if isinstance(v, list) and count["value"] in v)
 

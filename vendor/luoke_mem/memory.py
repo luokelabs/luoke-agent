@@ -20,14 +20,22 @@ NOTE_KINDS = ("fact", "interest", "dislike", "preference", "term", "taste")
 ORIGINS = ("user", "inferred")
 STATUSES = ("proposed", "active", "rejected", "superseded", "observed", "past")   # observed: 观察中 (ADR 0011, 0.16.1);
 # past: 以前的事 (0.20) -- what changes, with nothing newer than PAST_DAYS behind it: kept, not used as now, not asked
-LABELS = {"fact": "关于用户", "interest": "关注的话题", "dislike": "不感兴趣", "preference": "处理习惯", "term": "常用说法",
-          "taste": "订阅精选的口味"}
+# The headings of the memory snippets in the tools' prompts (`context`), for a model: luoke_mem/prompts/labels.json
+# (top-level ADR 0019), read here without the loader. A tool may carry only __init__, memory and sensitive (the
+# agreed three, DESIGN「版本和兼容」): then these, kept the same as the file by tests/test_prompts.py.
+_LABELS = {"fact": "关于用户", "interest": "关注的话题", "dislike": "不感兴趣", "preference": "处理习惯", "term": "常用说法",
+           "taste": "订阅精选的口味"}
+try:
+    with open(os.path.join(os.path.dirname(os.path.abspath(__file__)), "prompts", "labels.json"), encoding="utf-8") as _f:
+        LABELS = json.load(_f)
+except (OSError, ValueError):                # not there, or not readable: the same headings, from here
+    LABELS = dict(_LABELS)
 # What the user reads, one copy for every tool that shows them (the memory page, luoke-mail, luoke-agent): the kinds as
 # addressed to the user (LABELS above speak of the user, for a model), and the tools by the names they go by.
 KIND_NAMES = {"fact": "关于你", "interest": "关注的话题", "dislike": "不感兴趣", "preference": "处理习惯", "term": "常用说法",
               "taste": "精选的口味"}
 TOOL_NAMES = {"luoke-mail": "邮件助手", "luoke-ime": "螺壳输入法", "luoke-mem": "螺壳记忆", "luoke-core": "螺壳",
-              "luoke-agent": "螺壳", "luoke-audit": "螺壳体检"}
+              "luoke-agent": "螺壳", "luoke-scan": "螺壳扫描"}
 # What confirming does, by kind: said with a guess when it is asked about (ADR 0011: say why it is asked and what
 # confirming changes). One copy, like the names above.
 KIND_PURPOSES = {"fact": "确认后，螺壳的工具会把它当作关于你的事实，比如邮件助手分拣、起草回复时",
@@ -62,8 +70,8 @@ def ask_reason(note: dict, sources: set | None = None) -> str:
 
 # Where what was taken down directly comes from, as told to the user: (tool, who said the records it rests on).
 SOURCE_PHRASES = {("luoke-mail", "third_party"): "根据你收到的邮件", ("luoke-mail", "user"): "根据你发出的邮件和你在邮件助手里的操作",
-                  ("luoke-ime", "user"): "根据你打的字", ("luoke-audit", "user"): "根据你在螺壳体检里的选择",
-                  ("luoke-audit", "system"): "螺壳体检自动做的"}
+                  ("luoke-ime", "user"): "根据你打的字", ("luoke-scan", "user"): "根据你在螺壳扫描里的选择",
+                  ("luoke-scan", "system"): "螺壳扫描自动做的"}
 # Facts from others that are taken down without asking (ADR 0011), and the evidence that takes: what a cited
 # record's data says of how often the sender wrote (count), over how many months (months), how many the user opened
 # (opened), and the last month there was one (last, YYYY-MM). Agreed with luoke-mail, 2026-10-17. Anything that
@@ -90,7 +98,8 @@ GRADES = {
                  "digest-open": (3, 2, 28), "ime-commit": (3, 3, 0)},
     "dislike": {"digest-feedback": (2, 2, 7)},
     "preference": {"mail-override": (2, 2, 7)},       # testing period: the same change twice, a week apart
-    "term": {"ime-commit": (3, 3, 0)},
+    "term": {"ime-commit": (3, 3, 0), "sent-mail": (2, 2, 7),     # sent-mail: a person's name (0.30, voice hotwords)
+             "mail-contact": (2, 2, 28)},                            # written to in two months: their name (0.31)
     "taste": None,                                     # a tool's own feature: anything of the user's will do
 }
 # what is business, not reading ("某银行通知这种也能算…关注话题"): bills, banks, security, trips,
@@ -137,8 +146,9 @@ def action_name(action: str, data: dict | None = None) -> str:
 # keeps working on a file a newer one has touched. PRAGMA user_version says the newest schema that opened the
 # file (the remainder after the thousands); a change older libraries could not live with starts a new thousand,
 # and they refuse it.
-SCHEMA_VERSION = 7          # 5: facts from others waiting to be asked became 观察中 (ADR 0011 amendment); 6: the
-                            # agent's list (ADR 0012): asks.evidence, rank, action, key; 7: notes.data_json (habits)
+SCHEMA_VERSION = 9          # 5: facts from others waiting to be asked became 观察中 (ADR 0011 amendment); 6: the
+                            # agent's list (ADR 0012): asks.evidence, rank, action, key; 7: notes.data_json (habits);
+                            # 8: entities and notes.entity (0.30: people); 9: stopped (0.38: tools not learnt from)
 # Sensitive context (top-level ADR 0004) moves a file to the next thousand when the first of it is written:
 # libraries before 0.8 would hand it to any tool, so they refuse the file then; until then they still work.
 PROTECTED = 1
@@ -176,12 +186,27 @@ CREATE TABLE IF NOT EXISTS asks (
   about_note INTEGER, about_kind TEXT, urgency TEXT NOT NULL, answer TEXT NOT NULL, status TEXT NOT NULL,
   created_at TEXT NOT NULL, expires_at TEXT, decided_at TEXT, answer_record INTEGER, sensitive TEXT
 );
+CREATE TABLE IF NOT EXISTS entities (
+  id INTEGER PRIMARY KEY, kind TEXT NOT NULL, name TEXT NOT NULL, aliases_json TEXT NOT NULL, status TEXT NOT NULL,
+  merged_into INTEGER, data_json TEXT, formed_at TEXT NOT NULL, decided_at TEXT
+);
+CREATE TABLE IF NOT EXISTS stopped (
+  tool TEXT PRIMARY KEY, at TEXT NOT NULL
+);
 """
 ASK_KINDS = ("question", "suggestion")
 URGENCY = ("urgent", "normal", "low")
-ASK_STATUSES = ("open", "answered", "dismissed", "withdrawn", "later", "never")
+ASK_STATUSES = ("open", "answered", "dismissed", "withdrawn", "later", "never", "archived")   # archived: 0.34
+# What was asked about a note that changed (merged into another, gave way, now a thing of the past) is taken back,
+# open or archived alike (0.34): put back, an archived one would ask about what is no longer there. An archived one
+# had no time running (archive stops it, unarchive gives back what was left), so it was not left unanswered past its
+# time: it is taken back without one (expires_at NULL), and fit.tally does not count it as EXPIRED.
+WITHDRAW_ASKS = ("UPDATE asks SET status='withdrawn', decided_at=?, expires_at=CASE WHEN status='archived' THEN NULL"
+                 " ELSE expires_at END WHERE status IN ('open', 'archived')")
 COLUMNS = (("notes", "topic"), ("records", "sensitive"), ("notes", "sensitive"),   # added since the first schema
-           ("asks", "evidence"), ("asks", "rank"), ("asks", "action"), ("asks", "key"), ("notes", "data_json"))
+           ("asks", "evidence"), ("asks", "rank"), ("asks", "action"), ("asks", "key"), ("notes", "data_json"),
+           ("notes", "entity"))
+COLUMN_TYPES = {("notes", "entity"): "INTEGER"}      # who a note is about (entities.id); none: the user
 # How sure the memory is of an understanding (ADR 0012), read off what it already keeps: a guess is not used, only
 # shown on the page; likely is in effect without the user's word; sure is what the user confirmed or said.
 CONFIDENCE = {"guess": "status IN ('proposed', 'observed')",
@@ -240,6 +265,7 @@ def _same(a: str, b: str) -> bool:
 # What changes, whose newest evidence is older than PAST_DAYS, is 以前的事 (status 'past'). Coarse first: a kind
 # whose past notes the user keeps saying are still so waits longer (`_past_days`).
 PAST_DAYS = 730
+RELATION_DAYS = 365   # a relation (同事, 合作方...: not family) with neither a mention nor a mail to them for this long
 LASTING_TOPICS = ("姓名", "名字", "学校", "毕业", "生日", "籍贯", "家人", "孩子", "配偶", "父母")
 LASTING_WORDS = re.compile(r"^(曾|以前|过去|毕业于)|曾经|曾在|曾就读")
 
@@ -258,6 +284,12 @@ def answer_says(text: str) -> str | None:
     if len(t) <= 12 and NOT_SO.search(t):
         return "no"
     return None
+
+
+def _relation(kind: str, topic) -> bool:
+    """A fact about someone from the user's own mail that can change (同事, 客户...; family stays: LASTING_TOPICS)."""
+    head = str(topic or "").replace("：", ":").partition(":")[0].strip()
+    return kind == "fact" and head in PERSON_HEADS and not any(head.startswith(t) for t in LASTING_TOPICS)
 
 
 def _lasting(kind: str, topic: str | None, text: str) -> bool:
@@ -291,6 +323,120 @@ def _inst(topic) -> str | None:
     head, sep, tail = topic.replace("：", ":").partition(":")
     name = tail.strip().lower() if sep and head.strip() in INST_HEADS else ""
     return name or None
+
+
+# People (0.30): luoke-mail files a fact from the user's own mail about someone under "<relation>:<who>"
+PERSON_HEADS = ("上级", "同事", "下属", "客户", "合作方", "家人", "朋友")
+ENTITY_KINDS = ("person",)                           # institutions and projects later
+ENTITY_STATUSES = ("active", "proposed", "merged", "rejected")
+LIVE = ("proposed", "observed", "active", "past")    # notes that still say something
+CONTACT = "mail-contact"                             # luoke-mail: whom the user writes to, one record a month
+CONTACT_MIN = (2, 2)                                 # a person of their own: written to this often, in this many months
+LAPSED_DAYS = 180                                    # not written to for this long: 很久没联系 (the person stays)
+SUBJECTS_SHOWN, TOGETHER_SHOWN = 3, 3                # the latest subjects, the topics talked about, on the page
+HOTWORD_SHARE = {"person": 0.4, "name": 0.2}         # at most, of the voice hotwords; the user's own words the rest
+# a list or a desk, not a person, by the look of its address or name; a desk one writes to only to get something done
+# (claims, unsubscribing, a receipt) too (0.36.4: claims@ and unsubscribe@ were people on the window's 人 page)
+LISTISH = re.compile(r"(?i)^(all|team|list|group|staff|everyone|announce|info|support|service|hello|contact|admin|"
+                     r"notifications?|news|newsletters?|marketing|sales|billing|hr|jobs|office|claims?|unsubscribe|"
+                     r"no-?reply|do-?not-?reply|donotreply|mailer-daemon|postmaster|bounces?|receipts?|orders?|"
+                     r"invoices?|payments?|accounts?|alerts?|notify|feedback|help|helpdesk|care|customer[-_.]?(service|care)|"
+                     r"security|verify|verification|members?|membership|subscriptions?|digest|updates?)[-_.@+]"
+                     r"|全体|团队|群|小组|部门")
+ADDRESS = re.compile(r"[A-Za-z0-9._%+\-]+@[A-Za-z0-9.\-]+\.[A-Za-z]{2,}")
+
+
+def _person(topic, text: str) -> tuple | None:
+    """Who a fact from the user's own mail is about -- topic "同事:王磊", text 「同事：王磊（wanglei@corp.example）」:
+    (relation, name, addresses), or None for a fact about the user, an institution or a matter."""
+    if not topic or not isinstance(topic, str):
+        return None
+    head, sep, tail = topic.replace("：", ":").partition(":")
+    if not sep or head.strip() not in PERSON_HEADS:
+        return None
+    addrs = sorted({a.lower() for a in ADDRESS.findall(f"{tail} {text or ''}")})
+    name = " ".join(re.sub(r"[（(][^）)]*[）)]", " ", ADDRESS.sub(" ", tail)).split()).strip(" ：:,，<>")
+    return (head.strip(), name, addrs) if name or addrs else None
+
+
+def _listish(addr: str, c: dict) -> bool:
+    return bool(LISTISH.search(addr) or LISTISH.search(c.get("name") or ""))
+
+
+def _worth_a_person(addr: str, c: dict) -> bool:
+    """Whether someone the user writes to is a person of their own: written to (as the recipient) at least
+    CONTACT_MIN mails in as many months, and not a list or a shop's desk by the look of it."""
+    if _listish(addr, c):
+        return False
+    to = {m: (t if (t or cc) else count) for m, (count, t, cc) in c["months"].items()}   # no to/cc given: all count
+    to = {m: n for m, n in to.items() if n > 0}
+    return sum(to.values()) >= CONTACT_MIN[0] and len(to) >= CONTACT_MIN[1]
+
+
+def _profile(contacts: list, at: str) -> dict | None:
+    """What writing to someone says (0.31): since when, the last time, in how many months, how many mails (as
+    recipient, as copy), the last twelve months, and the records it rests on."""
+    if not contacts:
+        return None
+    months: dict = {}
+    for c in contacts:
+        for m, (count, to, cc) in c["months"].items():
+            a, b, d = months.get(m, (0, 0, 0))
+            months[m] = (a + count, b + to, d + cc)
+    last_at = max(c["last_at"] for c in contacts)
+    order = sorted(months)
+    year = order[-12:]
+    subjects = [(m, x) for c in contacts for m, xs in (c.get("subjects") or {}).items() for x in xs]
+    subjects.sort(key=lambda mx: mx[0], reverse=True)
+    return {"first": order[0], "last": order[-1], "months": len(order), "count": sum(v[0] for v in months.values()),
+            "to": sum(v[1] for v in months.values()), "cc": sum(v[2] for v in months.values()),
+            "recent": {m: months[m][0] for m in year}, "last_at": last_at,
+            "lapsed": bool(last_at) and _days(last_at[:19], at) > LAPSED_DAYS,
+            "subjects": [x for _, x in subjects[:SUBJECTS_SHOWN]], "_subjects": subjects,
+            "records": sorted(r for c in contacts for r in c["records"])}
+
+
+def _mentions(subject: str, words: str) -> bool:
+    """A topic or term in a mail's subject: a Latin one as a word of its own, ignoring case."""
+    if re.search(r"[A-Za-z0-9]", words[:1] + words[-1:]):
+        return bool(re.search(r"(?<![A-Za-z0-9])" + re.escape(words) + r"(?![A-Za-z0-9])", subject, re.I))
+    return words in subject
+
+
+def _together(subjects: list, topics: list) -> list:
+    """What the user writes to someone about (0.31): the user's topics and terms in effect, by how many of the
+    subjects of the mails to them name each, at most TOGETHER_SHOWN: [{text, note, mails}]."""
+    out = []
+    for n in topics:
+        hits = sum(1 for _, x in subjects if _mentions(x, n["text"]))
+        if hits:
+            out.append({"text": n["text"], "note": n["id"], "mails": hits})
+    return sorted(out, key=lambda t: (-t["mails"], t["text"]))[:TOGETHER_SHOWN]
+
+
+def _often(data) -> int:
+    """How much the user writes to someone lately: mails in the last six months of their profile."""
+    recent = ((data or {}).get("contact") or {}).get("recent") or {}
+    return sum(_int(v) for _, v in sorted(recent.items())[-6:])
+
+
+def _alias_key(alias: dict) -> tuple:
+    return ("address", alias["address"]) if alias.get("address") else ("name", str(alias.get("name", "")).casefold())
+
+
+SAME_PERSON = "same-person:"   # the key of a question whether two people are one (0.39): the names or addresses
+SAME_YES, SAME_NO = "是", "不是"  # that looked alike, one of each; answered 是, they are merged; 不是, never asked again
+
+
+def same_person_key(a: tuple, b: tuple) -> str:
+    """The matter of 「是不是同一个人」 for these two alias keys, the same whichever comes first."""
+    return SAME_PERSON + json.dumps(sorted([list(a), list(b)]), ensure_ascii=False)
+
+
+def _entity_row(row: dict, notes: int) -> dict:
+    data = json.loads(row.pop("data_json", None) or "null") or {}
+    return dict(row, aliases=json.loads(row.pop("aliases_json") or "[]"), relations=data.get("relations") or [],
+                contact=data.get("contact"), notes=notes)
 
 
 def _same_fact(topic_a, text_a: str, topic_b, text_b: str) -> bool:
@@ -335,11 +481,33 @@ REGRADE_BACKUP = ".before-0.18"     # the copy made before the table first grade
 BACKUP_DAYS = 14                    # and how long it is kept
 
 
+# the times a tool may write: YYYY, YYYY-MM, a day, or with the minute or the second ("T" or a space between); what
+# follows the 19th character (seconds' fractions, a time zone) is not read
+WHEN = re.compile(r"\d{4}(-\d{2}(-\d{2}([ T]\d{2}:\d{2}(:\d{2})?)?)?)?")
+
+
+def _full(at: str) -> str:
+    """A time as "YYYY-MM-DD HH:MM:SS": what it leaves out is the start of its year, month, day or minute."""
+    s = at[:19]
+    return (s + "2000-01-01 00:00:00"[len(s):]).replace("T", " ")
+
+
 def _days(a: str, b: str) -> float:
-    """Days from a to b, "YYYY-MM-DD HH:MM:SS" or shorter (tools write happened_at as YYYY-MM, a day, or a minute)."""
-    full = "2000-01-01 00:00:00"
-    t = lambda s: time.mktime(time.strptime((s[:19] + full[len(s[:19]):]).replace("T", " "), "%Y-%m-%d %H:%M:%S"))
+    """Days from a to b, "YYYY-MM-DD HH:MM:SS" or shorter (_full)."""
+    t = lambda s: time.mktime(time.strptime(_full(s), "%Y-%m-%d %H:%M:%S"))  # noqa: E731
     return (t(b) - t(a)) / 86400
+
+
+def _when(at, what: str = "happened_at") -> None:
+    """A time as WHEN says and _days and _day read it; anything else is refused when written, since one unreadable
+    time would keep the whole memory from opening, and "2026-1" would be read as November."""
+    try:
+        time.strptime(_full(at), "%Y-%m-%d %H:%M:%S")
+        ok = WHEN.fullmatch(at[:19]) is not None
+    except (TypeError, ValueError):
+        ok = False
+    if not ok:
+        raise ValueError(f"{what} is YYYY, YYYY-MM, YYYY-MM-DD or with the time")
 
 
 def _drop_backup(path: str) -> None:
@@ -387,9 +555,14 @@ def _with_confidence(n: dict) -> dict:
 
 
 def _day(at: str) -> str:
-    """The day of a record's happened_at, which tools write as YYYY-MM, YYYY-MM-DD or with the time."""
-    d = (at or "")[:10]
-    return d + "-01" if len(d) == 7 else d
+    """The day of a record's happened_at (YYYY-MM-DD), read as _days reads it: "2026" is 2026-01-01. '' for none, and
+    for one nobody can read (written before record checked times): no day, rather than a memory that will not open."""
+    try:
+        d = _full(at)[:10] if at else ""
+        time.strptime(d, "%Y-%m-%d")
+        return d
+    except (TypeError, ValueError):
+        return ""
 
 
 def _evidence(topic: str, text: str, data: dict) -> bool:
@@ -417,6 +590,7 @@ def _int(value) -> int:
 
 
 def _span(days: set) -> int:
+    days = set(days) - {""}
     if len(days) < 2:
         return 0
     t = lambda s: time.mktime(time.strptime(s, "%Y-%m-%d"))  # noqa: E731
@@ -466,6 +640,82 @@ def _matches(data_json: str | None, match: dict) -> bool:
     except ValueError:
         return False
     return isinstance(data, dict) and all(data.get(k) == v for k, v in match.items())
+
+
+# ---- a family of proposals: what the user says of one moves the bar for that family alone (DESIGN「首要原则」,
+# tallied in fit.py; here because a tool carries this module and not that one) ----------------------------
+FAMILY_KINDS = ("preference", "fact", "term", "interest", "taste")
+DISMISSED, NEVER, UNDONE, EXPIRED, DELETED = 1, 2, 2, 0.5, 1   # how much each counts as a no; a yes counts 1
+UNSUBSCRIBE = "unsubscribe"
+DELETED_KEY = "fit.deleted"                 # counts by family, in the learning table: no text of what was deleted
+
+
+def level(no: float, yes: float) -> int:
+    """How far this family's bar moves. Mostly no (two or more, more than yes): up one, up two when it is twice over
+    and four or more. Always yes (three or more, never no): down one."""
+    if no >= 2 and no > yes:
+        return 2 if no >= 4 and no >= 2 * yes else 1
+    return -1 if yes >= 3 and not no else 0
+
+
+def family(kind: str, topic: str | None, data: dict | None, typed: bool) -> str | None:
+    """Which family a note is of: telling one no moves the bar of this family alone."""
+    if kind == "preference":
+        d = data or {}
+        return f"habit:{d.get('action')}:{d.get('category') or ''}" if d.get("action") else None
+    if kind == "fact":
+        return f"fact:{fact_head(topic)}"
+    if kind == "term":
+        return "term"
+    return f"{kind}:{'typing' if typed else 'mail'}" if kind in FAMILY_KINDS else None
+
+
+def fact_head(topic) -> str:
+    """The family name of a fact: its topic up to the colon, half or full width ("机构:Apple", "机构：Apple")."""
+    return (topic or "").replace("：", ":").split(":")[0].strip()
+
+
+def _families(whole) -> dict:
+    with whole._lock:
+        rows = whole.db.execute(f"SELECT id, kind, topic, data_json, status, decided_at FROM notes WHERE origin='inferred'"
+                                f" AND kind IN ({','.join('?' * len(FAMILY_KINDS))})", FAMILY_KINDS).fetchall()
+        typed = {r[0] for r in whole.db.execute("SELECT DISTINCT c.note_id FROM cites c JOIN records r ON r.id=c.record_id"
+                                                " WHERE r.topic='ime-commit'")}
+    out = {}
+    for nid, kind, topic, data_json, status, decided in rows:
+        try:
+            data = json.loads(data_json) if data_json else None
+        except ValueError:
+            data = None
+        fam = family(kind, topic, data if isinstance(data, dict) else None, nid in typed)
+        if fam:
+            out[nid] = (fam, status, decided)
+    return out
+
+
+def deleted(whole, nid: int) -> None:
+    """The user deleted a note the memory drew: counted for its family, nothing of what it said is kept."""
+    fam = _families(whole).get(nid)
+    if not fam:
+        return
+    with whole._lock:
+        sensitive = whole.db.execute("SELECT sensitive FROM notes WHERE id=?", (nid,)).fetchone()
+        row = whole.db.execute("SELECT value FROM learning WHERE name=?", (DELETED_KEY,)).fetchone()
+    if sensitive and sensitive[0]:
+        return                                   # not even a count of those
+    counts = json.loads(row[0]) if row else {}
+    counts[fam[0]] = counts.get(fam[0], 0) + 1
+    with whole._lock, whole.db:
+        whole.db.execute("INSERT OR REPLACE INTO learning (name, value) VALUES (?, ?)", (DELETED_KEY, json.dumps(counts)))
+
+
+def same_family(whole, nid: int) -> list[int]:
+    """The notes of a note's family the user has not settled yet, waiting or under watch: for「这一类都不要」."""
+    notes = _families(whole)
+    if nid not in notes:
+        return []
+    return [i for i, (fam, status, decided) in notes.items()
+            if fam == notes[nid][0] and not decided and status in ("proposed", "observed")]
 
 
 class Memory:
@@ -518,7 +768,7 @@ class Memory:
                     self.db.execute(stmt)
                 for table, col in COLUMNS:          # 0.1 had no topic, 0.7 nothing sensitive
                     if col not in [r[1] for r in self.db.execute(f"PRAGMA table_info({table})")]:
-                        self.db.execute(f"ALTER TABLE {table} ADD COLUMN {col} TEXT")
+                        self.db.execute(f"ALTER TABLE {table} ADD COLUMN {col} {COLUMN_TYPES.get((table, col), 'TEXT')}")
                 if v % 1000 < 5:
                     _observe_others(self.db)
                 self.db.execute(f"PRAGMA user_version = {v // 1000 * 1000 + SCHEMA_VERSION}")
@@ -553,7 +803,11 @@ class Memory:
                ref: str | None = None, happened_at: str | None = None, sensitive: list[str] | None = None,
                now: str | None = None) -> int:
         """What happened, at once. `sensitive` names the kinds of sensitive context in it (sensitive_kinds());
-        secrets and credentials are not written at all (never_kept(), the tool's check)."""
+        secrets and credentials are not written at all (never_kept(), the tool's check). Returns the record's id; 0
+        when the user stopped the memory learning from this tool (stopped(), 0.38): nothing is written, and the tool
+        carries on as before."""
+        if self._is_stopped():
+            return 0
         return self._insert(self.tool, speaker, kind, text, topic=topic, data=data, ref=ref, happened_at=happened_at,
                             sensitive=sensitive, now=now)
 
@@ -561,6 +815,10 @@ class Memory:
                 ref: str | None = None, happened_at: str | None = None, sensitive=None, now: str | None = None) -> int:
         if speaker not in SPEAKERS or kind not in RECORD_KINDS:
             raise ValueError(f"unknown speaker or kind: {speaker}, {kind}")
+        if not all(v is None or isinstance(v, str) for v in (topic, ref)):
+            raise ValueError("topic and ref are text")
+        if happened_at is not None:
+            _when(happened_at)
         kinds = _kinds(sensitive)
         at = _now(now)
         text, data = mask_secrets(text), _masked(data)     # the library masks, whatever the tool did (ADR 0013)
@@ -578,8 +836,7 @@ class Memory:
         """A record of this tool's said the wrong time (own-label before luoke-mail 0.14.1 wrote when it read the
         label, not when it was in use): the tool puts it right. Only the time, only its own records; returns
         whether there was such a record."""
-        if not isinstance(happened_at, str) or not happened_at[:4].isdigit():
-            raise ValueError("happened_at is YYYY-MM, YYYY-MM-DD or with the time")
+        _when(happened_at)
         with self._lock, self.db:
             return self.db.execute("UPDATE records SET happened_at=? WHERE id=? AND tool=?",
                                    (happened_at, rid, self.tool)).rowcount == 1
@@ -707,13 +964,15 @@ class Memory:
         """A guess drawn from records: an open question for the user until confirmed. Nothing is proposed twice,
         and nothing the user already rejected comes back (returns None then). More evidence for a pending guess
         is added to it. A fact resting on what others said is never asked about (ADR 0011 amendment): plain and
-        well seen it takes effect (below), otherwise it waits in 观察中 (status 'observed') for the user to look at
-        if they wish -- in no card, not in effect.
+        well seen it takes effect (below), otherwise it is a guess (proposed) for the user to settle on the page if
+        they wish; learn moves those of a family this user keeps refusing to 观察中 ('observed', 0.27).
         A fact drawn from what others said takes effect when the cited records' data say the sender wrote often,
         over months, the user opened some, and lately (EVIDENCE) -- whatever it is about, money included; unless
         it is about health, legal disputes, religion or politics (only the user's word). It is
         never asked about. `about` is kept in the note's `data`, no longer weighed. `data` holds a note's structured fields (a habit's
         {account, sender, action}, 0.18)."""
+        if self._is_stopped():                 # the user stopped learning from this tool (0.38)
+            return None
         if not cites:
             raise ValueError("an inferred note must cite the records it rests on")
         self._speakers(cites)
@@ -788,7 +1047,7 @@ class Memory:
                 by.setdefault(topic, []).append((happened, data))
         for topic, rs in by.items():
             times, days, span = self._bar(kind, topic, rules[topic])
-            ds = {_day(h) for h, _ in rs}
+            ds = {_day(h) for h, _ in rs} - {""}
             also = ALSO.get(topic, {})
             if (len(rs) >= times and len(ds) >= days and _span(ds) >= span
                     and sum(_int(d.get("opened")) for _, d in rs) >= also.get("opened", 0)
@@ -805,11 +1064,11 @@ class Memory:
                 "SELECT SUM(n.status='rejected'), SUM(n.status<>'rejected') FROM notes n WHERE n.kind=? AND n.origin='inferred'"
                 " AND n.decided_at IS NOT NULL AND EXISTS (SELECT 1 FROM cites c JOIN records r ON r.id=c.record_id"
                 " WHERE c.note_id=n.id AND r.topic=?)", (kind, topic)).fetchone()
-        no, yes = int(row[0] or 0), int(row[1] or 0)
+        moved = level(int(row[0] or 0), int(row[1] or 0))
         times, days, span = rule
-        if no >= 2 and no > yes:
+        if moved > 0:
             return times + 1, days + 1, max(span * 2, 7)
-        if yes >= 3 and not no:
+        if moved < 0:
             days = max(1, days - 1)
             return max(1, times - 1), days, span // 2 if days > 1 else 0
         return rule
@@ -860,7 +1119,10 @@ class Memory:
         supersedes the old one (a new job title replaces the old). Nothing the user rejected comes back; the same
         understanding again gains evidence, and a guess takes effect once its evidence bears it out. Returns the
         note, or None if rejected. Sensitive context (marked here or in what it rests on) only counts when the
-        user said or confirmed it (ADR 0004), so it waits for them like a guess."""
+        user said or confirmed it (ADR 0004), so it waits for them like a guess. Nothing (None) from a tool the user
+        stopped the memory learning from (0.38)."""
+        if self._is_stopped():
+            return None
         if not cites:
             raise ValueError("an inferred note must cite the records it rests on")
         if self._speakers(cites) != {"user"}:
@@ -905,11 +1167,12 @@ class Memory:
         return max(days) if days else ""
 
     def _past_days(self, kind: str) -> int:
-        """How long without new evidence before what changes is 以前的事: PAST_DAYS, twice that for a kind whose
-        past notes the user said twice or more are still so (they came back by the user's word)."""
+        """How long without new evidence before what changes is 以前的事: PAST_DAYS (RELATION_DAYS for a relation,
+        kind "relation"), twice that for a kind whose past notes the user said twice or more are still so (they came
+        back by the user's word)."""
         with self._lock:
             row = self.db.execute("SELECT value FROM learning WHERE name=?", (f"past.revived.{kind}",)).fetchone()
-        return PAST_DAYS * (2 if row and int(row[0] or 0) >= 2 else 1)
+        return (RELATION_DAYS if kind == "relation" else PAST_DAYS) * (2 if row and int(row[0] or 0) >= 2 else 1)
 
     def _cites_of(self, nid: int) -> list[int]:
         with self._lock:
@@ -926,6 +1189,8 @@ class Memory:
                                 (nid, row["kind"], row["topic"], nid))
 
     def add_cites(self, nid: int, record_ids: list[int]) -> None:
+        if self._is_stopped():
+            return
         if record_ids:
             self._speakers(record_ids)
         with self._lock, self.db:
@@ -937,9 +1202,10 @@ class Memory:
         if not n or n["status"] not in ("proposed", "observed", "active", "past"):
             raise ValueError("this note can no longer be changed")
         if n["status"] == "past" and status == "active":      # still so, the user says: this kind waits longer
+            family = "relation" if _relation(n["kind"], n.get("topic")) else n["kind"]
             with self._lock, self.db:
                 self.db.execute("INSERT INTO learning (name, value) VALUES (?, '1') ON CONFLICT(name) DO UPDATE SET"
-                                " value=CAST(value AS INTEGER)+1", (f"past.revived.{n['kind']}",))
+                                " value=CAST(value AS INTEGER)+1", (f"past.revived.{family}",))
         rid = self._said("statement", f"{verb}：{n['text']}", topic="note-decision", ref=str(nid),
                          sensitive=_split(n["sensitive"]), now=now)
         with self._lock, self.db:
@@ -952,7 +1218,7 @@ class Memory:
         """The user said about a note, here or on the page: what the memory meant to ask about it is answered."""
         with self._lock, self.db:
             self.db.execute("UPDATE asks SET status=?, decided_at=?, answer_record=COALESCE(?, answer_record) WHERE"
-                            " about_note=? AND status IN ('open', 'later')", (status, _now(now), rid, nid))
+                            " about_note=? AND status IN ('open', 'later', 'archived')", (status, _now(now), rid, nid))
 
     def confirm(self, nid: int, *, now: str | None = None) -> None:
         self._decide(nid, "active", "确认", now)
@@ -964,6 +1230,13 @@ class Memory:
     def reject(self, nid: int, *, now: str | None = None) -> None:
         """Kept, marked rejected, so the same guess is not raised again."""
         self._decide(nid, "rejected", "否定", now)
+
+    def reject_family(self, nid: int, *, now: str | None = None) -> int:
+        """「这一类都不要」: every note of this one's family the user has not settled. Returns how many."""
+        ids = same_family(self, nid)
+        for i in ids:
+            self.reject(i, now=now)
+        return len(ids)
 
     def later(self, nid: int, *, now: str | None = None) -> int:
         """The user put it off (以后再说): a receipt, never a decision -- putting off is not saying no (principle 2).
@@ -1005,7 +1278,9 @@ class Memory:
 
     # ---- forgetting: the one place where things are really deleted -------------------------------------
     def forget(self, nid: int) -> None:
-        """Delete a note, the versions it superseded, and the records nothing else cites."""
+        """Delete a note, the versions it superseded, and the records nothing else cites. That the user deleted one
+        of this family is kept as a count: it says this kind of thing is not wanted, not what it said."""
+        deleted(self, nid)
         with self._lock, self.db:
             self._forget(nid)
         self._wipe()
@@ -1045,6 +1320,7 @@ class Memory:
         for r in gone:
             self.db.execute("DELETE FROM records WHERE id=?", (r,))
         self._unref(gone)
+        self._prune_people()
 
     def _drop(self, ids: list[int]) -> None:
         """Delete records. An understanding left citing nothing rested only on them, so it goes too."""
@@ -1060,6 +1336,35 @@ class Memory:
                     and not self.db.execute("SELECT 1 FROM cites WHERE note_id=?", (nid,)).fetchone()):
                 self._forget(nid)
         self._unref(ids)
+        self._prune_people()
+
+    def _prune_people(self) -> None:
+        """Facts or records are gone: a person keeps only the names and addresses a live fact or a record still
+        gives, and one with none left goes (unless the user took a stand on them) -- at once, not at the next
+        rumination: a forgotten fact's address must not stay behind. Inside the caller's transaction."""
+        live = ",".join("?" * len(LIVE))
+        for eid, aliases_json, decided in self.db.execute(
+                "SELECT id, aliases_json, decided_at FROM entities WHERE status<>'merged'").fetchall():
+            aliases = json.loads(aliases_json or "[]")
+            keep = []
+            for a in aliases:
+                ids = [_int(n) for n in a.get("notes") or []]
+                rids = [_int(r) for r in a.get("records") or []]
+                if ((ids and self.db.execute(f"SELECT 1 FROM notes WHERE id IN ({','.join('?' * len(ids))}) AND status IN"
+                                             f" ({live}) AND entity=?", ids + list(LIVE) + [eid]).fetchone())
+                        or (rids and self.db.execute(f"SELECT 1 FROM records WHERE topic=? AND id IN"
+                                                     f" ({','.join('?' * len(rids))})", [CONTACT] + rids).fetchone())):
+                    keep.append(a)
+            if len(keep) == len(aliases):
+                continue
+            if not keep and not decided:
+                self.db.execute("DELETE FROM entities WHERE id=?", (eid,))
+                self.db.execute("UPDATE notes SET entity=NULL WHERE entity=?", (eid,))
+            else:
+                names = [a["name"] for a in keep if a.get("name")]
+                self.db.execute("UPDATE entities SET aliases_json=?, name=CASE WHEN ? THEN name ELSE ? END WHERE id=?",
+                                (json.dumps(keep, ensure_ascii=False), bool(decided),
+                                 names[0] if names else (keep[0].get("address") if keep else ""), eid))
 
     def _unref(self, ids: list[int]) -> None:
         """Records are gone: what still pointed at them lets go. Ids come back (no AUTOINCREMENT), so a pointer
@@ -1170,6 +1475,18 @@ class Memory:
         return {"records": before[0] - after[0], "notes": before[1] - after[1]}
 
     # ---- sensitive context: read only with the user's leave (top-level ADR 0004) --------------------------
+    def stopped(self) -> list[dict]:
+        """The tools the user stopped the memory learning from (0.38): [{"tool", "at"}]. A tool may look, to spare
+        work nobody keeps; its writes are refused either way."""
+        with self._lock:
+            return [dict(r) for r in self.db.execute("SELECT tool, at FROM stopped ORDER BY tool")]
+
+    def _is_stopped(self) -> bool:
+        if self.tool == KEEPER:
+            return False
+        with self._lock:
+            return self.db.execute("SELECT 1 FROM stopped WHERE tool=?", (self.tool,)).fetchone() is not None
+
     def allowed(self) -> list[str]:
         """Every kind (ADR 0013; before 0.23 a tool read a kind of sensitive context only with the user's leave)."""
         return sorted(SENSITIVE_KINDS)
@@ -1247,14 +1564,17 @@ class Memory:
         "revise" with `text` (the user's own
         words, sure), "later" (put off; asked again some other time). A question of its own: "answer" with `text`.
         A suggestion: "useful", "useless" (not again for a while), "never" (not again); one about a note (a habit:
-        "以后都这样处理？") confirms it when useful."""
+        "以后都这样处理？") confirms it when useful. Any of them: "archive" (put away, not answered: archive)."""
         a = self._open_ask(aid)
         nid = a.get("about_note")
-        if a["kind"] == "question" and nid and choice in ("yes", "no", "revise", "later", "past"):
+        if a["kind"] == "question" and nid and choice in ("yes", "no", "revise", "later", "past", "archive"):
             n = self.note(nid)
             if not n or n["status"] not in ("proposed", "observed", "active", "past"):
                 self._settle_asks(nid, None, now)        # decided already, or forgotten
                 return
+        if choice == "archive":                          # any of them: put away, not answered (archive)
+            self.archive(aid, now=now)
+        elif a["kind"] == "question" and nid and choice in ("yes", "no", "revise", "later", "past"):
             if choice == "yes":
                 self.confirm(nid, now=now)
             elif choice == "no":
@@ -1267,6 +1587,8 @@ class Memory:
                 self.revise(nid, text, sensitive=sensitive_kinds(text), now=now)
             else:
                 self.later(nid, now=now)
+        elif a["kind"] == "question" and choice == "answer" and str(a.get("key") or "").startswith(SAME_PERSON):
+            self._same_person(a, text, now)
         elif a["kind"] == "question" and choice == "answer":
             self.answer(aid, text or "", now=now)
         elif a["kind"] == "question" and choice == "later":   # a question of the memory's own, put off
@@ -1285,6 +1607,30 @@ class Memory:
         else:
             raise ValueError(f"not an answer to this: {choice}")
 
+    def _same_person(self, a: dict, text: str | None, now: str | None) -> None:
+        """「是不是同一个人」 answered (0.39): 是 merges the two, the one with more behind it staying (as the user would
+        on the person's page); 不是 is kept as their word and the pair is never asked again. Either way the answer is a
+        statement under the question, like any of the memory's own."""
+        said = " ".join(str(text or "").split())
+        if said not in (SAME_YES, SAME_NO):
+            raise ValueError(f"答「{SAME_YES}」或「{SAME_NO}」")
+        keys = [tuple(k) for k in json.loads(a["key"][len(SAME_PERSON):])]
+        self.answer(a["id"], said, now=now)
+        if said == SAME_NO:
+            with self._lock, self.db:
+                self.db.execute("UPDATE asks SET status='never' WHERE id=?", (a["id"],))
+            return
+        who = [self._person_with(k) for k in keys]
+        if None in who or who[0]["id"] == who[1]["id"]:
+            return                                   # one went, or they are one already
+        keep, other = sorted(who, key=lambda e: (sum(len(x.get("notes") or []) + len(x.get("records") or [])
+                                                     for x in e["aliases"]), -e["id"]), reverse=True)
+        self.merge_people(keep["id"], other["id"], now=now)
+
+    def _person_with(self, key: tuple) -> dict | None:
+        """The person (active or a guess) going by this name or address."""
+        return next((e for e in self.entities(kind="person") if key in {_alias_key(x) for x in e["aliases"]}), None)
+
     def dismiss(self, aid: int, *, now: str | None = None) -> None:
         """The user does not want to be asked this: a receipt, and the question is closed."""
         a = self._open_ask(aid)
@@ -1292,6 +1638,37 @@ class Memory:
                    sensitive=_split(a["sensitive"]), now=now)
         with self._lock, self.db:
             self.db.execute("UPDATE asks SET status='dismissed', decided_at=? WHERE id=?", (_now(now), aid))
+
+    def archive(self, aid: int, *, now: str | None = None) -> None:
+        """归档 (0.34): the user puts it away without answering. Not yes or no, not 以后再说 (asked again after
+        LATER_DAYS), not 别再提: nothing is said about the note and nothing drawn from it, and it is not asked again
+        by itself -- while it is archived, the memory asks nothing new about the same matter (WholeMemory.ask). It
+        waits among the archived (`asks(status=["archived"])`), past its time too, until the user puts it back
+        (unarchive), or settles its note on a page, or the note changes (WITHDRAW_ASKS). One already past its time,
+        not yet taken back, is not archived (ValueError): it would never expire, and put back it would be past it."""
+        a = self._open_ask(aid)
+        if a.get("expires_at") and a["expires_at"] <= _now(now):
+            raise ValueError("this question is past its time")
+        with self._lock, self.db:
+            self.db.execute("UPDATE asks SET status='archived', decided_at=? WHERE id=?", (_now(now), aid))
+
+    def unarchive(self, aid: int, *, now: str | None = None) -> int:
+        """Put back what was archived: open again, with as long left before it expires as it had when put away,
+        under a new number -- whoever showed it took the old number as answered when it was put away from its card,
+        and would not show it again. Returns the new number."""
+        at = _now(now)
+        with self._lock, self.db:
+            row = self.db.execute("SELECT expires_at, decided_at FROM asks WHERE id=? AND status='archived'", (aid,)).fetchone()
+            if not row:
+                raise ValueError("this is not archived")
+            expires, put = row
+            if expires and put:
+                gone = max(0.0, _days(put, at)) * 86400
+                expires = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(
+                    time.mktime(time.strptime(_full(expires), "%Y-%m-%d %H:%M:%S")) + gone))
+            new = self.db.execute("SELECT COALESCE(MAX(id), 0) + 1 FROM asks").fetchone()[0]
+            self.db.execute("UPDATE asks SET id=?, status='open', decided_at=NULL, expires_at=? WHERE id=?", (new, expires, aid))
+        return new
 
     # ---- recall: read only (principle 10) ----------------------------------------------------------------
     @staticmethod
@@ -1522,7 +1899,7 @@ class WholeMemory(Memory):
 
     def restore_catch_all(self, *, now: str | None = None) -> list[int]:
         """Before 0.19.1 a fact on a catch-all topic (其他) took the place of the one before it, as if the topic held
-        one value: those come back, graded by the table (a guess, 观察中, or likely). Once, when the whole memory
+        one value: those come back, graded by the table (a guess or likely). Once, when the whole memory
         opens. What the user rewrote stays superseded. Returns the notes restored."""
         marks = ",".join("?" * len(CATCH_ALL))
         with self._lock:
@@ -1560,7 +1937,7 @@ class WholeMemory(Memory):
             cites = self._cites_of(nid)
             speakers = self._speakers(cites) if cites else set()
             if "third_party" in speakers:
-                status = "active" if not _needs_word(sensitive_kinds(text)) and self._well_seen(cites, now) else "observed"
+                status = "active" if not _needs_word(sensitive_kinds(text)) and self._well_seen(cites, now) else "proposed"
             else:
                 status = "active" if self._likely(kind, cites, text) else "proposed"
             with self._lock, self.db:
@@ -1578,6 +1955,328 @@ class WholeMemory(Memory):
         with self._lock, self.db:
             self.db.execute("UPDATE notes SET status='proposed', superseded_by=NULL, data_json=? WHERE id=?",
                             (json.dumps(data, ensure_ascii=False), nid))
+
+    # ---- people (0.30) ---------------------------------------------------------------------------------------
+    def link_people(self, *, now: str | None = None) -> int:
+        """Gather what the memory has about each person into one entity (0.30, 0.31), from scratch every time it
+        ruminates:
+        - facts from the user's own mail about someone (luoke-mail's "同事:王磊", with the address it wrote), each
+          pointed at its person (notes.entity) and staying with them;
+        - whom the user writes to (luoke-mail's `mail-contact`: one record per address and month, the newest of
+          each kept), by the address; someone written to often enough (CONTACT_MIN) is a person of their own.
+        One person by an address first, then by a name; two addresses under one name are taken for one person.
+        What the user said wins: names and addresses they moved (merging, parting) stay where they put them,
+        and a name they gave stays. Each person gets a profile (`data.contact`): since when, the last time, in how
+        many months, how many mails, the record ids it rests on. Someone with nothing left goes, unless the user
+        took a stand on them. Only the user's own words and doings: someone who only ever wrote to the user is not
+        one of their people. Returns how many people there are."""
+        at = _now(now)
+        live = ",".join("?" * len(LIVE))
+        with self._lock:
+            rows = [dict(r) for r in self.db.execute(
+                "SELECT id, topic, text, status, entity FROM notes WHERE kind='fact' AND topic IS NOT NULL AND status IN"
+                f" ({live}) AND (origin='user' OR EXISTS (SELECT 1 FROM cites c JOIN records r ON r.id=c.record_id"
+                " WHERE c.note_id=notes.id AND r.speaker='user')) ORDER BY formed_at, id", list(LIVE))]
+            every = {r["id"]: dict(r) for r in self.db.execute("SELECT * FROM entities WHERE kind='person'")}
+        contacts = self._contacts()
+        with self._lock:                              # what the user's topics and terms are, to find in subjects
+            topics = [dict(r) for r in self.db.execute(
+                "SELECT id, text FROM notes WHERE kind IN ('interest', 'term') AND status='active' AND entity IS NULL"
+                " AND length(text) >= 2")]
+        target = {}                                   # merged into: followed to the one that stays
+        for eid, e in every.items():
+            t, seen = eid, set()
+            while every.get(t, {}).get("status") == "merged" and every[t].get("merged_into") in every and t not in seen:
+                seen.add(t)
+                t = every[t]["merged_into"]
+            target[eid] = t
+        ents = {eid: e for eid, e in every.items() if e["status"] != "merged"}
+        pinned, by_key = {}, {}
+        for e in every.values():                      # what the user put where comes first
+            for k in (json.loads(e.get("data_json") or "null") or {}).get("pinned") or []:
+                pinned.setdefault(tuple(k), target[e["id"]])
+        for e in every.values():
+            for a in json.loads(e["aliases_json"] or "[]"):
+                by_key.setdefault(_alias_key(a), target[e["id"]])
+        by_key.update(pinned)
+        groups: dict = {}
+
+        def new(name: str) -> int:
+            eid = self.db.execute("INSERT INTO entities (kind, name, aliases_json, status, formed_at) VALUES"
+                                  " ('person', ?, '[]', 'proposed', ?)", (name, at)).lastrowid
+            ents[eid] = {"id": eid, "name": name, "decided_at": None, "status": "proposed", "data_json": None}
+            target[eid] = eid
+            return eid
+
+        with self._lock, self.db:
+            for n in rows:
+                who = _person(n["topic"], n["text"])
+                if not who:
+                    continue
+                rel, name, addrs = who
+                keys = [("address", a) for a in addrs] + ([("name", name.casefold())] if name else [])
+                eid = next((pinned[k] for k in keys if k in pinned), None)
+                if eid is None and _int(n["entity"]) in target:
+                    eid = target[_int(n["entity"])]
+                eid = eid or next((by_key[k] for k in keys if k in by_key), None) or new(name or addrs[0])
+                for k in keys:
+                    by_key.setdefault(k, eid)
+                groups.setdefault(eid, {"facts": [], "contacts": []})["facts"].append((n, rel, name, addrs))
+            for addr, c in sorted(contacts.items()):
+                keys = [("address", addr)] + ([("name", c["name"].casefold())] if c["name"] else [])
+                eid = next((by_key[k] for k in keys if k in by_key), None)
+                if eid is None:
+                    if not _worth_a_person(addr, c):
+                        continue
+                    eid = new(c["name"] or addr)
+                elif _listish(addr, c) and not any(k in pinned for k in keys) and not ents.get(eid, {}).get("decided_at"):
+                    continue                          # seen as a person before LISTISH knew it: no longer (0.36.4)
+                for k in keys:
+                    by_key.setdefault(k, eid)
+                groups.setdefault(eid, {"facts": [], "contacts": []})["contacts"].append((addr, c))
+            linked = []
+            for eid, e in list(ents.items()):
+                got = groups.get(eid)
+                if not got:
+                    if not e.get("decided_at"):
+                        self.db.execute("DELETE FROM entities WHERE id=?", (eid,))
+                        self.db.execute("UPDATE notes SET entity=NULL WHERE entity=?", (eid,))
+                    continue
+                aliases: dict = {}
+                for n, rel, name, addrs in got["facts"]:
+                    for a in ([{"name": name}] if name else []) + [{"address": x} for x in addrs]:
+                        aliases.setdefault(_alias_key(a), dict(a, notes=[], records=[]))["notes"].append(n["id"])
+                    linked.append(n["id"])
+                for addr, c in got["contacts"]:
+                    for a in [{"address": addr}] + ([{"name": c["name"]}] if c["name"] else []):
+                        aliases.setdefault(_alias_key(a), dict(a, notes=[], records=[]))["records"] += c["records"]
+                data = json.loads(e.get("data_json") or "null") or {}
+                names = [a for a in aliases.values() if a.get("name")]
+                display = (e["name"] if data.get("named") and e.get("name") else          # a name the user gave
+                           max(names, key=lambda a: len(a["notes"]) * 100 + len(a["records"]))["name"] if names
+                           else next(iter(aliases.values()))["address"])
+                relations = [{"relation": rel, "note": n["id"], "status": n["status"]} for n, rel, _, _ in got["facts"]]
+                profile = _profile([c for _, c in got["contacts"]], at)
+                if profile:
+                    profile["together"] = _together(profile.pop("_subjects"), topics)
+                status = e["status"] if e.get("decided_at") else (
+                    "active" if any(n["status"] == "active" for n, *_ in got["facts"])
+                    or (profile and any(_worth_a_person(a, c) for a, c in got["contacts"])) else "proposed")
+                data.update(relations=relations, contact=profile)
+                self.db.execute("UPDATE entities SET name=?, aliases_json=?, status=?, data_json=? WHERE id=?",
+                                (display, json.dumps(list(aliases.values()), ensure_ascii=False), status,
+                                 json.dumps(data, ensure_ascii=False), eid))
+                ids = sorted({n["id"] for n, *_ in got["facts"]})
+                if ids:
+                    self.db.execute(f"UPDATE notes SET entity=? WHERE id IN ({','.join('?' * len(ids))})", [eid] + ids)
+            keep = sorted(set(linked)) or [0]
+            self.db.execute(f"UPDATE notes SET entity=NULL WHERE kind='fact' AND entity IS NOT NULL AND id NOT IN"
+                            f" ({','.join('?' * len(keep))})", keep)      # rejected, superseded: about no one now
+            self.db.execute("UPDATE notes SET entity=(SELECT merged_into FROM entities WHERE id=notes.entity) WHERE"
+                            " entity IN (SELECT id FROM entities WHERE status='merged')")   # a name of one merged in
+            return self.db.execute("SELECT COUNT(*) FROM entities WHERE kind='person' AND status IN"
+                                   " ('active', 'proposed')").fetchone()[0]
+
+    def _contacts(self) -> dict:
+        """Whom the user writes to (luoke-mail's `mail-contact`, 0.31): address -> {name (the newest month's),
+        months: {YYYY-MM: (count, to, cc)}, records, first, last (when the last mail of the newest month went)}.
+        A month written again (a later count) counts once, as its newest record says."""
+        with self._lock:
+            rows = self.db.execute("SELECT id, ref, data_json, happened_at FROM records WHERE topic=? AND speaker='user'"
+                                   " ORDER BY recorded_at, id", (CONTACT,)).fetchall()
+        newest: dict = {}
+        for rid, ref, data_json, happened in rows:
+            try:
+                data = json.loads(data_json) if data_json else {}
+            except ValueError:
+                continue
+            addr = str((data or {}).get("sender") or "").strip().lower()
+            month = str((data or {}).get("month") or "")[:7]
+            if "@" in addr and re.fullmatch(r"\d{4}-\d{2}", month):
+                newest[(addr, month)] = (rid, data, happened)
+        out: dict = {}
+        for (addr, month), (rid, data, happened) in sorted(newest.items(), key=lambda kv: kv[0][1]):
+            c = out.setdefault(addr, {"name": "", "months": {}, "records": [], "first": month, "last": "", "last_at": ""})
+            c["months"][month] = (_int(data.get("count")), _int(data.get("to")), _int(data.get("cc")))
+            c["records"].append(rid)
+            subjects = data.get("subjects") if isinstance(data.get("subjects"), list) else []
+            c.setdefault("subjects", {})[month] = [" ".join(str(x).split())[:80] for x in subjects if str(x).strip()][:5]
+            c["name"] = " ".join(str(data.get("name") or "").split())[:60] or c["name"]
+            c["last"], c["last_at"] = month, max(c["last_at"], str(happened or "")[:19])
+        return out
+
+    # ---- what the user says about a person (0.31): on the memory's own page -----------------------------------
+    def _person_row(self, eid: int) -> dict:
+        with self._lock:
+            row = self.db.execute("SELECT * FROM entities WHERE id=? AND kind='person'", (_int(eid),)).fetchone()
+        if not row or row["status"] == "merged":
+            raise ValueError("这个人已经不在了")
+        return dict(row)
+
+    def _pin(self, eid: int, keys: list, data: dict | None = None, *, status: str | None = None,
+             name: str | None = None, now: str | None = None) -> None:
+        """The user put these names and addresses with this person: they stay there."""
+        row = self._person_row(eid)
+        d = dict(json.loads(row.get("data_json") or "null") or {}, **(data or {}))
+        d["pinned"] = [list(k) for k in dict.fromkeys(tuple(k) for k in (d.get("pinned") or []) + [list(k) for k in keys])]
+        with self._lock, self.db:
+            for other, other_json in self.db.execute("SELECT id, data_json FROM entities WHERE id<>?", (eid,)).fetchall():
+                od = json.loads(other_json or "null") or {}
+                kept = [k for k in od.get("pinned") or [] if tuple(k) not in {tuple(x) for x in keys}]
+                if kept != (od.get("pinned") or []):
+                    od["pinned"] = kept
+                    self.db.execute("UPDATE entities SET data_json=? WHERE id=?", (json.dumps(od, ensure_ascii=False), other))
+            self.db.execute("UPDATE entities SET data_json=?, decided_at=?, status=COALESCE(?, status), name=COALESCE(?, name)"
+                            " WHERE id=?", (json.dumps(d, ensure_ascii=False), _now(now), status, name, eid))
+
+    def _keys_of(self, eid: int) -> list:
+        row = self._person_row(eid)
+        return [_alias_key(a) for a in json.loads(row["aliases_json"] or "[]")]
+
+    def rename_person(self, eid: int, name: str, *, now: str | None = None) -> None:
+        """The user names this person: the name stays, and is a term of theirs (the user's own words: sure)."""
+        name = " ".join(str(name or "").split())[:60]
+        if not name or never_kept(name):
+            raise ValueError("请填写名字")
+        self._pin(eid, [("name", name.casefold())] + self._keys_of(eid), {"named": True}, name=name, status="active", now=now)
+        same = self._same_note("term", name)
+        nid = same["id"] if same and same["status"] in LIVE else self.state("term", name, now=now)
+        with self._lock, self.db:
+            self.db.execute("UPDATE notes SET entity=?, data_json=? WHERE id=?",
+                            (_int(eid), json.dumps({"sort": "person"}), nid))
+
+    def merge_people(self, keep: int, other: int, *, now: str | None = None) -> None:
+        """Two are one person (the user says): the other's names, addresses and notes go to `keep`."""
+        if _int(keep) == _int(other):
+            raise ValueError("是同一个人")
+        keys = self._keys_of(other) + self._keys_of(keep)
+        with self._lock, self.db:
+            self.db.execute("UPDATE entities SET status='merged', merged_into=?, decided_at=? WHERE id=?",
+                            (_int(keep), _now(now), _int(other)))
+            self.db.execute("UPDATE notes SET entity=? WHERE entity=?", (_int(keep), _int(other)))
+        self._pin(keep, keys, status="active", now=now)
+        self.link_people(now=now)
+
+    def split_person(self, eid: int, alias: dict, *, now: str | None = None) -> int:
+        """This name or address is someone else (the user says): a person of its own, with the notes that came
+        with it. Returns the new person."""
+        key = _alias_key(alias)
+        if key not in self._keys_of(eid):
+            raise ValueError("这个人没有这个叫法")
+        if len(self._keys_of(eid)) < 2:
+            raise ValueError("只剩这一个叫法，拆不开")
+        a = next(x for x in json.loads(self._person_row(eid)["aliases_json"]) if _alias_key(x) == key)
+        with self._lock, self.db:
+            new = self.db.execute("INSERT INTO entities (kind, name, aliases_json, status, formed_at, decided_at) VALUES"
+                                  " ('person', ?, '[]', 'active', ?, ?)",
+                                  (a.get("name") or a.get("address"), _now(now), _now(now))).lastrowid
+            ids = [_int(n) for n in a.get("notes") or []]
+            if ids:
+                self.db.execute(f"UPDATE notes SET entity=? WHERE id IN ({','.join('?' * len(ids))})", [new] + ids)
+        self._pin(new, [key], now=now)
+        row = self._person_row(eid)
+        d = json.loads(row.get("data_json") or "null") or {}
+        d["pinned"] = [k for k in (d.get("pinned") or []) if tuple(k) != key]
+        with self._lock, self.db:
+            self.db.execute("UPDATE entities SET data_json=?, decided_at=? WHERE id=?",
+                            (json.dumps(d, ensure_ascii=False), _now(now), _int(eid)))
+        self.link_people(now=now)
+        return new
+
+    def reject_person(self, eid: int, *, now: str | None = None) -> None:
+        """Not a person of the user's (a mailing list, a shop): kept as not one, so it does not come back; its
+        names are struck as terms."""
+        self._pin(eid, self._keys_of(eid), status="rejected", now=now)
+        with self._lock:
+            terms = [r[0] for r in self.db.execute("SELECT id FROM notes WHERE entity=? AND kind='term' AND status IN"
+                                                   " ('active', 'proposed', 'observed')", (_int(eid),))]
+        for nid in terms:
+            self.reject(nid, now=now)
+
+    def forget_person(self, eid: int) -> dict:
+        """Forget this person: every note about them (as forgetting each), whom-the-user-writes-to records of
+        their addresses, and the person. Someone the user writes to again later is seen anew. Returns counts."""
+        row = self._person_row(eid)
+        addrs = [a["address"] for a in json.loads(row["aliases_json"] or "[]") if a.get("address")]
+        with self._lock:
+            notes = [r[0] for r in self.db.execute("SELECT id FROM notes WHERE entity=?", (row["id"],))]
+            rids = [r[0] for r in self.db.execute("SELECT id, data_json FROM records WHERE topic=?", (CONTACT,))
+                    if str((json.loads(r[1] or "null") or {}).get("sender") or "").lower() in addrs]
+        for nid in notes:
+            if self.note(nid):
+                deleted(self, nid)
+        with self._lock, self.db:
+            for nid in notes:
+                if self.db.execute("SELECT 1 FROM notes WHERE id=?", (nid,)).fetchone():
+                    self._forget(nid)
+            self._drop([r for r in rids if self.db.execute("SELECT 1 FROM records WHERE id=?", (r,)).fetchone()])
+            self.db.execute("DELETE FROM entities WHERE id=? OR merged_into=?", (row["id"], row["id"]))
+            self.db.execute("UPDATE notes SET entity=NULL WHERE entity=?", (row["id"],))
+        self._wipe()
+        return {"notes": len(notes), "records": len(rids)}
+
+    def hotwords(self, limit: int = 50) -> list[str]:
+        """Words for the speech model (0.33, voice hotwords), at most `limit`: the user's terms, sure before likely
+        before guesses (as luoke-ime picked them), but shared out so that no one sort crowds the others out --
+        people's names at most HOTWORD_SHARE["person"] of them (those written to most these last months first),
+        English names at most HOTWORD_SHARE["name"], the rest the user's own words; room one sort leaves goes to
+        the others. Not sensitive ones, nothing over 24 characters or with a line break."""
+        notes = self.notes(kinds=["term"], confidence=["sure", "likely", "guess"])
+        with self._lock:
+            often = {r[0]: _often(json.loads(r[1] or "null")) for r in self.db.execute(
+                "SELECT id, data_json FROM entities WHERE status='active'")}
+        rank = {"sure": 0, "likely": 1, "guess": 2}
+        buckets: dict = {"person": [], "name": [], "own": []}
+        seen = set()
+        for n in sorted(notes, key=lambda n: n.get("fresh") or n.get("formed_at") or "", reverse=True):
+            t = (n.get("text") or "").strip()
+            if n.get("sensitive") or not t or len(t) > 24 or "\n" in t or t in seen:
+                continue
+            seen.add(t)
+            sort = (n.get("data") or {}).get("sort")
+            buckets[sort if sort in ("person", "name") else "own"].append(n)
+        for sort, ns in buckets.items():
+            ns.sort(key=lambda n: (rank.get(n.get("confidence"), 3),
+                                   -often.get(_int(n.get("entity")), 0) if sort == "person" else 0))
+        out, rest = [], []
+        for sort in ("person", "name"):               # each up to its share
+            room = max(1, int(limit * HOTWORD_SHARE[sort]))
+            out += buckets[sort][:room]
+            rest += buckets[sort][room:]
+        room = max(0, limit - len(out))               # the user's own words: the rest
+        out += buckets["own"][:room]
+        rest += buckets["own"][room:]
+        if len(out) < limit:                          # what one sort leaves goes to the others
+            out += sorted(rest, key=lambda n: rank.get(n.get("confidence"), 3))[:limit - len(out)]
+        return [n["text"].strip() for n in sorted(out, key=lambda n: rank.get(n.get("confidence"), 3))]
+
+    def entities(self, kind: str | None = None, status: list[str] | None = None) -> list[dict]:
+        """The people the memory knows (0.30), the most written about first: {id, kind, name, aliases: [{name or
+        address, notes}], status (active: a fact about them is in effect; proposed: only guesses), relations:
+        [{relation, note, status}], formed_at, decided_at, notes: how many notes are about them}. By default the
+        active and proposed ones."""
+        status = status or ["active", "proposed"]
+        q, args = f"SELECT * FROM entities WHERE status IN ({','.join('?' * len(status))})", list(status)
+        if kind:
+            q += " AND kind=?"
+            args.append(kind)
+        with self._lock:
+            rows = [dict(r) for r in self.db.execute(q, args)]
+            counts = dict(self.db.execute("SELECT entity, COUNT(*) FROM notes WHERE entity IS NOT NULL GROUP BY entity"))
+        out = [_entity_row(r, counts.get(r["id"], 0)) for r in rows]
+        return sorted(out, key=lambda e: (-e["notes"], e["name"], e["id"]))
+
+    def entity(self, eid: int) -> dict | None:
+        """One person with every note about them (notes(): any status, newest first): `about`."""
+        with self._lock:
+            row = self.db.execute("SELECT * FROM entities WHERE id=?", (_int(eid),)).fetchone()
+            if not row:
+                return None
+            about = [_with_confidence(dict(r)) for r in self.db.execute(
+                "SELECT * FROM notes WHERE entity=? ORDER BY formed_at DESC, id DESC", (row["id"],))]
+        e = _entity_row(dict(row), len(about))
+        e["about"] = about
+        return e
 
     def merged(self, nid: int) -> list[dict]:
         """What was folded into this note (one fact written several times), for the page to show and part again."""
@@ -1606,28 +2305,23 @@ class WholeMemory(Memory):
                     self.db.execute("INSERT OR IGNORE INTO cites (note_id, record_id) SELECT ?, record_id FROM cites WHERE note_id=?",
                                     (into["id"], n["id"]))
                     self.db.execute("UPDATE notes SET status='superseded', superseded_by=? WHERE id=?", (into["id"], n["id"]))
-                    self.db.execute("UPDATE asks SET status='withdrawn', decided_at=? WHERE about_note=? AND status='open'",
-                                    (_now(None), n["id"]))
+                    self.db.execute(WITHDRAW_ASKS + " AND about_note=?", (_now(None), n["id"]))
                 folded += 1
         return folded
 
     def regrade(self, *, now: str | None = None) -> list[int]:
         """What is in effect without the user's word, graded again by the table (GRADES): what the user's records no
-        longer bear out goes back to a guess; a fact from others that is no longer plain or well seen goes back to
-        观察中. What the user confirmed, rejected or said stays as it is. Only ever down: up is conclude's, with new
+        longer bear out goes back to a guess, and so does a fact from others that is no longer plain or well
+        seen. What the user confirmed, rejected or said stays as it is. Only ever down: up is conclude's, with new
         evidence. Returns the notes that went down."""
         with self._lock:
             rows = self.db.execute("SELECT id, kind, text, data_json FROM notes WHERE status='active' AND origin='inferred'"
                                    " AND decided_at IS NULL").fetchall()
-        down: dict = {"proposed": [], "observed": []}
+        down: dict = {"proposed": []}
         for nid, kind, text, data_json in rows:
             cites = self._cites_of(nid)
             speakers = self._speakers(cites) if cites else set()
             if "third_party" in speakers:
-                try:
-                    about = (json.loads(data_json) or {}).get("about") if data_json else None
-                except (ValueError, AttributeError):
-                    about = None
                 plain = kind == "fact" and not _needs_word(sensitive_kinds(text)) and self._well_seen(cites, now)
                 if not plain:
                     down["proposed"].append(nid)
@@ -1645,7 +2339,7 @@ class WholeMemory(Memory):
                 if ids:
                     self.db.execute(f"UPDATE notes SET status=? WHERE id IN ({','.join('?' * len(ids))})", [status] + ids)
         self.age(now=now)
-        return sorted(down["proposed"] + down["observed"])
+        return sorted(down["proposed"])
 
     def age(self, *, now: str | None = None) -> list[int]:
         """What changes (work, city, interests, accounts, habits; not a name or a school one went to), with nothing
@@ -1653,20 +2347,23 @@ class WholeMemory(Memory):
         asked about as now. Whatever the user said: their word of long ago is old too. Returns those that went."""
         at = _now(now)
         with self._lock:
-            rows = self.db.execute("SELECT id, kind, topic, text FROM notes WHERE status IN ('active', 'proposed', 'observed')"
-                                   ).fetchall()      # a guess of long ago too
+            rows = self.db.execute("SELECT id, kind, topic, text, entity FROM notes WHERE status IN ('active', 'proposed',"
+                                   " 'observed')").fetchall()      # a guess of long ago too
+            wrote = {r[0]: ((json.loads(r[1] or "null") or {}).get("contact") or {}).get("last_at") or ""
+                     for r in self.db.execute("SELECT id, data_json FROM entities")}
         gone = []
-        for nid, kind, topic, text in rows:
+        for nid, kind, topic, text, entity in rows:
             if _lasting(kind, topic, text):
                 continue
-            fresh = self._fresh(nid)
-            if fresh and _days(fresh, at) > self._past_days(kind):
+            fresh, family = self._fresh(nid), kind
+            if _relation(kind, topic):           # still writing to them: still so (0.31)
+                family, fresh = "relation", max(fresh, _day(wrote.get(_int(entity)) or ""))
+            if fresh and _days(fresh, at) > self._past_days(family):
                 gone.append(nid)
         if gone:
             with self._lock, self.db:
                 self.db.execute(f"UPDATE notes SET status='past' WHERE id IN ({','.join('?' * len(gone))})", gone)
-                self.db.execute(f"UPDATE asks SET status='withdrawn', decided_at=? WHERE status='open' AND about_note IN"
-                                f" ({','.join('?' * len(gone))})", [at] + gone)
+                self.db.execute(WITHDRAW_ASKS + f" AND about_note IN ({','.join('?' * len(gone))})", [at] + gone)
         return gone
 
     def records(self, *, tool: str | None = None, topic: str | None = None, kind: str | None = None,
@@ -1692,8 +2389,9 @@ class WholeMemory(Memory):
         """Something the memory would like to ask or suggest. Stored, never sent: luoke-agent picks when to ask.
         The same open question is not asked twice. `answer` says how it is answered: {"type": "yes_no"},
         {"type": "choice", "options": [...]} or {"type": "text"}. It is as sensitive as the note it is about.
-        `key` names the matter (ADR 0012): none is made while one with the same key is open or put off, after
-        the user said never, or within REASK_DAYS of their last answer -- returns None then. `evidence` is what it
+        `key` names the matter (ADR 0012): none is made while one with the same key is open, archived or put off,
+        after the user said never, or within REASK_DAYS of their last answer -- returns None then; one archived with
+        the same words is returned as it is. `evidence` is what it
         rests on, in words; `rank` how much it is worth; `action` what a tool would do ({tool, capability, params}),
         for luoke-agent to carry out with the user's say."""
         if kind not in ASK_KINDS or urgency not in URGENCY:
@@ -1711,12 +2409,12 @@ class WholeMemory(Memory):
         with self._lock, self.db:                # left unanswered past its time: no longer holds its place
             self.db.execute("UPDATE asks SET status='withdrawn', decided_at=? WHERE status='open' AND expires_at IS NOT NULL"
                             " AND expires_at<=?", (at, at))
-            for aid, t in self.db.execute("SELECT id, text FROM asks WHERE status='open'").fetchall():
+            for aid, t in self.db.execute("SELECT id, text FROM asks WHERE status IN ('open', 'archived')").fetchall():
                 if _same(t, text):
                     return aid
             if key:
                 for status, decided in self.db.execute("SELECT status, decided_at FROM asks WHERE key=?", (key,)).fetchall():
-                    if status in ("open", "never") or (decided and _days(decided[:19], at) < (
+                    if status in ("open", "never", "archived") or (decided and _days(decided[:19], at) < (
                             LATER_DAYS if status in ("later", "withdrawn") else REASK_DAYS)):
                         return None
             cur = self.db.execute(
@@ -1730,14 +2428,15 @@ class WholeMemory(Memory):
             return cur.lastrowid
 
     def withdraw(self, aid: int, *, now: str | None = None) -> None:
-        """No longer worth asking (the memory learnt it otherwise, or it is out of date)."""
+        """No longer worth asking (the memory learnt it otherwise, or it is out of date). Only an open one: an archived
+        one waits however long, until the user puts it back or its note changes (archive, WITHDRAW_ASKS)."""
         with self._lock, self.db:
             self.db.execute("UPDATE asks SET status='withdrawn', decided_at=? WHERE id=? AND status='open'", (_now(now), aid))
 
     def forget_all(self) -> None:
         """Clear the whole memory: every tool's records and notes, and what luoke-mem was learning from them."""
         with self._lock, self.db:
-            for t in ("cites", "notes", "records", "candidates", "learning", "asks"):
+            for t in ("cites", "notes", "records", "candidates", "learning", "asks", "entities"):
                 self.db.execute(f"DELETE FROM {t}")
             self.db.execute("INSERT INTO learning (name, value) VALUES ('regrade.0.18', '{}')")   # nothing to grade
         self._wipe()                              # the copy made before grading goes too
@@ -1760,6 +2459,21 @@ class WholeMemory(Memory):
             row = self.db.execute("SELECT why FROM grants WHERE tool=? AND category=?", (tool, kind)).fetchone()
             self.db.execute("INSERT OR REPLACE INTO grants (tool, category, status, why, at) VALUES (?,?,?,?,?)",
                             (tool, kind, status, row[0] if row else None, _now(now)))
+
+    def stop_learning(self, tool: str, *, now: str | None = None) -> None:
+        """The user stopped the memory learning from a tool (设置, 0.38): from now on what it writes is not kept
+        (record() returns 0, propose() and conclude() None). What it already wrote stays, until forgotten
+        (forget_tool); what the user says through it is theirs and still kept (state, decisions, answers). Only the
+        memory's own, never itself; libraries before 0.38 do not know the list and still write."""
+        if not tool or tool == KEEPER:
+            raise ValueError("the memory's own is not stopped")
+        with self._lock, self.db:
+            self.db.execute("INSERT OR IGNORE INTO stopped (tool, at) VALUES (?, ?)", (tool, _now(now)))
+
+    def resume_learning(self, tool: str) -> None:
+        """The user lets the memory learn from a tool again."""
+        with self._lock, self.db:
+            self.db.execute("DELETE FROM stopped WHERE tool=?", (tool,))
 
     def sources(self) -> list[dict]:
         """Which tools wrote into the memory, and how much: [{"tool", "records", "notes"}]."""

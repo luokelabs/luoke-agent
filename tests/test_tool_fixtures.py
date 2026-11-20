@@ -42,6 +42,13 @@ def name(sc: str) -> str:
     return os.path.relpath(sc, os.path.join(ROOT, "fixtures"))
 
 
+def _event(surface, cid):
+    try:
+        return surface.button_event(cid)[0]
+    except a2ui.CardError:
+        return None
+
+
 class ToolFixturesTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
@@ -87,7 +94,11 @@ class ToolFixturesTest(unittest.TestCase):
                 for rec in s.replay.writes():
                     page = ((rec["request"]["params"].get("_meta") or {}).get("ai.luoke/user-action") or {}).get("surfaceId")
                     if page and apppages.builds(s.source, page) is not None:
-                        continue        # 工具旧页上的点按：这一页现在由核心照原始数据拼（ADR 0028），录的按钮不在了
+                        # 工具旧页上的点按：这一页现在由核心照原始数据拼（ADR 0028），录的按钮不在了。照录的发给工具，
+                        # 后面的步骤才接得上（邮件 due：先在收件箱归档，「即将截止」的卡片才出来）
+                        s.replay.handle(dict(rec["request"], id=f"setup-{rec['file']}"))
+                        s.agent.poll()
+                        continue
                     if (name(sc), rec["file"]) in REPLACED:
                         continue
                     with self.subTest(f"{name(sc)} {rec['file']}"):
@@ -141,7 +152,8 @@ class ToolFixturesTest(unittest.TestCase):
                         self.assertIn(ctx.get("page"), pages, "开的是这个工具登记的页")
                         args = ctx.get("args") or {}
                         # 应用自己的旧页换成核心拼的那一页（apppages.alias：邮件的旧设置、规则、清扫）
-                        want = {"app": s.app, "page": apppages.alias(s.source, ctx["page"])}
+                        # 带着 id 去收件箱的换成打开那一封（apppages 的 `ARG_PAGES`）
+                        want = {"app": s.app, "page": apppages.alias(s.source, ctx["page"], args)}
                         if args:
                             if all(isinstance(v, str) for v in args.values()):
                                 want["args"] = args
@@ -155,6 +167,23 @@ class ToolFixturesTest(unittest.TestCase):
                         with_args += bool(args)
         self.assertGreaterEqual(opened, 1)
         self.assertGreaterEqual(with_args, 1, "样例里有带参数的（邮件助手只讲一封的卡片上的「在邮件助手里看」）")
+
+    def test_a_one_mail_cards_view_button_opens_that_mail(self):
+        """邮件助手只讲一封的卡片上「在邮件助手中查看」带 `id` 去收件箱：打开的是这一封（已归档的不在收件箱的任何一组里）"""
+        sc = next((x for x in SCENARIOS if name(x) == "luoke-mail/due"), None)
+        if sc is None:
+            self.skipTest("没有邮件助手的 due 场景")
+        s = self.session(sc)
+        with contextlib.redirect_stderr(io.StringIO()):
+            s.run()
+        sid, surface = next((sid, sf) for sid, (_k, sf) in s.agent.surfaces.items() if "/due-" in sid)
+        cid = next(c for c in sorted(surface.components) if _event(surface, c) == "agent.open_page")
+        r = s.agent.tap(sid, cid, {})
+        self.assertEqual(r.get("page"), {"app": "luoke-mail", "page": "mail", "args": {"id": "2"}})
+        s.agent.page(s.app, "mail", r["page"]["args"])
+        texts = [c.get("text") for c in s.agent.pages["luoke-mail/page/mail"][2].components.values()]
+        self.assertIn("重新登记奖赏计划", texts)
+        self.assertIn("完成", texts)
 
     def test_window_samples_are_current(self):
         r = subprocess.run([sys.executable, "-B", os.path.join(ROOT, "scripts", "window_samples.py"), "--check"],

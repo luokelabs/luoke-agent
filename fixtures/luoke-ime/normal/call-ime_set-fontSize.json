@@ -1,0 +1,968 @@
+{
+  "reply" : {
+    "id" : 1,
+    "jsonrpc" : "2.0",
+    "result" : {
+      "content" : [
+        {
+          "text" : "字号：18",
+          "type" : "text"
+        }
+      ],
+      "isError" : false,
+      "resultType" : "complete",
+      "structuredContent" : {
+        "card" : [
+          {
+            "createSurface" : {
+              "catalogId" : "ai.luoke/a2ui/agent/1",
+              "surfaceId" : "settings"
+            },
+            "version" : "v0.9"
+          },
+          {
+            "updateComponents" : {
+              "components" : [
+                {
+                  "children" : [
+                    "s-input",
+                    "s-fuzzy",
+                    "s-voice",
+                    "s-lang",
+                    "s-typeset",
+                    "s-window",
+                    "s-predict",
+                    "s-memory",
+                    "s-more"
+                  ],
+                  "component" : "Column",
+                  "id" : "root"
+                },
+                {
+                  "component" : "Text",
+                  "id" : "s-input-h",
+                  "text" : "输入方式",
+                  "variant" : "h4"
+                },
+                {
+                  "component" : "Text",
+                  "id" : "engine-t",
+                  "text" : "输入方案"
+                },
+                {
+                  "action" : {
+                    "event" : {
+                      "context" : {
+                        "key" : "currentEngine",
+                        "page" : "settings",
+                        "value" : "quanpin"
+                      },
+                      "name" : "ime_set"
+                    }
+                  },
+                  "child" : "engine-0-t",
+                  "component" : "Button",
+                  "id" : "engine-0"
+                },
+                {
+                  "component" : "Text",
+                  "id" : "engine-0-t",
+                  "text" : "全拼"
+                },
+                {
+                  "action" : {
+                    "event" : {
+                      "context" : {
+                        "key" : "currentEngine",
+                        "page" : "settings",
+                        "value" : "xiaohe"
+                      },
+                      "name" : "ime_set"
+                    }
+                  },
+                  "child" : "engine-1-t",
+                  "component" : "Button",
+                  "id" : "engine-1",
+                  "variant" : "primary"
+                },
+                {
+                  "component" : "Text",
+                  "id" : "engine-1-t",
+                  "text" : "小鹤双拼"
+                },
+                {
+                  "children" : [
+                    "engine-0",
+                    "engine-1"
+                  ],
+                  "component" : "Row",
+                  "id" : "engine"
+                },
+                {
+                  "children" : [
+                    "s-input-h",
+                    "engine-t",
+                    "engine"
+                  ],
+                  "component" : "Column",
+                  "id" : "s-input"
+                },
+                {
+                  "component" : "Divider",
+                  "id" : "s-fuzzy-div"
+                },
+                {
+                  "component" : "Text",
+                  "id" : "s-fuzzy-h",
+                  "text" : "模糊音",
+                  "variant" : "h4"
+                },
+                {
+                  "children" : [
+                    "fuzzy-t",
+                    "fuzzy-b"
+                  ],
+                  "component" : "Row",
+                  "id" : "fuzzy",
+                  "justify" : "spaceBetween"
+                },
+                {
+                  "component" : "Text",
+                  "id" : "fuzzy-t",
+                  "text" : "模糊音"
+                },
+                {
+                  "action" : {
+                    "event" : {
+                      "context" : {
+                        "key" : "fuzzyOn",
+                        "page" : "settings",
+                        "value" : true
+                      },
+                      "name" : "ime_set"
+                    }
+                  },
+                  "child" : "fuzzy-bt",
+                  "component" : "Button",
+                  "id" : "fuzzy-b",
+                  "on" : false,
+                  "variant" : "switch"
+                },
+                {
+                  "component" : "Text",
+                  "id" : "fuzzy-bt",
+                  "text" : "开启模糊音"
+                },
+                {
+                  "component" : "Text",
+                  "id" : "fuzzy-note",
+                  "text" : "开启后同时给出拼法相近的字，准确的候选可能排序靠后",
+                  "variant" : "caption"
+                },
+                {
+                  "children" : [
+                    "s-fuzzy-div",
+                    "s-fuzzy-h",
+                    "fuzzy",
+                    "fuzzy-note"
+                  ],
+                  "component" : "Column",
+                  "id" : "s-fuzzy"
+                },
+                {
+                  "component" : "Divider",
+                  "id" : "s-voice-div"
+                },
+                {
+                  "component" : "Text",
+                  "id" : "s-voice-h",
+                  "text" : "语音",
+                  "variant" : "h4"
+                },
+                {
+                  "children" : [
+                    "voice-t",
+                    "voice-b"
+                  ],
+                  "component" : "Row",
+                  "id" : "voice",
+                  "justify" : "spaceBetween"
+                },
+                {
+                  "component" : "Text",
+                  "id" : "voice-t",
+                  "text" : "语音输入"
+                },
+                {
+                  "action" : {
+                    "event" : {
+                      "context" : {
+                        "key" : "voiceOn",
+                        "page" : "settings",
+                        "value" : true
+                      },
+                      "name" : "ime_set"
+                    }
+                  },
+                  "child" : "voice-bt",
+                  "component" : "Button",
+                  "id" : "voice-b",
+                  "on" : false,
+                  "variant" : "switch"
+                },
+                {
+                  "component" : "Text",
+                  "id" : "voice-bt",
+                  "text" : "开启语音输入"
+                },
+                {
+                  "component" : "Text",
+                  "id" : "voice-note",
+                  "text" : "按住所选按键说话，松开后上屏；识别和整理均由螺壳在本机完成；首次使用时系统将请求麦克风权限",
+                  "variant" : "caption"
+                },
+                {
+                  "children" : [
+                    "s-voice-div",
+                    "s-voice-h",
+                    "voice",
+                    "voice-note"
+                  ],
+                  "component" : "Column",
+                  "id" : "s-voice"
+                },
+                {
+                  "component" : "Divider",
+                  "id" : "s-lang-div"
+                },
+                {
+                  "component" : "Text",
+                  "id" : "s-lang-h",
+                  "text" : "中英文",
+                  "variant" : "h4"
+                },
+                {
+                  "component" : "Text",
+                  "id" : "default-lang-t",
+                  "text" : "进入应用时的默认模式"
+                },
+                {
+                  "action" : {
+                    "event" : {
+                      "context" : {
+                        "key" : "defaultEnglish",
+                        "page" : "settings",
+                        "value" : false
+                      },
+                      "name" : "ime_set"
+                    }
+                  },
+                  "child" : "default-lang-0-t",
+                  "component" : "Button",
+                  "id" : "default-lang-0",
+                  "variant" : "primary"
+                },
+                {
+                  "component" : "Text",
+                  "id" : "default-lang-0-t",
+                  "text" : "中文"
+                },
+                {
+                  "action" : {
+                    "event" : {
+                      "context" : {
+                        "key" : "defaultEnglish",
+                        "page" : "settings",
+                        "value" : true
+                      },
+                      "name" : "ime_set"
+                    }
+                  },
+                  "child" : "default-lang-1-t",
+                  "component" : "Button",
+                  "id" : "default-lang-1"
+                },
+                {
+                  "component" : "Text",
+                  "id" : "default-lang-1-t",
+                  "text" : "英文"
+                },
+                {
+                  "children" : [
+                    "default-lang-0",
+                    "default-lang-1"
+                  ],
+                  "component" : "Row",
+                  "id" : "default-lang"
+                },
+                {
+                  "children" : [
+                    "remember-t",
+                    "remember-b"
+                  ],
+                  "component" : "Row",
+                  "id" : "remember",
+                  "justify" : "spaceBetween"
+                },
+                {
+                  "component" : "Text",
+                  "id" : "remember-t",
+                  "text" : "记住各应用上次的中英文模式"
+                },
+                {
+                  "action" : {
+                    "event" : {
+                      "context" : {
+                        "key" : "rememberMode",
+                        "page" : "settings",
+                        "value" : false
+                      },
+                      "name" : "ime_set"
+                    }
+                  },
+                  "child" : "remember-bt",
+                  "component" : "Button",
+                  "id" : "remember-b",
+                  "on" : true,
+                  "variant" : "switch"
+                },
+                {
+                  "component" : "Text",
+                  "id" : "remember-bt",
+                  "text" : "关闭记住各应用上次的中英文模式"
+                },
+                {
+                  "children" : [
+                    "shift-t",
+                    "shift-b"
+                  ],
+                  "component" : "Row",
+                  "id" : "shift",
+                  "justify" : "spaceBetween"
+                },
+                {
+                  "component" : "Text",
+                  "id" : "shift-t",
+                  "text" : "单按 Shift 切换中英文"
+                },
+                {
+                  "action" : {
+                    "event" : {
+                      "context" : {
+                        "key" : "shiftToggles",
+                        "page" : "settings",
+                        "value" : false
+                      },
+                      "name" : "ime_set"
+                    }
+                  },
+                  "child" : "shift-bt",
+                  "component" : "Button",
+                  "id" : "shift-b",
+                  "on" : true,
+                  "variant" : "switch"
+                },
+                {
+                  "component" : "Text",
+                  "id" : "shift-bt",
+                  "text" : "关闭单按 Shift 切换中英文"
+                },
+                {
+                  "children" : [
+                    "s-lang-div",
+                    "s-lang-h",
+                    "default-lang-t",
+                    "default-lang",
+                    "remember",
+                    "shift"
+                  ],
+                  "component" : "Column",
+                  "id" : "s-lang"
+                },
+                {
+                  "component" : "Divider",
+                  "id" : "s-typeset-div"
+                },
+                {
+                  "component" : "Text",
+                  "id" : "s-typeset-h",
+                  "text" : "排版",
+                  "variant" : "h4"
+                },
+                {
+                  "children" : [
+                    "space-t",
+                    "space-b"
+                  ],
+                  "component" : "Row",
+                  "id" : "space",
+                  "justify" : "spaceBetween"
+                },
+                {
+                  "component" : "Text",
+                  "id" : "space-t",
+                  "text" : "中英文之间自动加空格"
+                },
+                {
+                  "action" : {
+                    "event" : {
+                      "context" : {
+                        "key" : "autoSpace",
+                        "page" : "settings",
+                        "value" : true
+                      },
+                      "name" : "ime_set"
+                    }
+                  },
+                  "child" : "space-bt",
+                  "component" : "Button",
+                  "id" : "space-b",
+                  "on" : false,
+                  "variant" : "switch"
+                },
+                {
+                  "component" : "Text",
+                  "id" : "space-bt",
+                  "text" : "开启中英文之间自动加空格"
+                },
+                {
+                  "children" : [
+                    "braces-t",
+                    "braces-b"
+                  ],
+                  "component" : "Row",
+                  "id" : "braces",
+                  "justify" : "spaceBetween"
+                },
+                {
+                  "component" : "Text",
+                  "id" : "braces-t",
+                  "text" : "中文状态下 { } 输入为「」"
+                },
+                {
+                  "action" : {
+                    "event" : {
+                      "context" : {
+                        "key" : "cornerBraces",
+                        "page" : "settings",
+                        "value" : false
+                      },
+                      "name" : "ime_set"
+                    }
+                  },
+                  "child" : "braces-bt",
+                  "component" : "Button",
+                  "id" : "braces-b",
+                  "on" : true,
+                  "variant" : "switch"
+                },
+                {
+                  "component" : "Text",
+                  "id" : "braces-bt",
+                  "text" : "关闭中文状态下 { } 输入为「」"
+                },
+                {
+                  "children" : [
+                    "s-typeset-div",
+                    "s-typeset-h",
+                    "space",
+                    "braces"
+                  ],
+                  "component" : "Column",
+                  "id" : "s-typeset"
+                },
+                {
+                  "component" : "Divider",
+                  "id" : "s-window-div"
+                },
+                {
+                  "component" : "Text",
+                  "id" : "s-window-h",
+                  "text" : "候选窗口",
+                  "variant" : "h4"
+                },
+                {
+                  "component" : "Text",
+                  "id" : "font-t",
+                  "text" : "字号：18"
+                },
+                {
+                  "action" : {
+                    "event" : {
+                      "context" : {
+                        "key" : "fontSize",
+                        "page" : "settings",
+                        "value" : 17
+                      },
+                      "name" : "ime_set"
+                    }
+                  },
+                  "child" : "font-less-t",
+                  "component" : "Button",
+                  "id" : "font-less"
+                },
+                {
+                  "component" : "Text",
+                  "id" : "font-less-t",
+                  "text" : "减小字号"
+                },
+                {
+                  "action" : {
+                    "event" : {
+                      "context" : {
+                        "key" : "fontSize",
+                        "page" : "settings",
+                        "value" : 19
+                      },
+                      "name" : "ime_set"
+                    }
+                  },
+                  "child" : "font-more-t",
+                  "component" : "Button",
+                  "id" : "font-more"
+                },
+                {
+                  "component" : "Text",
+                  "id" : "font-more-t",
+                  "text" : "增大字号"
+                },
+                {
+                  "children" : [
+                    "font-t",
+                    "font-less",
+                    "font-more"
+                  ],
+                  "component" : "Row",
+                  "id" : "font"
+                },
+                {
+                  "component" : "Text",
+                  "id" : "orient-t",
+                  "text" : "候选排列"
+                },
+                {
+                  "action" : {
+                    "event" : {
+                      "context" : {
+                        "key" : "orientation",
+                        "page" : "settings",
+                        "value" : "horizontal"
+                      },
+                      "name" : "ime_set"
+                    }
+                  },
+                  "child" : "orient-0-t",
+                  "component" : "Button",
+                  "id" : "orient-0",
+                  "variant" : "primary"
+                },
+                {
+                  "component" : "Text",
+                  "id" : "orient-0-t",
+                  "text" : "横排"
+                },
+                {
+                  "action" : {
+                    "event" : {
+                      "context" : {
+                        "key" : "orientation",
+                        "page" : "settings",
+                        "value" : "vertical"
+                      },
+                      "name" : "ime_set"
+                    }
+                  },
+                  "child" : "orient-1-t",
+                  "component" : "Button",
+                  "id" : "orient-1"
+                },
+                {
+                  "component" : "Text",
+                  "id" : "orient-1-t",
+                  "text" : "竖排"
+                },
+                {
+                  "children" : [
+                    "orient-0",
+                    "orient-1"
+                  ],
+                  "component" : "Row",
+                  "id" : "orient"
+                },
+                {
+                  "component" : "Text",
+                  "id" : "pagesize-t",
+                  "text" : "每页候选数：9"
+                },
+                {
+                  "action" : {
+                    "event" : {
+                      "context" : {
+                        "key" : "pageSize",
+                        "page" : "settings",
+                        "value" : 8
+                      },
+                      "name" : "ime_set"
+                    }
+                  },
+                  "child" : "pagesize-less-t",
+                  "component" : "Button",
+                  "id" : "pagesize-less"
+                },
+                {
+                  "component" : "Text",
+                  "id" : "pagesize-less-t",
+                  "text" : "减少候选数"
+                },
+                {
+                  "children" : [
+                    "pagesize-t",
+                    "pagesize-less"
+                  ],
+                  "component" : "Row",
+                  "id" : "pagesize"
+                },
+                {
+                  "component" : "Text",
+                  "id" : "paging-t",
+                  "text" : "翻页键"
+                },
+                {
+                  "action" : {
+                    "event" : {
+                      "context" : {
+                        "key" : "pagingKeys",
+                        "page" : "settings",
+                        "value" : "-="
+                      },
+                      "name" : "ime_set"
+                    }
+                  },
+                  "child" : "paging-0-t",
+                  "component" : "Button",
+                  "id" : "paging-0",
+                  "variant" : "primary"
+                },
+                {
+                  "component" : "Text",
+                  "id" : "paging-0-t",
+                  "text" : "- 和 ="
+                },
+                {
+                  "action" : {
+                    "event" : {
+                      "context" : {
+                        "key" : "pagingKeys",
+                        "page" : "settings",
+                        "value" : ",."
+                      },
+                      "name" : "ime_set"
+                    }
+                  },
+                  "child" : "paging-1-t",
+                  "component" : "Button",
+                  "id" : "paging-1"
+                },
+                {
+                  "component" : "Text",
+                  "id" : "paging-1-t",
+                  "text" : ", 和 ."
+                },
+                {
+                  "children" : [
+                    "paging-0",
+                    "paging-1"
+                  ],
+                  "component" : "Row",
+                  "id" : "paging"
+                },
+                {
+                  "component" : "Text",
+                  "id" : "inline-t",
+                  "text" : "拼音显示位置"
+                },
+                {
+                  "action" : {
+                    "event" : {
+                      "context" : {
+                        "key" : "inline",
+                        "page" : "settings",
+                        "value" : true
+                      },
+                      "name" : "ime_set"
+                    }
+                  },
+                  "child" : "inline-0-t",
+                  "component" : "Button",
+                  "id" : "inline-0",
+                  "variant" : "primary"
+                },
+                {
+                  "component" : "Text",
+                  "id" : "inline-0-t",
+                  "text" : "输入框"
+                },
+                {
+                  "action" : {
+                    "event" : {
+                      "context" : {
+                        "key" : "inline",
+                        "page" : "settings",
+                        "value" : false
+                      },
+                      "name" : "ime_set"
+                    }
+                  },
+                  "child" : "inline-1-t",
+                  "component" : "Button",
+                  "id" : "inline-1"
+                },
+                {
+                  "component" : "Text",
+                  "id" : "inline-1-t",
+                  "text" : "候选窗口"
+                },
+                {
+                  "children" : [
+                    "inline-0",
+                    "inline-1"
+                  ],
+                  "component" : "Row",
+                  "id" : "inline"
+                },
+                {
+                  "children" : [
+                    "s-window-div",
+                    "s-window-h",
+                    "font",
+                    "orient-t",
+                    "orient",
+                    "pagesize",
+                    "paging-t",
+                    "paging",
+                    "inline-t",
+                    "inline"
+                  ],
+                  "component" : "Column",
+                  "id" : "s-window"
+                },
+                {
+                  "component" : "Divider",
+                  "id" : "s-predict-div"
+                },
+                {
+                  "component" : "Text",
+                  "id" : "s-predict-h",
+                  "text" : "联想",
+                  "variant" : "h4"
+                },
+                {
+                  "children" : [
+                    "predict-t",
+                    "predict-b"
+                  ],
+                  "component" : "Row",
+                  "id" : "predict",
+                  "justify" : "spaceBetween"
+                },
+                {
+                  "component" : "Text",
+                  "id" : "predict-t",
+                  "text" : "联想"
+                },
+                {
+                  "action" : {
+                    "event" : {
+                      "context" : {
+                        "key" : "predict",
+                        "page" : "settings",
+                        "value" : false
+                      },
+                      "name" : "ime_set"
+                    }
+                  },
+                  "child" : "predict-bt",
+                  "component" : "Button",
+                  "id" : "predict-b",
+                  "on" : true,
+                  "variant" : "switch"
+                },
+                {
+                  "component" : "Text",
+                  "id" : "predict-bt",
+                  "text" : "关闭联想"
+                },
+                {
+                  "component" : "Text",
+                  "id" : "predict-note",
+                  "text" : "按 Tab 选用推荐",
+                  "variant" : "caption"
+                },
+                {
+                  "children" : [
+                    "s-predict-div",
+                    "s-predict-h",
+                    "predict",
+                    "predict-note"
+                  ],
+                  "component" : "Column",
+                  "id" : "s-predict"
+                },
+                {
+                  "component" : "Divider",
+                  "id" : "s-memory-div"
+                },
+                {
+                  "component" : "Text",
+                  "id" : "s-memory-h",
+                  "text" : "记忆记录",
+                  "variant" : "h4"
+                },
+                {
+                  "children" : [
+                    "memory-t",
+                    "memory-b"
+                  ],
+                  "component" : "Row",
+                  "id" : "memory",
+                  "justify" : "spaceBetween"
+                },
+                {
+                  "component" : "Text",
+                  "id" : "memory-t",
+                  "text" : "记录输入内容到记忆"
+                },
+                {
+                  "action" : {
+                    "event" : {
+                      "context" : {
+                        "key" : "memory",
+                        "page" : "settings",
+                        "value" : false
+                      },
+                      "name" : "ime_set"
+                    }
+                  },
+                  "child" : "memory-bt",
+                  "component" : "Button",
+                  "id" : "memory-b",
+                  "on" : true,
+                  "variant" : "switch"
+                },
+                {
+                  "component" : "Text",
+                  "id" : "memory-bt",
+                  "text" : "关闭记录输入内容到记忆"
+                },
+                {
+                  "component" : "Text",
+                  "id" : "memory-note",
+                  "text" : "保存在本机的螺壳记忆中，用于联想和候选排序；关闭后已有记录保留",
+                  "variant" : "caption"
+                },
+                {
+                  "children" : [
+                    "paused-t",
+                    "paused-b"
+                  ],
+                  "component" : "Row",
+                  "id" : "paused",
+                  "justify" : "spaceBetween"
+                },
+                {
+                  "component" : "Text",
+                  "id" : "paused-t",
+                  "text" : "暂停所有记录"
+                },
+                {
+                  "action" : {
+                    "event" : {
+                      "context" : {
+                        "key" : "recordingPaused",
+                        "page" : "settings",
+                        "value" : true
+                      },
+                      "name" : "ime_set"
+                    }
+                  },
+                  "child" : "paused-bt",
+                  "component" : "Button",
+                  "id" : "paused-b",
+                  "on" : false,
+                  "variant" : "switch"
+                },
+                {
+                  "component" : "Text",
+                  "id" : "paused-bt",
+                  "text" : "开启暂停所有记录"
+                },
+                {
+                  "component" : "Text",
+                  "id" : "paused-note",
+                  "text" : "暂停期间不记录，可随时恢复",
+                  "variant" : "caption"
+                },
+                {
+                  "children" : [
+                    "s-memory-div",
+                    "s-memory-h",
+                    "memory",
+                    "memory-note",
+                    "paused",
+                    "paused-note"
+                  ],
+                  "component" : "Column",
+                  "id" : "s-memory"
+                },
+                {
+                  "component" : "Divider",
+                  "id" : "s-more-div"
+                },
+                {
+                  "component" : "Text",
+                  "id" : "more-note",
+                  "text" : "已学词语、已忘记词语、使用统计和开发模式位于输入法菜单的「设置…」中",
+                  "variant" : "caption"
+                },
+                {
+                  "children" : [
+                    "s-more-div",
+                    "more-note"
+                  ],
+                  "component" : "Column",
+                  "id" : "s-more"
+                }
+              ],
+              "surfaceId" : "settings"
+            },
+            "version" : "v0.9"
+          }
+        ],
+        "data" : {
+          "key" : "fontSize",
+          "value" : 18
+        }
+      }
+    }
+  },
+  "request" : {
+    "id" : 1,
+    "jsonrpc" : "2.0",
+    "method" : "tools/call",
+    "params" : {
+      "_meta" : {
+        "ai.luoke/user-action" : {
+          "at" : "2026-11-19T12:00:00+08:00",
+          "componentId" : "x",
+          "surfaceId" : "settings"
+        },
+        "io.modelcontextprotocol/protocolVersion" : "2026-07-28"
+      },
+      "arguments" : {
+        "key" : "fontSize",
+        "value" : 18
+      },
+      "name" : "ime_set"
+    }
+  }
+}

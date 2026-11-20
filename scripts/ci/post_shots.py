@@ -25,6 +25,7 @@ BOT = "github-actions[bot]"
 BOT_EMAIL = "41898282+github-actions[bot]@users.noreply.github.com"
 HELPER = ["-c", "credential.helper=", "-c", "credential.helper=!gh auth git-credential"]
 PYTHON_RESULT = {"success": "ok", "failure": "fail"}
+MAX_COMMENT = 250000  # GitHub 评论上限 262144 字，超了 API 回 422
 
 
 def sh(*args, cwd=None, check=True):
@@ -128,7 +129,7 @@ def img_url(repo, h):
     return "https://github.com/%s/blob/ui-shots/img/%s.png?raw=true" % (repo, h)
 
 
-def comment_body(repo, sha, results, shots, base, run, run_url):
+def comment_body(repo, sha, results, shots, base, run, run_url, full=True):
     lines = [MARK, "### 界面截图和测试（`%s`）" % sha[:7], ""]
     marks = {"ok": "✓", "fail": "✗", "skip": "–"}
     lines.append(" · ".join("%s %s%s" % (r["name"], marks.get(r["result"], "?"), (" " + r["count"]) if r["count"] else "")
@@ -170,7 +171,10 @@ def comment_body(repo, sha, results, shots, base, run, run_url):
             parts = (["变了 %d 个" % len(changed)] if changed else []) + (["新加 %d 个" % len(new)] if new else [])
             lines.append("和 main 比：" + "，".join(parts) + "（共 %d 个界面）。" % len(by))
             lines += ["", "<details open><summary>变了的和新加的</summary>", ""] + table(changed + new) + ["", "</details>"]
-        lines += ["", "<details><summary>全部 %d 个界面（浅色、深色）</summary>" % len(by), ""] + table(list(by)) + ["", "</details>"]
+        if full:
+            lines += ["", "<details><summary>全部 %d 个界面（浅色、深色）</summary>" % len(by), ""] + table(list(by)) + ["", "</details>"]
+        else:
+            lines += ["", "全部 %d 个界面评论里放不下，看[这一次的运行摘要](%s)。" % (len(by), run_url)]
     lines += ["", "<sub>每次推新提交后由 GitHub Actions 自动跑（[这一次](%s)）；截图在 `ui-shots` 分支。%s</sub>"
               % (run_url, datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=8))).strftime("%m-%d %H:%M"))]
     return "\n".join(lines)
@@ -217,7 +221,11 @@ def main():
 
     body = comment_body(a.repo, a.sha, results, shots, base, a.run, a.run_url)
     if a.target != "main":
-        upsert_comment(a.repo, a.target, body, a.run)
+        if len(body) > MAX_COMMENT:  # 变了的多时两张表加起来太长：评论里不放全部，运行摘要里照样全有
+            short = comment_body(a.repo, a.sha, results, shots, base, a.run, a.run_url, full=False)
+        else:
+            short = body
+        upsert_comment(a.repo, a.target, short, a.run)
     summary_file = os.environ.get("GITHUB_STEP_SUMMARY")
     if summary_file:
         with open(summary_file, "a", encoding="utf-8") as f:

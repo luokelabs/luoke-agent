@@ -20,7 +20,9 @@
               {
                 "account": "me@example.com",
                 "action": "archive",
+                "archived": false,
                 "ask_text": "周刊",
+                "calendar_added": false,
                 "date": "2026-10-19 20:30",
                 "draft": false,
                 "due": null,
@@ -41,7 +43,9 @@
               {
                 "account": "me@example.com",
                 "action": "ignore",
+                "archived": false,
                 "ask_text": "促销",
+                "calendar_added": false,
                 "date": "2026-10-19 20:30",
                 "draft": false,
                 "due": null,

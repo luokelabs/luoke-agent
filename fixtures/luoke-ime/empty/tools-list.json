@@ -1,0 +1,104 @@
+{
+  "reply" : {
+    "id" : 1,
+    "jsonrpc" : "2.0",
+    "result" : {
+      "resultType" : "complete",
+      "tools" : [
+        {
+          "annotations" : {
+            "readOnlyHint" : false
+          },
+          "description" : "改一项输入法设置（只在用户点了页上的按钮时调）",
+          "inputSchema" : {
+            "properties" : {
+              "app" : {
+                "type" : "string"
+              },
+              "key" : {
+                "type" : "string"
+              },
+              "page" : {
+                "type" : "string"
+              },
+              "value" : {
+
+              }
+            },
+            "required" : [
+              "key",
+              "value"
+            ],
+            "type" : "object"
+          },
+          "name" : "ime_set",
+          "title" : "修改输入法设置"
+        },
+        {
+          "annotations" : {
+            "destructiveHint" : true,
+            "readOnlyHint" : false
+          },
+          "description" : "清除已学词语、恢复已忘记的词语、清零使用统计、开关开发模式（只在用户点了页上的按钮时调）",
+          "inputSchema" : {
+            "properties" : {
+              "engine" : {
+                "type" : "string"
+              },
+              "id" : {
+                "type" : "string"
+              },
+              "on" : {
+                "type" : "boolean"
+              },
+              "op" : {
+                "enum" : [
+                  "clear_learned",
+                  "restore",
+                  "reset_usage",
+                  "dev_mode"
+                ],
+                "type" : "string"
+              }
+            },
+            "required" : [
+              "op"
+            ],
+            "type" : "object"
+          },
+          "name" : "ime_do",
+          "title" : "输入法的数据操作"
+        },
+        {
+          "annotations" : {
+            "readOnlyHint" : true
+          },
+          "description" : "带 app 展开这个应用的设置，不带回到列表（只记在 window-page.json 里，不改输入法的行为）",
+          "inputSchema" : {
+            "properties" : {
+              "app" : {
+                "type" : "string"
+              },
+              "page" : {
+                "type" : "string"
+              }
+            },
+            "type" : "object"
+          },
+          "name" : "ime_page",
+          "title" : "选择「各应用」页展开的应用"
+        }
+      ]
+    }
+  },
+  "request" : {
+    "id" : 1,
+    "jsonrpc" : "2.0",
+    "method" : "tools/list",
+    "params" : {
+      "_meta" : {
+        "io.modelcontextprotocol/protocolVersion" : "2026-07-28"
+      }
+    }
+  }
+}

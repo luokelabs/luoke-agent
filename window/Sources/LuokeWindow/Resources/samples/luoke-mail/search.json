@@ -1,5 +1,5 @@
 {
- "_about": "scripts/window_samples.py 用 fixtures/luoke-mail/search（luoke-mail e124c8bfca86）接上真核心生成的，不要手改",
+ "_about": "scripts/window_samples.py 用 fixtures/luoke-mail/search（luoke-mail 469ea688a3e8）接上真核心生成的，不要手改",
  "app": "luoke-mail",
  "apps": {
   "apps": [
@@ -3633,5 +3633,5 @@
  "replies": [],
  "scenario": "search",
  "title": "问螺壳搜邮件",
- "version": "0.19.71"
+ "version": "0.19.74"
 }

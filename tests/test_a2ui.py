@@ -396,6 +396,12 @@ class SurfaceTest(unittest.TestCase):
         self.assertEqual(a2ui.validate(msgs), [])
         gone = a2ui.update(s, [{"version": V, "deleteSurface": {"surfaceId": "p1"}}])
         self.assertTrue(gone.deleted)
+        # 删了以后同一组里再来的更新不认：不然没有 action 的按钮这类坏组件不经校验就进了保存的卡片
+        bad = {"version": V, "updateComponents": {"surfaceId": "p1", "components": [{"id": "root", "component": "Button", "child": "x"}]}}
+        with self.assertRaises(a2ui.CardError):
+            a2ui.update(s, [{"version": V, "deleteSurface": {"surfaceId": "p1"}}, bad])
+        with self.assertRaises(a2ui.CardError):
+            a2ui.update(gone, [bad])
 
     def test_paths(self):
         d = {"a": {"b": [1, {"c": 2}]}, "x~y/z": 3}

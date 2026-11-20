@@ -37,7 +37,8 @@ CLIENT_CAPABILITIES = {"experimental": {"ai.luoke/a2ui": {"features": ["placemen
                                                                        "subtitle", "countAlso", "countWeights",
                                                                        "pageArgs", "bigPages", "secureField", "pageRefresh",
                                                                        "saveFile", "neutralBadge", "chips", "pageSections",
-                                                                       "confirm", "rowOpen", "fieldSubmit", "lucide2", "choiceSubmit", "headerPlacement"]}}}
+                                                                       "confirm", "rowOpen", "fieldSubmit", "lucide2", "choiceSubmit", "headerPlacement",
+                                                                       "countChecks"]}}}
 USER_ACTION = "ai.luoke/user-action"  # 会改动东西的调用必带：用户在哪张卡片上点的（§5）
 
 LISTEN_BACKLOG = 128   # Unix socket 上还没接下来的连接最多排几条（socketserver 默认 5，一下来十几条就拒）
@@ -115,21 +116,22 @@ class ToolServer:
     # 注册
 
     def tool(self, name: str, fn: ToolFn, *, title: str, description: str = "",
-             input_schema: Optional[dict] = None, read_only: bool = True, destructive: bool = False) -> None:
+             input_schema: Optional[dict] = None, read_only: bool = True, destructive: bool = False,
+             meta: Optional[dict] = None) -> None:
+        """`meta`：`tools/list` 里这个工具的 `_meta`（打开东西的动作写 `{"ai.luoke/where": "mac"}`，工具协议 §5）"""
         if name.startswith("agent."):
             raise ValueError("agent. 开头的动作名留给 agent 自己")
         schema = input_schema or {"type": "object", "properties": {}}
-        self._tools[name] = {
-            "fn": fn,
-            "read_only": read_only,
-            "spec": {
-                "name": name,
-                "title": title,
-                "description": description,
-                "inputSchema": schema,
-                "annotations": {"readOnlyHint": read_only, "destructiveHint": destructive},
-            },
+        spec: Dict[str, Any] = {
+            "name": name,
+            "title": title,
+            "description": description,
+            "inputSchema": schema,
+            "annotations": {"readOnlyHint": read_only, "destructiveHint": destructive},
         }
+        if meta:
+            spec["_meta"] = dict(meta)
+        self._tools[name] = {"fn": fn, "read_only": read_only, "spec": spec}
 
     def resource(self, uri: str, fn: Callable[..., Any], *, name: str, mime_type: str = "application/json",
                  args: bool = False, features: bool = False) -> None:

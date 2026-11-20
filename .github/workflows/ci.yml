@@ -2,6 +2,9 @@
 # PR 上贴一条评论（每次更新它）：测试结果、和 main 比哪些界面变了、全部截图。
 # 截图按内容存在 ui-shots 分支；main 的那一份是 PR 比较的底。
 # 全部 job 跑在自托管的一次性 macOS 虚拟机里（标签 luoke-vm），同时最多 2 台，忙时排队。
+# 截图、推 ui-shots、贴评论在同一个 job 里做完，不经过 Actions 制品（artifact）：
+# 免费额度下制品和 Packages 共用存储，截图包曾把当月额度用光。
+# 从别人 fork 来的 PR 没有写权限：照样跑测试和截图，结果只在运行日志里，不推截图、不评论。
 name: 测试和截图
 
 on:
@@ -44,14 +47,22 @@ jobs:
 
   swift:
     name: Swift 测试和截图
+    # 要 Python 的结果写进评论，所以排在它后面；Python 没过也照样跑
+    needs: [python]
+    if: ${{ !cancelled() }}
     runs-on: [self-hosted, luoke-vm]
     timeout-minutes: 40
+    permissions:
+      contents: write
+      pull-requests: write
     env:
       OUT: ${{ github.workspace }}/.tmp/ci
     steps:
       - uses: actions/checkout@v7
         with:
           ref: ${{ env.HEAD_SHA }}
+          # 令牌只给「贴截图」这一步，不留在 .git/config 里给前面跑的代码
+          persist-credentials: false
       - name: 工具链
         run: |
           sw_vers
@@ -64,36 +75,9 @@ jobs:
       - name: 截图
         if: ${{ !cancelled() }}
         run: scripts/ci/step.sh "$OUT" 截图 shots.log swift run --package-path window luoke-window-shots "$OUT/shots"
-      - uses: actions/upload-artifact@v7
-        if: ${{ !cancelled() }}
-        with:
-          name: ui-shots-${{ env.HEAD_SHA }}
-          path: .tmp/ci
-          # 截图包只给同一次运行的「贴截图」读；截图另存在 ui-shots 分支。
-          # fork 来的 PR 只能看这个包，存 3 天，过期后单独重跑「贴截图」也取不到。
-          retention-days: 3
-
-  report:
-    name: 贴截图
-    needs: [python, swift]
-    # 从别人 fork 来的 PR 没有写权限：只留 artifact，不推截图、不评论
-    if: ${{ !cancelled() && (github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository) }}
-    runs-on: [self-hosted, luoke-vm]
-    timeout-minutes: 10
-    permissions:
-      contents: write
-      pull-requests: write
-    steps:
-      - uses: actions/checkout@v7
-        with:
-          ref: ${{ env.HEAD_SHA }}
-          sparse-checkout: scripts/ci
-      - uses: actions/download-artifact@v8
-        continue-on-error: true
-        with:
-          name: ui-shots-${{ env.HEAD_SHA }}
-          path: .tmp/ci
-      - name: 推截图、更新评论
+      - name: 贴截图
+        # 测试没过也贴；fork 来的 PR 跳过（见文件头）
+        if: ${{ !cancelled() && (github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository) }}
         env:
           GH_TOKEN: ${{ github.token }}
           TARGET: ${{ github.event.pull_request.number || 'main' }}

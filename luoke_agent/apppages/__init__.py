@@ -11,9 +11,9 @@ from __future__ import annotations
 
 from typing import Any, List, Optional
 
-from . import mail, mem, scan, search
+from . import ime, mail, mem, scan, search
 
-BUILDERS = {mail.APP: mail, mem.APP: mem, scan.APP: scan, search.APP: search}
+BUILDERS = {ime.APP: ime, mail.APP: mail, mem.APP: mem, scan.APP: scan, search.APP: search}
 
 
 def kind_name(app: str, kind: str) -> Optional[str]:
@@ -80,11 +80,17 @@ def pages(src: Any, tool_pages: List[dict]) -> List[dict]:
     return mine + [dict(p, hidden=True) for p in tool_pages if p["id"] not in ids]
 
 
-def alias(src: Any, page: Any) -> Any:
-    """应用自己的旧页换成核心拼的那一页（模块的 `PAGE_ALIASES`）：那一页核心拼得出来才换，拼不出来照旧去应用自己的"""
+def alias(src: Any, page: Any, args: Any = None) -> Any:
+    """应用自己的旧页换成核心拼的那一页（模块的 `PAGE_ALIASES`）：那一页核心拼得出来才换，拼不出来照旧去应用自己的。
+    带着某个参数去的换成另一页（模块的 `ARG_PAGES`：邮件助手卡片上「在邮件助手中查看」带 `id` 去收件箱，是要看那一封）"""
     mod = builder(src)
     to = getattr(mod, "PAGE_ALIASES", {}).get(page) if mod is not None and isinstance(page, str) else None
-    return to if to is not None and builds(src, to) is not None else page
+    page = to if to is not None and builds(src, to) is not None else page
+    if mod is not None and isinstance(page, str) and isinstance(args, dict):
+        for (frm, arg, without), to in getattr(mod, "ARG_PAGES", {}).items():
+            if frm == page and args.get(arg) and not any(args.get(w) for w in without) and builds(src, to) is not None:
+                return to
+    return page
 
 
 def cards(src: Any) -> Optional[Any]:

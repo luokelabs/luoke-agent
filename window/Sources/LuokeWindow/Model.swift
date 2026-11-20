@@ -399,10 +399,12 @@ public struct QuietRow: Identifiable, Equatable {
     public var done = false
     /// 接上核心时：不急的那张卡片
     public var surface: SurfaceModel? = nil
+    /// 卡片右上角的时间（写好的字）。只有扫描一轮的结论卡写：检查完成的时间，看得出是哪一轮（负责人 11-19）
+    public var time: String? = nil
 
     public static func == (a: QuietRow, b: QuietRow) -> Bool {
         a.id == b.id && a.tool == b.tool && a.text == b.text && a.sub == b.sub && a.action == b.action && a.done == b.done
-            && a.surface === b.surface
+            && a.surface === b.surface && a.time == b.time
     }
 }
 
@@ -946,6 +948,28 @@ public final class WindowModel: ObservableObject {
     @Published public var coreReachable = true {
         didSet { if coreReachable { offlineSince = nil } else if offlineSince == nil { offlineSince = now() } }
     }
+    /// 连上过核心没有；从什么时候开始连的。刚打开螺壳、核心还在起的头几秒不算断开（#176：每次启动都先写
+    /// 「螺壳暂时没响应」）：`startGrace` 秒里连不上只当正在启动，页上照「正在准备」画；过了还连不上才算没响应
+    /// 主窗口是不是全屏着（「显示」菜单那一项的字）
+    @Published public var fullScreen = false
+    public private(set) var everReached = false
+    public private(set) var connectingSince: Date?
+    public static let startGrace: TimeInterval = 15
+
+    /// 连接层报连得上、连不上都走这里（不直接改 `coreReachable`）
+    public func setReachable(_ ok: Bool) {
+        if ok {
+            everReached = true
+            coreReachable = true
+            return
+        }
+        if !everReached {
+            let since = connectingSince ?? now()
+            connectingSince = since
+            if now().timeIntervalSince(since) < Self.startGrace { return }
+        }
+        coreReachable = false
+    }
     /// 从什么时候起连不上（连得上是 nil）；最后一次拿到核心的 feed 是什么时候：没响应时写「下面是 … 的内容」
     @Published public var offlineSince: Date?
     @Published public var lastSeen: Date?
@@ -1228,6 +1252,7 @@ public final class WindowModel: ObservableObject {
         if p != page || focus != nil { entrance = .page }
         if p != .today { closeBrief() }       // 简报是它在「今天」说的那一句：离开「今天」就说完了，回来不再说一遍
         focus = nil
+        settingsDialog = nil      // 设置页里开着的弹窗（关于螺壳……）跟着这一页走：换页、换标签就关掉（#170）
         forgetUnsent()
         let before = p == page ? visibleAppTab : nil     // 同一个应用里去它的隐藏页：弹窗底下留着正看的那一页
         takePageArgs(for: p, tab: tab, base: before)
@@ -1290,6 +1315,7 @@ public final class WindowModel: ObservableObject {
     /// 设置里换标签
     public func selectPrefsTab(_ t: PrefsTab) {
         if handOff(.prefs, tab: t.rawValue) { return }
+        settingsDialog = nil
         prefsTab = t.shownTab
         loadVisible()
     }
@@ -1535,6 +1561,41 @@ public final class WindowModel: ObservableObject {
     public var searchBarShown: Bool {
         features.contains(.search) && !features.contains(.ask) && page == .searchApp
             && focus == nil && hostPage == nil && hostTakeover == nil
+            && (agentApps == nil || agentApp(for: .searchApp) != nil)      // 搜索停用、没装时不放框（#172：看着能用）
+    }
+
+    /// 侧栏里有这个应用的入口、核心却没列它时，页上写什么、给什么按钮（#172：一律写「尚未接入螺壳」分不出停用、没装、没在运行）
+    public struct AppAbsence: Equatable {
+        public enum Fix: Equatable { case enable, start, manage }
+        public let text: String
+        public let fix: Fix?
+        public var button: String? {
+            switch fix {
+            case .enable: return "开启"
+            case .start: return "启动"
+            case .manage: return "应用管理"
+            case nil: return nil
+            }
+        }
+    }
+
+    public func appAbsence(_ tool: ToolIcon) -> AppAbsence {
+        guard let row = appRows.first(where: { $0.tool == tool }) else { return AppAbsence(text: "\(tool.name)尚未接入螺壳", fix: nil) }
+        switch row.state {
+        case .disabled: return AppAbsence(text: "\(tool.name)已停用", fix: row.actions.contains(.enable) ? .enable : .manage)
+        case .installable, .unavailable: return AppAbsence(text: "\(tool.name)尚未安装", fix: .manage)
+        case .working: return AppAbsence(text: "\(tool.name)正在安装", fix: .manage)
+        case .installed, .update: return AppAbsence(text: "\(tool.name)未运行", fix: .start)
+        }
+    }
+
+    public func fixAbsence(_ tool: ToolIcon) {
+        guard let row = appRows.first(where: { $0.tool == tool }), let fix = appAbsence(tool).fix else { return }
+        switch fix {
+        case .enable: perform(.enable, on: row)
+        case .start: perform(.restart, on: row)
+        case .manage: go(.apps)
+        }
     }
 
     /// ⌘K、菜单里的「搜索」：不在螺壳搜索的页上就先去那一页，再把光标放进搜索框

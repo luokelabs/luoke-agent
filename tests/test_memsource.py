@@ -163,6 +163,15 @@ class MemorySourceTest(unittest.TestCase):
     def by_prefix(self, prefix):
         return [it for it in self.src.poll(NOW) if it.key.startswith(prefix)]
 
+    def test_a_memory_that_will_not_open_says_error_not_missing(self):
+        """记忆库在、打不开（不是「比自带的库新」）：状态是 error，不留在「还没有记忆」；错照旧往上报"""
+        with open(self.path, "wb") as f:
+            f.write(b"not a database at all" * 64)
+        self.src._mem = None
+        with self.assertRaises(Exception):
+            self.src._open()
+        self.assertEqual(self.src.status, "error")
+
     def test_memory_refuses_a_password_keeps_the_card(self):
         import luoke_agent.memsource as ms
         src = self.src

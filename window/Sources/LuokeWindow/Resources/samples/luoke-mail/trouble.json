@@ -1,5 +1,5 @@
 {
- "_about": "scripts/window_samples.py 用 fixtures/luoke-mail/trouble（luoke-mail e124c8bfca86）接上真核心生成的，不要手改",
+ "_about": "scripts/window_samples.py 用 fixtures/luoke-mail/trouble（luoke-mail 469ea688a3e8）接上真核心生成的，不要手改",
  "app": "luoke-mail",
  "apps": {
   "apps": [
@@ -889,9 +889,9 @@
        {
         "children": [
          "t3",
-         "l13",
-         "t14",
-         "l21"
+         "l12",
+         "t13",
+         "l20"
         ],
         "component": "Column",
         "id": "root"
@@ -958,75 +958,68 @@
         "text": "全部结果"
        },
        {
-        "component": "Text",
-        "id": "t5",
-        "text": "无法退订 1",
-        "variant": "caption"
-       },
-       {
         "children": [
-         "t4",
-         "t5"
+         "t4"
         ],
         "component": "Column",
-        "id": "c6"
+        "id": "c5"
        },
        {
         "children": [
          "b1"
         ],
         "component": "Row",
-        "id": "r7"
+        "id": "r6"
        },
        {
         "children": [
-         "c6",
-         "r7"
+         "c5",
+         "r6"
         ],
         "component": "Row",
-        "id": "r8",
+        "id": "r7",
         "justify": "spaceBetween",
         "open": "b1"
        },
        {
         "component": "Text",
-        "id": "t9",
-        "text": "上次检查：10月20日，最近 60 天的订阅"
+        "id": "t8",
+        "text": "上次检查：10月20日"
        },
        {
         "children": [
-         "t9"
+         "t8"
         ],
         "component": "Column",
-        "id": "c10"
+        "id": "c9"
        },
        {
         "children": [
          "b2"
         ],
         "component": "Row",
-        "id": "r11"
+        "id": "r10"
        },
        {
         "children": [
-         "c10",
-         "r11"
+         "c9",
+         "r10"
         ],
         "component": "Row",
-        "id": "r12",
+        "id": "r11",
         "justify": "spaceBetween"
        },
        {
         "children": [
-         "r8",
-         "r12"
+         "r7",
+         "r11"
         ],
         "component": "List",
-        "id": "l13"
+        "id": "l12"
        },
        {
         "component": "Text",
-        "id": "t14",
+        "id": "t13",
         "text": "旧邮件",
         "variant": "caption"
        },
@@ -1040,58 +1033,58 @@
           "name": "mail_old_scan"
          }
         },
-        "child": "b15-text",
+        "child": "b14-text",
         "component": "Button",
-        "id": "b15",
+        "id": "b14",
         "variant": "primary"
        },
        {
         "component": "Text",
-        "id": "b15-text",
+        "id": "b14-text",
         "text": "开始检查"
        },
        {
         "component": "Text",
-        "id": "t16",
+        "id": "t15",
         "text": "尚未检查收件箱中的旧邮件",
         "variant": "strong"
        },
        {
         "component": "Text",
-        "id": "t17",
+        "id": "t16",
         "text": "仅读取邮件头，完成后列出可归档的分组",
         "variant": "caption"
        },
        {
         "children": [
-         "t16",
-         "t17"
+         "t15",
+         "t16"
         ],
         "component": "Column",
-        "id": "c18"
+        "id": "c17"
        },
        {
         "children": [
-         "b15"
+         "b14"
         ],
         "component": "Row",
-        "id": "r19"
+        "id": "r18"
        },
        {
         "children": [
-         "c18",
-         "r19"
+         "c17",
+         "r18"
         ],
         "component": "Row",
-        "id": "r20",
+        "id": "r19",
         "justify": "spaceBetween"
        },
        {
         "children": [
-         "r20"
+         "r19"
         ],
         "component": "List",
-        "id": "l21"
+        "id": "l20"
        }
       ],
       "surfaceId": "luoke-mail/page/clean"
@@ -2935,7 +2928,7 @@
        {
         "component": "Text",
         "id": "t17",
-        "text": "上次检查：10月20日，最近 60 天 4 封",
+        "text": "上次检查：10月20日",
         "variant": "caption"
        },
        {
@@ -3285,5 +3278,5 @@
  "replies": [],
  "scenario": "trouble",
  "title": "模型连不上、邮箱被拒",
- "version": "0.19.71"
+ "version": "0.19.74"
 }

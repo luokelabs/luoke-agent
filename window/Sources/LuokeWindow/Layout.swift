@@ -37,8 +37,6 @@ enum LKColumn {
     static var railShift: CGFloat { (gap + rail) / 2 }
     /// 紧凑的「今天」那张表最宽多少
     static let table: CGFloat = 1080
-    /// 「添加应用」那一栏最宽多少（连两边边距，`LKInsets.page`）：照对照稿，1004 宽的窗口里两列卡片一共 720，不收成上面 700 的一栏
-    static let apps: CGFloat = 720 + LKInsets.page.leading + LKInsets.page.trailing
 }
 
 private struct LayoutKey: EnvironmentKey { static let defaultValue = LKLayout.regular }

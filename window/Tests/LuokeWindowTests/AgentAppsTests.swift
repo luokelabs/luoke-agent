@@ -74,6 +74,63 @@ final class AgentAppsTests: XCTestCase {
         XCTAssertNil(m.appSettingsPlace(.scan), "核心没列这个应用时没有去处")
     }
 
+    func testTheHostCanTurnToAppManagementFromAnyPage() {
+        // luoke-core#231：菜单栏的「应用」→ 本体调 go(.apps)，主窗口停在原来那页
+        final class Host: WindowHost {
+            func openModelSettings() {}
+            func openPrivacySettings() {}
+            func openAddApps() { XCTFail("本体给了应用的数据：不该交回去") }
+            func upgrade(app: String) {}
+            func appsSnapshot() -> HostApps? {
+                HostApps(rows: [HostAppRow(id: "luoke-mail", tool: .mail, tagline: "", version: "0.19.66", state: .installed,
+                                           bundled: true, actions: [.disable])])
+            }
+        }
+        let (m, _) = fed()
+        let host = Host()
+        m.host = host
+        m.features = .beta2
+        for from in [Page.today, .mail, .prefs] {
+            m.go(from)
+            XCTAssertEqual(m.page, from)
+            m.go(.apps)
+            XCTAssertEqual(m.page, .apps, "从\(from.title)去")
+        }
+    }
+
+    func testAnAppTheCoreDoesNotListSaysWhyAndOffersTheFix() {
+        // #172：搜索停用时页上写「尚未接入螺壳」、没有开启的入口，搜索框照样在
+        final class Host: WindowHost {
+            var done: [String] = []
+            func openModelSettings() {}
+            func openPrivacySettings() {}
+            func openAddApps() {}
+            func upgrade(app: String) {}
+            func appsSnapshot() -> HostApps? {
+                HostApps(rows: [HostAppRow(id: "luoke-search", tool: .search, tagline: "", version: "0.1.25", state: .disabled,
+                                           bundled: true, actions: [.enable]),
+                                HostAppRow(id: "luoke-scan", tool: .scan, tagline: "", version: "0.3.40", state: .installed,
+                                           bundled: true, actions: [.disable])])
+            }
+            func perform(app: String, action: HostAppAction) { done.append("\(app):\(action.title)") }
+        }
+        let (m, _) = fed()
+        let host = Host()
+        m.host = host
+        m.features.insert(.search)
+        m.features.remove(.ask)
+        m.agentApps = m.agentApps?.filter { $0.tool != .search }
+        let off = m.appAbsence(.search)
+        XCTAssertEqual(off.text, "螺壳搜索已停用")
+        XCTAssertEqual(off.button, "开启")
+        m.fixAbsence(.search)
+        XCTAssertEqual(host.done, ["luoke-search:开启"])
+        m.go(.searchApp)
+        XCTAssertFalse(m.searchBarShown, "停用时不放搜索框")
+        XCTAssertEqual(m.appAbsence(.scan).button, "启动", "装着、核心没列：没在运行")
+        XCTAssertEqual(m.appAbsence(.ime), WindowModel.AppAbsence(text: "螺壳输入法尚未接入螺壳", fix: nil))
+    }
+
     func testBundledAppsSayTheyComeWithLuoke() {
         let scan = HostAppRow(id: "luoke-scan", tool: .scan, tagline: "", version: "0.3.40", state: .installed, bundled: true,
                               actions: [.disable])

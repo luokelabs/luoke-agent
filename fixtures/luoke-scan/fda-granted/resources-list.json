@@ -26,6 +26,11 @@
         },
         {
           "mimeType": "application/json",
+          "name": "占地方最多的文件夹",
+          "uri": "data/usage"
+        },
+        {
+          "mimeType": "application/json",
           "name": "扫描要告诉你的事",
           "uri": "luoke://luoke-scan/outbox"
         },

@@ -141,7 +141,15 @@ struct AppPage: View {
             if let agent {
                 AgentAppBody(model: model, app: agent, entry: entry)
             } else if data == nil, model.agentApps != nil {
-                Text("\(tool.name)尚未接入螺壳").font(LKFont.ui(LKType.small)).foregroundStyle(p.mutedFg)
+                let gone = model.appAbsence(tool)
+                HStack(spacing: 12) {
+                    Text(gone.text).font(LKFont.ui(LKType.small)).foregroundStyle(p.mutedFg)
+                    Spacer(minLength: 0)
+                    if let b = gone.button {
+                        Button(b) { model.fixAbsence(tool) }.buttonStyle(LKButtonStyle(kind: gone.fix == .manage ? .secondary : .primary))
+                    }
+                }
+                .lkCard()
             }
             if let data {
                 LKTabs(tabs: data.tabs.map { LKTabs.Tab(id: $0.id, title: $0.title, external: $0.external) }, selected: model.appTab) { t in
@@ -480,7 +488,7 @@ struct AddAppsPage: View {
 
     var body: some View {
         let rows = model.appRows
-        PageScroll(padding: LKInsets.page, maxWidth: LKColumn.apps) {
+        PageScroll() {       // 边距、一栏多宽和设置、各应用的页一样（#173：原来照旧的两列卡片稿单独定的，现在是一张列表）
             PageHeader(title: "应用管理")
             group("螺壳出品", rows.filter { $0.origin == .luoke })
             group("Powered by 螺壳", rows.filter { $0.origin == .poweredBy }) {

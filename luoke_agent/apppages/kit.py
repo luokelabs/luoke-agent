@@ -102,12 +102,14 @@ class PageKit:
         return self.add({"id": self._id("c"), "component": "Column", "children": list(children), "collapsed": summary})
 
     def item(self, title: str, sub: Optional[str] = None, buttons: Sequence[str] = (), *,
-             open: Optional[str] = None, strong: bool = True) -> str:
-        """一行：左边标题（加粗）和一行小字，右边几个小按钮。`open` 是点这一行就点的那个按钮（放在 `buttons` 里，窗口不画它，画箭头）"""
+             open: Optional[str] = None, strong: bool = True, icon: Optional[str] = None) -> str:
+        """一行：左边标题（加粗）和一行小字，右边几个小按钮。`open` 是点这一行就点的那个按钮（放在 `buttons` 里，窗口不画它，画箭头）。
+        `icon`：这一行最左边的图标（§4 itemIcons：一行里只有一个图标和一列字）"""
         left = [self.text(title, "strong" if strong else None)]
         if sub:
             left.append(self.text(sub.rstrip("。"), "caption"))      # 一行小字句尾不带句号（数据里的摘要常带）
-        kids = [self.column(left)]
+        col = self.column(left)
+        kids = [self.row([self.add({"id": self._id("i"), "component": "Icon", "name": icon}), col]) if icon else col]
         btns = list(buttons) + ([open] if open and open not in buttons else [])
         if btns:
             kids.append(self.row(btns))

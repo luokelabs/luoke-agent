@@ -486,9 +486,6 @@ struct CardBackground: ViewModifier {
 enum LKInsets {
     static let card = EdgeInsets(top: LKSpace.x4, leading: LKSpace.x5, bottom: LKSpace.x4, trailing: LKSpace.x5)
     static let row = EdgeInsets(top: LKSpace.x3, leading: LKSpace.x4, bottom: LKSpace.x3, trailing: LKSpace.x4)
-    /// 「添加应用」那一页（对照稿 .scroll：上 28、左右 32）。底下和 `column` 一样留到搜索框那一段（84）上面，
-    /// 不然最后一行卡片被它挡住（只有这一页用）
-    static let page = EdgeInsets(top: column.top, leading: LKSpace.x8, bottom: column.bottom, trailing: LKSpace.x8)
     /// 「今天」「活动」「设置」那一栏
     /// 底部留白正好是搜索框那一段（离底 18 + 框 48 + 上面 18 = 84）：滚到底时最后一行和搜索框之间空 18，和框离底一样（负责人 11-13）
     /// 顶上 28：标题栏下面空一点才是页标题

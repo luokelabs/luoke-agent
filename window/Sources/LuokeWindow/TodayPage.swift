@@ -285,7 +285,7 @@ struct TodayStandard: View {
                 }
             }
             .buttonStyle(LKButtonStyle())
-            .help("待确认的 \(model.cards.count) 件逐件显示：⏎ 回答，↓ 跳过，Esc 返回（急事在上方直接处理）")
+            .help("待确认的 \(model.cards.count) 件逐件显示：⏎ 回答，↓ 跳过，Esc 返回")
         }
     }
 
@@ -485,7 +485,14 @@ struct TodayStandard: View {
                                     .padding(.vertical, LKSpace.x3)
                             }
                             if let s = q.surface {
+                                // 时间在右上角，只占第一行（标题那一行让出来），和「待确认」的卡片同一个画法
                                 SurfaceView(model: s) { cid, _, ctx in model.tapSurface(q.id, componentId: cid, context: ctx) }
+                                    .environment(\.a2uiFirstLineInset, q.time == nil ? 0 : CardFrame.timeInset)
+                                    .overlay(alignment: .topTrailing) {
+                                        if let t = q.time {
+                                            Text(t).font(LKFont.ui(LKType.caption)).foregroundStyle(p.mutedFg).monospacedDigit().padding(.top, 2)
+                                        }
+                                    }
                             }
                         }
                     }
@@ -1051,7 +1058,7 @@ struct CategoryPicks: View {
                         Text(c.name).lineLimit(1)
                         LKCount(value: c.ids.count).foregroundStyle(p.mutedFg)
                     }
-                    .help("「\(c.name)」的 \(c.ids.count) 件一次只摆一件：⏎ 答，↓ 跳过，Esc 回来")
+                    .help("「\(c.name)」的 \(c.ids.count) 件逐件显示：⏎ 回答，↓ 跳过，Esc 返回")
                     .accessibilityLabel("逐件处理「\(c.name)」的 \(c.ids.count) 件")
                 }
             }

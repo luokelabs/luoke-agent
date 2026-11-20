@@ -220,7 +220,7 @@
               },
               {
                 "auto": null,
-                "bytes": 0,
+                "bytes": 49152,
                 "count": 7,
                 "facts": {
                   "apps": [],
@@ -240,7 +240,7 @@
                 "files": 7,
                 "id": "ai-plugin",
                 "suggested": 7,
-                "suggestedBytes": 0
+                "suggestedBytes": 49152
               },
               {
                 "auto": null,

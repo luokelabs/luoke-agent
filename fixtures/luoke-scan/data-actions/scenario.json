@@ -120,6 +120,11 @@
       "file": "read-data-category-project.json"
     },
     {
+      "clock": "2026-10-20T12:00:00Z",
+      "do": "读占地方最多的文件夹 data/usage",
+      "file": "read-data-usage.json"
+    },
+    {
       "clock": "2026-10-20T12:05:00Z",
       "do": "用户在「临时文件夹」这一类的详情里取消了最大的一项，点「把选中的移到废纸篓」：scan_apply 的 plan_id 和 choices 的键取自 data/category 每一项的 plan、key",
       "file": "call-scan_apply-selected.json"

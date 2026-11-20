@@ -453,6 +453,19 @@ class PageAdditionsTest(_Base):
         self.assertEqual(len(self.fake.page_args), n, "不合的不去读工具")
         self.assertEqual(get(self.home, f"/apps/{APP}/pages/nope?q=1")[0], 404)
 
+    def test_search_button_on_a_page_tells_the_window_what_to_search(self):
+        """应用页上的 `agent.search`（搜索页的「最近搜索」）：答复里带上要搜的那一句，窗口拿它去搜。
+        11-19 走查：点了没反应，是 `/action` 的答复里漏了这一项"""
+        card = cards.Card("rules")
+        card.buttons(cards.button("海边", "agent.search", {"q": "海边"}), cards.button("空的", "agent.search", {"q": " "}))
+        ids = [c["id"] for m in self.page_with(card) for c in (m.get("updateComponents") or {}).get("components") or []
+               if c.get("component") == "Button"]
+        ids.sort(key=lambda x: int(x.lstrip("b")))
+        status, r = post(self.home, "/action", {"surfaceId": self.SID, "sourceComponentId": ids[0], "context": {}})
+        self.assertEqual((status, r), (200, {"text": "", "error": False, "search": "海边"}))
+        status, r = post(self.home, "/action", {"surfaceId": self.SID, "sourceComponentId": ids[1], "context": {}})
+        self.assertEqual(r, {"text": "请输入搜索内容", "error": True})
+
     def test_open_page_with_args(self):
         card = cards.Card("rules")
         card.text_field("q", "搜规则")

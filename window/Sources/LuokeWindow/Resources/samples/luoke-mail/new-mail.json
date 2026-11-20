@@ -1,5 +1,5 @@
 {
- "_about": "scripts/window_samples.py 用 fixtures/luoke-mail/new-mail（luoke-mail e124c8bfca86）接上真核心生成的，不要手改",
+ "_about": "scripts/window_samples.py 用 fixtures/luoke-mail/new-mail（luoke-mail 469ea688a3e8）接上真核心生成的，不要手改",
  "app": "luoke-mail",
  "apps": {
   "apps": [
@@ -3803,5 +3803,5 @@
  ],
  "scenario": "new-mail",
  "title": "新邮件分拣好了",
- "version": "0.19.71"
+ "version": "0.19.74"
 }

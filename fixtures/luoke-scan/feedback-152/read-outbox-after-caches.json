@@ -274,7 +274,7 @@
                         {
                           "component": "Text",
                           "id": "h1",
-                          "text": "能放心删的 7 项",
+                          "text": "能清出 49 KB",
                           "variant": "h4"
                         },
                         {
@@ -318,8 +318,9 @@
                 "data": {
                   "cleans": [],
                   "decide": {
-                    "bytes": 0,
+                    "bytes": 49152,
                     "caches": 0,
+                    "cachesBytes": 0,
                     "cleaned": 3,
                     "freed": 175116288,
                     "offerAuto": true,
@@ -342,7 +343,7 @@
                 "id": "round/2026-10-20T12:00:00Z",
                 "kind": "findings",
                 "summary": "已删掉会重建的缓存 3 项（腾出 175.1 MB）；另外 21 项在「螺壳扫描」里等你看。",
-                "title": "能放心删的 7 项，另外 21 项等你处理",
+                "title": "能清出 49 KB，另外 21 项等你处理",
                 "urgency": "low",
                 "why_now": "扫描刚查完一轮"
               }

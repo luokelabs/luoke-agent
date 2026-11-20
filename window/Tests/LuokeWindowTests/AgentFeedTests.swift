@@ -72,6 +72,11 @@ final class AgentFeedTests: XCTestCase {
         XCTAssertEqual(m.cards.first { $0.id == "memory/ask-7" }?.time, "08:15", "今天的写时刻")
         XCTAssertEqual(m.done.map(\.id), scanIDs("done"))
         XCTAssertEqual(m.quiet.map(\.id), ["agent/less-1"] + scanIDs("later"))
+        // 扫描一轮的结论卡写检查完成的时间，看得出是哪一轮（负责人 11-19）；别的不急的卡片不写
+        for q in m.quiet {
+            let round = scanCards("later").contains { $0["id"]?.string == q.id && $0["kind"]?.string == "findings" }
+            XCTAssertEqual(q.time != nil, round, q.id)
+        }
         XCTAssertEqual(m.notices, [], "示例里不再带应用没在运行的提示（另拍 stress-today-app-stopped）")
         XCTAssertEqual(m.todayCount, 2 + scanDecide.count, "只算要你决定的；急事另外是红点")
         XCTAssertTrue(m.hasUrgent)

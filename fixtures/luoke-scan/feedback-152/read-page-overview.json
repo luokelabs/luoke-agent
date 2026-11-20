@@ -39,17 +39,17 @@
                       "c-i16",
                       "c-i17",
                       "c-i18",
-                      "c-g-i5",
+                      "c-g-i0",
                       "t34",
                       "t35",
                       "r40",
-                      "c-i2",
+                      "c-i6",
                       "t41",
                       "r43",
-                      "c-i3",
+                      "c-i7",
                       "t44",
                       "r46",
-                      "c-i4",
+                      "c-i8",
                       "t47",
                       "r49",
                       "t50",
@@ -505,8 +505,8 @@
                   },
                   {
                     "component": "ChoicePicker",
-                    "id": "c-g-i5",
-                    "label": "本机模型的对话模板里多了给模型的话，一共 4 项",
+                    "id": "c-g-i0",
+                    "label": "本机模型的对话模板里多了给模型的话，一共 4 项（49 KB）",
                     "options": [
                       {
                         "label": "移到废纸篓",
@@ -522,7 +522,7 @@
                       }
                     ],
                     "value": {
-                      "path": "/choices/g-i5"
+                      "path": "/choices/g-i0"
                     }
                   },
                   {
@@ -621,7 +621,7 @@
                   },
                   {
                     "component": "ChoicePicker",
-                    "id": "c-i2",
+                    "id": "c-i6",
                     "label": "「Claude Code」的插件「claude-automation-recommender」能操作你的电脑",
                     "options": [
                       {
@@ -638,7 +638,7 @@
                       }
                     ],
                     "value": {
-                      "path": "/choices/i2"
+                      "path": "/choices/i6"
                     }
                   },
                   {
@@ -674,7 +674,7 @@
                   },
                   {
                     "component": "ChoicePicker",
-                    "id": "c-i3",
+                    "id": "c-i7",
                     "label": "「Claude Code」的插件「cloudflare」能操作你的电脑",
                     "options": [
                       {
@@ -691,7 +691,7 @@
                       }
                     ],
                     "value": {
-                      "path": "/choices/i3"
+                      "path": "/choices/i7"
                     }
                   },
                   {
@@ -727,7 +727,7 @@
                   },
                   {
                     "component": "ChoicePicker",
-                    "id": "c-i4",
+                    "id": "c-i8",
                     "label": "「Claude Code」的插件「example-command」能操作你的电脑",
                     "options": [
                       {
@@ -744,7 +744,7 @@
                       }
                     ],
                     "value": {
-                      "path": "/choices/i4"
+                      "path": "/choices/i8"
                     }
                   },
                   {
@@ -1155,14 +1155,8 @@
                 "surfaceId": "overview",
                 "value": {
                   "choices": {
-                    "g-i5": [
+                    "g-i0": [
                       "trash"
-                    ],
-                    "i0": [
-                      "keep"
-                    ],
-                    "i1": [
-                      "keep"
                     ],
                     "i10": [
                       "keep"
@@ -1191,13 +1185,19 @@
                     "i18": [
                       "keep"
                     ],
-                    "i2": [
-                      "trash"
-                    ],
-                    "i3": [
-                      "trash"
-                    ],
                     "i4": [
+                      "keep"
+                    ],
+                    "i5": [
+                      "keep"
+                    ],
+                    "i6": [
+                      "trash"
+                    ],
+                    "i7": [
+                      "trash"
+                    ],
+                    "i8": [
                       "trash"
                     ],
                     "i9": [

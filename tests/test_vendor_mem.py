@@ -42,7 +42,8 @@ class VendorMemTests(unittest.TestCase):
         self.mem = os.path.join(self.tmp, "luoke-mem")
         os.makedirs(os.path.join(self.mem, "luoke_mem", "prompts"))
         git(self.mem, "init", "-q")
-        self.write(os.path.join(self.mem, "LICENSE"), "MIT\n")
+        self.write(os.path.join(self.mem, "LICENSE"), "Apache-2.0\n")
+        self.write(os.path.join(self.mem, "NOTICE"), "螺壳记忆\n")
         self.write(os.path.join(self.mem, "luoke_mem", "__init__.py"), '__version__ = "0.2.0"\nfrom .memory import LABELS\n')
         self.write(os.path.join(self.mem, "luoke_mem", "sensitive.py"), "kinds = ()\n")
         self.write(os.path.join(self.mem, "luoke_mem", "memory.py"), GOOD_MEMORY)
@@ -86,7 +87,7 @@ class VendorMemTests(unittest.TestCase):
         r = self.run_script(self.good)
         self.assertEqual(r.returncode, 0, r.stdout + r.stderr)
         self.assertEqual(sorted(os.listdir(os.path.join(self.vendor, "luoke_mem"))),
-                         ["LICENSE", "__init__.py", "memory.py", "sensitive.py"])
+                         ["LICENSE", "NOTICE", "__init__.py", "memory.py", "sensitive.py"])
         self.assertEqual(self.read(os.path.join(self.vendor, "luoke_mem.VERSION")), f"luoke_mem 0.2.0\ncommit {self.good}\n")
         self.assertEqual(self.leftovers(), [])
 

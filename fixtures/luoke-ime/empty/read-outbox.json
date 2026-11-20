@@ -1,0 +1,31 @@
+{
+  "reply" : {
+    "id" : 1,
+    "jsonrpc" : "2.0",
+    "result" : {
+      "contents" : [
+        {
+          "mimeType" : "application/json",
+          "text" : {
+            "items" : [
+
+            ]
+          },
+          "uri" : "luoke://luoke-ime/outbox"
+        }
+      ],
+      "resultType" : "complete"
+    }
+  },
+  "request" : {
+    "id" : 1,
+    "jsonrpc" : "2.0",
+    "method" : "resources/read",
+    "params" : {
+      "_meta" : {
+        "io.modelcontextprotocol/protocolVersion" : "2026-07-28"
+      },
+      "uri" : "luoke://luoke-ime/outbox"
+    }
+  }
+}

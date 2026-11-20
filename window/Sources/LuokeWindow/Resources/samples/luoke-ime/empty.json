@@ -1,0 +1,1667 @@
+{
+ "_about": "scripts/window_samples.py 用 fixtures/luoke-ime/empty（luoke-ime 48f289d2253e）接上真核心生成的，不要手改",
+ "app": "luoke-ime",
+ "apps": {
+  "apps": [
+   {
+    "id": "luoke-ime",
+    "needs": [],
+    "pages": [
+     {
+      "id": "settings",
+      "title": "设置"
+     },
+     {
+      "id": "apps",
+      "title": "各应用"
+     }
+    ],
+    "running": true,
+    "summary": null,
+    "ui": null
+   }
+  ]
+ },
+ "asked": [
+  "read-data-apps.json",
+  "read-data-settings.json",
+  "read-outbox.json",
+  "tools-list.json"
+ ],
+ "clock": "2026-11-19T04:00:00Z",
+ "events": [
+  [
+   "feed",
+   {
+    "brief": {
+     "next": "2026-11-19T08:00:00+08:00",
+     "words": null
+    },
+    "cards": [],
+    "dot": false,
+    "hello": null,
+    "notice_rows": [],
+    "notices": [],
+    "open": 0,
+    "order": [],
+    "paused_until": null
+   }
+  ]
+ ],
+ "host": {},
+ "pages": {
+  "apps": {
+   "messages": [
+    {
+     "createSurface": {
+      "catalogId": "ai.luoke/a2ui/agent/1",
+      "surfaceId": "luoke-ime/page/apps"
+     },
+     "version": "v0.9"
+    },
+    {
+     "updateComponents": {
+      "components": [
+       {
+        "children": [
+         "t1",
+         "l6"
+        ],
+        "component": "Column",
+        "id": "root"
+       },
+       {
+        "component": "Text",
+        "id": "t1",
+        "text": "应用单独设置",
+        "variant": "caption"
+       },
+       {
+        "component": "Text",
+        "id": "t2",
+        "text": "暂无单独设置的应用",
+        "variant": "strong"
+       },
+       {
+        "component": "Text",
+        "id": "t3",
+        "text": "在应用中打开输入法菜单，选择「此应用设置」",
+        "variant": "caption"
+       },
+       {
+        "children": [
+         "t2",
+         "t3"
+        ],
+        "component": "Column",
+        "id": "c4"
+       },
+       {
+        "children": [
+         "c4"
+        ],
+        "component": "Row",
+        "id": "r5",
+        "justify": "spaceBetween"
+       },
+       {
+        "children": [
+         "r5"
+        ],
+        "component": "List",
+        "id": "l6"
+       }
+      ],
+      "surfaceId": "luoke-ime/page/apps"
+     },
+     "version": "v0.9"
+    }
+   ]
+  },
+  "settings": {
+   "messages": [
+    {
+     "createSurface": {
+      "catalogId": "ai.luoke/a2ui/agent/1",
+      "surfaceId": "luoke-ime/page/settings"
+     },
+     "version": "v0.9"
+    },
+    {
+     "updateComponents": {
+      "components": [
+       {
+        "children": [
+         "t6",
+         "l7",
+         "t14",
+         "l15",
+         "t22",
+         "l23",
+         "t38",
+         "l39",
+         "t50",
+         "l51",
+         "t79",
+         "l80",
+         "t87",
+         "l88",
+         "t101",
+         "l102",
+         "t103",
+         "l114",
+         "t115",
+         "l120",
+         "t135",
+         "l136",
+         "t148",
+         "l149"
+        ],
+        "component": "Column",
+        "id": "root"
+       },
+       {
+        "action": {
+         "event": {
+          "context": {
+           "key": "currentEngine",
+           "value": {
+            "path": "/choices/currentEngine/0"
+           }
+          },
+          "name": "ime_set"
+         }
+        },
+        "child": "b1-text",
+        "component": "Button",
+        "id": "b1"
+       },
+       {
+        "component": "Text",
+        "id": "b1-text",
+        "text": "输入方案"
+       },
+       {
+        "component": "Text",
+        "id": "t2",
+        "text": "输入方案",
+        "variant": "strong"
+       },
+       {
+        "children": [
+         "t2"
+        ],
+        "component": "Column",
+        "id": "c3"
+       },
+       {
+        "component": "ChoicePicker",
+        "id": "k4",
+        "options": [
+         {
+          "label": "全拼",
+          "value": "quanpin"
+         },
+         {
+          "label": "小鹤双拼",
+          "value": "xiaohe"
+         }
+        ],
+        "submit": "b1",
+        "value": {
+         "path": "/choices/currentEngine"
+        }
+       },
+       {
+        "children": [
+         "c3",
+         "k4"
+        ],
+        "component": "Row",
+        "id": "r5",
+        "justify": "spaceBetween"
+       },
+       {
+        "component": "Text",
+        "id": "t6",
+        "text": "输入方式",
+        "variant": "caption"
+       },
+       {
+        "children": [
+         "r5"
+        ],
+        "component": "List",
+        "id": "l7"
+       },
+       {
+        "action": {
+         "event": {
+          "context": {
+           "key": "fuzzyOn",
+           "value": true
+          },
+          "name": "ime_set"
+         }
+        },
+        "child": "b8-text",
+        "component": "Button",
+        "id": "b8",
+        "on": false,
+        "variant": "switch"
+       },
+       {
+        "component": "Text",
+        "id": "b8-text",
+        "text": "模糊音"
+       },
+       {
+        "component": "Text",
+        "id": "t9",
+        "text": "模糊音",
+        "variant": "strong"
+       },
+       {
+        "component": "Text",
+        "id": "t10",
+        "text": "同时给出拼法相近的字，准确的候选可能排序靠后",
+        "variant": "caption"
+       },
+       {
+        "children": [
+         "t9",
+         "t10"
+        ],
+        "component": "Column",
+        "id": "c11"
+       },
+       {
+        "children": [
+         "b8"
+        ],
+        "component": "Row",
+        "id": "r12"
+       },
+       {
+        "children": [
+         "c11",
+         "r12"
+        ],
+        "component": "Row",
+        "id": "r13",
+        "justify": "spaceBetween"
+       },
+       {
+        "component": "Text",
+        "id": "t14",
+        "text": "模糊音",
+        "variant": "caption"
+       },
+       {
+        "children": [
+         "r13"
+        ],
+        "component": "List",
+        "id": "l15"
+       },
+       {
+        "action": {
+         "event": {
+          "context": {
+           "key": "voiceOn",
+           "value": true
+          },
+          "name": "ime_set"
+         }
+        },
+        "child": "b16-text",
+        "component": "Button",
+        "id": "b16",
+        "on": false,
+        "variant": "switch"
+       },
+       {
+        "component": "Text",
+        "id": "b16-text",
+        "text": "语音输入"
+       },
+       {
+        "component": "Text",
+        "id": "t17",
+        "text": "语音输入",
+        "variant": "strong"
+       },
+       {
+        "component": "Text",
+        "id": "t18",
+        "text": "按住所选按键说话，松开后上屏；识别和整理均由螺壳在本机完成；首次使用时系统将请求麦克风权限",
+        "variant": "caption"
+       },
+       {
+        "children": [
+         "t17",
+         "t18"
+        ],
+        "component": "Column",
+        "id": "c19"
+       },
+       {
+        "children": [
+         "b16"
+        ],
+        "component": "Row",
+        "id": "r20"
+       },
+       {
+        "children": [
+         "c19",
+         "r20"
+        ],
+        "component": "Row",
+        "id": "r21",
+        "justify": "spaceBetween"
+       },
+       {
+        "component": "Text",
+        "id": "t22",
+        "text": "语音",
+        "variant": "caption"
+       },
+       {
+        "children": [
+         "r21"
+        ],
+        "component": "List",
+        "id": "l23"
+       },
+       {
+        "action": {
+         "event": {
+          "context": {
+           "bool": true,
+           "key": "defaultEnglish",
+           "value": {
+            "path": "/choices/defaultEnglish/0"
+           }
+          },
+          "name": "ime_set"
+         }
+        },
+        "child": "b24-text",
+        "component": "Button",
+        "id": "b24"
+       },
+       {
+        "component": "Text",
+        "id": "b24-text",
+        "text": "进入应用时的默认模式"
+       },
+       {
+        "component": "Text",
+        "id": "t25",
+        "text": "进入应用时的默认模式",
+        "variant": "strong"
+       },
+       {
+        "component": "ChoicePicker",
+        "id": "k26",
+        "options": [
+         {
+          "label": "中文",
+          "value": "false"
+         },
+         {
+          "label": "英文",
+          "value": "true"
+         }
+        ],
+        "submit": "b24",
+        "value": {
+         "path": "/choices/defaultEnglish"
+        }
+       },
+       {
+        "children": [
+         "t25",
+         "k26"
+        ],
+        "component": "Row",
+        "id": "r27",
+        "justify": "spaceBetween"
+       },
+       {
+        "action": {
+         "event": {
+          "context": {
+           "key": "rememberMode",
+           "value": false
+          },
+          "name": "ime_set"
+         }
+        },
+        "child": "b28-text",
+        "component": "Button",
+        "id": "b28",
+        "on": true,
+        "variant": "switch"
+       },
+       {
+        "component": "Text",
+        "id": "b28-text",
+        "text": "记住各应用上次的中英文模式"
+       },
+       {
+        "component": "Text",
+        "id": "t29",
+        "text": "记住各应用上次的中英文模式",
+        "variant": "strong"
+       },
+       {
+        "children": [
+         "t29"
+        ],
+        "component": "Column",
+        "id": "c30"
+       },
+       {
+        "children": [
+         "b28"
+        ],
+        "component": "Row",
+        "id": "r31"
+       },
+       {
+        "children": [
+         "c30",
+         "r31"
+        ],
+        "component": "Row",
+        "id": "r32",
+        "justify": "spaceBetween"
+       },
+       {
+        "action": {
+         "event": {
+          "context": {
+           "key": "shiftToggles",
+           "value": false
+          },
+          "name": "ime_set"
+         }
+        },
+        "child": "b33-text",
+        "component": "Button",
+        "id": "b33",
+        "on": true,
+        "variant": "switch"
+       },
+       {
+        "component": "Text",
+        "id": "b33-text",
+        "text": "单按 Shift 切换中英文"
+       },
+       {
+        "component": "Text",
+        "id": "t34",
+        "text": "单按 Shift 切换中英文",
+        "variant": "strong"
+       },
+       {
+        "children": [
+         "t34"
+        ],
+        "component": "Column",
+        "id": "c35"
+       },
+       {
+        "children": [
+         "b33"
+        ],
+        "component": "Row",
+        "id": "r36"
+       },
+       {
+        "children": [
+         "c35",
+         "r36"
+        ],
+        "component": "Row",
+        "id": "r37",
+        "justify": "spaceBetween"
+       },
+       {
+        "component": "Text",
+        "id": "t38",
+        "text": "中英文",
+        "variant": "caption"
+       },
+       {
+        "children": [
+         "r27",
+         "r32",
+         "r37"
+        ],
+        "component": "List",
+        "id": "l39"
+       },
+       {
+        "action": {
+         "event": {
+          "context": {
+           "key": "autoSpace",
+           "value": true
+          },
+          "name": "ime_set"
+         }
+        },
+        "child": "b40-text",
+        "component": "Button",
+        "id": "b40",
+        "on": false,
+        "variant": "switch"
+       },
+       {
+        "component": "Text",
+        "id": "b40-text",
+        "text": "中英文之间自动加空格"
+       },
+       {
+        "component": "Text",
+        "id": "t41",
+        "text": "中英文之间自动加空格",
+        "variant": "strong"
+       },
+       {
+        "children": [
+         "t41"
+        ],
+        "component": "Column",
+        "id": "c42"
+       },
+       {
+        "children": [
+         "b40"
+        ],
+        "component": "Row",
+        "id": "r43"
+       },
+       {
+        "children": [
+         "c42",
+         "r43"
+        ],
+        "component": "Row",
+        "id": "r44",
+        "justify": "spaceBetween"
+       },
+       {
+        "action": {
+         "event": {
+          "context": {
+           "key": "cornerBraces",
+           "value": false
+          },
+          "name": "ime_set"
+         }
+        },
+        "child": "b45-text",
+        "component": "Button",
+        "id": "b45",
+        "on": true,
+        "variant": "switch"
+       },
+       {
+        "component": "Text",
+        "id": "b45-text",
+        "text": "中文状态下 { } 输入为「」"
+       },
+       {
+        "component": "Text",
+        "id": "t46",
+        "text": "中文状态下 { } 输入为「」",
+        "variant": "strong"
+       },
+       {
+        "children": [
+         "t46"
+        ],
+        "component": "Column",
+        "id": "c47"
+       },
+       {
+        "children": [
+         "b45"
+        ],
+        "component": "Row",
+        "id": "r48"
+       },
+       {
+        "children": [
+         "c47",
+         "r48"
+        ],
+        "component": "Row",
+        "id": "r49",
+        "justify": "spaceBetween"
+       },
+       {
+        "component": "Text",
+        "id": "t50",
+        "text": "排版",
+        "variant": "caption"
+       },
+       {
+        "children": [
+         "r44",
+         "r49"
+        ],
+        "component": "List",
+        "id": "l51"
+       },
+       {
+        "action": {
+         "event": {
+          "context": {
+           "key": "fontSize",
+           "value": 15
+          },
+          "name": "ime_set"
+         }
+        },
+        "child": "b52-text",
+        "component": "Button",
+        "id": "b52",
+        "tooltip": "减小字号"
+       },
+       {
+        "component": "Text",
+        "id": "b52-text",
+        "text": "减小"
+       },
+       {
+        "component": "Text",
+        "id": "t53",
+        "text": "16"
+       },
+       {
+        "action": {
+         "event": {
+          "context": {
+           "key": "fontSize",
+           "value": 17
+          },
+          "name": "ime_set"
+         }
+        },
+        "child": "b54-text",
+        "component": "Button",
+        "id": "b54",
+        "tooltip": "增大字号"
+       },
+       {
+        "component": "Text",
+        "id": "b54-text",
+        "text": "增大"
+       },
+       {
+        "component": "Text",
+        "id": "t55",
+        "text": "字号",
+        "variant": "strong"
+       },
+       {
+        "children": [
+         "t55"
+        ],
+        "component": "Column",
+        "id": "c56"
+       },
+       {
+        "children": [
+         "b52",
+         "t53",
+         "b54"
+        ],
+        "component": "Row",
+        "id": "r57"
+       },
+       {
+        "children": [
+         "c56",
+         "r57"
+        ],
+        "component": "Row",
+        "id": "r58",
+        "justify": "spaceBetween"
+       },
+       {
+        "action": {
+         "event": {
+          "context": {
+           "key": "orientation",
+           "value": {
+            "path": "/choices/orientation/0"
+           }
+          },
+          "name": "ime_set"
+         }
+        },
+        "child": "b59-text",
+        "component": "Button",
+        "id": "b59"
+       },
+       {
+        "component": "Text",
+        "id": "b59-text",
+        "text": "候选排列"
+       },
+       {
+        "component": "Text",
+        "id": "t60",
+        "text": "候选排列",
+        "variant": "strong"
+       },
+       {
+        "children": [
+         "t60"
+        ],
+        "component": "Column",
+        "id": "c61"
+       },
+       {
+        "component": "ChoicePicker",
+        "id": "k62",
+        "options": [
+         {
+          "label": "横排",
+          "value": "horizontal"
+         },
+         {
+          "label": "竖排",
+          "value": "vertical"
+         }
+        ],
+        "submit": "b59",
+        "value": {
+         "path": "/choices/orientation"
+        }
+       },
+       {
+        "children": [
+         "c61",
+         "k62"
+        ],
+        "component": "Row",
+        "id": "r63",
+        "justify": "spaceBetween"
+       },
+       {
+        "action": {
+         "event": {
+          "context": {
+           "key": "pageSize",
+           "value": 8
+          },
+          "name": "ime_set"
+         }
+        },
+        "child": "b64-text",
+        "component": "Button",
+        "id": "b64",
+        "tooltip": "减少每页候选数"
+       },
+       {
+        "component": "Text",
+        "id": "b64-text",
+        "text": "减少"
+       },
+       {
+        "component": "Text",
+        "id": "t65",
+        "text": "9"
+       },
+       {
+        "component": "Text",
+        "id": "t66",
+        "text": "每页候选数",
+        "variant": "strong"
+       },
+       {
+        "children": [
+         "t66"
+        ],
+        "component": "Column",
+        "id": "c67"
+       },
+       {
+        "children": [
+         "b64",
+         "t65"
+        ],
+        "component": "Row",
+        "id": "r68"
+       },
+       {
+        "children": [
+         "c67",
+         "r68"
+        ],
+        "component": "Row",
+        "id": "r69",
+        "justify": "spaceBetween"
+       },
+       {
+        "action": {
+         "event": {
+          "context": {
+           "key": "pagingKeys",
+           "value": {
+            "path": "/choices/pagingKeys/0"
+           }
+          },
+          "name": "ime_set"
+         }
+        },
+        "child": "b70-text",
+        "component": "Button",
+        "id": "b70"
+       },
+       {
+        "component": "Text",
+        "id": "b70-text",
+        "text": "翻页键"
+       },
+       {
+        "component": "Text",
+        "id": "t71",
+        "text": "翻页键",
+        "variant": "strong"
+       },
+       {
+        "children": [
+         "t71"
+        ],
+        "component": "Column",
+        "id": "c72"
+       },
+       {
+        "component": "ChoicePicker",
+        "id": "k73",
+        "options": [
+         {
+          "label": "- 和 =",
+          "value": "-="
+         },
+         {
+          "label": ", 和 .",
+          "value": ",."
+         }
+        ],
+        "submit": "b70",
+        "value": {
+         "path": "/choices/pagingKeys"
+        }
+       },
+       {
+        "children": [
+         "c72",
+         "k73"
+        ],
+        "component": "Row",
+        "id": "r74",
+        "justify": "spaceBetween"
+       },
+       {
+        "action": {
+         "event": {
+          "context": {
+           "bool": true,
+           "key": "inline",
+           "value": {
+            "path": "/choices/inline/0"
+           }
+          },
+          "name": "ime_set"
+         }
+        },
+        "child": "b75-text",
+        "component": "Button",
+        "id": "b75"
+       },
+       {
+        "component": "Text",
+        "id": "b75-text",
+        "text": "拼音显示位置"
+       },
+       {
+        "component": "Text",
+        "id": "t76",
+        "text": "拼音显示位置",
+        "variant": "strong"
+       },
+       {
+        "component": "ChoicePicker",
+        "id": "k77",
+        "options": [
+         {
+          "label": "输入框",
+          "value": "true"
+         },
+         {
+          "label": "候选窗口",
+          "value": "false"
+         }
+        ],
+        "submit": "b75",
+        "value": {
+         "path": "/choices/inline"
+        }
+       },
+       {
+        "children": [
+         "t76",
+         "k77"
+        ],
+        "component": "Row",
+        "id": "r78",
+        "justify": "spaceBetween"
+       },
+       {
+        "component": "Text",
+        "id": "t79",
+        "text": "候选窗口",
+        "variant": "caption"
+       },
+       {
+        "children": [
+         "r58",
+         "r63",
+         "r69",
+         "r74",
+         "r78"
+        ],
+        "component": "List",
+        "id": "l80"
+       },
+       {
+        "action": {
+         "event": {
+          "context": {
+           "key": "predict",
+           "value": false
+          },
+          "name": "ime_set"
+         }
+        },
+        "child": "b81-text",
+        "component": "Button",
+        "id": "b81",
+        "on": true,
+        "variant": "switch"
+       },
+       {
+        "component": "Text",
+        "id": "b81-text",
+        "text": "联想"
+       },
+       {
+        "component": "Text",
+        "id": "t82",
+        "text": "联想",
+        "variant": "strong"
+       },
+       {
+        "component": "Text",
+        "id": "t83",
+        "text": "按 Tab 选用推荐",
+        "variant": "caption"
+       },
+       {
+        "children": [
+         "t82",
+         "t83"
+        ],
+        "component": "Column",
+        "id": "c84"
+       },
+       {
+        "children": [
+         "b81"
+        ],
+        "component": "Row",
+        "id": "r85"
+       },
+       {
+        "children": [
+         "c84",
+         "r85"
+        ],
+        "component": "Row",
+        "id": "r86",
+        "justify": "spaceBetween"
+       },
+       {
+        "component": "Text",
+        "id": "t87",
+        "text": "联想",
+        "variant": "caption"
+       },
+       {
+        "children": [
+         "r86"
+        ],
+        "component": "List",
+        "id": "l88"
+       },
+       {
+        "action": {
+         "event": {
+          "context": {
+           "key": "memory",
+           "value": false
+          },
+          "name": "ime_set"
+         }
+        },
+        "child": "b89-text",
+        "component": "Button",
+        "id": "b89",
+        "on": true,
+        "variant": "switch"
+       },
+       {
+        "component": "Text",
+        "id": "b89-text",
+        "text": "记录输入内容到记忆"
+       },
+       {
+        "component": "Text",
+        "id": "t90",
+        "text": "记录输入内容到记忆",
+        "variant": "strong"
+       },
+       {
+        "component": "Text",
+        "id": "t91",
+        "text": "保存在本机，用于联想和候选排序",
+        "variant": "caption"
+       },
+       {
+        "children": [
+         "t90",
+         "t91"
+        ],
+        "component": "Column",
+        "id": "c92"
+       },
+       {
+        "children": [
+         "b89"
+        ],
+        "component": "Row",
+        "id": "r93"
+       },
+       {
+        "children": [
+         "c92",
+         "r93"
+        ],
+        "component": "Row",
+        "id": "r94",
+        "justify": "spaceBetween"
+       },
+       {
+        "action": {
+         "event": {
+          "context": {
+           "key": "recordingPaused",
+           "value": true
+          },
+          "name": "ime_set"
+         }
+        },
+        "child": "b95-text",
+        "component": "Button",
+        "id": "b95",
+        "on": false,
+        "variant": "switch"
+       },
+       {
+        "component": "Text",
+        "id": "b95-text",
+        "text": "暂停所有记录"
+       },
+       {
+        "component": "Text",
+        "id": "t96",
+        "text": "暂停所有记录",
+        "variant": "strong"
+       },
+       {
+        "component": "Text",
+        "id": "t97",
+        "text": "暂停期间不记录，可随时恢复",
+        "variant": "caption"
+       },
+       {
+        "children": [
+         "t96",
+         "t97"
+        ],
+        "component": "Column",
+        "id": "c98"
+       },
+       {
+        "children": [
+         "b95"
+        ],
+        "component": "Row",
+        "id": "r99"
+       },
+       {
+        "children": [
+         "c98",
+         "r99"
+        ],
+        "component": "Row",
+        "id": "r100",
+        "justify": "spaceBetween"
+       },
+       {
+        "component": "Text",
+        "id": "t101",
+        "text": "记忆记录",
+        "variant": "caption"
+       },
+       {
+        "children": [
+         "r94",
+         "r100"
+        ],
+        "component": "List",
+        "id": "l102"
+       },
+       {
+        "component": "Text",
+        "id": "t103",
+        "text": "「小鹤双拼」的词语",
+        "variant": "caption"
+       },
+       {
+        "action": {
+         "event": {
+          "context": {
+           "engine": "xiaohe",
+           "op": "clear_learned"
+          },
+          "name": "ime_do"
+         }
+        },
+        "child": "b104-text",
+        "component": "Button",
+        "confirm": {
+         "label": "清除",
+         "text": "因改选而排序靠前的词语将全部清除，此后按默认顺序排列；已忘记的词语仍不显示。清除后无法恢复。",
+         "title": "清除「小鹤双拼」的已学词语？"
+        },
+        "id": "b104",
+        "variant": "destructive"
+       },
+       {
+        "component": "Text",
+        "id": "b104-text",
+        "text": "清除"
+       },
+       {
+        "component": "Text",
+        "id": "t105",
+        "text": "已学词语",
+        "variant": "strong"
+       },
+       {
+        "component": "Text",
+        "id": "t106",
+        "text": "改选过的词语排序靠前",
+        "variant": "caption"
+       },
+       {
+        "children": [
+         "t105",
+         "t106"
+        ],
+        "component": "Column",
+        "id": "c107"
+       },
+       {
+        "children": [
+         "b104"
+        ],
+        "component": "Row",
+        "id": "r108"
+       },
+       {
+        "children": [
+         "c107",
+         "r108"
+        ],
+        "component": "Row",
+        "id": "r109",
+        "justify": "spaceBetween"
+       },
+       {
+        "component": "Text",
+        "id": "t110",
+        "text": "已忘记词语",
+        "variant": "strong"
+       },
+       {
+        "component": "Text",
+        "id": "t111",
+        "text": "在候选上按 Shift+⌫ 可忘记词语",
+        "variant": "caption"
+       },
+       {
+        "children": [
+         "t110",
+         "t111"
+        ],
+        "component": "Column",
+        "id": "c112"
+       },
+       {
+        "children": [
+         "c112"
+        ],
+        "component": "Row",
+        "id": "r113",
+        "justify": "spaceBetween"
+       },
+       {
+        "children": [
+         "r109",
+         "r113"
+        ],
+        "component": "List",
+        "id": "l114"
+       },
+       {
+        "component": "Text",
+        "id": "t115",
+        "text": "使用统计",
+        "variant": "caption"
+       },
+       {
+        "component": "Text",
+        "id": "t116",
+        "text": "最近 7 天",
+        "variant": "strong"
+       },
+       {
+        "component": "Text",
+        "id": "t117",
+        "text": "暂无统计",
+        "variant": "caption"
+       },
+       {
+        "children": [
+         "t116",
+         "t117"
+        ],
+        "component": "Column",
+        "id": "c118"
+       },
+       {
+        "children": [
+         "c118"
+        ],
+        "component": "Row",
+        "id": "r119",
+        "justify": "spaceBetween"
+       },
+       {
+        "children": [
+         "r119"
+        ],
+        "component": "List",
+        "id": "l120"
+       },
+       {
+        "action": {
+         "event": {
+          "context": {
+           "engine": "quanpin",
+           "on": true,
+           "op": "dev_mode"
+          },
+          "name": "ime_do"
+         }
+        },
+        "child": "b121-text",
+        "component": "Button",
+        "confirm": {
+         "label": "开启",
+         "text": "开启后在本机记录此输入方案的按键和候选，保存在记录文件夹中，保留 7 天；密码框、暂停所有记录期间和禁止记录的应用中不记录。",
+         "title": "开启「全拼」的开发模式？"
+        },
+        "id": "b121",
+        "on": false,
+        "variant": "switch"
+       },
+       {
+        "component": "Text",
+        "id": "b121-text",
+        "text": "记录「全拼」的输入"
+       },
+       {
+        "component": "Text",
+        "id": "t122",
+        "text": "记录「全拼」的输入",
+        "variant": "strong"
+       },
+       {
+        "children": [
+         "t122"
+        ],
+        "component": "Column",
+        "id": "c123"
+       },
+       {
+        "children": [
+         "b121"
+        ],
+        "component": "Row",
+        "id": "r124"
+       },
+       {
+        "children": [
+         "c123",
+         "r124"
+        ],
+        "component": "Row",
+        "id": "r125",
+        "justify": "spaceBetween"
+       },
+       {
+        "action": {
+         "event": {
+          "context": {
+           "engine": "xiaohe",
+           "on": true,
+           "op": "dev_mode"
+          },
+          "name": "ime_do"
+         }
+        },
+        "child": "b126-text",
+        "component": "Button",
+        "confirm": {
+         "label": "开启",
+         "text": "开启后在本机记录此输入方案的按键和候选，保存在记录文件夹中，保留 7 天；密码框、暂停所有记录期间和禁止记录的应用中不记录。",
+         "title": "开启「小鹤双拼」的开发模式？"
+        },
+        "id": "b126",
+        "on": false,
+        "variant": "switch"
+       },
+       {
+        "component": "Text",
+        "id": "b126-text",
+        "text": "记录「小鹤双拼」的输入"
+       },
+       {
+        "component": "Text",
+        "id": "t127",
+        "text": "记录「小鹤双拼」的输入",
+        "variant": "strong"
+       },
+       {
+        "children": [
+         "t127"
+        ],
+        "component": "Column",
+        "id": "c128"
+       },
+       {
+        "children": [
+         "b126"
+        ],
+        "component": "Row",
+        "id": "r129"
+       },
+       {
+        "children": [
+         "c128",
+         "r129"
+        ],
+        "component": "Row",
+        "id": "r130",
+        "justify": "spaceBetween"
+       },
+       {
+        "component": "Text",
+        "id": "t131",
+        "text": "记录文件夹",
+        "variant": "strong"
+       },
+       {
+        "component": "Text",
+        "id": "t132",
+        "text": "尚无记录",
+        "variant": "caption"
+       },
+       {
+        "children": [
+         "t131",
+         "t132"
+        ],
+        "component": "Column",
+        "id": "c133"
+       },
+       {
+        "children": [
+         "c133"
+        ],
+        "component": "Row",
+        "id": "r134",
+        "justify": "spaceBetween"
+       },
+       {
+        "component": "Text",
+        "id": "t135",
+        "text": "开发模式",
+        "variant": "caption"
+       },
+       {
+        "children": [
+         "r125",
+         "r130",
+         "r134"
+        ],
+        "component": "List",
+        "id": "l136"
+       },
+       {
+        "action": {
+         "event": {
+          "context": {
+           "item": "~/.luoke/ime/engines"
+          },
+          "name": "agent.reveal"
+         }
+        },
+        "child": "b137-row",
+        "component": "Button",
+        "id": "b137",
+        "variant": "borderless"
+       },
+       {
+        "component": "Icon",
+        "id": "b137-icon",
+        "name": "folder"
+       },
+       {
+        "component": "Text",
+        "id": "b137-text",
+        "text": "在访达中显示"
+       },
+       {
+        "children": [
+         "b137-icon",
+         "b137-text"
+        ],
+        "component": "Row",
+        "id": "b137-row"
+       },
+       {
+        "component": "Text",
+        "id": "t138",
+        "text": "引擎文件夹",
+        "variant": "strong"
+       },
+       {
+        "component": "Text",
+        "id": "t139",
+        "text": "用于放置自制引擎",
+        "variant": "caption"
+       },
+       {
+        "children": [
+         "t138",
+         "t139"
+        ],
+        "component": "Column",
+        "id": "c140"
+       },
+       {
+        "children": [
+         "b137"
+        ],
+        "component": "Row",
+        "id": "r141"
+       },
+       {
+        "children": [
+         "c140",
+         "r141"
+        ],
+        "component": "Row",
+        "id": "r142",
+        "justify": "spaceBetween"
+       },
+       {
+        "action": {
+         "event": {
+          "context": {
+           "item": "~/.luoke/ime/settings.json"
+          },
+          "name": "agent.reveal"
+         }
+        },
+        "child": "b143-row",
+        "component": "Button",
+        "id": "b143",
+        "variant": "borderless"
+       },
+       {
+        "component": "Icon",
+        "id": "b143-icon",
+        "name": "folder"
+       },
+       {
+        "component": "Text",
+        "id": "b143-text",
+        "text": "在访达中显示"
+       },
+       {
+        "children": [
+         "b143-icon",
+         "b143-text"
+        ],
+        "component": "Row",
+        "id": "b143-row"
+       },
+       {
+        "component": "Text",
+        "id": "t144",
+        "text": "设置文件",
+        "variant": "strong"
+       },
+       {
+        "children": [
+         "t144"
+        ],
+        "component": "Column",
+        "id": "c145"
+       },
+       {
+        "children": [
+         "b143"
+        ],
+        "component": "Row",
+        "id": "r146"
+       },
+       {
+        "children": [
+         "c145",
+         "r146"
+        ],
+        "component": "Row",
+        "id": "r147",
+        "justify": "spaceBetween"
+       },
+       {
+        "component": "Text",
+        "id": "t148",
+        "text": "文件",
+        "variant": "caption"
+       },
+       {
+        "children": [
+         "r142",
+         "r147"
+        ],
+        "component": "List",
+        "id": "l149"
+       }
+      ],
+      "surfaceId": "luoke-ime/page/settings"
+     },
+     "version": "v0.9"
+    },
+    {
+     "updateDataModel": {
+      "path": "/",
+      "surfaceId": "luoke-ime/page/settings",
+      "value": {
+       "choices": {
+        "currentEngine": [
+         "xiaohe"
+        ],
+        "defaultEnglish": [
+         "false"
+        ],
+        "inline": [
+         "true"
+        ],
+        "orientation": [
+         "horizontal"
+        ],
+        "pagingKeys": [
+         "-="
+        ]
+       }
+      }
+     },
+     "version": "v0.9"
+    }
+   ]
+  }
+ },
+ "permissions": {
+  "rows": []
+ },
+ "replies": [],
+ "scenario": "empty",
+ "title": "",
+ "version": "0.0.0"
+}

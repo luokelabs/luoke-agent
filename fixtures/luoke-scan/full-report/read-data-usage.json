@@ -1,0 +1,365 @@
+{
+  "reply": {
+    "id": 1012,
+    "jsonrpc": "2.0",
+    "result": {
+      "contents": [
+        {
+          "mimeType": "application/json",
+          "text": {
+            "complete": true,
+            "folders": [
+              {
+                "apps": null,
+                "bundleId": null,
+                "bytes": 358612992,
+                "day": "2026-10-20",
+                "grew7d": null,
+                "holds": null,
+                "id": null,
+                "kind": "dev-caches",
+                "name": null,
+                "paths": [
+                  "~/Library/Caches/pip",
+                  "~/Library/Caches/go-build",
+                  "~/.cache/uv",
+                  "~/.npm",
+                  "~/Library/Developer/Xcode",
+                  "~/.bun",
+                  "~/.cache/huggingface",
+                  "~/.cargo"
+                ],
+                "pathsMore": 0,
+                "top": [
+                  {
+                    "bytes": 62914560,
+                    "dir": true,
+                    "name": "pip",
+                    "path": "~/Library/Caches/pip"
+                  },
+                  {
+                    "bytes": 60817408,
+                    "dir": true,
+                    "name": "go-build",
+                    "path": "~/Library/Caches/go-build"
+                  },
+                  {
+                    "bytes": 58720256,
+                    "dir": true,
+                    "name": "uv",
+                    "path": "~/.cache/uv"
+                  },
+                  {
+                    "bytes": 56623104,
+                    "dir": true,
+                    "name": ".npm",
+                    "path": "~/.npm"
+                  },
+                  {
+                    "bytes": 55574528,
+                    "dir": true,
+                    "name": "Xcode",
+                    "path": "~/Library/Developer/Xcode"
+                  }
+                ]
+              },
+              {
+                "apps": null,
+                "bundleId": null,
+                "bytes": 262156288,
+                "day": "2026-10-20",
+                "grew7d": null,
+                "holds": null,
+                "id": null,
+                "kind": "temp",
+                "name": null,
+                "paths": [
+                  "$TMPDIR"
+                ],
+                "pathsMore": 0,
+                "top": [
+                  {
+                    "bytes": 5242880,
+                    "dir": true,
+                    "name": "busy-B00000",
+                    "path": "$TMPDIR/busy-B00000"
+                  },
+                  {
+                    "bytes": 5242880,
+                    "dir": true,
+                    "name": "busy-B00001",
+                    "path": "$TMPDIR/busy-B00001"
+                  },
+                  {
+                    "bytes": 5242880,
+                    "dir": true,
+                    "name": "busy-B00002",
+                    "path": "$TMPDIR/busy-B00002"
+                  },
+                  {
+                    "bytes": 5242880,
+                    "dir": true,
+                    "name": "busy-B00003",
+                    "path": "$TMPDIR/busy-B00003"
+                  },
+                  {
+                    "bytes": 5242880,
+                    "dir": true,
+                    "name": "busy-B00004",
+                    "path": "$TMPDIR/busy-B00004"
+                  }
+                ]
+              },
+              {
+                "apps": null,
+                "bundleId": null,
+                "bytes": 31469568,
+                "day": "2026-10-20",
+                "grew7d": null,
+                "holds": null,
+                "id": "Downloads",
+                "kind": "known",
+                "name": null,
+                "paths": [
+                  "~/Downloads"
+                ],
+                "pathsMore": 0,
+                "top": [
+                  {
+                    "bytes": 31457280,
+                    "dir": false,
+                    "name": "macOS Sonoma 安装程序 备份 2023 年 3 月最终版 (1).dmg",
+                    "path": "~/Downloads/macOS Sonoma 安装程序 备份 2023 年 3 月最终版 (1).dmg"
+                  }
+                ]
+              },
+              {
+                "apps": null,
+                "bundleId": null,
+                "bytes": 20971520,
+                "day": "2026-10-20",
+                "grew7d": null,
+                "holds": null,
+                "id": "Movies",
+                "kind": "known",
+                "name": null,
+                "paths": [
+                  "~/Movies"
+                ],
+                "pathsMore": 0,
+                "top": [
+                  {
+                    "bytes": 20971520,
+                    "dir": false,
+                    "name": "二零二三年大学毕业典礼全程录像（含校长致辞和学生代表发言）完整版.mp4",
+                    "path": "~/Movies/二零二三年大学毕业典礼全程录像（含校长致辞和学生代表发言）完整版.mp4"
+                  }
+                ]
+              },
+              {
+                "apps": null,
+                "bundleId": null,
+                "bytes": 12582912,
+                "day": "2026-10-20",
+                "grew7d": null,
+                "holds": null,
+                "id": "Pictures",
+                "kind": "known",
+                "name": null,
+                "paths": [
+                  "~/Pictures"
+                ],
+                "pathsMore": 0,
+                "top": [
+                  {
+                    "bytes": 12582912,
+                    "dir": true,
+                    "name": "Trip",
+                    "path": "~/Pictures/Trip"
+                  }
+                ]
+              },
+              {
+                "apps": 5,
+                "bundleId": null,
+                "bytes": 11534336,
+                "day": "2026-10-20",
+                "grew7d": null,
+                "holds": null,
+                "id": null,
+                "kind": "removed-apps",
+                "name": null,
+                "paths": [
+                  "~/Library/Application Support/io.example.removed",
+                  "~/Library/Application Support/io.parity.ethereum",
+                  "~/Library/Application Support/org.present.oldhelper",
+                  "~/Library/Caches/com.apple.example",
+                  "~/Library/Caches/io.example.stillused",
+                  "~/Library/Containers/ABCDE12345.io.example.removed"
+                ],
+                "pathsMore": 0,
+                "top": [
+                  {
+                    "bytes": 2097152,
+                    "dir": true,
+                    "name": "io.example.removed",
+                    "path": "~/Library/Application Support/io.example.removed"
+                  },
+                  {
+                    "bytes": 2097152,
+                    "dir": true,
+                    "name": "io.parity.ethereum",
+                    "path": "~/Library/Application Support/io.parity.ethereum"
+                  },
+                  {
+                    "bytes": 2097152,
+                    "dir": true,
+                    "name": "org.present.oldhelper",
+                    "path": "~/Library/Application Support/org.present.oldhelper"
+                  },
+                  {
+                    "bytes": 2097152,
+                    "dir": true,
+                    "name": "com.apple.example",
+                    "path": "~/Library/Caches/com.apple.example"
+                  },
+                  {
+                    "bytes": 2097152,
+                    "dir": true,
+                    "name": "io.example.stillused",
+                    "path": "~/Library/Caches/io.example.stillused"
+                  }
+                ]
+              },
+              {
+                "apps": null,
+                "bundleId": "com.tencent.xinWeChat",
+                "bytes": 9437184,
+                "day": "2026-10-20",
+                "grew7d": null,
+                "holds": "data",
+                "id": null,
+                "kind": "app",
+                "name": "微信",
+                "paths": [
+                  "~/Library/Containers/com.tencent.xinWeChat"
+                ],
+                "pathsMore": 0,
+                "top": [
+                  {
+                    "bytes": 9437184,
+                    "dir": true,
+                    "name": "Data",
+                    "path": "~/Library/Containers/com.tencent.xinWeChat/Data"
+                  }
+                ]
+              },
+              {
+                "apps": null,
+                "bundleId": "com.microsoft.teams2",
+                "bytes": 5242880,
+                "day": "2026-10-20",
+                "grew7d": null,
+                "holds": "cache",
+                "id": null,
+                "kind": "app",
+                "name": "Microsoft Teams",
+                "paths": [
+                  "~/Library/Caches/com.microsoft.teams2"
+                ],
+                "pathsMore": 0,
+                "top": [
+                  {
+                    "bytes": 5242880,
+                    "dir": false,
+                    "name": "a",
+                    "path": "~/Library/Caches/com.microsoft.teams2/a"
+                  }
+                ]
+              },
+              {
+                "apps": null,
+                "bundleId": null,
+                "bytes": 3371008,
+                "day": "2026-10-20",
+                "grew7d": null,
+                "holds": null,
+                "id": null,
+                "kind": "folder",
+                "name": "Projects",
+                "paths": [
+                  "~/Projects"
+                ],
+                "pathsMore": 0,
+                "top": [
+                  {
+                    "bytes": 2101248,
+                    "dir": true,
+                    "name": "unpacked",
+                    "path": "~/Projects/unpacked"
+                  }
+                ]
+              },
+              {
+                "apps": null,
+                "bundleId": null,
+                "bytes": 3145728,
+                "day": "2026-10-20",
+                "grew7d": null,
+                "holds": null,
+                "id": "Library/Group Containers",
+                "kind": "known",
+                "name": null,
+                "paths": [
+                  "~/Library/Group Containers"
+                ],
+                "pathsMore": 0,
+                "top": [
+                  {
+                    "bytes": 2097152,
+                    "dir": true,
+                    "name": "group.org.present.app.shared",
+                    "path": "~/Library/Group Containers/group.org.present.app.shared"
+                  },
+                  {
+                    "bytes": 1048576,
+                    "dir": true,
+                    "name": "ABCDE12345.io.example.removed",
+                    "path": "~/Library/Group Containers/ABCDE12345.io.example.removed"
+                  }
+                ]
+              }
+            ],
+            "listedBytes": 718524416,
+            "measuredBytes": 720621568,
+            "more": 1,
+            "scanned": {
+              "finished": "2026-10-20T12:00:00Z",
+              "started": "2026-10-20T12:00:00Z"
+            },
+            "schema": 1,
+            "unseen": []
+          },
+          "uri": "data/usage"
+        }
+      ],
+      "resultType": "complete"
+    }
+  },
+  "request": {
+    "id": 1012,
+    "jsonrpc": "2.0",
+    "method": "resources/read",
+    "params": {
+      "_meta": {
+        "io.modelcontextprotocol/clientCapabilities": {},
+        "io.modelcontextprotocol/clientInfo": {
+          "name": "luoke-agent",
+          "version": "fixtures"
+        },
+        "io.modelcontextprotocol/protocolVersion": "2026-07-28"
+      },
+      "uri": "data/usage"
+    }
+  }
+}

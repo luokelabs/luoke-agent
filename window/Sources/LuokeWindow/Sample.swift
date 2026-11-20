@@ -246,7 +246,8 @@ public enum Sample {
 
     /// 和核心的 `GET /apps` 一样的答复：邮件助手（手写，有自己的界面），螺壳扫描（场景样例接上真核心得来的；
     /// 清单里没有 `service.ui`，没有自己的界面）
-    public static func agentApps(scan: String = ToolSample.defaultScan, mail: String? = nil, mem: String? = nil, search: String? = nil) -> Data {
+    public static func agentApps(scan: String = ToolSample.defaultScan, mail: String? = nil, mem: String? = nil, search: String? = nil,
+                                 ime: String? = nil) -> Data {
         func refs(_ r: [(String, String)]) -> JSONValue {
             .array(r.map { .object(["id": .string($0.0), "title": .string($0.1)]) })
         }
@@ -261,13 +262,15 @@ public enum Sample {
             ?? [app("luoke-mail", 2, "2 件待处理", [("overview", "概览"), ("rules", "规则")], [("accounts", "账号")], needs: [])]
         let memApps = mem.flatMap { ToolSample.load("luoke-mem", $0) }?.apps ?? []
         let searchApps = search.flatMap { ToolSample.load("luoke-search", $0) }?.apps ?? []
-        return JSONValue.object(["apps": .array(mailApps + (ToolSample.load("luoke-scan", scan)?.apps ?? []) + memApps + searchApps)]).serialized()
+        let imeApps = ime.flatMap { ToolSample.load("luoke-ime", $0) }?.apps ?? []
+        return JSONValue.object(["apps": .array(mailApps + (ToolSample.load("luoke-scan", scan)?.apps ?? []) + memApps + searchApps + imeApps)]).serialized()
     }
 
     /// 和核心的 `GET /apps/<id>/pages/<页>` 一样的答复（`{"messages": [...]}`）；没有这一页是 nil。
     /// 螺壳扫描的页是场景样例接上真核心得来的。
     public static func agentPage(_ app: String, _ page: String, scan: String = ToolSample.defaultScan,
-                                 mail: String? = nil, mem: String? = nil, search: String? = nil) -> Data? {
+                                 mail: String? = nil, mem: String? = nil, search: String? = nil, ime: String? = nil) -> Data? {
+        if app == "luoke-ime", let s = ime.flatMap({ ToolSample.load(app, $0) }) { return s.pages[page]?.serialized() }
         if app == "luoke-mem", let s = mem.flatMap({ ToolSample.load(app, $0) }) { return s.pages[page]?.serialized() }
         if app == "luoke-search", let s = search.flatMap({ ToolSample.load(app, $0) }) { return s.pages[page]?.serialized() }
         if app == "luoke-scan" { return ToolSample.load(app, scan)?.pages[page]?.serialized() }
@@ -317,15 +320,16 @@ public enum Sample {
 
     /// 把上面三样像核心答的一样交给窗口（截图「螺壳扫描 · 接上核心」「设置 · 权限 · 接上核心」用）
     public static func applyAgentApps(_ feed: AgentFeed, scan: String = ToolSample.defaultScan, mail: String? = nil, mem: String? = nil,
-                                      search: String? = nil) {
-        if let v = try? JSONValue.parse(agentApps(scan: scan, mail: mail, mem: mem, search: search)) { feed.applyApps(v) }
+                                      search: String? = nil, ime: String? = nil) {
+        if let v = try? JSONValue.parse(agentApps(scan: scan, mail: mail, mem: mem, search: search, ime: ime)) { feed.applyApps(v) }
         let scanPages = ToolSample.load("luoke-scan", scan)?.pageIDs ?? []
         let mailPages = mail.flatMap { ToolSample.load("luoke-mail", $0) }?.pageIDs ?? ["overview"]
         let memPages = mem.flatMap { ToolSample.load("luoke-mem", $0) }?.pageIDs ?? []
         let searchPages = search.flatMap { ToolSample.load("luoke-search", $0) }?.pageIDs ?? []
+        let imePages = ime.flatMap { ToolSample.load("luoke-ime", $0) }?.pageIDs ?? []
         for (app, page) in mailPages.map({ ("luoke-mail", $0) }) + scanPages.map({ ("luoke-scan", $0) }) + memPages.map({ ("luoke-mem", $0) })
-            + searchPages.map({ ("luoke-search", $0) }) {
-            if let d = agentPage(app, page, scan: scan, mail: mail, mem: mem, search: search) { feed.applyPage(app: app, page: page, status: 200, body: d) }
+            + searchPages.map({ ("luoke-search", $0) }) + imePages.map({ ("luoke-ime", $0) }) {
+            if let d = agentPage(app, page, scan: scan, mail: mail, mem: mem, search: search, ime: ime) { feed.applyPage(app: app, page: page, status: 200, body: d) }
         }
         if let v = try? JSONValue.parse(agentPermissions(scan: scan, mail: mail)) { feed.applyPermissions(v) }
     }

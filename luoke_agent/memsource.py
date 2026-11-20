@@ -106,6 +106,9 @@ class MemorySource:
         except lm.TooNew:
             self.status = "too_new"
             return None
+        except Exception:
+            self.status = "error"      # 记忆库在、打不开（坏了、被占着）：状态写清楚，不留在「还没有记忆」；错照旧往上报
+            raise
         self.status = "ok"
         return self._mem
 

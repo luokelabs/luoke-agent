@@ -183,6 +183,7 @@ class Agent:
         self.repoll_after_tap = True     # 点完马上再读一遍那个应用；回放录好的场景时关掉（那里一步一步照录的顺序读）
         self.undone: set = set()     # 撤销过的卡片：不算做完的（「今天」不画），历史里标「已撤销」
         self.notices: Dict[str, str] = {}         # 来源 → 一句状态（「邮件助手未运行」）
+        self._tapping: set = set()                # 正在处理点按的卡片
         self.notice_kinds: Dict[str, str] = {}    # 来源 → 是哪一种（stopped、stale、memory、memory_too_new、notifications、hub）
         self._unread_since: Dict[str, float] = {}  # 来源 → 从什么时候起一直读不到它的事（在运行，答了错误）
         # 记忆改由自己的 outbox 报时，旧路已经说过、看过的事：新编号列出来时回一次 shown（旧路没有 ack，记忆还不知道）
@@ -925,6 +926,11 @@ class Agent:
             seen = {f"{c['source']}:{c['kind']}": c["urgent"] for c in self.state.categories()}
             for cat in list(self.labels) + list(modes):
                 seen.setdefault(cat, False)
+            # 应用的清单里已经没有的旧类别不列（邮件以前的 `tidy`：事项库里还留着几件，清单里没有它，也就没有名字，
+            # 列出来是一行「这一类事」）。清单还没拿到的应用（一类名字都没有）照旧全列；现在还开着的事的那一类也留着
+            declared = {c.split(":", 1)[0] for c in self.labels}
+            live = {it.category for it in self.items.values()}
+            seen = {c: u for c, u in seen.items() if c in self.labels or c in live or c.split(":", 1)[0] not in declared}
             if self.memory_by_tool():        # 记忆那几类照它清单的 reports（luoke-mem:…），不再列这一路的
                 seen = {c: u for c, u in seen.items() if not c.startswith("memory:")}
             kinds = []
@@ -1218,6 +1224,18 @@ class Agent:
             on_page = sid not in self.surfaces and sid in self.pages
         if on_page:
             return self._tap_page(sid, component_id, client_context)
+        # 同一张卡片上一次点按还没做完：这一次不交给工具（窗口会把按钮灰掉，别的进程直接连上来的不会）
+        with self._lock:
+            if sid in self._tapping:
+                return {"text": "正在处理", "error": True}
+            self._tapping.add(sid)
+        try:
+            return self._tap_card(sid, component_id, client_context)
+        finally:
+            with self._lock:
+                self._tapping.discard(sid)
+
+    def _tap_card(self, sid: str, component_id: str, client_context: Optional[dict]) -> Dict[str, Any]:
         now = self.clock()
         with self._lock:
             entry = self.surfaces.get(sid)
@@ -1274,7 +1292,9 @@ class Agent:
                 updated = a2ui.update(entry[1], result["card"])
             except a2ui.CardError:
                 updated = None
-            if updated is not None:
+            if updated is not None and updated.deleted:
+                self._drop_surface(sid)       # 结果是把卡片删掉：撤卡，不留在表里（留着的话窗口重连会再画出来）
+            elif updated is not None:
                 replaced = True
                 if undo and not result.get("error"):
                     self.undone.add(sid)      # 做完的那一句、时间都留原来的
@@ -1353,7 +1373,9 @@ class Agent:
         comps = entry[1].components
         for cid in a2ui._reachable(comps):     # 只看画得出来的：换成结果以后旧按钮还在表里，但不在树上
             c = comps[cid]
-            if c.get("component") != "Button" or c["action"]["event"]["name"].startswith("agent."):
+            action = c.get("action") if isinstance(c.get("action"), dict) else {}
+            event = action.get("event") if isinstance(action.get("event"), dict) else {}
+            if c.get("component") != "Button" or not isinstance(event.get("name"), str) or event["name"].startswith("agent."):
                 continue
             label = comps.get(c.get("child") or "", {})
             if label.get("component") == "Text" and label.get("text") in self.UNDO_LABELS:
@@ -1401,7 +1423,7 @@ class Agent:
         page = ctx.get("page")
         with self._lock:
             src = self._app(app)
-        page = apppages.alias(src, page) if src is not None else page
+        page = apppages.alias(src, page, ctx.get("args")) if src is not None else page
         known = [p["id"] for p in apppages.pages(src, src.service["pages"])] if src is not None else []
         if not isinstance(page, str) or page not in known or not set(ctx) <= {"page", "args"}:
             return {"text": "此页无法打开", "error": True}

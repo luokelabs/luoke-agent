@@ -76,7 +76,7 @@ extension WindowModel {
             MenuSpec(id: "view", title: "显示", items: [
                 MenuItemSpec(id: "sidebar", title: sidebarMini ? "展开侧栏" : "收起侧栏",
                              shortcut: Shortcut(key: "s", modifiers: [.control, .command], label: "⌃⌘S"), action: .toggleSidebar),
-                .sep("s1"), .plain("fullscreen", "进入全屏幕", "fn F"),
+                .sep("s1"), .plain("fullscreen", fullScreen ? "退出全屏幕" : "进入全屏幕", "⌃⌘F"),
             ]),
             MenuSpec(id: "go", title: "前往", items: goItems),
             MenuSpec(id: "window", title: "窗口", items: [
@@ -204,6 +204,13 @@ public struct LuokeCommands: Commands {
             Button(model.sidebarMini ? "展开侧栏" : "收起侧栏") { model.toggleSidebar() }
                 .keyboardShortcut("s", modifiers: [.control, .command])
                 .disabled(model.hostTakeover != nil)      // 本体的界面占着整个窗口：没有侧栏
+            // 换掉系统的这一组以后，系统自带的全屏那一项也没了（#176：「显示」里没有全屏，⌃⌘F 不起作用）
+            Divider()
+            Button(model.fullScreen ? "退出全屏幕" : "进入全屏幕") {
+                openWindow()
+                (NSApp.keyWindow ?? NSApp.mainWindow)?.toggleFullScreen(nil)
+            }
+            .keyboardShortcut("f", modifiers: [.control, .command])
         }
         // 应用菜单「设置」下面：检查更新（负责人 11-15：顶部菜单里没有「检查更新」）
         CommandGroup(after: .appSettings) {

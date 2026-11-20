@@ -430,10 +430,14 @@ struct SettingsDialogView: View {
                     ForEach(model.kinds) { k in
                         HStack(spacing: 12) {
                             AppIcon(tool: k.tool, size: 20)
-                            Text(k.title)
-                            Spacer()
+                            // 名字长的折行，右边那组选项不让位：每行的选项一样宽、靠右，自然对成列（#175：选项被挤成「立即…」、各行错开）
+                            // 核心给不出名字的一类（应用清单里没有、但还有开着的事）：写「其他提醒」，前面有应用图标，不写「这一类事」
+                            let title = k.title == WindowModel.unnamedKind ? "其他提醒" : k.title
+                            Text(title).lineLimit(2).fixedSize(horizontal: false, vertical: true)
+                            Spacer(minLength: 0)
                             LKSegmented(options: Level.allCases.map { .init(value: $0, title: $0.title, symbol: nil) },
-                                        value: Binding(get: { k.level }, set: { model.setLevel(k.id, $0) }), radio: true, label: k.title)
+                                        value: Binding(get: { k.level }, set: { model.setLevel(k.id, $0) }), radio: true, label: title)
+                                .fixedSize().layoutPriority(1)
                         }
                         .frame(minHeight: 34)
                     }

@@ -19,13 +19,20 @@ public struct TaskRow: Identifiable, Equatable {
         case soon, time(Date), power, thermal, memory, paused, quiet, busy
 
         /// 标在那一行右边的短话；马上就轮到的不标
-        var label: String? {
+        var label: String? { label(now: Date()) }
+
+        /// 定了钟点的：今天的只写时刻，明天的写「明天 15:25 起」，再往后带上月日（#171：间隔 24 小时的任务下一次是明天，
+        /// 只写「15:25 起」像是几小时前就该开始）
+        func label(now: Date, calendar: Calendar = .current) -> String? {
             switch self {
             case .soon: return nil
             case .time(let d):
                 let f = DateFormatter()
                 f.locale = Locale(identifier: "zh_CN")
-                f.dateFormat = "HH:mm"
+                f.calendar = calendar
+                f.timeZone = calendar.timeZone
+                let days = calendar.dateComponents([.day], from: calendar.startOfDay(for: now), to: calendar.startOfDay(for: d)).day ?? 0
+                f.dateFormat = days <= 0 ? "HH:mm" : days == 1 ? "'明天' HH:mm" : "M月d日 HH:mm"
                 return "\(f.string(from: d)) 起"
             case .power: return "接电源时"
             case .thermal: return "降温后"

@@ -115,6 +115,11 @@
     },
     {
       "clock": "2026-10-20T12:05:00Z",
+      "do": "读占地方最多的文件夹 data/usage",
+      "file": "read-data-usage-before.json"
+    },
+    {
+      "clock": "2026-10-20T12:05:00Z",
       "do": "用户在扫描页上把临时文件夹改成移到废纸篓，点「按上面的选择清理」",
       "file": "call-scan_apply.json"
     },
@@ -162,6 +167,11 @@
       "clock": "2026-10-20T13:00:00Z",
       "do": "读设置的数据 data/settings",
       "file": "read-data-settings.json"
+    },
+    {
+      "clock": "2026-10-20T13:00:00Z",
+      "do": "读占地方最多的文件夹 data/usage",
+      "file": "read-data-usage.json"
     },
     {
       "clock": "2026-10-20T13:05:00Z",

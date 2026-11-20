@@ -241,6 +241,8 @@ class _Handler(BaseHTTPRequestHandler):
                 out["page"] = r["page"]          # agent.open_page：窗口换到这个应用的这一页（§4），可能带 args
             if isinstance(r.get("file"), dict):
                 out["file"] = r["file"]          # 存文件（工具协议 §4 saveFile）：窗口弹出存文件的框
+            if isinstance(r.get("search"), str) and r["search"]:
+                out["search"] = r["search"]      # agent.search（应用页上的「最近搜索」）：窗口拿这一句去搜。原来这里没带上，点了没反应
             return self._json(200, out)
         if self.path == "/presence":
             try:

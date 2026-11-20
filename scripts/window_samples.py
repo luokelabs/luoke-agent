@@ -55,16 +55,25 @@ def manifest_version(scenario_dir: str) -> str:
         return ""
 
 
-def sample(scenario_dir: str, tries: int = 3) -> dict:
-    """一个场景接上真核心得来的样例。偶尔有一页读成「没在运行」（503：核心读页面时没连上回放的工具，原因还没找到，
-    几十次里一次），样例就和上次的不一样：这种重来一遍，几次都这样才照实写下"""
+def sample(scenario_dir: str, tries: int = 5) -> dict:
+    """一个场景接上真核心得来的样例。偶尔有一下核心没在时限内读到回放的工具（几十次里一次，原因还没找到）：
+    有一页读成「没在运行」（503），或者 feed 里少一张卡片，样例就和上次的不一样。所以取到两次一样的才算数；
+    几次都对不上就照最后一次写下"""
+    seen = []
+    out = {}
     for n in range(tries):
         out = _sample(scenario_dir)
         flaky = any(isinstance(p, dict) and p.get("status") == 503 for p in out.get("pages", {}).values()) or \
             any(a.get("running") is False for a in (out.get("apps") or {}).get("apps", []))   # 同一回事：这一下没连上回放的工具
-        if not flaky:
+        if flaky:
+            sys.stderr.write(f"{os.path.basename(scenario_dir)}：有一页读成没在运行，重来（第 {n + 1} 次）\n")
+            continue
+        text = json.dumps(out, ensure_ascii=False, sort_keys=True)
+        if text in seen:
             return out
-        sys.stderr.write(f"{os.path.basename(scenario_dir)}：有一页读成没在运行，重来（第 {n + 1} 次）\n")
+        if seen:
+            sys.stderr.write(f"{os.path.basename(scenario_dir)}：两次取到的不一样，重来（第 {n + 1} 次）\n")
+        seen.append(text)
     return out
 
 
@@ -90,11 +99,35 @@ def _sample(scenario_dir: str) -> dict:
             "/".join(replay_tool.request_key(m)) for m in missing))
     return {
         "replies": replies(tool, scenario_dir),
+        **({"views": views(tool, scenario_dir)} if views(tool, scenario_dir) else {}),     # 没有的不写这一项
         "_about": f"scripts/window_samples.py 用 fixtures/{tool}/{name}（{tool} {commit_of(tool_dir)[:12]}）接上真核心生成的，不要手改",
         "app": tool, "scenario": name, "title": s.replay.scenario.get("title", ""), "version": manifest_version(scenario_dir),
         # 核心读权限、读页面是并发的，先后每次不一样：排好序，--check 才不会时过时不过
         "clock": clock, "host": host, "asked": sorted(asked), **snap,
     }
+
+
+def views(tool: str, scenario_dir: str) -> dict:
+    """带参数才看得到的页（输入法「各应用」里从菜单点进来的那个应用）：回放按先后算状态，窗口该看的那一段读不到后面才录的
+    带参数的数据，所以照模块的 `SAMPLE_VIEWS` 直接拿样例里录的那份数据拼，存在 `views` 里，截图时换上去"""
+    from luoke_agent import a2ui, apppages
+    mod = apppages.BUILDERS.get(tool)
+    out = {}
+    for name, (page, args, files, only) in sorted(getattr(mod, "SAMPLE_VIEWS", {}).items()):
+        if os.path.basename(scenario_dir) != only:
+            continue
+
+        def read(uri, files=files):
+            with open(os.path.join(scenario_dir, files[uri]), encoding="utf-8") as fh:
+                return json.load(fh)["reply"]["result"]["contents"][0]["text"]
+        msgs = mod.build(page, dict(args), read)
+        a2ui.build(msgs, page=True)
+        for m in msgs:
+            for body in m.values():
+                if isinstance(body, dict) and "surfaceId" in body:
+                    body["surfaceId"] = f"{tool}/page/{page}"
+        out[name] = {"page": page, "messages": msgs}
+    return out
 
 
 def replies(tool: str, scenario_dir: str) -> list:

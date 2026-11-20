@@ -37,6 +37,14 @@ final class RightPanelTests: XCTestCase {
 
     func testWaitLabels() {
         XCTAssertNil(TaskRow.Wait.soon.label, "马上就轮到的不标")
+        // #171：不是今天的带上日子
+        var cal = Calendar(identifier: .gregorian)
+        cal.timeZone = TimeZone(identifier: "Asia/Shanghai")!
+        let now = cal.date(from: DateComponents(year: 2026, month: 11, day: 18, hour: 19, minute: 23))!
+        func at(_ day: Int, _ h: Int, _ m: Int) -> TaskRow.Wait { .time(cal.date(from: DateComponents(year: 2026, month: 11, day: day, hour: h, minute: m))!) }
+        XCTAssertEqual(at(18, 21, 5).label(now: now, calendar: cal), "21:05 起")
+        XCTAssertEqual(at(19, 15, 25).label(now: now, calendar: cal), "明天 15:25 起")
+        XCTAssertEqual(at(20, 15, 25).label(now: now, calendar: cal), "11月20日 15:25 起")
         XCTAssertEqual(TaskRow.Wait.power.label, "接电源时")
         XCTAssertEqual(TaskRow.Wait.busy.label, "排队中")
         XCTAssertEqual(TaskRow.Wait.quiet.label, "空闲时")
