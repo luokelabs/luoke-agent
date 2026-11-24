@@ -39,12 +39,27 @@ struct SearchLayer: View {
             .offset(x: model.hasRail(layout) ? -LKColumn.railShift : 0)
             .padding(.bottom, 18)
         }
-        .onChange(of: model.searchFocus) { focused = true }
-        // 窗口打开时系统把光标放进第一个输入框：不要（负责人 11-14），⌘K 或点了才进去
+        .onChange(of: model.searchFocus) {
+            model.pendingSearchFocus = false
+            focused = true
+        }
+        // 页上发起的搜索（点「最近搜索」的一条）：框里换成搜的那一句，看得出在搜什么、能接着改
+        .onChange(of: model.searchFill) { text = model.searchFill.text }
+        // 窗口打开时系统把光标放进第一个输入框：不要（负责人 11-14），⌘K 或点了才进去；
+        // 但从别的页按 ⌘K 跳过来时（pendingSearchFocus），直接聚焦且不踢掉焦点
         .onAppear {
+            if model.pendingSearchFocus {
+                model.pendingSearchFocus = false
+                DispatchQueue.main.async { focused = true }
+                return
+            }
             // 窗口变成前台窗口时系统才放光标：等一下再拿掉
             for t in [0.0, 0.3, 0.8] {
-                DispatchQueue.main.asyncAfter(deadline: .now() + t) { if focused { focused = false }; Self.dropAutoFocus() }
+                DispatchQueue.main.asyncAfter(deadline: .now() + t) {
+                    guard !model.pendingSearchFocus else { return }
+                    if focused { focused = false }
+                    Self.dropAutoFocus()
+                }
             }
         }
     }
@@ -77,14 +92,18 @@ struct SearchLayer: View {
                 TextField("搜索", text: $text)
                     .textFieldStyle(.plain)
                     .focused($focused)
-                    // 回车：结果开着、框里还是搜的那一句时打开选中的（没选中是第一条），不然搜
+                    // 回车：用 ↑↓ 或鼠标选中了一条、框里还是搜的那一句时打开它；不然搜（同一句也重新搜）
                     .onSubmit { if !model.returnPressed(text: text) { model.runSearch(text) } }
                     // 输入法正在拼时（框里有带下划线的字）↓↑ 是选候选词，不动结果
                     .onKeyPress(.downArrow) { model.searchAnswer?.hits.isEmpty == false && !Self.composing ? (model.moveSearchSelection(1), .handled).1 : .ignored }
                     .onKeyPress(.upArrow) { model.searchAnswer?.hits.isEmpty == false && !Self.composing ? (model.moveSearchSelection(-1), .handled).1 : .ignored }
                     .onKeyPress(keys: [.return]) { press in
-                        guard press.modifiers.contains(.command), !Self.composing else { return .ignored }
-                        return model.returnPressed(text: text, reveal: true) ? .handled : .ignored     // ⌘↩ 在访达中显示
+                        guard !Self.composing else { return .ignored }
+                        // 按住回车的连发不算：只认按下的那一下（rc3：多出的一下把结果用外部应用打开了）
+                        if press.phase == .repeat { return .handled }
+                        guard press.modifiers.contains(.command) else { return .ignored }
+                        // ⌘↩ 在访达中显示选中的那条；没选中时什么都不做，框里改了字才当搜
+                        return model.returnPressed(text: text, reveal: true) || model.showsResults(for: text) ? .handled : .ignored
                     }
                     .onExitCommand {
                         text = ""
@@ -160,6 +179,10 @@ struct SearchPanel: View {
                     ErrorNote(text: note) { model.runSearch(model.searchQuery) }
                 } else if let note = a.note {
                     line(note)
+                } else if let why = a.partialNote {
+                    // 没找到、但应用说了这次搜得不全（模型还在加载……）：写出原因，能再搜一次
+                    ErrorNote(text: "未找到结果", detail: why) { model.runSearch(model.searchQuery) }
+                    ForEach(a.lines, id: \.self) { line($0) }
                 } else if a.allFailed {
                     ErrorNote(text: a.allFailedText) { model.runSearch(model.searchQuery) }
                 } else {

@@ -35,7 +35,7 @@ struct TodayPage: View {
     /// 「待确认」先摆几叠（一叠是相近的几张，见 `TodayStack`）：每天最多先问三件，多的先攒着（2026-11-12 定）。
     /// 急事不受这个限制；「逐件处理」能一次走完所有的
     static let askLimit = 3
-    /// 「待确认」那一张下面最多画几个小点
+    /// 「待确认」那一张下面最多画几个小点；超过这个数改画「2 / 14」页码
     static let deckDots = 8
 
     static func visibleUrgent(_ items: [UrgentItem], all: Bool) -> (stacks: [[UrgentItem]], more: Int) {
@@ -431,17 +431,25 @@ struct TodayStandard: View {
                 .transition(.asymmetric(insertion: Motion.cardBack(reduce: reduce || snapshot),
                                         removal: Motion.cardLeave(reduce: reduce || snapshot)))
             if cards.count > 1 {
-                // 左边「上一件」、中间一排小点（一件一个，现在这件实心，点了跳过去）、右边「下一件」（负责人 11-13）
+                // 左边「上一件」、中间小点（超过 8 件时显示清晰页码「2 / 14」避免丢失位置感）、右边「下一件」
                 ZStack {
-                    HStack(spacing: 6) {
-                        ForEach(Array(cards.prefix(TodayPage.deckDots).enumerated()), id: \.element.id) { k, card in
-                            Button { withAnimation(Motion.enter(Motion.reflow, reduce: reduce)) { deckIndex = k } } label: {
-                                Circle().fill(k == n ? p.fg.opacity(0.7) : p.mutedFg.opacity(0.28)).frame(width: 6, height: 6)
-                                    .padding(3).contentShape(Rectangle())
+                    if cards.count <= TodayPage.deckDots {
+                        HStack(spacing: 6) {
+                            ForEach(Array(cards.enumerated()), id: \.element.id) { k, _ in
+                                Button { withAnimation(Motion.enter(Motion.reflow, reduce: reduce)) { deckIndex = k } } label: {
+                                    Circle().fill(k == n ? p.fg.opacity(0.7) : p.mutedFg.opacity(0.28)).frame(width: 6, height: 6)
+                                        .padding(3).contentShape(Rectangle())
+                                }
+                                .buttonStyle(.plainPointer)
+                                .accessibilityLabel("第 \(k + 1) 件")
                             }
-                            .buttonStyle(.plainPointer)
-                            .accessibilityLabel("第 \(k + 1) 件")
                         }
+                    } else {
+                        Text("\(n + 1) / \(cards.count)")
+                            .font(LKFont.ui(LKType.caption, .medium))
+                            .foregroundStyle(p.mutedFg)
+                            .monospacedDigit()
+                            .accessibilityLabel("第 \(n + 1) 件，共 \(cards.count) 件")
                     }
                     HStack(spacing: LKSpace.x2) {
                         Button {

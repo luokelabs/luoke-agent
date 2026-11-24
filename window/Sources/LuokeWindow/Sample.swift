@@ -8,7 +8,7 @@ public enum Sample {
     /// 「设置」里本体管的那几块（没接本体时用；数字照 beta0 配方的模型）
     public static let hostSettings = HostSettings(
         general: HostGeneral(loginItem: .on, currentVersion: "0.9.3", latestVersion: nil,
-                             lastChecked: Date(timeIntervalSince1970: 1_794_000_000), powerMode: .balanced, batteryMode: .light, autoCheck: true),
+                             lastChecked: Date(timeIntervalSince1970: 1_794_000_000), powerMode: .balanced, batteryMode: .light, autoCheck: true, pauseOnLowPower: true),
         models: HostModels(
             tiers: [
                 HostTier(id: "standard", title: "省空间", model: "Qwen3.5-9B · 4-bit", sizeGB: 5.6, state: .inUse, kind: .lighter),

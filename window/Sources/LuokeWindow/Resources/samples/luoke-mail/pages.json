@@ -4647,7 +4647,8 @@
          "b6"
         ],
         "component": "Row",
-        "id": "r7"
+        "id": "r7",
+        "placement": "footer"
        },
        {
         "component": "Text",
@@ -5668,7 +5669,8 @@
          "b8"
         ],
         "component": "Row",
-        "id": "r9"
+        "id": "r9",
+        "placement": "footer"
        }
       ],
       "surfaceId": "luoke-mail/page/piece"

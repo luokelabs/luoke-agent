@@ -62,10 +62,10 @@ TONES = frozenset({"danger", "warning", "neutral"})
 A2UI_FEATURES = ("placement", "badge", "strong", "maxLines", "optionIcons", "collapsed", "lucide", "tooltip",
                  "doneGroup", "itemIcons", "countLabel", "openPage", "subtitle", "countAlso",
                  "countWeights", "pageArgs", "bigPages", "secureField", "pageRefresh", "saveFile",
-                 "neutralBadge", "chips", "pageSections", "confirm", "rowOpen", "fieldSubmit", "lucide2", "choiceSubmit", "headerPlacement",
+                 "neutralBadge", "chips", "pageSections", "confirm", "rowOpen", "fieldSubmit", "lucide2", "choiceSubmit", "headerPlacement", "footerPlacement",
                  "countChecks")
 # 应用页里一段的位置（§4「宽窗口的侧栏」）：只有 aside，写在根 Column 下面一层的 Column 上
-PLACEMENTS = frozenset({"aside", "header"})
+PLACEMENTS = frozenset({"aside", "header", "footer"})
 MAX_TOOLTIP = 200              # 选项的 tooltip（§4 choiceSubmit：切换邮箱时停在上面写地址）最多几个字
 # 应用页怎么排（§4 pageSections）：只有 sections（下面一层一段一张卡片），写在页的根 Column 上
 LAYOUTS = frozenset({"sections"})
@@ -695,9 +695,10 @@ def _check_placement(cid: str, c: dict, parent: Optional[str], root_is_column: b
     header（§4 headerPlacement）是这一样画在应用页标题那一行的右边（邮件助手切换邮箱），只能写在根 Column 下面一层。"""
     if not isinstance(c.get("placement"), str) or c["placement"] not in PLACEMENTS:
         problems.append(f"组件 {cid}：placement 只能是 " + "、".join(sorted(PLACEMENTS)))
-    elif c["placement"] == "header":
+    elif c["placement"] in ("header", "footer"):
+        # footer（§4 footerPlacement）：以弹窗打开的页里，这一样固定在弹窗底部，内容滚动时不动（一类详情的「移到废纸篓」）
         if parent != "root" or not root_is_column:
-            problems.append(f"组件 {cid}：placement header 只能写在根 Column 下面一层")
+            problems.append(f"组件 {cid}：placement {c['placement']} 只能写在根 Column 下面一层")
     elif c.get("component") != "Column" or parent != "root" or not root_is_column:
         problems.append(f"组件 {cid}：placement 只能写在根 Column 下面一层的 Column 上")
 

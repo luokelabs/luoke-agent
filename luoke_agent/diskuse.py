@@ -22,10 +22,68 @@ DENIED_TTL = 20.0   # 读不了的文件夹记多久
 KEEP = 40           # 最多记着几个文件夹
 SHOW = 12           # 一页列最大的几项
 PEEK = 5            # 一个子文件夹里先看几个名字（给用途说明用）
+FILES = 10          # 整个文件夹里（不管在第几层）记最大的几个文件
+KIND_DIRS = 8       # 每种文件列在哪几个文件夹里（占得最多的几个）
+
+# 文件是哪一种，照扩展名分（负责人 2026-11-20：点开只看到一堆看不懂的子文件夹，不知道里面是什么）。代号，页上的字由页写
+KINDS = {"video": ("mov", "mp4", "m4v", "avi", "mkv", "webm", "wmv", "flv", "ts"),
+         "photo": ("jpg", "jpeg", "png", "heic", "heif", "gif", "tif", "tiff", "dng", "cr2", "cr3", "nef", "arw", "raw", "webp", "bmp", "psd"),
+         "audio": ("mp3", "m4a", "wav", "flac", "aac", "aiff", "caf", "amr", "opus", "ogg"),
+         "document": ("pdf", "doc", "docx", "xls", "xlsx", "ppt", "pptx", "key", "pages", "numbers", "txt", "md", "rtf", "epub", "csv"),
+         "archive": ("zip", "dmg", "pkg", "tar", "gz", "tgz", "bz2", "xz", "7z", "rar", "iso", "xip", "ipsw"),
+         "model": ("gguf", "safetensors", "mlmodel", "mlpackage", "onnx", "ckpt", "pt", "pth"),
+         "database": ("db", "sqlite", "sqlite3", "sqlite-wal", "db-wal", "storedata", "realm")}
+_KIND_OF = {ext: kind for kind, exts in KINDS.items() for ext in exts}
 
 
-def _size(path: str, dev: int, deadline: float, clock: Callable[[], float]) -> Optional[int]:
-    """这一项占多大（字节，照实际占的块算）；到点没量完是 None"""
+def kind_of(name: str) -> str:
+    """文件名 → 种类的代号（认不出的是 other）"""
+    return _KIND_OF.get(name.rsplit(".", 1)[-1].lower() if "." in name else "", "other")
+
+
+class Tally:
+    """量一项时顺手记下的：每种文件占多少、每年改的占多少、最大的几个文件"""
+
+    def __init__(self) -> None:
+        self.kinds: Dict[str, List[int]] = {}       # 种类 → [字节, 个数]
+        self.years: Dict[int, int] = {}             # 哪年改的 → 字节
+        self.files: List[tuple] = []                # (字节, 路径, 改的时间)，最大的 FILES 个
+        # 种类 → 所在的文件夹 → [字节, 个数]（负责人 11-21：「模型 807 GB」却只看到 8 GB 的文件，要看到是哪几个模型占的）
+        self.dirs: Dict[str, Dict[str, List[int]]] = {}
+
+    def add(self, path: str, name: str, size: int, mtime: float) -> None:
+        kind = kind_of(name)
+        k = self.kinds.setdefault(kind, [0, 0])
+        k[0] += size
+        k[1] += 1
+        d = self.dirs.setdefault(kind, {}).setdefault(os.path.dirname(path), [0, 0])
+        d[0] += size
+        d[1] += 1
+        year = time.localtime(mtime).tm_year
+        self.years[year] = self.years.get(year, 0) + size
+        if len(self.files) < FILES or size > self.files[-1][0]:
+            self.files.append((size, path, mtime))
+            self.files.sort(key=lambda f: -f[0])
+            del self.files[FILES:]
+
+    def merge(self, other: "Tally") -> None:
+        for kind, (b, n) in other.kinds.items():
+            k = self.kinds.setdefault(kind, [0, 0])
+            k[0] += b
+            k[1] += n
+        for year, b in other.years.items():
+            self.years[year] = self.years.get(year, 0) + b
+        self.files = sorted(self.files + other.files, key=lambda f: -f[0])[:FILES]
+        for kind, ds in other.dirs.items():
+            mine = self.dirs.setdefault(kind, {})
+            for d, (b, n) in ds.items():
+                m = mine.setdefault(d, [0, 0])
+                m[0] += b
+                m[1] += n
+
+
+def _size(path: str, dev: int, deadline: float, clock: Callable[[], float], tally: Optional[Tally] = None) -> Optional[int]:
+    """这一项占多大（字节，照实际占的块算）；到点没量完是 None。给了 `tally` 就顺手记下里面每个文件的种类、年份和最大的几个"""
     total = 0
     stack = [path]
     n = 0
@@ -46,6 +104,8 @@ def _size(path: str, dev: int, deadline: float, clock: Callable[[], float]) -> O
                     total += st.st_blocks * 512
                     if stat.S_ISDIR(st.st_mode):
                         stack.append(e.path)
+                    elif tally is not None and stat.S_ISREG(st.st_mode):
+                        tally.add(e.path, e.name, st.st_blocks * 512, st.st_mtime)
         except OSError:
             continue
     return total
@@ -80,17 +140,20 @@ class Usage:
         """这个文件夹现在量到哪了：{"state": "measuring" / "done" / "gone", "path": "~/…", "parent": "~/…" 或 None,
         "items": [{"name", "path", "key"（用途说明的编号）, "bytes"（没量完是 None）, "dir", "changed": "YYYY-MM-DD",
         "contains": [...]}]（大的在前）,
-        "count": 一共几项, "bytes": 量到的合计, "partial": 有没有没量完的, "denied": 系统不让读}。没量过就开始量"""
+        "count": 一共几项, "bytes": 量到的合计, "partial": 有没有没量完的, "denied": 系统不让读,
+        "kinds": [{"kind": 种类的代号, "bytes", "count", "dirs": [{"path", "bytes", "count"}]（这种文件占得最多的几个所在文件夹）}]（整个文件夹里每种文件占多少，大的在前）,
+        "years": [{"year", "bytes"}]（哪年改的，新的在前）,
+        "files": [{"name", "path", "bytes", "changed", "in": 所在的文件夹}]（不管在第几层，最大的几个文件）}。没量过就开始量"""
         real = self.resolve(path)
         if real is None or not os.path.isdir(real):
             return {"state": "gone", "path": path if isinstance(path, str) else "", "parent": None, "items": [], "count": 0,
-                    "bytes": 0, "partial": False}
+                    "bytes": 0, "partial": False, "kinds": [], "years": [], "files": []}
         now = self.clock()
         with self._lock:
             rec = self._results.get(real)
             # 读不了的（没给权限）只记一小会儿：用户去允许了，回来再点就重新量
             if rec is None or (rec["state"] == "done" and now - rec["at"] > (DENIED_TTL if rec.get("denied") else TTL)):
-                rec = {"state": "measuring", "at": now, "items": [], "count": 0}
+                rec = {"state": "measuring", "at": now, "items": [], "count": 0, "tally": Tally()}
                 self._results[real] = rec
                 if len(self._results) > KEEP:
                     for old in sorted((k for k in self._results if k != real), key=lambda k: self._results[k]["at"])[:len(self._results) - KEEP]:
@@ -101,13 +164,22 @@ class Usage:
                     self._thread.start()
             items = sorted((dict(i) for i in rec["items"]), key=lambda i: -(i["bytes"] or 0))
             state, count, denied = rec["state"], rec["count"], bool(rec.get("denied"))
+            tally: Tally = rec["tally"]
+            kinds = sorted(({"kind": k, "bytes": b, "count": n,
+                             "dirs": [{"path": self.short(d), "bytes": db, "count": dn} for d, (db, dn) in
+                                      sorted(tally.dirs.get(k, {}).items(), key=lambda x: -x[1][0])[:KIND_DIRS] if db]}
+                            for k, (b, n) in tally.kinds.items() if b), key=lambda k: -k["bytes"])
+            years = [{"year": y, "bytes": b} for y, b in sorted(tally.years.items(), reverse=True) if b]
+            files = [{"name": os.path.basename(f[1]), "path": self.short(f[1]), "bytes": f[0],
+                      "changed": time.strftime("%Y-%m-%d", time.localtime(f[2])),
+                      "in": self.short(os.path.dirname(f[1]))} for f in tally.files]
         parent = os.path.dirname(real)
         return {"state": state, "path": self.short(real),
                 "parent": self.short(parent) if real != self.home and parent.startswith(self.home) and parent != self.home else None,
                 "items": [dict(i, path=self.short(i["path"]), key=f"{i['path']}|{i['bytes'] if i['bytes'] is not None else ''}")
                           for i in items],
                 "count": count, "bytes": sum(i["bytes"] or 0 for i in items), "partial": any(i["bytes"] is None for i in items),
-                "denied": denied}
+                "denied": denied, "kinds": kinds, "years": years, "files": files}
 
     def known_items(self) -> List[dict]:
         """量好的各个文件夹里最大的几项（给用途说明挑要问的）：真实路径"""
@@ -152,8 +224,9 @@ class Usage:
                     continue
                 is_dir = stat.S_ISDIR(st.st_mode)
                 contains: List[str] = []
+                tally = Tally()
                 if is_dir and st.st_dev == dev:
-                    size = _size(e.path, dev, deadline, self.clock) if self.clock() <= deadline else None
+                    size = _size(e.path, dev, deadline, self.clock, tally) if self.clock() <= deadline else None
                     if size is not None:
                         size += st.st_blocks * 512
                     try:
@@ -162,9 +235,12 @@ class Usage:
                         contains = []
                 else:
                     size = st.st_blocks * 512
+                    if stat.S_ISREG(st.st_mode):
+                        tally.add(e.path, e.name, size, st.st_mtime)
                 row = {"name": e.name, "path": e.path, "bytes": size, "dir": is_dir,
                        "changed": time.strftime("%Y-%m-%d", time.localtime(st.st_mtime)), "contains": contains}
                 with self._lock:
                     rec["items"].append(row)
+                    rec["tally"].merge(tally)
             with self._lock:
                 rec["state"], rec["at"] = "done", self.clock()

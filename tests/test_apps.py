@@ -278,6 +278,20 @@ class AppsTest(_Base):
             with self.subTest(name):
                 self.assertEqual(self._fallback(override), ["概览", "此页无法显示"], "退回纯文本，不带工具的内容")
 
+    def test_hidden_page_that_cannot_be_drawn_does_not_repeat_its_title(self):
+        """隐藏页以弹窗打开，弹窗的标题就是页名：画不了时页里只写一句，不再写一遍页名（#181：「详情 详情 此页无法显示」）"""
+        self.src.set_manifest(dict(SERVICE, pages=[{"id": "overview", "title": "概览"},
+                                                   {"id": "rules", "title": "详情", "hidden": True}]), PERMISSIONS)
+        self.agent.app_changed(APP)
+        self.fake.page_override = "<html>"
+        with contextlib.redirect_stderr(io.StringIO()):
+            status, data = get(self.home, f"/apps/{APP}/pages/rules")
+        self.assertEqual(status, 200)
+        a2ui.build(data["messages"], page=True)
+        texts = [c.get("text") for m in data["messages"] for c in (m.get("updateComponents") or {}).get("components") or []
+                 if c.get("component") == "Text"]
+        self.assertEqual(texts, ["此页无法显示"])
+
     def test_page_of_a_tool_not_running(self):
         self.stop_tool()
         status, data = get(self.home, f"/apps/{APP}/pages/overview")
@@ -687,6 +701,29 @@ class SearchTest(_Base):
         card.text("没有找到")
         self.fake.find_override = {"text": "没有找到。", "hits": [], "card": card.messages()}
         self.assertEqual(no_search_id(post(self.home, "/search", {"query": "账单"})[1]), {"results": [], "failed": [], "asked": 1})
+
+    def test_nothing_found_but_said_why(self):
+        # rc3：模型还在加载、只按字词搜时 0 条，原因不能丢，不然窗口只写「未找到结果」
+        card = cards.Card("find")
+        card.text("没有找到")
+        why = "螺壳还在加载模型，这次只按字词搜"
+        self.fake.find_override = {"text": why + "。", "hits": [], "card": card.messages(), "partial": True,
+                                   "partial_reason": why}
+        data = no_search_id(post(self.home, "/search", {"query": "怎么索赔"})[1])
+        self.assertEqual(data, {"results": [], "failed": [], "asked": 1,
+                                "partial": [{"app": APP, "name": "假邮件", "text": why}]})
+        self.fake.find_override["partial_reason"] = "字" * 500
+        (p,) = post(self.home, "/search", {"query": "怎么索赔"})[1]["partial"]
+        self.assertEqual(len(p["text"]), agent_mod.PARTIAL_CHARS, "太长的截短")
+        for bad in ({"partial": False, "partial_reason": why}, {"partial": True, "partial_reason": None},
+                    {"partial": True, "partial_reason": "  "}, {"partial": True, "partial_reason": 3}):
+            self.fake.find_override = dict({"text": "没有找到。", "hits": [], "card": card.messages()}, **bad)
+            self.assertEqual(no_search_id(post(self.home, "/search", {"query": "账单"})[1]),
+                             {"results": [], "failed": [], "asked": 1}, bad)
+        # 搜到了的照旧：原因不另外交（页脚的事以后再说）
+        self.fake.find_override = {"text": "找到 1 封。", "hits": [{"id": "x", "title": "x"}], "card": [], "partial": True,
+                                   "partial_reason": why}
+        self.assertNotIn("partial", post(self.home, "/search", {"query": "账单"})[1])
 
     def test_hits_without_a_card_are_drawn_from_the_hits(self):
         hit = {"id": "a|1", "title": "某某商城的账单", "line": "某某商城", "date": "2026-11-02", "snippet": "…本月账单…",

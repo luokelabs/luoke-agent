@@ -79,14 +79,13 @@ public enum Appearance: String, CaseIterable, Sendable {
 
 /// 设置页底下的链接打开的弹窗
 public enum SettingsDialog: String, Sendable {
-    case alerts, about, advanced, checks
+    case alerts, about, advanced
 
     public var title: String {
         switch self {
         case .alerts: return "分类提醒设置"
         case .about: return "关于螺壳"
         case .advanced: return "高级（本机接口）"
-        case .checks: return "系统权限检查"
         }
     }
 }
@@ -804,6 +803,12 @@ public struct SearchCard: Identifiable {
     public let surface: SurfaceModel
 }
 
+/// 页上发起的搜索要填进搜索框的字（`WindowModel.searchFill`）：编号变了才换
+public struct SearchFill: Equatable {
+    public var serial = 0
+    public var text = ""
+}
+
 /// 一次搜索的答复（docs/界面接口.md §7）
 public struct SearchAnswer {
     /// 给了 `hits` 的工具的结果，窗口按类型分组自己画（工具协议 §1b）；照问的顺序、工具里照它给的顺序
@@ -827,6 +832,14 @@ public struct SearchAnswer {
     public var failed: [String] = []
     /// 问了几个应用（核心的 `asked`；旧核心不给，那时不说「都没答」）
     public var asked: Int? = nil
+    /// 没搜到、但说了这次搜得不全的应用说的那句（核心的 `partial`，例如「螺壳还在加载模型，这次只按字词搜」）
+    public var partial: [String] = []
+
+    /// 什么都没搜到、有应用说了原因：面板写「未找到结果」和这句原因，带「重试」（rc3：第一次回车「查不到」）
+    public var partialNote: String? {
+        guard cards.isEmpty, hits.isEmpty, !partial.isEmpty else { return nil }
+        return partial.joined(separator: "\n")
+    }
 
     /// 一个能搜的应用都没答上来：什么也没搜成，不能说「没有找到」
     public var allFailed: Bool {
@@ -837,7 +850,7 @@ public struct SearchAnswer {
     public var lines: [String] {
         if allFailed { return [] }
         let missing = failed.map { "\($0)未响应" }
-        if !cards.isEmpty || !hits.isEmpty { return missing }
+        if !cards.isEmpty || !hits.isEmpty || partialNote != nil { return missing }
         return [failed.isEmpty ? "未找到结果" : "其他应用中未找到结果"] + missing
     }
 
@@ -893,6 +906,12 @@ public final class WindowModel: ObservableObject {
     @Published public var appTab: String = "overview"
     /// 应用的隐藏页（设置、处理记录、一类的详情……）以弹窗打开时，底下那一页是哪个标签（走查重画稿：齿轮、时钟打开的是弹窗）
     @Published public private(set) var appBaseTab: String?
+    /// 多层应用弹窗的返回栈：在弹窗里点开另一张隐藏页弹窗时压栈，返回上一级时恢复其页签和参数
+    public struct AppDialogEntry: Equatable, Sendable {
+        public let tab: String
+        public let args: [String: String]
+    }
+    @Published public private(set) var appDialogStack: [AppDialogEntry] = []
     @Published public private(set) var sidebarMini = false
     @Published public private(set) var appsExpanded = false
     /// 「今天」的密度（设置 · 显示）
@@ -914,6 +933,8 @@ public final class WindowModel: ObservableObject {
     @Published public internal(set) var searchAnswer: SearchAnswer?
     /// 加一就把光标放进搜索框（⌘K、菜单）
     @Published public private(set) var searchFocus = 0
+    /// 跨页按 ⌘K 跳到搜索页时记住待聚焦请求，避免 SearchLayer.onAppear 误踢掉光标
+    var pendingSearchFocus = false
     /// 选中的那条结果（`WindowHit.id`）：右边出预览，回车打开它
     @Published public internal(set) var searchSelected: String?
     /// 只看这一类（组的编号，`HitGroup.key`）；nil 是全部
@@ -1045,6 +1066,8 @@ public final class WindowModel: ObservableObject {
     @Published public var catalog: [CatalogApp] = []
     @Published public var appPages: [Page: AppPageData] = [:]
     @Published public var searchQuery = ""
+    /// 从页上发起的搜索（点「最近搜索」的一条）要填进搜索框的字；编号变了搜索框就换上（rc3：点了框里还是空的）
+    @Published public private(set) var searchFill = SearchFill()
     @Published public var searchSections: [SearchSection] = []
     @Published public var searchFilter = "all"
     @Published public var chat: [ChatLine] = []
@@ -1245,6 +1268,13 @@ public final class WindowModel: ObservableObject {
         return AgentFeed.pageKey(app.id, tab)
     }
 
+    /// 正看着螺壳搜索的应用页（弹窗开着时是底下那一页）：(应用, 页)。搜过以后重新取它，「最近搜索」才是新的
+    public var visibleSearchAppPage: (app: String, page: String)? {
+        guard page == .searchApp, hostPage == nil, hostTakeover == nil, let app = agentApp(for: page),
+              let tab = visibleAppTab else { return nil }
+        return (app.id, tab)
+    }
+
     public func go(_ p: Page, tab: String? = nil) {
         guard mayNavigate() else { openingArgs = nil; return }
         if handOff(p, tab: tab) { openingArgs = nil; return }
@@ -1254,11 +1284,18 @@ public final class WindowModel: ObservableObject {
         focus = nil
         settingsDialog = nil      // 设置页里开着的弹窗（关于螺壳……）跟着这一页走：换页、换标签就关掉（#170）
         forgetUnsent()
+        let prevDialog = p == page ? appDialog : nil
+        let prevDialogArgs = prevDialog.flatMap { pageArgs[AgentFeed.pageKey($0.app.id, $0.page.id)] } ?? [:]
         let before = p == page ? visibleAppTab : nil     // 同一个应用里去它的隐藏页：弹窗底下留着正看的那一页
         takePageArgs(for: p, tab: tab, base: before)
         page = p
         if let tab {
-            if p == .prefs, let t = PrefsTab(rawValue: tab) { prefsTab = t.shownTab } else { setAppTab(tab, base: before) }
+            if p == .prefs, let t = PrefsTab(rawValue: tab) {
+                appDialogStack = []
+                prefsTab = t.shownTab
+            } else {
+                setAppTab(tab, base: before, prevDialog: prevDialog, prevDialogArgs: prevDialogArgs)
+            }
         } else if p != .prefs {
             setAppTab("overview", base: nil)
         }
@@ -1276,12 +1313,19 @@ public final class WindowModel: ObservableObject {
         loadVisible()
     }
 
-    /// 换到这个标签：是隐藏页就以弹窗打开，记下底下那一页
-    private func setAppTab(_ id: String, base: String?) {
+    /// 换到这个标签：是隐藏页就以弹窗打开，记下底下那一页；从一个隐藏页跳到另一个隐藏页时把前一个压入返回栈
+    private func setAppTab(_ id: String, base: String?, prevDialog: (app: AgentApp, page: AgentApp.PageRef)? = nil,
+                           prevDialogArgs: [String: String] = [:]) {
         if let app = agentApp(for: page), app.pages.first(where: { $0.id == id })?.hidden == true {
             appBaseTab = base.flatMap { b in app.pages.contains { $0.id == b && !$0.hidden } ? b : nil } ?? appBaseTab
+            if let prev = prevDialog, prev.app.id == app.id, prev.page.id != id {
+                appDialogStack.append(AppDialogEntry(tab: prev.page.id, args: prevDialogArgs))
+            } else if prevDialog == nil {
+                appDialogStack = []
+            }
         } else {
             appBaseTab = nil
+            appDialogStack = []
         }
         appTab = id
     }
@@ -1303,11 +1347,32 @@ public final class WindowModel: ObservableObject {
         return (app, ref)
     }
 
-    /// 关掉弹窗：回到底下那一页
+    /// 弹窗里是否还能返回上一张弹窗
+    public var canGoBackInAppDialog: Bool { appDialog != nil && !appDialogStack.isEmpty }
+
+    /// 弹窗返回上一级：恢复上一张弹窗的页签和参数；没有上一级则直接关闭弹窗
+    public func popAppDialog() {
+        guard let current = appDialog else { return }
+        guard let prev = appDialogStack.popLast() else {
+            closeAppDialog()
+            return
+        }
+        forgetUnsent()
+        let currentKey = AgentFeed.pageKey(current.app.id, current.page.id)
+        let prevKey = AgentFeed.pageKey(current.app.id, prev.tab)
+        if currentKey != prevKey { pageArgs[currentKey] = nil }
+        pageArgs[prevKey] = prev.args.isEmpty ? nil : prev.args
+        appTab = prev.tab
+        // 保留已有视图不闪「正在加载」，同时重新拉取上一级弹窗，避免在下一层做了操作后返回看到旧数据
+        loadVisible(onlyMissing: false)
+    }
+
+    /// 关掉弹窗：清空返回栈，回到底下那一页
     public func closeAppDialog() {
         guard appDialog != nil else { return }
         let base = visibleAppTab
         appBaseTab = nil
+        appDialogStack = []
         if let base { appTab = base }
         loadVisible(onlyMissing: true)
     }
@@ -1602,7 +1667,10 @@ public final class WindowModel: ObservableObject {
     public func focusSearch() {
         guard features.contains(.search) else { return }
         if page != .searchApp { go(.searchApp) }
-        if page == .searchApp { searchFocus += 1 }
+        if page == .searchApp {
+            pendingSearchFocus = true
+            searchFocus += 1
+        }
     }
 
     /// 用户按了回车：词直接给应用，不经模型
@@ -1614,6 +1682,14 @@ public final class WindowModel: ObservableObject {
         clearSearchState()
         searching = true
         backend?.search(query: q)
+    }
+
+    /// 页上要搜的一句（核心拼的页上的 `agent.search`，例如「最近搜索」的一条）：先填进搜索框，再搜
+    public func searchFromPage(_ query: String) {
+        let q = query.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard features.contains(.search), !q.isEmpty else { return }
+        searchFill = SearchFill(serial: searchFill.serial + 1, text: q)
+        runSearch(q)
     }
 
     /// 收起结果；还没到的答复不要了
@@ -1695,13 +1771,18 @@ public final class WindowModel: ObservableObject {
         if let id = searchSelected, !searchOrder.contains(where: { $0.id == id }) { searchSelected = nil }
     }
 
-    /// 回车：结果开着、框里还是搜的那一句时，打开选中的那条（没选中是第一条），答 true；不然是要搜，答 false
+    /// 回车：用户用 ↑↓ 或鼠标选中了一条、框里还是搜的那一句时，打开选中的那条，答 true；不然是要搜（同一句也重新搜），
+    /// 答 false。没选中时不替用户打开第一条（rc3：连按两下回车，第二下把新结果的第一条用外部应用打开了）
     public func returnPressed(text: String, reveal: Bool = false) -> Bool {
-        guard let answer = searchAnswer, !answer.hits.isEmpty,
-              text.trimmingCharacters(in: .whitespacesAndNewlines) == searchQuery,
-              let hit = selectedHit ?? searchOrder.first else { return false }
+        guard showsResults(for: text), let hit = selectedHit else { return false }
         openHit(hit, reveal: reveal)
         return true
+    }
+
+    /// 结果开着、框里还是搜的那一句（⌘↩ 没选中时什么都不做，不当重新搜）
+    public func showsResults(for text: String) -> Bool {
+        guard let answer = searchAnswer, !answer.hits.isEmpty else { return false }
+        return text.trimmingCharacters(in: .whitespacesAndNewlines) == searchQuery
     }
 
     /// 打开一条结果（或在访达中显示）：交给核心，核心转给出这条结果的工具（§7 `POST /hit`）
@@ -1753,7 +1834,7 @@ public final class WindowModel: ObservableObject {
         defaults?.set(a.rawValue, forKey: Self.appearanceKey)
     }
 
-    /// 设置页底下一行链接打开的弹窗：逐类设置提醒、关于螺壳、高级（本机接口）、系统权限检查
+    /// 设置页打开的弹窗：分类提醒设置、关于螺壳、高级（本机接口）
     @Published public var settingsDialog: SettingsDialog?
 
     /// 页标题旁边的日期：「11月4日 星期三」
@@ -2168,6 +2249,7 @@ public final class WindowModel: ObservableObject {
             }
         case .localAPI(let on): s.models.advanced.enabled = on
         case .autoCheckUpdates(let on): s.general.autoCheck = on
+        case .pauseOnLowPower(let on): s.general.pauseOnLowPower = on
         }
         sampleSettings = s
     }

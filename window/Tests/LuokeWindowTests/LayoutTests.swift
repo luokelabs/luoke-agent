@@ -58,23 +58,23 @@ final class LayoutTests: XCTestCase {
         keep.append(f)
         Sample.applyAgentApps(f)
         m.go(.scan)
-        XCTAssertTrue(m.hasRail(.wide), "第一页下面的「这个应用」放进侧栏")
+        XCTAssertFalse(m.hasRail(.wide), "第一页没有 aside 段时不再留出空白右侧栏")
         XCTAssertFalse(m.hasRail(.regular))
-        m.selectAppTab("cleaned")
+        m.selectAppTab("status")
         XCTAssertFalse(m.hasRail(.wide), "别的页、工具没写 aside：一栏")
 
         let page = #"""
         {"messages": [
-          {"version": "v0.9", "createSurface": {"surfaceId": "cleaned", "catalogId": "ai.luoke/a2ui/agent/1"}},
-          {"version": "v0.9", "updateComponents": {"surfaceId": "cleaned", "components": [
+          {"version": "v0.9", "createSurface": {"surfaceId": "status", "catalogId": "ai.luoke/a2ui/agent/1"}},
+          {"version": "v0.9", "updateComponents": {"surfaceId": "status", "components": [
             {"id": "root", "component": "Column", "children": ["t", "a"]},
-            {"id": "t", "component": "Text", "text": "清理记录"},
+            {"id": "t", "component": "Text", "text": "状态"},
             {"id": "a", "component": "Column", "placement": "aside", "children": ["d", "s"]},
             {"id": "d", "component": "Divider"},
             {"id": "s", "component": "Text", "text": "这周清掉 1.2 GB", "variant": "caption"}]}}]}
         """#
-        f.applyPage(app: "luoke-scan", page: "cleaned", status: 200, body: Data(page.utf8))
-        let s = try XCTUnwrap(m.agentPages["luoke-scan/page/cleaned"]?.surface)
+        f.applyPage(app: "luoke-scan", page: "status", status: 200, body: Data(page.utf8))
+        let s = try XCTUnwrap(m.agentPages["luoke-scan/page/status"]?.surface)
         XCTAssertEqual(s.surface.asideSections, ["a"])
         XCTAssertTrue(m.hasRail(.wide), "工具写了 aside 的段：放进侧栏")
         XCTAssertFalse(m.hasRail(.regular), "不宽：照原来的顺序一栏画")

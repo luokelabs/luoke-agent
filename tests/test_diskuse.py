@@ -19,6 +19,10 @@ def write(path: str, n: int) -> None:
         f.write(b"x" * n)
 
 
+def _comps(msgs):
+    return {c["id"]: c for m in msgs for c in (m.get("updateComponents") or {}).get("components") or []}
+
+
 class UsageTest(unittest.TestCase):
     def setUp(self):
         self.tmp = os.path.realpath(tempfile.mkdtemp())
@@ -49,6 +53,70 @@ class UsageTest(unittest.TestCase):
         self.assertEqual(u["count"], 4)
         self.assertIsNone(u["parent"], "家目录下的第一层没有上一级")
         self.assertEqual(self.usage.look("~/Codes/big")["parent"], "~/Codes")
+
+    def test_what_kinds_of_files_and_the_largest_ones_wherever_they_are(self):
+        """点开只看到一堆内部编号的子文件夹时也看得出里面是什么（负责人 11-20）：每种文件占多少、最大的几个文件"""
+        write(os.path.join(self.home, "Msgs", "0a", "11", "IMG_1.MOV"), 400_000)
+        write(os.path.join(self.home, "Msgs", "0b", "22", "clip.mp4"), 200_000)
+        write(os.path.join(self.home, "Msgs", "0b", "22", "a.jpg"), 50_000)
+        write(os.path.join(self.home, "Msgs", "chat.db"), 20_000)
+        self.usage.look("~/Msgs")
+        self.usage.wait()
+        u = self.usage.look("~/Msgs")
+        kinds = {k["kind"]: k for k in u["kinds"]}
+        self.assertEqual([k["kind"] for k in u["kinds"]], ["video", "photo", "database"], "大的在前")
+        self.assertEqual(kinds["video"]["count"], 2)
+        self.assertGreaterEqual(kinds["video"]["bytes"], 600_000)
+        self.assertEqual([f["name"] for f in u["files"]], ["IMG_1.MOV", "clip.mp4", "a.jpg", "chat.db"])
+        self.assertEqual(u["files"][0]["path"], "~/Msgs/0a/11/IMG_1.MOV")
+        self.assertEqual(u["files"][0]["in"], "~/Msgs/0a/11")
+        self.assertEqual(sum(y["bytes"] for y in u["years"]), sum(k["bytes"] for k in u["kinds"]))
+        msgs = scan.build("folder", {"dir": "~/Msgs"}, lambda uri: u if uri.startswith("agent/usage") else {})
+        a2ui.build(msgs, page=True)
+        text = json.dumps(msgs, ensure_ascii=False)
+        for want in ("构成", "视频", "2 个", "最大的文件", "IMG_1.MOV", "0a/11", "按文件夹"):
+            self.assertIn(want, text)
+        self.assertEqual(diskuse.kind_of("a.TAR.GZ"), "archive")
+        self.assertEqual(diskuse.kind_of("README"), "other")
+
+    def test_each_kind_says_which_folders_hold_it(self):
+        """构成里每一种能点开，看在哪几个文件夹里（负责人 11-21：模型 807 GB，最大的文件只有 8 GB，看不出是哪些模型）"""
+        for i in range(3):
+            write(os.path.join(self.home, "M", "models", "a", f"model-{i}.safetensors"), 300_000)
+        write(os.path.join(self.home, "M", "models", "b", "model.safetensors"), 200_000)
+        write(os.path.join(self.home, "M", "blobs", "9f3c2a7e5b1d4c6f8a0e2b4d6f8a1c3e", "w.safetensors"), 2_000_000)
+        write(os.path.join(self.home, "M", "notes.md"), 10_000)
+        self.usage.look("~/M")
+        self.usage.wait()
+        u = self.usage.look("~/M")
+        model = next(k for k in u["kinds"] if k["kind"] == "model")
+        self.assertEqual([d["path"] for d in model["dirs"]],
+                         ["~/M/blobs/9f3c2a7e5b1d4c6f8a0e2b4d6f8a1c3e", "~/M/models/a", "~/M/models/b"])
+        self.assertEqual(model["dirs"][1]["count"], 3)
+        msgs = scan.build("folder", {"dir": "~/M"}, lambda uri: u if uri.startswith("agent/usage") else {})
+        a2ui.build(msgs, page=True)
+        opens = [c["action"]["event"]["context"] for c in _comps(msgs).values() if c["component"] == "Button"
+                 and c["action"]["event"]["name"] == "agent.open_page" and (c["action"]["event"]["context"].get("args") or {}).get("kind")]
+        self.assertIn({"page": "folder", "args": {"dir": "~/M", "kind": "model"}}, opens)
+        msgs = scan.build("folder", {"dir": "~/M", "kind": "model"}, lambda uri: u if uri.startswith("agent/usage") else {})
+        a2ui.build(msgs, page=True)
+        text = json.dumps(msgs, ensure_ascii=False)
+        for want in ("模型文件", "models/a", "3 个文件", "models/b", "blobs/9f3c2a7e…"):
+            self.assertIn(want, text)
+        # 名字是编号的文件夹排在有名字的后面，名字缩短（负责人 11-22）
+        self.assertLess(text.index("models/b"), text.index("blobs/9f3c2a7e…"))
+        self.assertNotIn("9f3c2a7e5b1d", text.replace("~/M/blobs/9f3c2a7e5b1d4c6f8a0e2b4d6f8a1c3e", ""))
+        # 「返回」是按钮，不是整行点开（整行点开的行尾画向右的箭头）
+        comps = _comps(msgs)
+        back = next(i for i, c in comps.items() if c["component"] == "Button" and c["action"]["event"]["context"].get("args") == {"dir": "~/M"})
+        self.assertFalse(any(c.get("open") == back for c in comps.values()))
+
+    def test_a_known_folder_says_what_it_is_and_how_to_shrink_it(self):
+        u = {"state": "done", "path": "~/Library/Messages", "parent": "~/Library", "items": [], "count": 0, "bytes": 0}
+        text = json.dumps(scan.build("folder", {"dir": "~/Library/Messages"}, lambda uri: u if uri.startswith("agent/usage") else {}),
+                          ensure_ascii=False)
+        self.assertIn("「信息」的聊天记录和附件", text)
+        self.assertIn("保留信息", text)
 
     def test_only_folders_inside_home(self):
         for bad in ("/etc", "~/../outside", os.path.join(self.tmp, "outside"), "~/Codes/link", "~/nothing", "Codes", "", None):
@@ -140,6 +208,39 @@ class FolderPageTest(unittest.TestCase):
         self.assertNotIn("不含", text)
         self.assertIsNone(scan._usage_folders(lambda u: (_ for _ in ()).throw(KeyError(u))), "旧版本没有这份数据：照旧")
 
+    def test_what_the_scan_did_not_measure_is_a_row_of_its_own(self):
+        """对账（负责人 11-23）：硬盘已用减去量到的单列一行，大得反常时点出可能是什么；量得不全不列；每行写能释放多少（#219）"""
+        usage = {"schema": 1, "scanned": {"finished": "2026-11-23T03:04:00Z"}, "complete": True, "unseen": [], "more": 0,
+                 "listedBytes": 300_000_000_000, "measuredBytes": 400_000_000_000, "folders": [
+                     {"kind": "folder", "name": "Codes", "paths": ["~/Codes"], "pathsMore": 0, "bytes": 300_000_000_000,
+                      "grew7d": None, "day": "2026-11-23", "top": [],
+                      "reclaim": {"bytes": 12_300_000_000, "count": 3, "categories": [{"id": "cache", "bytes": 12_300_000_000, "count": 3}]}}]}
+        data = dict(self.spec["data"])
+        data["data/usage"] = usage
+        over = dict(data[scan.uri("overview")])
+        over["disk"] = {"total": 1_800_000_000_000, "free": 200_000_000_000}
+        data[scan.uri("overview")] = over
+        msgs = scan.build("status", {}, lambda u: data[u])
+        a2ui.build(msgs, page=True)
+        text = json.dumps(msgs, ensure_ascii=False)
+        for want in ("未统计的占用", "1.2 TB", "Spotlight 索引异常", "如何查看", "可释放 12.3 GB"):
+            self.assertIn(want, text)
+        self.assertNotIn("以上合计约", text)
+        over["disk"] = {"total": 500_000_000_000, "free": 50_000_000_000}
+        text = json.dumps(scan.build("status", {}, lambda u: data[u]), ensure_ascii=False)
+        self.assertIn("macOS、应用和其他未统计的位置", text)
+        self.assertNotIn("Spotlight", text)
+        # 量到的比已用还多（APFS 克隆各算一份）：不列这一行，说明合计偏大
+        over["disk"] = {"total": 450_000_000_000, "free": 100_000_000_000}
+        text = json.dumps(scan.build("status", {}, lambda u: data[u]), ensure_ascii=False)
+        self.assertNotIn("未统计的占用", text)
+        self.assertIn("APFS 克隆", text)
+        self.assertNotIn("以上合计约", text)
+        usage["complete"] = False
+        text = json.dumps(scan.build("status", {}, lambda u: data[u]), ensure_ascii=False)
+        self.assertNotIn("未统计的占用", text)
+        self.assertIn("以上合计约", text)
+
     def test_growth_is_a_line_of_its_own(self):
         page = [{"updateComponents": {"components": [
             {"id": "root", "component": "Column", "children": ["t", "r"]},
@@ -195,7 +296,8 @@ class RevealTest(unittest.TestCase):
         sid = "luoke-scan/page/folder"
         comps = self.agent.pages[sid][2].components
         reveal = next(cid for cid, c in comps.items() if c.get("component") == "Button"
-                      and c["action"]["event"]["name"] == "agent.reveal")
+                      and c["action"]["event"]["name"] == "agent.reveal"
+                      and c["action"]["event"]["context"] == {"item": "~/Codes/big"})
         out = self.agent.tap(sid, reveal)
         self.assertFalse(out.get("error"), out)
         self.assertEqual(self.shown, [os.path.join(self.home, "Codes", "big")])

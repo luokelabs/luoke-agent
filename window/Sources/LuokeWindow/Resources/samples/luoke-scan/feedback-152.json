@@ -60,6 +60,7 @@
  "asked": [
   "read-data-history.json",
   "read-data-overview.json",
+  "read-data-settings.json",
   "read-outbox.json",
   "read-page-mac.json",
   "read-permissions.json",
@@ -358,7 +359,7 @@
       {
        "component": "Text",
        "id": "b5-text",
-       "text": "在扫描页查看 21 项"
+       "text": "在扫描页查看"
       },
       {
        "action": {
@@ -423,7 +424,7 @@
       "kind": "findings",
       "section": "later",
       "time": "2026-10-20T20:00:00+08:00",
-      "title": "可释放 176.2 MB，另有 21 项待处理"
+      "title": "可释放 176.2 MB，另有项目待处理"
      }
     ],
     "dot": true,
@@ -1103,12 +1104,13 @@
       "components": [
        {
         "children": [
-         "t6",
-         "l7",
-         "t8",
-         "l115",
-         "t116",
-         "l147"
+         "l94",
+         "t95",
+         "l96",
+         "t97",
+         "l121",
+         "t122",
+         "l141"
         ],
         "component": "Column",
         "id": "root"
@@ -1146,48 +1148,55 @@
        {
         "component": "Text",
         "id": "t2",
-        "text": "上次检查：10月20日 20:00"
+        "text": "9 项安全问题建议处理，可释放 313.7 MB",
+        "variant": "strong"
+       },
+       {
+        "component": "Text",
+        "id": "t3",
+        "text": "上次检查：10月20日 20:00",
+        "variant": "caption"
        },
        {
         "children": [
-         "t2"
+         "t2",
+         "t3"
         ],
         "component": "Column",
-        "id": "c3"
+        "id": "c4"
        },
        {
         "children": [
          "b1"
         ],
         "component": "Row",
-        "id": "r4"
+        "id": "r5"
        },
        {
         "children": [
-         "c3",
-         "r4"
+         "c4",
+         "r5"
         ],
         "component": "Row",
-        "id": "r5",
+        "id": "r6",
         "justify": "spaceBetween"
        },
        {
         "component": "Text",
-        "id": "t6",
-        "text": "检查",
-        "variant": "caption"
-       },
-       {
-        "children": [
-         "r5"
-        ],
-        "component": "List",
-        "id": "l7"
+        "id": "t7",
+        "text": "疑似病毒文件",
+        "variant": "strong"
        },
        {
         "component": "Text",
         "id": "t8",
-        "text": "安全 · 9",
+        "text": "需尽快处理 · 病毒库已识别此文件，打开后可能损害这台 Mac",
+        "variant": "caption"
+       },
+       {
+        "component": "Text",
+        "id": "t9",
+        "text": "~/Downloads/eicar-test.com",
         "variant": "caption"
        },
        {
@@ -1199,38 +1208,6 @@
           "name": "scan_reveal"
          }
         },
-        "child": "b9-row",
-        "component": "Button",
-        "id": "b9",
-        "variant": "borderless"
-       },
-       {
-        "component": "Icon",
-        "id": "b9-icon",
-        "name": "folder"
-       },
-       {
-        "component": "Text",
-        "id": "b9-text",
-        "text": "在访达中显示"
-       },
-       {
-        "children": [
-         "b9-icon",
-         "b9-text"
-        ],
-        "component": "Row",
-        "id": "b9-row"
-       },
-       {
-        "action": {
-         "event": {
-          "context": {
-           "finding_id": "malware.clamav/000000000003"
-          },
-          "name": "scan_ignore"
-         }
-        },
         "child": "b10-row",
         "component": "Button",
         "id": "b10",
@@ -1239,12 +1216,12 @@
        {
         "component": "Icon",
         "id": "b10-icon",
-        "name": "bell-off"
+        "name": "folder"
        },
        {
         "component": "Text",
         "id": "b10-text",
-        "text": "标为误报"
+        "text": "在访达中显示"
        },
        {
         "children": [
@@ -1258,6 +1235,38 @@
         "action": {
          "event": {
           "context": {
+           "finding_id": "malware.clamav/000000000003"
+          },
+          "name": "scan_ignore"
+         }
+        },
+        "child": "b11-row",
+        "component": "Button",
+        "id": "b11",
+        "variant": "borderless"
+       },
+       {
+        "component": "Icon",
+        "id": "b11-icon",
+        "name": "bell-off"
+       },
+       {
+        "component": "Text",
+        "id": "b11-text",
+        "text": "标为误报"
+       },
+       {
+        "children": [
+         "b11-icon",
+         "b11-text"
+        ],
+        "component": "Row",
+        "id": "b11-row"
+       },
+       {
+        "action": {
+         "event": {
+          "context": {
            "args": {
             "id": "malware"
            },
@@ -1266,66 +1275,73 @@
           "name": "agent.open_page"
          }
         },
-        "child": "b11-text",
+        "child": "b12-text",
         "component": "Button",
-        "id": "b11"
+        "id": "b12"
        },
        {
         "component": "Text",
-        "id": "b11-text",
-        "text": "查看详情"
+        "id": "b12-text",
+        "text": "查看并处理"
        },
        {
-        "component": "Text",
-        "id": "t12",
-        "text": "疑似病毒文件",
-        "variant": "strong"
-       },
-       {
-        "component": "Text",
-        "id": "t13",
-        "text": "需尽快处理 · eicar-test.com",
-        "variant": "caption"
+        "component": "Icon",
+        "id": "i13",
+        "name": "shield-alert"
        },
        {
         "children": [
-         "t12",
-         "t13"
+         "t7",
+         "t8",
+         "t9"
         ],
         "component": "Column",
         "id": "c14"
        },
        {
-        "component": "Icon",
-        "id": "i15",
-        "name": "shield-alert"
+        "children": [
+         "i13",
+         "c14"
+        ],
+        "component": "Row",
+        "id": "r15"
        },
        {
         "children": [
-         "i15",
-         "c14"
+         "b10",
+         "b11",
+         "b12"
         ],
         "component": "Row",
         "id": "r16"
        },
        {
         "children": [
-         "b9",
-         "b10",
-         "b11"
+         "r15",
+         "r16"
         ],
         "component": "Row",
-        "id": "r17"
+        "id": "r17",
+        "justify": "spaceBetween",
+        "open": "b12"
        },
        {
-        "children": [
-         "r16",
-         "r17"
-        ],
-        "component": "Row",
-        "id": "r18",
-        "justify": "spaceBetween",
-        "open": "b11"
+        "component": "Text",
+        "id": "t18",
+        "text": "疑似病毒文件",
+        "variant": "strong"
+       },
+       {
+        "component": "Text",
+        "id": "t19",
+        "text": "需尽快处理 · 文件内容与已知恶意程序的特征一致，打开后可能窃取密码或文件",
+        "variant": "caption"
+       },
+       {
+        "component": "Text",
+        "id": "t20",
+        "text": "~/Downloads/update.scpt",
+        "variant": "caption"
        },
        {
         "action": {
@@ -1336,28 +1352,28 @@
           "name": "scan_reveal"
          }
         },
-        "child": "b19-row",
+        "child": "b21-row",
         "component": "Button",
-        "id": "b19",
+        "id": "b21",
         "variant": "borderless"
        },
        {
         "component": "Icon",
-        "id": "b19-icon",
+        "id": "b21-icon",
         "name": "folder"
        },
        {
         "component": "Text",
-        "id": "b19-text",
+        "id": "b21-text",
         "text": "在访达中显示"
        },
        {
         "children": [
-         "b19-icon",
-         "b19-text"
+         "b21-icon",
+         "b21-text"
         ],
         "component": "Row",
-        "id": "b19-row"
+        "id": "b21-row"
        },
        {
         "action": {
@@ -1368,28 +1384,28 @@
           "name": "scan_ignore"
          }
         },
-        "child": "b20-row",
+        "child": "b22-row",
         "component": "Button",
-        "id": "b20",
+        "id": "b22",
         "variant": "borderless"
        },
        {
         "component": "Icon",
-        "id": "b20-icon",
+        "id": "b22-icon",
         "name": "bell-off"
        },
        {
         "component": "Text",
-        "id": "b20-text",
+        "id": "b22-text",
         "text": "标为误报"
        },
        {
         "children": [
-         "b20-icon",
-         "b20-text"
+         "b22-icon",
+         "b22-text"
         ],
         "component": "Row",
-        "id": "b20-row"
+        "id": "b22-row"
        },
        {
         "action": {
@@ -1403,53 +1419,42 @@
           "name": "agent.open_page"
          }
         },
-        "child": "b21-text",
+        "child": "b23-text",
         "component": "Button",
-        "id": "b21"
+        "id": "b23"
        },
        {
         "component": "Text",
-        "id": "b21-text",
-        "text": "查看详情"
-       },
-       {
-        "component": "Text",
-        "id": "t22",
-        "text": "疑似病毒文件",
-        "variant": "strong"
-       },
-       {
-        "component": "Text",
-        "id": "t23",
-        "text": "需尽快处理 · update.scpt",
-        "variant": "caption"
-       },
-       {
-        "children": [
-         "t22",
-         "t23"
-        ],
-        "component": "Column",
-        "id": "c24"
+        "id": "b23-text",
+        "text": "查看并处理"
        },
        {
         "component": "Icon",
-        "id": "i25",
+        "id": "i24",
         "name": "shield-alert"
        },
        {
         "children": [
-         "i25",
-         "c24"
+         "t18",
+         "t19",
+         "t20"
+        ],
+        "component": "Column",
+        "id": "c25"
+       },
+       {
+        "children": [
+         "i24",
+         "c25"
         ],
         "component": "Row",
         "id": "r26"
        },
        {
         "children": [
-         "b19",
-         "b20",
-         "b21"
+         "b21",
+         "b22",
+         "b23"
         ],
         "component": "Row",
         "id": "r27"
@@ -1462,223 +1467,187 @@
         "component": "Row",
         "id": "r28",
         "justify": "spaceBetween",
-        "open": "b21"
-       },
-       {
-        "action": {
-         "event": {
-          "context": {
-           "finding_id": "skill.download-exec/000000000016"
-          },
-          "name": "scan_reveal"
-         }
-        },
-        "child": "b29-row",
-        "component": "Button",
-        "id": "b29",
-        "variant": "borderless"
-       },
-       {
-        "component": "Icon",
-        "id": "b29-icon",
-        "name": "folder"
+        "open": "b23"
        },
        {
         "component": "Text",
-        "id": "b29-text",
-        "text": "在访达中显示"
-       },
-       {
-        "children": [
-         "b29-icon",
-         "b29-text"
-        ],
-        "component": "Row",
-        "id": "b29-row"
-       },
-       {
-        "action": {
-         "event": {
-          "context": {
-           "finding_id": "skill.download-exec/000000000016"
-          },
-          "name": "scan_ignore"
-         }
-        },
-        "child": "b30-row",
-        "component": "Button",
-        "id": "b30",
-        "variant": "borderless"
-       },
-       {
-        "component": "Icon",
-        "id": "b30-icon",
-        "name": "bell-off"
-       },
-       {
-        "component": "Text",
-        "id": "b30-text",
-        "text": "不再提醒"
-       },
-       {
-        "children": [
-         "b30-icon",
-         "b30-text"
-        ],
-        "component": "Row",
-        "id": "b30-row"
-       },
-       {
-        "component": "Text",
-        "id": "t31",
-        "text": "AI 插件存在风险",
+        "id": "t29",
+        "text": "AI 插件和模型模板",
         "variant": "strong"
        },
        {
         "component": "Text",
-        "id": "t32",
-        "text": "高风险 · command-development",
+        "id": "t30",
+        "text": "高风险 · 插件的说明或脚本中含高风险指令，AI 助手使用它时可能执行",
         "variant": "caption"
        },
        {
+        "action": {
+         "event": {
+          "context": {
+           "args": {
+            "id": "ai-plugin"
+           },
+           "page": "category"
+          },
+          "name": "agent.open_page"
+         }
+        },
+        "child": "b31-text",
+        "component": "Button",
+        "id": "b31"
+       },
+       {
+        "component": "Text",
+        "id": "b31-text",
+        "text": "查看并处理"
+       },
+       {
+        "component": "Icon",
+        "id": "i32",
+        "name": "shield-alert"
+       },
+       {
         "children": [
-         "t31",
-         "t32"
+         "t29",
+         "t30"
         ],
         "component": "Column",
         "id": "c33"
        },
        {
-        "component": "Icon",
-        "id": "i34",
-        "name": "shield-alert"
-       },
-       {
         "children": [
-         "i34",
+         "i32",
          "c33"
         ],
         "component": "Row",
-        "id": "r35"
+        "id": "r34"
+       },
+       {
+        "component": "Text",
+        "id": "t35",
+        "text": "9 项",
+        "variant": "badge"
        },
        {
         "children": [
-         "b29",
-         "b30"
+         "b31"
         ],
         "component": "Row",
         "id": "r36"
        },
        {
         "children": [
-         "r35",
+         "r34",
+         "t35",
          "r36"
         ],
         "component": "Row",
         "id": "r37",
-        "justify": "spaceBetween"
-       },
-       {
-        "action": {
-         "event": {
-          "context": {
-           "finding_id": "skill.download-exec/000000000017"
-          },
-          "name": "scan_reveal"
-         }
-        },
-        "child": "b38-row",
-        "component": "Button",
-        "id": "b38",
-        "variant": "borderless"
-       },
-       {
-        "component": "Icon",
-        "id": "b38-icon",
-        "name": "folder"
+        "justify": "spaceBetween",
+        "open": "b31"
        },
        {
         "component": "Text",
-        "id": "b38-text",
-        "text": "在访达中显示"
-       },
-       {
-        "children": [
-         "b38-icon",
-         "b38-text"
-        ],
-        "component": "Row",
-        "id": "b38-row"
-       },
-       {
-        "action": {
-         "event": {
-          "context": {
-           "finding_id": "skill.download-exec/000000000017"
-          },
-          "name": "scan_ignore"
-         }
-        },
-        "child": "b39-row",
-        "component": "Button",
-        "id": "b39",
-        "variant": "borderless"
-       },
-       {
-        "component": "Icon",
-        "id": "b39-icon",
-        "name": "bell-off"
-       },
-       {
-        "component": "Text",
-        "id": "b39-text",
-        "text": "不再提醒"
-       },
-       {
-        "children": [
-         "b39-icon",
-         "b39-text"
-        ],
-        "component": "Row",
-        "id": "b39-row"
-       },
-       {
-        "component": "Text",
-        "id": "t40",
-        "text": "AI 插件存在风险",
+        "id": "t38",
+        "text": "硬盘未加密",
         "variant": "strong"
        },
        {
         "component": "Text",
-        "id": "t41",
-        "text": "高风险 · hook-development",
+        "id": "t39",
+        "text": "高风险 · Mac 丢失后他人可直接读取全部文件",
         "variant": "caption"
        },
        {
-        "children": [
-         "t40",
-         "t41"
-        ],
-        "component": "Column",
-        "id": "c42"
+        "action": {
+         "event": {
+          "context": {
+           "grant": "FileVault"
+          },
+          "name": "scan_open_settings"
+         }
+        },
+        "child": "b40-row",
+        "component": "Button",
+        "id": "b40",
+        "variant": "borderless"
        },
        {
         "component": "Icon",
-        "id": "i43",
+        "id": "b40-icon",
+        "name": "settings"
+       },
+       {
+        "component": "Text",
+        "id": "b40-text",
+        "text": "打开 FileVault 设置"
+       },
+       {
+        "children": [
+         "b40-icon",
+         "b40-text"
+        ],
+        "component": "Row",
+        "id": "b40-row"
+       },
+       {
+        "action": {
+         "event": {
+          "context": {
+           "finding_id": "posture.filevault"
+          },
+          "name": "scan_ignore"
+         }
+        },
+        "child": "b41-row",
+        "component": "Button",
+        "id": "b41",
+        "variant": "borderless"
+       },
+       {
+        "component": "Icon",
+        "id": "b41-icon",
+        "name": "bell-off"
+       },
+       {
+        "component": "Text",
+        "id": "b41-text",
+        "text": "不再提醒"
+       },
+       {
+        "children": [
+         "b41-icon",
+         "b41-text"
+        ],
+        "component": "Row",
+        "id": "b41-row"
+       },
+       {
+        "component": "Icon",
+        "id": "i42",
         "name": "shield-alert"
        },
        {
         "children": [
-         "i43",
-         "c42"
+         "t38",
+         "t39"
+        ],
+        "component": "Column",
+        "id": "c43"
+       },
+       {
+        "children": [
+         "i42",
+         "c43"
         ],
         "component": "Row",
         "id": "r44"
        },
        {
         "children": [
-         "b38",
-         "b39"
+         "b40",
+         "b41"
         ],
         "component": "Row",
         "id": "r45"
@@ -1693,85 +1662,22 @@
         "justify": "spaceBetween"
        },
        {
-        "action": {
-         "event": {
-          "context": {
-           "finding_id": "posture.filevault"
-          },
-          "name": "scan_ignore"
-         }
-        },
-        "child": "b47-row",
-        "component": "Button",
-        "id": "b47",
-        "variant": "borderless"
-       },
-       {
-        "component": "Icon",
-        "id": "b47-icon",
-        "name": "bell-off"
-       },
-       {
         "component": "Text",
-        "id": "b47-text",
-        "text": "不再提醒"
-       },
-       {
-        "children": [
-         "b47-icon",
-         "b47-text"
-        ],
-        "component": "Row",
-        "id": "b47-row"
-       },
-       {
-        "component": "Text",
-        "id": "t48",
-        "text": "硬盘未加密",
+        "id": "t47",
+        "text": "程序文件已删除的进程",
         "variant": "strong"
        },
        {
         "component": "Text",
-        "id": "t49",
-        "text": "高风险",
+        "id": "t48",
+        "text": "中风险 · 进程仍在运行，其程序文件已被删除，无法核对来源",
         "variant": "caption"
        },
        {
-        "children": [
-         "t48",
-         "t49"
-        ],
-        "component": "Column",
-        "id": "c50"
-       },
-       {
-        "component": "Icon",
-        "id": "i51",
-        "name": "shield-alert"
-       },
-       {
-        "children": [
-         "i51",
-         "c50"
-        ],
-        "component": "Row",
-        "id": "r52"
-       },
-       {
-        "children": [
-         "b47"
-        ],
-        "component": "Row",
-        "id": "r53"
-       },
-       {
-        "children": [
-         "r52",
-         "r53"
-        ],
-        "component": "Row",
-        "id": "r54",
-        "justify": "spaceBetween"
+        "component": "Text",
+        "id": "t49",
+        "text": "~/Applications/Gone.app/Contents/MacOS/gone",
+        "variant": "caption"
        },
        {
         "action": {
@@ -1782,28 +1688,28 @@
           "name": "scan_reveal"
          }
         },
-        "child": "b55-row",
+        "child": "b50-row",
         "component": "Button",
-        "id": "b55",
+        "id": "b50",
         "variant": "borderless"
        },
        {
         "component": "Icon",
-        "id": "b55-icon",
+        "id": "b50-icon",
         "name": "folder"
        },
        {
         "component": "Text",
-        "id": "b55-text",
+        "id": "b50-text",
         "text": "在访达中显示"
        },
        {
         "children": [
-         "b55-icon",
-         "b55-text"
+         "b50-icon",
+         "b50-text"
         ],
         "component": "Row",
-        "id": "b55-row"
+        "id": "b50-row"
        },
        {
         "action": {
@@ -1814,40 +1720,84 @@
           "name": "scan_ignore"
          }
         },
-        "child": "b56-row",
+        "child": "b51-row",
         "component": "Button",
-        "id": "b56",
+        "id": "b51",
         "variant": "borderless"
        },
        {
         "component": "Icon",
-        "id": "b56-icon",
+        "id": "b51-icon",
         "name": "bell-off"
        },
        {
         "component": "Text",
-        "id": "b56-text",
+        "id": "b51-text",
         "text": "不再提醒"
        },
        {
         "children": [
-         "b56-icon",
-         "b56-text"
+         "b51-icon",
+         "b51-text"
         ],
         "component": "Row",
-        "id": "b56-row"
+        "id": "b51-row"
+       },
+       {
+        "component": "Icon",
+        "id": "i52",
+        "name": "triangle-alert"
+       },
+       {
+        "children": [
+         "t47",
+         "t48",
+         "t49"
+        ],
+        "component": "Column",
+        "id": "c53"
+       },
+       {
+        "children": [
+         "i52",
+         "c53"
+        ],
+        "component": "Row",
+        "id": "r54"
+       },
+       {
+        "children": [
+         "b50",
+         "b51"
+        ],
+        "component": "Row",
+        "id": "r55"
+       },
+       {
+        "children": [
+         "r54",
+         "r55"
+        ],
+        "component": "Row",
+        "id": "r56",
+        "justify": "spaceBetween"
        },
        {
         "component": "Text",
         "id": "t57",
-        "text": "程序文件已删除的进程",
+        "text": "已删除应用仍保留权限",
         "variant": "strong"
        },
        {
         "component": "Text",
         "id": "t58",
-        "text": "中风险 · gone",
+        "text": "中风险 · 应用已删除，授予它的权限仍然有效；同名程序可沿用这些权限",
         "variant": "caption"
+       },
+       {
+        "component": "Icon",
+        "id": "i59",
+        "name": "triangle-alert"
        },
        {
         "children": [
@@ -1855,33 +1805,26 @@
          "t58"
         ],
         "component": "Column",
-        "id": "c59"
-       },
-       {
-        "component": "Icon",
-        "id": "i60",
-        "name": "triangle-alert"
+        "id": "c60"
        },
        {
         "children": [
-         "i60",
-         "c59"
+         "i59",
+         "c60"
         ],
         "component": "Row",
         "id": "r61"
        },
        {
-        "children": [
-         "b55",
-         "b56"
-        ],
-        "component": "Row",
-        "id": "r62"
+        "component": "Text",
+        "id": "t62",
+        "text": "3 项",
+        "variant": "badge"
        },
        {
         "children": [
          "r61",
-         "r62"
+         "t62"
         ],
         "component": "Row",
         "id": "r63",
@@ -1954,13 +1897,12 @@
        {
         "component": "Text",
         "id": "t66",
-        "text": "已删除应用仍保留权限",
-        "variant": "strong"
+        "text": "tool"
        },
        {
         "component": "Text",
         "id": "t67",
-        "text": "中风险 · tool",
+        "text": "/opt/gone/tool",
         "variant": "caption"
        },
        {
@@ -1972,282 +1914,73 @@
         "id": "c68"
        },
        {
-        "component": "Icon",
-        "id": "i69",
-        "name": "triangle-alert"
-       },
-       {
-        "children": [
-         "i69",
-         "c68"
-        ],
-        "component": "Row",
-        "id": "r70"
-       },
-       {
         "children": [
          "b64",
          "b65"
         ],
         "component": "Row",
-        "id": "r71"
+        "id": "r69"
+       },
+       {
+        "children": [
+         "c68",
+         "r69"
+        ],
+        "component": "Row",
+        "id": "r70",
+        "justify": "spaceBetween"
+       },
+       {
+        "component": "Text",
+        "id": "t71",
+        "text": "2 项未提供名称"
+       },
+       {
+        "children": [
+         "t71"
+        ],
+        "component": "Column",
+        "id": "c72"
+       },
+       {
+        "children": [
+         "c72"
+        ],
+        "component": "Row",
+        "id": "r73",
+        "justify": "spaceBetween"
        },
        {
         "children": [
          "r70",
-         "r71"
-        ],
-        "component": "Row",
-        "id": "r72",
-        "justify": "spaceBetween"
-       },
-       {
-        "action": {
-         "event": {
-          "context": {
-           "finding_id": "permission.stale-grant/000000000020"
-          },
-          "name": "scan_ignore"
-         }
-        },
-        "child": "b73-row",
-        "component": "Button",
-        "id": "b73",
-        "variant": "borderless"
-       },
-       {
-        "component": "Icon",
-        "id": "b73-icon",
-        "name": "bell-off"
-       },
-       {
-        "component": "Text",
-        "id": "b73-text",
-        "text": "不再提醒"
-       },
-       {
-        "children": [
-         "b73-icon",
-         "b73-text"
-        ],
-        "component": "Row",
-        "id": "b73-row"
-       },
-       {
-        "component": "Text",
-        "id": "t74",
-        "text": "已删除应用仍保留权限",
-        "variant": "strong"
-       },
-       {
-        "component": "Text",
-        "id": "t75",
-        "text": "中风险",
-        "variant": "caption"
-       },
-       {
-        "children": [
-         "t74",
-         "t75"
-        ],
-        "component": "Column",
-        "id": "c76"
-       },
-       {
-        "component": "Icon",
-        "id": "i77",
-        "name": "triangle-alert"
-       },
-       {
-        "children": [
-         "i77",
-         "c76"
-        ],
-        "component": "Row",
-        "id": "r78"
-       },
-       {
-        "children": [
-         "b73"
-        ],
-        "component": "Row",
-        "id": "r79"
-       },
-       {
-        "children": [
-         "r78",
-         "r79"
-        ],
-        "component": "Row",
-        "id": "r80",
-        "justify": "spaceBetween"
-       },
-       {
-        "action": {
-         "event": {
-          "context": {
-           "finding_id": "permission.stale-grant/000000000021"
-          },
-          "name": "scan_ignore"
-         }
-        },
-        "child": "b81-row",
-        "component": "Button",
-        "id": "b81",
-        "variant": "borderless"
-       },
-       {
-        "component": "Icon",
-        "id": "b81-icon",
-        "name": "bell-off"
-       },
-       {
-        "component": "Text",
-        "id": "b81-text",
-        "text": "不再提醒"
-       },
-       {
-        "children": [
-         "b81-icon",
-         "b81-text"
-        ],
-        "component": "Row",
-        "id": "b81-row"
-       },
-       {
-        "component": "Text",
-        "id": "t82",
-        "text": "已删除应用仍保留权限",
-        "variant": "strong"
-       },
-       {
-        "component": "Text",
-        "id": "t83",
-        "text": "中风险",
-        "variant": "caption"
-       },
-       {
-        "children": [
-         "t82",
-         "t83"
-        ],
-        "component": "Column",
-        "id": "c84"
-       },
-       {
-        "component": "Icon",
-        "id": "i85",
-        "name": "triangle-alert"
-       },
-       {
-        "children": [
-         "i85",
-         "c84"
-        ],
-        "component": "Row",
-        "id": "r86"
-       },
-       {
-        "children": [
-         "b81"
-        ],
-        "component": "Row",
-        "id": "r87"
-       },
-       {
-        "children": [
-         "r86",
-         "r87"
-        ],
-        "component": "Row",
-        "id": "r88",
-        "justify": "spaceBetween"
-       },
-       {
-        "children": [
-         "r88"
+         "r73"
         ],
         "component": "List",
-        "id": "l89"
+        "id": "l74"
        },
        {
         "children": [
-         "l89"
+         "l74"
         ],
-        "collapsed": "其余 1 项",
+        "collapsed": "查看 3 项",
         "component": "Column",
-        "id": "c90"
-       },
-       {
-        "action": {
-         "event": {
-          "context": {
-           "args": {
-            "id": "ai-plugin"
-           },
-           "page": "category"
-          },
-          "name": "agent.open_page"
-         }
-        },
-        "child": "b91-text",
-        "component": "Button",
-        "id": "b91"
-       },
-       {
-        "component": "Text",
-        "id": "b91-text",
-        "text": "查看详情"
-       },
-       {
-        "component": "Text",
-        "id": "t92",
-        "text": "AI 插件和模型模板",
-        "variant": "strong"
-       },
-       {
-        "component": "Text",
-        "id": "t93",
-        "text": "7 项 · 49 KB",
-        "variant": "caption"
+        "id": "c75"
        },
        {
         "children": [
-         "t92",
-         "t93"
+         "r63",
+         "c75"
         ],
+        "component": "List",
+        "id": "l76"
+       },
+       {
+        "children": [
+         "l76"
+        ],
+        "collapsed": "其余 1 条",
         "component": "Column",
-        "id": "c94"
-       },
-       {
-        "component": "Icon",
-        "id": "i95",
-        "name": "puzzle"
-       },
-       {
-        "children": [
-         "i95",
-         "c94"
-        ],
-        "component": "Row",
-        "id": "r96"
-       },
-       {
-        "children": [
-         "b91"
-        ],
-        "component": "Row",
-        "id": "r97"
-       },
-       {
-        "children": [
-         "r96",
-         "r97"
-        ],
-        "component": "Row",
-        "id": "r98",
-        "justify": "spaceBetween",
-        "open": "b91"
+        "id": "c77"
        },
        {
         "action": {
@@ -2261,64 +1994,64 @@
           "name": "agent.open_page"
          }
         },
-        "child": "b99-text",
+        "child": "b78-text",
         "component": "Button",
-        "id": "b99"
+        "id": "b78"
        },
        {
         "component": "Text",
-        "id": "b99-text",
+        "id": "b78-text",
         "text": "查看详情"
        },
        {
         "component": "Text",
-        "id": "t100",
+        "id": "t79",
         "text": "开机启动项",
         "variant": "strong"
        },
        {
         "component": "Text",
-        "id": "t101",
+        "id": "t80",
         "text": "1 项",
         "variant": "caption"
        },
        {
         "children": [
-         "t100",
-         "t101"
+         "t79",
+         "t80"
         ],
         "component": "Column",
-        "id": "c102"
+        "id": "c81"
        },
        {
         "component": "Icon",
-        "id": "i103",
+        "id": "i82",
         "name": "power"
        },
        {
         "children": [
-         "i103",
-         "c102"
+         "i82",
+         "c81"
         ],
         "component": "Row",
-        "id": "r104"
+        "id": "r83"
        },
        {
         "children": [
-         "b99"
+         "b78"
         ],
         "component": "Row",
-        "id": "r105"
+        "id": "r84"
        },
        {
         "children": [
-         "r104",
-         "r105"
+         "r83",
+         "r84"
         ],
         "component": "Row",
-        "id": "r106",
+        "id": "r85",
         "justify": "spaceBetween",
-        "open": "b99"
+        "open": "b78"
        },
        {
         "action": {
@@ -2332,88 +2065,144 @@
           "name": "agent.open_page"
          }
         },
-        "child": "b107-text",
+        "child": "b86-text",
         "component": "Button",
-        "id": "b107"
+        "id": "b86"
        },
        {
         "component": "Text",
-        "id": "b107-text",
+        "id": "b86-text",
         "text": "查看详情"
        },
        {
         "component": "Text",
-        "id": "t108",
+        "id": "t87",
         "text": "依赖安装脚本",
         "variant": "strong"
        },
        {
         "component": "Text",
-        "id": "t109",
+        "id": "t88",
         "text": "2 项",
         "variant": "caption"
        },
        {
         "children": [
-         "t108",
-         "t109"
+         "t87",
+         "t88"
         ],
         "component": "Column",
-        "id": "c110"
+        "id": "c89"
        },
        {
         "component": "Icon",
-        "id": "i111",
+        "id": "i90",
         "name": "settings"
        },
        {
         "children": [
-         "i111",
-         "c110"
+         "i90",
+         "c89"
         ],
         "component": "Row",
-        "id": "r112"
+        "id": "r91"
        },
        {
         "children": [
-         "b107"
+         "b86"
         ],
         "component": "Row",
-        "id": "r113"
+        "id": "r92"
        },
        {
         "children": [
-         "r112",
-         "r113"
+         "r91",
+         "r92"
         ],
         "component": "Row",
-        "id": "r114",
+        "id": "r93",
         "justify": "spaceBetween",
-        "open": "b107"
+        "open": "b86"
        },
        {
         "children": [
-         "r18",
-         "r28",
-         "r37",
-         "r46",
-         "r54",
-         "r63",
-         "r72",
-         "r80",
-         "c90",
-         "r98",
-         "r106",
-         "r114"
+         "r6"
         ],
         "component": "List",
-        "id": "l115"
+        "id": "l94"
        },
        {
         "component": "Text",
-        "id": "t116",
-        "text": "清理 · 可释放 313.7 MB",
+        "id": "t95",
+        "text": "建议处理 · 9",
         "variant": "caption"
+       },
+       {
+        "children": [
+         "r17",
+         "r28",
+         "r37",
+         "r46",
+         "r56",
+         "c77",
+         "r85",
+         "r93"
+        ],
+        "component": "List",
+        "id": "l96"
+       },
+       {
+        "component": "Text",
+        "id": "t97",
+        "text": "可直接清理 · 307.2 MB",
+        "variant": "caption"
+       },
+       {
+        "component": "Text",
+        "id": "t98",
+        "text": "均可重建、重新下载或另有一份",
+        "variant": "strong"
+       },
+       {
+        "component": "Text",
+        "id": "t99",
+        "text": "缓存、残留的临时文件夹，清理后不影响使用；移到废纸篓的可在清理记录中恢复",
+        "variant": "caption"
+       },
+       {
+        "action": {
+         "event": {
+          "context": {
+           "on": true
+          },
+          "name": "scan_autoclean"
+         }
+        },
+        "child": "b100-text",
+        "component": "Button",
+        "id": "b100",
+        "variant": "primary"
+       },
+       {
+        "component": "Text",
+        "id": "b100-text",
+        "text": "开启自动清理"
+       },
+       {
+        "children": [
+         "b100"
+        ],
+        "component": "Row",
+        "id": "r101"
+       },
+       {
+        "children": [
+         "t98",
+         "t99",
+         "r101"
+        ],
+        "component": "Column",
+        "id": "c102"
        },
        {
         "action": {
@@ -2427,64 +2216,71 @@
           "name": "agent.open_page"
          }
         },
-        "child": "b117-text",
+        "child": "b103-text",
         "component": "Button",
-        "id": "b117"
+        "id": "b103"
        },
        {
         "component": "Text",
-        "id": "b117-text",
-        "text": "查看详情"
+        "id": "b103-text",
+        "text": "查看并清理"
+       },
+       {
+        "component": "Icon",
+        "id": "i104",
+        "name": "refresh-cw"
        },
        {
         "component": "Text",
-        "id": "t118",
+        "id": "t105",
         "text": "缓存",
         "variant": "strong"
        },
        {
         "component": "Text",
-        "id": "t119",
-        "text": "Gradle、Xcode、pip 缓存，可自动重建 · 176.2 MB",
+        "id": "t106",
+        "text": "Gradle、Xcode、pip 缓存，可自动重建",
         "variant": "caption"
        },
        {
         "children": [
-         "t118",
-         "t119"
+         "t105",
+         "t106"
         ],
         "component": "Column",
-        "id": "c120"
-       },
-       {
-        "component": "Icon",
-        "id": "i121",
-        "name": "refresh-cw"
+        "id": "c107"
        },
        {
         "children": [
-         "i121",
-         "c120"
+         "i104",
+         "c107"
         ],
         "component": "Row",
-        "id": "r122"
+        "id": "r108"
+       },
+       {
+        "component": "Text",
+        "id": "t109",
+        "text": "176.2 MB",
+        "variant": "badge"
        },
        {
         "children": [
-         "b117"
+         "b103"
         ],
         "component": "Row",
-        "id": "r123"
+        "id": "r110"
        },
        {
         "children": [
-         "r122",
-         "r123"
+         "r108",
+         "t109",
+         "r110"
         ],
         "component": "Row",
-        "id": "r124",
+        "id": "r111",
         "justify": "spaceBetween",
-        "open": "b117"
+        "open": "b103"
        },
        {
         "action": {
@@ -2498,64 +2294,86 @@
           "name": "agent.open_page"
          }
         },
-        "child": "b125-text",
+        "child": "b112-text",
         "component": "Button",
-        "id": "b125"
+        "id": "b112"
        },
        {
         "component": "Text",
-        "id": "b125-text",
-        "text": "查看详情"
+        "id": "b112-text",
+        "text": "查看并清理"
+       },
+       {
+        "component": "Icon",
+        "id": "i113",
+        "name": "folder"
        },
        {
         "component": "Text",
-        "id": "t126",
+        "id": "t114",
         "text": "残留的临时文件夹",
         "variant": "strong"
        },
        {
         "component": "Text",
-        "id": "t127",
-        "text": "测试工具运行后未删除 · 131.1 MB",
+        "id": "t115",
+        "text": "测试工具运行后未删除",
         "variant": "caption"
        },
        {
         "children": [
-         "t126",
-         "t127"
+         "t114",
+         "t115"
         ],
         "component": "Column",
-        "id": "c128"
-       },
-       {
-        "component": "Icon",
-        "id": "i129",
-        "name": "folder"
+        "id": "c116"
        },
        {
         "children": [
-         "i129",
-         "c128"
+         "i113",
+         "c116"
         ],
         "component": "Row",
-        "id": "r130"
+        "id": "r117"
+       },
+       {
+        "component": "Text",
+        "id": "t118",
+        "text": "131.1 MB",
+        "variant": "badge"
        },
        {
         "children": [
-         "b125"
+         "b112"
         ],
         "component": "Row",
-        "id": "r131"
+        "id": "r119"
        },
        {
         "children": [
-         "r130",
-         "r131"
+         "r117",
+         "t118",
+         "r119"
         ],
         "component": "Row",
-        "id": "r132",
+        "id": "r120",
         "justify": "spaceBetween",
-        "open": "b125"
+        "open": "b112"
+       },
+       {
+        "children": [
+         "c102",
+         "r111",
+         "r120"
+        ],
+        "component": "List",
+        "id": "l121"
+       },
+       {
+        "component": "Text",
+        "id": "t122",
+        "text": "需确认 · 6.4 MB",
+        "variant": "caption"
        },
        {
         "action": {
@@ -2569,25 +2387,108 @@
           "name": "agent.open_page"
          }
         },
-        "child": "b133-text",
+        "child": "b123-text",
         "component": "Button",
-        "id": "b133"
+        "id": "b123"
        },
        {
         "component": "Text",
-        "id": "b133-text",
+        "id": "b123-text",
         "text": "查看详情"
        },
        {
+        "component": "Icon",
+        "id": "i124",
+        "name": "archive"
+       },
+       {
         "component": "Text",
-        "id": "t134",
+        "id": "t125",
         "text": "已删除应用的残留数据",
         "variant": "strong"
        },
        {
         "component": "Text",
+        "id": "t126",
+        "text": "应用已删除",
+        "variant": "caption"
+       },
+       {
+        "children": [
+         "t125",
+         "t126"
+        ],
+        "component": "Column",
+        "id": "c127"
+       },
+       {
+        "children": [
+         "i124",
+         "c127"
+        ],
+        "component": "Row",
+        "id": "r128"
+       },
+       {
+        "component": "Text",
+        "id": "t129",
+        "text": "6.3 MB",
+        "variant": "badge"
+       },
+       {
+        "children": [
+         "b123"
+        ],
+        "component": "Row",
+        "id": "r130"
+       },
+       {
+        "children": [
+         "r128",
+         "t129",
+         "r130"
+        ],
+        "component": "Row",
+        "id": "r131",
+        "justify": "spaceBetween",
+        "open": "b123"
+       },
+       {
+        "action": {
+         "event": {
+          "context": {
+           "args": {
+            "id": "project"
+           },
+           "page": "category"
+          },
+          "name": "agent.open_page"
+         }
+        },
+        "child": "b132-text",
+        "component": "Button",
+        "id": "b132"
+       },
+       {
+        "component": "Text",
+        "id": "b132-text",
+        "text": "查看详情"
+       },
+       {
+        "component": "Icon",
+        "id": "i133",
+        "name": "folder-open"
+       },
+       {
+        "component": "Text",
+        "id": "t134",
+        "text": "长期未改动的项目",
+        "variant": "strong"
+       },
+       {
+        "component": "Text",
         "id": "t135",
-        "text": "应用已删除 · 6.3 MB",
+        "text": "均已推送或可重新生成",
         "variant": "caption"
        },
        {
@@ -2599,98 +2500,44 @@
         "id": "c136"
        },
        {
-        "component": "Icon",
-        "id": "i137",
-        "name": "archive"
-       },
-       {
         "children": [
-         "i137",
+         "i133",
          "c136"
         ],
         "component": "Row",
-        "id": "r138"
+        "id": "r137"
+       },
+       {
+        "component": "Text",
+        "id": "t138",
+        "text": "147 KB",
+        "variant": "badge"
        },
        {
         "children": [
-         "b133"
+         "b132"
         ],
         "component": "Row",
         "id": "r139"
        },
        {
         "children": [
-         "r138",
+         "r137",
+         "t138",
          "r139"
         ],
         "component": "Row",
         "id": "r140",
         "justify": "spaceBetween",
-        "open": "b133"
-       },
-       {
-        "action": {
-         "event": {
-          "context": {
-           "page": "more"
-          },
-          "name": "agent.open_page"
-         }
-        },
-        "child": "b141-text",
-        "component": "Button",
-        "id": "b141"
-       },
-       {
-        "component": "Text",
-        "id": "b141-text",
-        "text": "其他"
-       },
-       {
-        "component": "Text",
-        "id": "t142",
-        "text": "其他 1 类"
-       },
-       {
-        "component": "Text",
-        "id": "t143",
-        "text": "147 KB",
-        "variant": "caption"
+        "open": "b132"
        },
        {
         "children": [
-         "t142",
-         "t143"
-        ],
-        "component": "Column",
-        "id": "c144"
-       },
-       {
-        "children": [
-         "b141"
-        ],
-        "component": "Row",
-        "id": "r145"
-       },
-       {
-        "children": [
-         "c144",
-         "r145"
-        ],
-        "component": "Row",
-        "id": "r146",
-        "justify": "spaceBetween",
-        "open": "b141"
-       },
-       {
-        "children": [
-         "r124",
-         "r132",
-         "r140",
-         "r146"
+         "r131",
+         "r140"
         ],
         "component": "List",
-        "id": "l147"
+        "id": "l141"
        }
       ],
       "surfaceId": "luoke-scan/page/overview"

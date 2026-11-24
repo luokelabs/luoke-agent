@@ -439,6 +439,28 @@ final class BehaviourTests: XCTestCase {
         XCTAssertNil(m.settingsDialog)
     }
 
+    func testNestedAppDialogsReturnStack() {
+        let m = Sample.model()
+        let f = AgentFeed(model: m)
+        Sample.applyAgentApps(f)
+        m.openAgentPage(app: "luoke-scan", page: "overview")
+        m.openAgentPage(app: "luoke-scan", page: "more")
+        XCTAssertEqual(m.appDialog?.page.id, "more")
+        XCTAssertFalse(m.canGoBackInAppDialog)
+        m.openAgentPage(app: "luoke-scan", page: "category", args: ["id": "cache"])
+        XCTAssertEqual(m.appDialog?.page.id, "category")
+        XCTAssertTrue(m.canGoBackInAppDialog)
+        m.popAppDialog()
+        XCTAssertEqual(m.appDialog?.page.id, "more")
+        XCTAssertFalse(m.canGoBackInAppDialog)
+        m.openAgentPage(app: "luoke-scan", page: "category", args: ["id": "temp"])
+        m.closeAppDialog()
+        XCTAssertNil(m.appDialog)
+        XCTAssertTrue(m.appDialogStack.isEmpty)
+        XCTAssertEqual(m.visibleAppTab, "overview")
+        withExtendedLifetime(f) {}
+    }
+
     func testGoingSomewhereClosesAsk() {
         m.openAsk()
         m.go(.search)

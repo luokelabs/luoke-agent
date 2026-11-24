@@ -298,6 +298,14 @@ cases = {
     "header_nested": (card([{"id": "root", "component": "Column", "children": ["c"]},
                             {"id": "c", "component": "Column", "children": ["h"]},
                             {"id": "h", "component": "Text", "text": "x", "placement": "header"}]), A),
+    # §4 footerPlacement：弹窗底部固定的一排
+    "footer_ok": (card([{"id": "root", "component": "Column", "children": ["t", "r"]},
+                        {"id": "t", "component": "Text", "text": "x"},
+                        {"id": "r", "component": "Row", "children": ["t2"], "placement": "footer"},
+                        {"id": "t2", "component": "Text", "text": "y"}]), A),
+    "footer_nested": (card([{"id": "root", "component": "Column", "children": ["c"]},
+                            {"id": "c", "component": "Column", "children": ["h"]},
+                            {"id": "h", "component": "Text", "text": "x", "placement": "footer"}]), A),
     "count_ok": (count_btn({"path": "/choices", "value": "trash"}), A),
     # §4 countChecks：数一组勾选框里勾上的（value 是 true，path 指向 键 → true / false）
     "count_checks_ok": (card([{"id": "root", "component": "Button", "child": "t", "count": {"path": "/checks", "value": True},

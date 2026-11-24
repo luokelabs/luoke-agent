@@ -132,6 +132,17 @@ def iso(ts: float) -> str:
     return dt.datetime.fromtimestamp(ts).astimezone().isoformat(timespec="seconds")
 
 
+# 工具没搜到、说了这次搜得不全的那句话（`partial_reason`）最长留几个字
+PARTIAL_CHARS = 120
+
+
+class _Partial:
+    """一个工具没搜到，但说了这次搜得不全（`partial_reason`）：交给窗口写出原因（§7 `partial`）。"""
+
+    def __init__(self, text: str) -> None:
+        self.text = text
+
+
 def _note_id(v: Any) -> Optional[str]:
     """记忆里一条的编号（正整数）写成页参数的值；不是就是 None。"""
     if isinstance(v, bool) or not isinstance(v, (int, str)):
@@ -1525,7 +1536,8 @@ class Agent:
             n = len(e.problems) if isinstance(e, a2ui.CardError) else 1
             print(f"luoke-agent: {app} 的页 {page} 画不了：{n} 处问题", file=sys.stderr)
             card = cards.Card(page)
-            card.heading(spec["title"])
+            if not spec.get("hidden"):      # 隐藏页以弹窗打开，弹窗的标题已经是页名，页里不再写一遍
+                card.heading(spec["title"])
             card.text("此页无法显示", caption=True)
             surface = a2ui.build(card.messages(), page=True)
         sid = f"{app}/page/{page}"
@@ -1571,6 +1583,7 @@ class Agent:
             answers = list(pool.map(lambda s: self._search_one(s, query, limit), sources))
         results: List[dict] = []
         failed: List[str] = []
+        partial: List[dict] = []
         with self._lock:
             latest = seq == self.search_seq    # 答完前又搜了一次：这次的结果窗口不画，留下的按钮、缩略图也不换
             if latest:
@@ -1579,6 +1592,8 @@ class Agent:
             for src, answer in zip(sources, answers):
                 if answer is False:
                     failed.append(src.name)
+                elif isinstance(answer, _Partial):
+                    partial.append({"app": src.source, "name": src.name, "text": answer.text})
                 elif answer is not None:
                     surface, hits = answer
                     sid = f"{src.source}/search"
@@ -1590,16 +1605,24 @@ class Agent:
                         if latest:
                             self.search_hits[src.source] = {h["id"]: h for h in hits}
                     results.append(r)
-            return {"search": seq, "results": results, "failed": failed, "asked": len(sources)}
+            out = {"search": seq, "results": results, "failed": failed, "asked": len(sources)}
+            if partial:
+                out["partial"] = partial
+            return out
 
     def _search_one(self, src: Any, query: str, limit: int) -> Any:
-        """一个工具的答复：(画得了的卡片, 核过的 hits)，只给 hits 的卡片照 hits 画；没搜到是 None；没答上来是 False。"""
+        """一个工具的答复：(画得了的卡片, 核过的 hits)，只给 hits 的卡片照 hits 画；没搜到是 None；没答上来是 False；
+        没搜到、又说了这次搜得不全（`partial_reason`，例如模型还在加载、只按字词搜）是 `_Partial`：窗口写出原因，
+        不写「未找到结果」（rc3：第一次回车「查不到」，再按一次才有）。"""
         try:
             result = src.search(query, limit, at=iso(self.clock()))
             if result.is_error:
                 return False
             raw = result.structured.get("hits")
             if raw == [] or (not result.card and not raw):
+                why = result.structured.get("partial_reason")
+                if raw == [] and result.structured.get("partial") is True and isinstance(why, str) and why.strip():
+                    return _Partial(why.strip()[:PARTIAL_CHARS])
                 return None
             hits = searchhits.hits(raw, limit)
             if any(h["actions"] for h in hits):

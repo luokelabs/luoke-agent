@@ -161,11 +161,13 @@ def overview(args: Dict[str, str], read: Read) -> List[dict]:
                  for s in skipped[:SKIPPED_ROWS]]
         top.append(kit.fold(f"已跳过 {len(skipped)} 个", [kit.list(srows)]))
 
-    # 权限：文件、照片两个开关；系统那一层没允许时写清楚去哪里允许（负责人 11-15：写「打开时会再问」是错的，系统不会再问）。
+    # 权限：文件、照片图库两个开关；系统那一层没允许时写清楚去哪里允许（负责人 11-15：写「打开时会再问」是错的，系统不会再问）。
+    # 照片图库没允许时搜索不读图库、也不打开图库里的照片，系统也不会自己来问（只在用户点了「允许」以后问）；
+    # 检索范围里的图片文件走「文件」，照常能搜能开：写明白，免得看着像「没允许却打得开」（2026-11-23 的测试反馈）。
     # 还没选检索范围时点开关一律被拒：不放开关，写先做什么
     top.append(kit.heading("权限"))
     rows = []
-    for key, title in (("files", "文件"), ("photos", "照片")):
+    for key, title in (("files", "文件"), ("photos", "照片图库")):
         p = perms.get(key)
         if not isinstance(p, dict):
             continue
@@ -175,9 +177,9 @@ def overview(args: Dict[str, str], read: Read) -> List[dict]:
             continue
         sub = None
         if on and p.get("system") == "denied":
-            sub = "系统未允许读取，请在螺壳「设置 · 隐私与权限」中允许"
+            sub = "系统未允许读取，请在螺壳「设置 · 隐私与权限」中允许" + ("；文件夹里的图片照常能搜" if key == "photos" else "")
         elif on and p.get("system") == "ask":
-            sub = "首次读取时系统会询问"
+            sub = "尚未允许读取，请在螺壳「设置 · 隐私与权限」中允许" + ("；文件夹里的图片照常能搜" if key == "photos" else "")
         sw = kit.button(title, SET, {key: not on}, variant="switch", on=on)
         rows.append(kit.item(title, sub, [sw]))
     top.append(kit.list(rows))

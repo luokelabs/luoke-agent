@@ -6373,6 +6373,96 @@
   "ok": false
  },
  {
+  "name": "footer_ok",
+  "catalog": "ai.luoke/a2ui/agent/1",
+  "messages": [
+   {
+    "version": "v0.9",
+    "createSurface": {
+     "surfaceId": "s",
+     "catalogId": "ai.luoke/a2ui/agent/1"
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateComponents": {
+     "surfaceId": "s",
+     "components": [
+      {
+       "id": "root",
+       "component": "Column",
+       "children": [
+        "t",
+        "r"
+       ]
+      },
+      {
+       "id": "t",
+       "component": "Text",
+       "text": "x"
+      },
+      {
+       "id": "r",
+       "component": "Row",
+       "children": [
+        "t2"
+       ],
+       "placement": "footer"
+      },
+      {
+       "id": "t2",
+       "component": "Text",
+       "text": "y"
+      }
+     ]
+    }
+   }
+  ],
+  "ok": true
+ },
+ {
+  "name": "footer_nested",
+  "catalog": "ai.luoke/a2ui/agent/1",
+  "messages": [
+   {
+    "version": "v0.9",
+    "createSurface": {
+     "surfaceId": "s",
+     "catalogId": "ai.luoke/a2ui/agent/1"
+    }
+   },
+   {
+    "version": "v0.9",
+    "updateComponents": {
+     "surfaceId": "s",
+     "components": [
+      {
+       "id": "root",
+       "component": "Column",
+       "children": [
+        "c"
+       ]
+      },
+      {
+       "id": "c",
+       "component": "Column",
+       "children": [
+        "h"
+       ]
+      },
+      {
+       "id": "h",
+       "component": "Text",
+       "text": "x",
+       "placement": "footer"
+      }
+     ]
+    }
+   }
+  ],
+  "ok": false
+ },
+ {
   "name": "count_ok",
   "catalog": "ai.luoke/a2ui/agent/1",
   "messages": [

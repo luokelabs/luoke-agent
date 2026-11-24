@@ -61,7 +61,10 @@ class StatusPageTest(unittest.TestCase):
         self.assertIn("开发工具缓存", text)
         self.assertIn("已卸载应用的残留数据（5 个应用）", text)
         self.assertIn("358.6 MB", text)
-        self.assertIn("以上合计约 718.5 MB", text)
+        # 样例里扫描量全了：差额单列「未统计的占用」，不再写「以上合计」
+        self.assertIn("未统计的占用", text)
+        self.assertIn("311.28 GB", text)
+        self.assertNotIn("以上合计约", text)
         self.assertIn("微信数据", text)
         self.assertIn("版本 27000 · 2026年10月20日更新", text, "病毒库那一行写明两个数各是什么（#173）")
         self.assertEqual(scan._summary({"id": "cache", "count": 3, "facts": {"tools": ["Go", "SwiftPM", "npm"]}}).split("，")[0],

@@ -88,4 +88,15 @@ final class RightPanelTests: XCTestCase {
                     row("early", .time(t)), row("power", .power), row("busy", .busy), row("soon2", .soon)]
         XCTAssertEqual(TaskRow.queueOrder(rows).map(\.id), ["soon", "soon2", "busy", "early", "late", "quiet", "power", "paused"])
     }
+
+    func testViewMenuTogglesRightPanel() {
+        let m = WindowModel()
+        let viewMenu = m.topMenus.first { $0.id == "view" }
+        XCTAssertEqual(viewMenu?.items.first { $0.id == "panel" }?.title, "显示任务与历史")
+        m.perform(.togglePanel)
+        XCTAssertTrue(m.panelOpen)
+        XCTAssertEqual(m.topMenus.first { $0.id == "view" }?.items.first { $0.id == "panel" }?.title, "收起任务与历史")
+        m.perform(.togglePanel)
+        XCTAssertFalse(m.panelOpen)
+    }
 }

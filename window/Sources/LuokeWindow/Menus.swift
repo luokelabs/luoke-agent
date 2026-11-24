@@ -7,6 +7,7 @@ public enum MenuAction: Equatable, Sendable {
     case go(Page, String?)
     case ask
     case toggleSidebar
+    case togglePanel
     case openWindow
     case pause
     case urgent(String)
@@ -76,13 +77,15 @@ extension WindowModel {
             MenuSpec(id: "view", title: "显示", items: [
                 MenuItemSpec(id: "sidebar", title: sidebarMini ? "展开侧栏" : "收起侧栏",
                              shortcut: Shortcut(key: "s", modifiers: [.control, .command], label: "⌃⌘S"), action: .toggleSidebar),
+                MenuItemSpec(id: "panel", title: panelOpen ? "收起任务与历史" : "显示任务与历史",
+                             shortcut: Shortcut(key: "s", modifiers: [.option, .command], label: "⌥⌘S"), action: .togglePanel),
                 .sep("s1"), .plain("fullscreen", fullScreen ? "退出全屏幕" : "进入全屏幕", "⌃⌘F"),
             ]),
             MenuSpec(id: "go", title: "前往", items: goItems),
             MenuSpec(id: "window", title: "窗口", items: [
                 .plain("min", "最小化", "⌘M"), .plain("zoom", "缩放"), .sep("s1"), .plain("front", "前置全部窗口"), .sep("s2"), .plain("win", "✓ 螺壳"),
             ]),
-            MenuSpec(id: "help", title: "帮助", items: [.plain("checks", "系统权限检查"), .plain("export", "导出诊断信息")]),
+            MenuSpec(id: "help", title: "帮助", items: [.plain("checks", "隐私与权限"), .plain("export", "导出诊断信息")]),
         ]
     }
 
@@ -177,6 +180,7 @@ extension WindowModel {
             guard mayNavigate() else { return }
             if features.contains(.ask) { go(.today); openAsk() } else { focusSearch() }
         case .toggleSidebar: toggleSidebar()
+        case .togglePanel: togglePanel()
         case .openWindow: break
         case .pause: togglePause()
         case .urgent(let id):
@@ -204,6 +208,9 @@ public struct LuokeCommands: Commands {
             Button(model.sidebarMini ? "展开侧栏" : "收起侧栏") { model.toggleSidebar() }
                 .keyboardShortcut("s", modifiers: [.control, .command])
                 .disabled(model.hostTakeover != nil)      // 本体的界面占着整个窗口：没有侧栏
+            Button(model.panelOpen ? "收起任务与历史" : "显示任务与历史") { openWindow(); model.togglePanel() }
+                .keyboardShortcut("s", modifiers: [.option, .command])
+                .disabled(model.hostTakeover != nil || model.hostPage != nil)
             // 换掉系统的这一组以后，系统自带的全屏那一项也没了（#176：「显示」里没有全屏，⌃⌘F 不起作用）
             Divider()
             Button(model.fullScreen ? "退出全屏幕" : "进入全屏幕") {
@@ -219,7 +226,7 @@ public struct LuokeCommands: Commands {
         }
         // 「帮助」：放现在就能用的两样（以前是空的）。使用说明、反馈问题要有网址以后再加
         CommandGroup(replacing: .help) {
-            Button("系统权限检查") { openWindow(); model.go(.prefs, tab: PrefsTab.privacy.rawValue); model.settingsDialog = .checks }
+            Button("隐私与权限") { openWindow(); model.go(.prefs, tab: PrefsTab.privacy.rawValue) }
                 .disabled(model.hostTakeover != nil)
             Button("导出诊断信息") { model.settingsAction(.export) }
                 .disabled(model.host == nil)

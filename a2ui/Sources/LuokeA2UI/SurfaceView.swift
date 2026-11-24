@@ -92,6 +92,7 @@ public struct SurfaceView: View {
     @Environment(\.a2uiFont) private var fontHook
     @Environment(\.a2uiIcon) private var iconHook
     @Environment(\.a2uiFirstLineInset) private var firstLineInset
+    @Environment(\.a2uiListInset) private var listInset
 
     public init(model: SurfaceModel, part: SurfacePart = .all,
                 onAction: @escaping (_ componentId: String, _ name: String, _ context: JSONValue) -> Void) {
@@ -192,7 +193,7 @@ public struct SurfaceView: View {
         let afterHeading = k > 0 && Self.kind(comps[kids[k - 1]]) == "heading"
         if drawn != nil, !afterHeading, c?["component"]?.string == "Text", Self.kind(c) == "body", !next.isEmpty,
            Self.kind(comps[next]) == "caption" || isButtonRow(next) || pickRow(next) != nil {
-            return AnyView(styled(Text(text(c?["text"])).fontWeight(.medium), c?["variant"]?.string).textSelection(.enabled)
+            return AnyView(styled(Text(text(c?["text"])).fontWeight(.medium), c?["variant"]?.string).modifier(SelectableUnlessInOpenRow())
                 .frame(maxWidth: .infinity, alignment: .leading).fixedSize(horizontal: false, vertical: true))
         }
         return node(kids[k], allowed: allowed, depth: depth + 1)
@@ -270,7 +271,7 @@ public struct SurfaceView: View {
         let variant = c["variant"]?.string
         if variant == "badge" { return AnyView(DrawnBadge(text: s, tone: c["tone"]?.string, colors: drawn)) }
         let t = variant == "strong" ? Text(s).fontWeight(.semibold) : Text(s)
-        var v = AnyView(styled(t, variant == "strong" ? "body" : variant).textSelection(.enabled))
+        var v = AnyView(styled(t, variant == "strong" ? "body" : variant).modifier(SelectableUnlessInOpenRow()))
         if let n = c["maxLines"]?.number {
             v = AnyView(v.lineLimit(Int(n)).truncationMode(.tail).help(s))
         }
@@ -608,6 +609,8 @@ public struct SurfaceView: View {
             tops[i] = 2   // 一行（发件人、主题、标签）下面的理由贴着它
         }
         if type == "List", let d = drawn {
+            // 卡片里只有这一组（`a2uiListInset`，负责人 11-22）：卡片本身不留边，边距挪进每一行，停上去的底色和能点的范围铺满到卡片边上
+            let flush: EdgeInsets? = depth == 0 ? listInset : nil
             // 一项一行，项和项之间一条细线（逐封列的邮件，工具协议 §4）
             return AnyView(VStack(alignment: .leading, spacing: 0) {
                 // 有的行整行能点开（行尾有箭头）、有的不能：不能点的行尾也留出箭头那么宽，右边的数和比例条才对得齐（负责人 11-18）
@@ -625,10 +628,14 @@ public struct SurfaceView: View {
                     }
                         // 整行能点开的：线和线之间这一整格都能点，不只是字那一条（负责人 11-18）
                         .environment(\.openRowBleed, 9)
+                        .environment(\.openRowEdge, flush.map { f in
+                            EdgeInsets(top: i == 0 ? f.top : 9, leading: f.leading, bottom: i == kids.count - 1 ? f.bottom : 9, trailing: f.trailing)
+                        })
                         // 线上下各空 9；第一项上面、最后一项下面不空，卡片四周的边距和别的卡片一样
-                        .padding(.top, i == 0 ? 0 : 9)
-                        .padding(.bottom, i == kids.count - 1 ? 0 : 9)
+                        .padding(.top, i == 0 ? (flush?.top ?? 0) : 9)
+                        .padding(.bottom, i == kids.count - 1 ? (flush?.bottom ?? 0) : 9)
                         .overlay(alignment: .top) { if i > 0 { Rectangle().fill(d.border).frame(height: 1) } }
+                        .padding(.leading, flush?.leading ?? 0).padding(.trailing, flush?.trailing ?? 0)
                 }
             })
         }
@@ -1269,6 +1276,43 @@ extension EnvironmentValues {
     }
 }
 
+/// 列表行铺满卡片时（`a2uiListInset`）：停上去的底色和能点的范围往四边各伸出多少，伸到卡片边和分隔线
+private struct OpenRowEdgeKey: EnvironmentKey { static let defaultValue: EdgeInsets? = nil }
+extension EnvironmentValues {
+    var openRowEdge: EdgeInsets? {
+        get { self[OpenRowEdgeKey.self] }
+        set { self[OpenRowEdgeKey.self] = newValue }
+    }
+}
+
+private struct ListInsetKey: EnvironmentKey { static let defaultValue: EdgeInsets? = nil }
+extension EnvironmentValues {
+    /// 一段只是一组列表、放在卡片里而卡片不留边时，卡片的边距：由列表加在每一行里
+    public var a2uiListInset: EdgeInsets? {
+        get { self[ListInsetKey.self] }
+        set { self[ListInsetKey.self] = newValue }
+    }
+}
+
+private struct InOpenRowKey: EnvironmentKey { static let defaultValue = false }
+
+extension EnvironmentValues {
+    /// 在整行可点的一项里：里面的字不能选
+    var a2uiInOpenRow: Bool {
+        get { self[InOpenRowKey.self] }
+        set { self[InOpenRowKey.self] = newValue }
+    }
+}
+
+/// 字默认能选；在整行可点的一项里不能选，单击才落到这一行上，鼠标也照这一行显示手形
+struct SelectableUnlessInOpenRow: ViewModifier {
+    @Environment(\.a2uiInOpenRow) private var inRow
+
+    @ViewBuilder func body(content: Content) -> some View {
+        if inRow { content.textSelection(.disabled) } else { content.textSelection(.enabled) }
+    }
+}
+
 /// 整行可点的一项（工具协议 §4 rowOpen）：鼠标停上去底下浮一层淡灰，行尾一个向右的箭头；行里别的按钮照常点
 struct OpenRow<Content: View>: View {
     let label: String
@@ -1282,18 +1326,26 @@ struct OpenRow<Content: View>: View {
     @ViewBuilder let content: () -> Content
     @State private var hover = false
     @Environment(\.openRowBleed) private var bleed
+    @Environment(\.openRowEdge) private var edge
 
     var body: some View {
         HStack(spacing: inline ? 3 : 8) {
-            if inline { content().fixedSize() } else { content().frame(maxWidth: .infinity, alignment: .leading) }
+            // 整行可点：行里的字不能选（能选时鼠标停在字上是 I 形、单击被选字吃掉，负责人 11-21）
+            Group {
+                if inline { content().fixedSize() } else { content().frame(maxWidth: .infinity, alignment: .leading) }
+            }
+            .environment(\.a2uiInOpenRow, true)
             if chevron { OpenChevron(inline: inline, colors: colors) }
             if inline { Spacer(minLength: 0) }
         }
         // 能点的范围和停上去的底色比排版占的地方大：左右各 8；在列表里上下一直到分隔线（`openRowBleed`）
-        .padding(.horizontal, 8).padding(.vertical, 4 + bleed)
-        .background(RoundedRectangle(cornerRadius: 8, style: .continuous)
+        // 铺满卡片时（`openRowEdge`）伸到卡片边，底色不带圆角，由卡片的圆角裁
+        .padding(EdgeInsets(top: 4 + (edge?.top ?? bleed), leading: edge?.leading ?? 8,
+                            bottom: 4 + (edge?.bottom ?? bleed), trailing: edge?.trailing ?? 8))
+        .background(RoundedRectangle(cornerRadius: edge == nil ? 8 : 0, style: .continuous)
             .fill(hover && !disabled ? (colors?.fg ?? .primary).opacity(0.05) : .clear))
-        .padding(.horizontal, -8).padding(.vertical, -bleed)
+        .padding(EdgeInsets(top: -(edge?.top ?? bleed), leading: -(edge?.leading ?? 8),
+                            bottom: -(edge?.bottom ?? bleed), trailing: -(edge?.trailing ?? 8)))
         .contentShape(Rectangle())
         .onHover { hover = $0 }
         .modifier(PointerIf(on: !disabled))

@@ -64,6 +64,7 @@ final class Beta2Tests: XCTestCase {
         m.focusSearch()
         XCTAssertEqual(m.page, .searchApp, "⌘K：先去螺壳搜索的页")
         XCTAssertTrue(m.searchBarShown && m.hasBottomBar)
+        XCTAssertTrue(m.pendingSearchFocus, "跨页跳转后保留待聚焦标志，不让 onAppear 踢掉光标")
         XCTAssertEqual(m.searchFocus, before + 1, "再把光标放进搜索框")
         m.runSearch("合同")
         XCTAssertEqual(b.queries, ["合同"])

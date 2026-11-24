@@ -37,7 +37,7 @@ CLIENT_CAPABILITIES = {"experimental": {"ai.luoke/a2ui": {"features": ["placemen
                                                                        "subtitle", "countAlso", "countWeights",
                                                                        "pageArgs", "bigPages", "secureField", "pageRefresh",
                                                                        "saveFile", "neutralBadge", "chips", "pageSections",
-                                                                       "confirm", "rowOpen", "fieldSubmit", "lucide2", "choiceSubmit", "headerPlacement",
+                                                                       "confirm", "rowOpen", "fieldSubmit", "lucide2", "choiceSubmit", "headerPlacement", "footerPlacement",
                                                                        "countChecks"]}}}
 USER_ACTION = "ai.luoke/user-action"  # 会改动东西的调用必带：用户在哪张卡片上点的（§5）
 

@@ -300,6 +300,7 @@ public final class AgentFeed {
             out.hits = hits
             out.failed += (v?["failed"]?.array ?? []).compactMap(\.string)
             out.asked = v?["asked"]?.number.map { Int($0) }
+            out.partial = (v?["partial"]?.array ?? []).compactMap { $0["text"]?.string }.filter { !$0.isEmpty }
             out.note = v?["text"]?.string
         } else {
             let q = model.searchQuery.isEmpty ? "" : "「\(model.searchQuery)」"
@@ -573,14 +574,26 @@ public final class AgentConnection: WindowBackend {
             // 答复带了文件（工具协议 §4 saveFile）：用户选了位置才存
             if status == 200, let file = Self.savedFile(reply) { self.saveFile(file.name, file.text) }
             // agent.search：核心拼的页上的搜索框、「最近搜过」，拿这一句去底部的搜索里搜（结果在那里）
-            if status == 200, let q = Self.searchAsked(reply) { self.model.runSearch(q); return }
+            if status == 200, let q = Self.searchAsked(reply) { self.model.searchFromPage(q); return }
             // agent.open_page（工具协议 §5）：核心核过是这个应用自己的页，换过去（带 args 时读这一页带上，§4 pageArgs）
             if status == 200, let (app, p, args) = Self.openedPage(reply) {
                 self.model.openAgentPage(app: app, page: p, args: args)
                 if let page, page.app == app, page.page == p { return }   // 换到的就是这一页：换页时已经重新取了
             }
             // 基础页上点完：工具答复里的卡片不画，重新取这一页（§6）；取到以后发排着的下一个（reloadPage 里）
-            if let page, status != 0, !nav { self.reloadPage(app: page.app, page: page.page) }
+            if let page, status != 0, !nav {
+                self.reloadPage(app: page.app, page: page.page)
+                self.reloadSiblings(app: page.app, except: page.page)
+            }
+        }
+    }
+
+    /// 一页上点完，这个应用别的取过的页也重新取：弹窗底下那一页、别的标签画的是点之前的样子
+    /// （负责人 11-20：清理完成之后页面没有更新状态）。没取过的不取，等看到时再取；隐藏页每次打开都重新取，不在这里取
+    private func reloadSiblings(app: String, except page: String) {
+        guard let pages = model.agentApps?.first(where: { $0.id == app })?.pages else { return }
+        for ref in pages where !ref.hidden && ref.id != page && model.agentPages[AgentFeed.pageKey(app, ref.id)] != nil {
+            reloadPage(app: app, page: ref.id)
         }
     }
 
@@ -659,6 +672,8 @@ public final class AgentConnection: WindowBackend {
         send("POST", "/search", body) { [weak self] status, body in
             guard let self, serial == self.searchSerial else { return }     // 又搜了别的：这个不要了
             self.feed.applySearch(status: status, body: body)
+            // 搜过以后螺壳搜索的「最近搜索」变了：正看着它的页就重新取（rc3：要切到别处再切回来才更新）
+            if status == 200, let (app, page) = self.model.visibleSearchAppPage { self.reloadPage(app: app, page: page) }
         }
     }
 

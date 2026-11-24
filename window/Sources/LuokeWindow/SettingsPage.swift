@@ -1,3 +1,4 @@
+import AppKit
 import SwiftUI
 
 /// 设置（走查重画稿第二、三稿，11-12；提醒三类 11-13 负责人定）：通用、模型、隐私与权限三个标签。
@@ -96,21 +97,35 @@ struct SettingsHeading: View {
     }
 }
 
-/// 页底一行链接：「逐类设置提醒 › · 关于螺壳 › · 卸载螺壳 ›」
+/// 页底一行链接：「关于螺壳 › · 卸载螺壳 ›」；危险操作标红与普通链接区分
 struct SettingsLinks: View {
-    let links: [(String, () -> Void)]
+    struct Link {
+        let title: String
+        var danger = false
+        let action: () -> Void
+    }
+
+    let links: [Link]
     @Environment(\.lk) private var p
+
+    init(links: [(String, () -> Void)]) {
+        self.links = links.map { Link(title: $0.0, danger: false, action: $0.1) }
+    }
+
+    init(items: [Link]) {
+        self.links = items
+    }
 
     var body: some View {
         HStack(spacing: LKSpace.x2) {
             ForEach(Array(links.enumerated()), id: \.offset) { i, l in
                 if i > 0 { Text("·").foregroundStyle(p.mutedFg) }
-                Button(action: l.1) {
+                Button(action: l.action) {
                     HStack(spacing: 2) {
-                        Text(l.0)
+                        Text(l.title)
                         LKIcon("chevron-right", size: 11)
                     }
-                    .foregroundStyle(p.mutedFg)
+                    .foregroundStyle(l.danger ? p.danger : p.mutedFg)
                     .contentShape(Rectangle())
                 }
                 .buttonStyle(.plainPointer)
@@ -163,6 +178,11 @@ struct GeneralTab: View {
                         LKSegmented(options: HostBatteryMode.allCases.map { .init(value: $0, title: $0.title, symbol: nil) },
                                     value: Binding(get: { g.batteryMode }, set: { model.applySetting(.batteryMode($0)) }), label: "使用电池时")
                     }
+                    if let pause = g.pauseOnLowPower {
+                        SettingsRow(title: "低电量模式时暂停") {
+                            LKSwitch(on: Binding(get: { pause }, set: { model.applySetting(.pauseOnLowPower($0)) }), label: "低电量模式时暂停")
+                        }
+                    }
                 }
             }
             SettingsHeading(title: "提醒")
@@ -192,16 +212,34 @@ struct GeneralTab: View {
                                         label: c.title)
                         }
                     }
+                    SettingsRow(title: "简报频率") {
+                        LKSelect(value: model.brief.rawValue, options: BriefMode.allCases.map(\.rawValue), label: "简报频率") {
+                            model.setBrief(BriefMode(rawValue: $0) ?? .morning)
+                        }
+                    }
                     SettingsRow(title: "每日简报") {
                         LKSelect(value: model.briefTime, options: model.briefTimeOptions, label: "每日简报") { model.setBriefTime($0) }
                     }
+                    SettingsRow(title: "免打扰") {
+                        LKSelect(value: model.quietHours, options: model.quietOptions, label: "免打扰") { model.setQuiet($0) }
+                    }
+                    Button { model.settingsDialog = .alerts } label: {
+                        SettingsRow(title: "按应用分类设置") {
+                            LKIcon("chevron-right", size: 13).foregroundStyle(p.mutedFg)
+                        }
+                        .contentShape(Rectangle())
+                    }
+                    .buttonStyle(.plainPointer)
                 }
                 .disabled(!model.alertsOn || !model.coreReachable)
                 .opacity(model.alertsOn && model.coreReachable ? 1 : 0.45)
             }
-            SettingsLinks(links: [("分类提醒设置", { model.settingsDialog = .alerts })]
-                          + (data == nil ? [] : [("关于螺壳", { model.settingsDialog = .about }),
-                                                 ("卸载螺壳", { model.settingsAction(.uninstall) })]))
+            if data != nil {
+                SettingsLinks(items: [
+                    .init(title: "关于螺壳", action: { model.settingsDialog = .about }),
+                    .init(title: "卸载螺壳", danger: true, action: { model.settingsAction(.uninstall) }),
+                ])
+            }
         }
     }
 
@@ -309,7 +347,7 @@ struct ModelsTab: View {
 
 // MARK: 隐私与权限
 
-/// 隐私与权限：最上面一句数据在哪；「螺壳可以用的」每项一个开关；最下面「导出诊断信息 › · 系统权限检查 ›」
+/// 隐私与权限：最上面一句数据在哪；下面是全部权限（螺壳级权限支持按应用展开、本体系统检查如通知、应用自有权限、账号、每次询问）；页底可导出诊断信息
 struct PrivacyTab: View {
     @ObservedObject var model: WindowModel
     let data: HostPrivacy?
@@ -320,71 +358,213 @@ struct PrivacyTab: View {
             SettingsGroup {
                 SettingsRow(title: "数据仅保存在这台 Mac 上", note: data?.dataLine ?? "邮件、记忆、文件索引均不上传") { EmptyView() }
             }
-            CanUseList(model: model)
-            SettingsLinks(links: (data?.canExport ?? false ? [("导出诊断信息", { model.settingsAction(.export) })] : [])
-                          + [("系统权限检查", { model.settingsDialog = .checks })])
+            CanUseList(model: model, systemChecks: data?.systemChecks ?? [])
+            if data?.canExport ?? false {
+                SettingsLinks(links: [("导出诊断信息", { model.settingsAction(.export) })])
+            }
         }
     }
 }
 
-/// 「螺壳可以用的」：螺壳名下的系统权限（文件、照片……）、账号，每项一行；没允许的是「允许」按钮。
+/// 权限管理唯一入口：螺壳名下的系统权限（已授权且多应用使用时可就地「按应用」展开）、本体系统检查（如通知，不与上面重复）、
+/// 应用自有系统权限、账号，以及每次询问的只读清单。
 /// 代你做的事（扫描「不用点就清」）是那个应用自己的设置，在它的页上，不放这里（负责人 11-15）。
-/// 每次都问的、账号的移除、各应用的细项在「系统权限检查」弹窗里
 struct CanUseList: View {
     @ObservedObject var model: WindowModel
+    var systemChecks: [HostSystemCheck] = []
     @Environment(\.lk) private var p
+    /// 已授权的螺壳级权限点击后就地展开，显示并单独开关各应用的权限
+    @State private var expanded: Set<String> = []
+
+    /// 关掉某个应用使用螺壳名下的权限时显示的状态文字（约定：不说系统拦着）
+    static let hostOffText = "未允许"
+
+    /// 状态灯：灯的颜色和读屏、悬停时的一句话
+    static func light(_ kind: String, _ state: String?, needed: Bool) -> (LKLight.State, String) {
+        let account = kind == "account"
+        switch state {
+        case "granted": return (.ok, account ? "已连接" : "已允许")
+        case "denied": return account ? (.off, "未连接") : (.warn, "未允许")
+        case "ask": return needed ? (.warn, "待允许") : (.off, account ? "未连接" : "未允许")
+        default: return (.off, "未知")
+        }
+    }
+
+    /// 过滤掉已在螺壳级权限中展示的同名项（如完全磁盘访问、照片），保留通知等仅由本体检查的系统权限
+    static func extraChecks(_ checks: [HostSystemCheck], covered: Set<String>) -> [HostSystemCheck] {
+        checks.filter { !covered.contains($0.name) }
+    }
 
     var body: some View {
         if model.agentPermissions != nil {
             let groups = model.luokePermissions
+            let extras = Self.extraChecks(systemChecks, covered: Set(groups.map(\.title)))
+            let system = model.agentPermissionRows("system")
             let accounts = model.agentPermissionRows("account")
-            if !groups.isEmpty || !accounts.isEmpty {
+            let each = model.agentPermissionRows("each-time")
+            if !groups.isEmpty || !extras.isEmpty || !system.isEmpty || !accounts.isEmpty {
                 SettingsHeading(title: "螺壳的权限")
                 SettingsGroup {
                     ForEach(groups) { g in luokeRow(g) }
+                    ForEach(Array(extras.enumerated()), id: \.offset) { _, c in systemCheckRow(c) }
+                    ForEach(system) { r in appSystemRow(r) }
                     ForEach(accounts) { r in
-                        SettingsRow(title: r.title, note: AgentPermissionsTab.light(r.kind, r.state, needed: model.isNeeded(r)).1) {
+                        SettingsRow(title: r.title, note: Self.light(r.kind, r.state, needed: model.isNeeded(r)).1) {
                             if (r.can ?? []).contains("open") {
                                 LKIconButton(symbol: "square-arrow-out-up-right", label: "打开") { model.permissionAction(r, "open") }
+                            }
+                            if (r.can ?? []).contains("remove") {
+                                Button("移除") { model.permissionAction(r, "remove") }
+                                    .buttonStyle(LKButtonStyle(kind: .text))
+                                    .disabled(model.permissionPending[r.id] != nil)
                             }
                         }
                     }
                 }
             }
-        } else if !model.permissions.isEmpty || !model.accounts.isEmpty {
-            SettingsHeading(title: "螺壳的权限")
-            SettingsGroup {
-                ForEach(model.permissions) { r in
-                    SettingsRow(title: r.title, note: r.sub) {
-                        if r.state == .granted {
-                            LKSwitch(on: .constant(true), label: r.title)
-                        } else {
-                            Button("允许") { model.requestPermission(r.id) }.buttonStyle(LKButtonStyle(kind: r.state == .waiting ? .primary : .secondary))
+            if !each.isEmpty {
+                SettingsHeading(title: "每次询问")
+                SettingsGroup {
+                    ForEach(each) { r in
+                        let why = r.facts.isEmpty ? "每次需手动确认" : r.facts.joined(separator: "；")
+                        SettingsRow(title: r.title, note: r.tool.name) {
+                            LKIcon("lock").foregroundStyle(p.mutedFg).help(why).accessibilityLabel(why)
                         }
                     }
                 }
-                ForEach(model.accounts) { r in SettingsRow(title: r.title, note: r.sub) { EmptyView() } }
+            }
+        } else {
+            let extras = Self.extraChecks(systemChecks, covered: Set(model.permissions.map(\.title)))
+            if !model.permissions.isEmpty || !extras.isEmpty || !model.accounts.isEmpty {
+                SettingsHeading(title: "螺壳的权限")
+                SettingsGroup {
+                    ForEach(model.permissions) { r in
+                        SettingsRow(title: r.title, note: r.sub) {
+                            if r.state == .granted {
+                                LKSwitch(on: .constant(true), label: r.title)
+                            } else {
+                                Button("允许") { model.requestPermission(r.id) }.buttonStyle(LKButtonStyle(kind: r.state == .waiting ? .primary : .secondary))
+                            }
+                        }
+                    }
+                    ForEach(Array(extras.enumerated()), id: \.offset) { _, c in systemCheckRow(c) }
+                    ForEach(model.accounts) { r in
+                        SettingsRow(title: r.title, note: r.sub) {
+                            Button("移除") { model.show("授权码会从钥匙串里删掉") }.buttonStyle(LKButtonStyle(kind: .text))
+                        }
+                    }
+                }
+            }
+            if !model.eachTime.isEmpty {
+                SettingsHeading(title: "每次询问")
+                SettingsGroup {
+                    ForEach(model.eachTime) { e in
+                        SettingsRow(title: e.title, note: e.tool.name) {
+                            LKIcon("lock").foregroundStyle(p.mutedFg).help(e.why).accessibilityLabel(e.why)
+                        }
+                    }
+                }
             }
         }
     }
 
-    /// 螺壳名下的一项：给了就是开关（关了是不让各应用用，和系统那层无关）；没给就是「允许」或「打开系统设置」
+    /// 本体检查的系统权限状态（如通知）：正常亮绿灯，未允许亮黄灯（通知未允许时可直接打开系统设置）
+    @ViewBuilder private func systemCheckRow(_ c: HostSystemCheck) -> some View {
+        let label = c.ok ? "已允许" : "未允许"
+        SettingsRow(title: c.name, note: c.detail ?? label) {
+            if !c.ok && c.name == "通知" {
+                Button("打开系统设置") {
+                    if let u = URL(string: "x-apple.systempreferences:com.apple.Notifications-Settings.extension") {
+                        NSWorkspace.shared.open(u)
+                    }
+                }
+                .buttonStyle(LKButtonStyle(kind: .secondary))
+            }
+            LKLight(state: c.ok ? .ok : .warn, label: label).help(label)
+        }
+    }
+
+    /// 挂在某个应用自己名下的系统权限（非螺壳统一管理）
+    @ViewBuilder private func appSystemRow(_ r: AgentPermission) -> some View {
+        let (_, label) = Self.light(r.kind, r.state, needed: model.isNeeded(r))
+        let busy = model.permissionPending[r.id] != nil
+        SettingsRow(title: r.title, note: "\(r.tool.name) · \(label)") {
+            ForEach(r.can ?? [], id: \.self) { op in
+                if op == "settings" {
+                    Button { model.permissionAction(r, op) } label: { IconText("打开系统设置", symbol: "settings") }
+                        .buttonStyle(LKButtonStyle(kind: .secondary)).disabled(busy)
+                } else if op == "request" {
+                    Button("允许") { model.permissionAction(r, op) }
+                        .buttonStyle(LKButtonStyle(kind: .primary)).disabled(busy)
+                } else if op == "open" {
+                    LKIconButton(symbol: "square-arrow-out-up-right", label: "打开") { model.permissionAction(r, op) }
+                        .disabled(busy)
+                }
+            }
+        }
+    }
+
+    /// 螺壳名下的一项：给了就是开关（关了是不让各应用用，和系统那层无关），支持点击展开单独控制各应用；没给就是「允许」或「打开系统设置」
     @ViewBuilder private func luokeRow(_ g: LuokePermission) -> some View {
         let users = g.rows.filter(model.hostPermissionOn).reduce(into: [String]()) { out, r in
             if !out.contains(r.tool.name) { out.append(r.tool.name) }
         }
-        let missing = AgentPermissionsTab.light("system", g.state, needed: g.rows.contains { model.isNeeded($0) }).1
+        let appRows = g.rows.filter { $0.kind == "system" }
+        let canExpand = g.state == "granted" && appRows.count > 1
+        let isOpen = canExpand && expanded.contains(g.id)
+        let missing = Self.light("system", g.state, needed: g.rows.contains { model.isNeeded($0) }).1
         // 完全磁盘访问这类在系统设置里给的：macOS 要螺壳退出再打开才算数，没重开时这里照旧是没允许
         let note = g.state == "granted" ? (users.isEmpty ? "暂无应用使用" : "\(users.joined(separator: "、")) 使用中")
             : g.can.first == "settings" ? "\(missing)，允许后需重新打开螺壳" : missing
-        SettingsRow(title: g.title, note: note) {
-            if g.state == "granted" {
-                LKSwitch(on: Binding(get: { !users.isEmpty }, set: { on in
-                    for r in g.rows where model.hostPermissionOn(r) != on { model.setHostPermission(r, on: on) }
-                }), label: "允许螺壳使用\(g.title)")
-            } else if let op = g.can.first, let r = g.rows.first(where: { $0.can?.contains(op) == true }) {
-                Button(op == "settings" ? "打开系统设置" : "允许") { model.permissionAction(r, op) }
-                    .buttonStyle(LKButtonStyle(kind: .primary))
+        VStack(alignment: .leading, spacing: 0) {
+            SettingsRow(title: g.title, note: note) {
+                if canExpand {
+                    Button {
+                        withAnimation(.easeOut(duration: 0.15)) {
+                            if isOpen { expanded.remove(g.id) } else { expanded.insert(g.id) }
+                        }
+                    } label: {
+                        HStack(spacing: 4) {
+                            Text(isOpen ? "收起" : "按应用").font(LKFont.ui(LKType.caption))
+                            LKIcon("chevron-right", size: 11).rotationEffect(.degrees(isOpen ? 90 : 0))
+                        }
+                        .foregroundStyle(p.mutedFg)
+                        .padding(.horizontal, 6).frame(height: 24)
+                        .contentShape(Rectangle())
+                    }
+                    .buttonStyle(.plainPointer)
+                    .accessibilityLabel(isOpen ? "收起各应用权限" : "展开各应用权限")
+                }
+                if g.state == "granted" {
+                    LKSwitch(on: Binding(get: { !users.isEmpty }, set: { on in
+                        for r in g.rows where model.hostPermissionOn(r) != on { model.setHostPermission(r, on: on) }
+                    }), label: "允许螺壳使用\(g.title)")
+                } else if let op = g.can.first, let r = g.rows.first(where: { $0.can?.contains(op) == true }) {
+                    Button(op == "settings" ? "打开系统设置" : "允许") { model.permissionAction(r, op) }
+                        .buttonStyle(LKButtonStyle(kind: .primary))
+                }
+            }
+            if isOpen {
+                VStack(spacing: 0) {
+                    ForEach(appRows) { r in
+                        let on = model.hostPermissionOn(r)
+                        HStack(spacing: 10) {
+                            AppIcon(tool: r.tool, size: 18)
+                            VStack(alignment: .leading, spacing: 1) {
+                                Text(r.tool.name).font(LKFont.ui(LKType.small))
+                                if !on {
+                                    Text(Self.hostOffText).font(LKFont.ui(LKType.caption)).foregroundStyle(p.mutedFg)
+                                }
+                            }
+                            Spacer(minLength: LKSpace.x3)
+                            LKSwitch(on: Binding(get: { on }, set: { model.setHostPermission(r, on: $0) }),
+                                     label: "允许\(r.tool.name)使用\(g.title)")
+                        }
+                        .padding(.leading, 12).padding(.vertical, 6)
+                        .overlay(alignment: .top) { Rectangle().fill(p.border).frame(height: 1).padding(.leading, 12) }
+                    }
+                }
+                .padding(.top, LKSpace.x1)
             }
         }
     }
@@ -405,27 +585,19 @@ struct SettingsDialogView: View {
                 case .alerts: alerts
                 case .about: about
                 case .advanced: if let a = model.settingsData?.models.advanced { LocalAPIRows(model: model, api: a) }
-                case .checks: checks
                 }
             }
         }
     }
 
-    /// 主动提醒、简报怎么发、免打扰，和每类事怎么说
+    /// 各类事项的提醒方式（简报频率、免打扰已直接放在「设置 · 通用」的提醒卡片里）
     private var alerts: some View {
         VStack(alignment: .leading, spacing: 0) {
-            SettingsGroup {
-                SettingsRow(title: "简报") {
-                    LKSelect(value: model.brief.rawValue, options: BriefMode.allCases.map(\.rawValue), label: "简报") {
-                        model.setBrief(BriefMode(rawValue: $0) ?? .morning)
-                    }
+            if model.kinds.isEmpty {
+                SettingsGroup {
+                    SettingsRow(title: "暂无可单独设置的提醒类别") { EmptyView() }
                 }
-                SettingsRow(title: "免打扰") {
-                    LKSelect(value: model.quietHours, options: model.quietOptions, label: "免打扰") { model.setQuiet($0) }
-                }
-            }
-            if !model.kinds.isEmpty {
-                SettingsHeading(title: "分类")
+            } else {
                 SettingsGroup {
                     ForEach(model.kinds) { k in
                         HStack(spacing: 12) {
@@ -452,20 +624,6 @@ struct SettingsDialogView: View {
                 Text(model.settingsData?.general.currentVersion ?? "").font(LKFont.mono(LKType.small)).foregroundStyle(p.mutedFg)
                     .textSelection(.enabled)
             }
-        }
-    }
-
-    private var checks: some View {
-        VStack(alignment: .leading, spacing: 0) {
-            if let cs = model.settingsData?.privacy.systemChecks, !cs.isEmpty {
-                SettingsGroup {
-                    ForEach(Array(cs.enumerated()), id: \.offset) { _, c in
-                        SettingsRow(title: c.name, note: c.detail) { LKLight(state: c.ok ? .ok : .warn, label: c.ok ? "正常" : "未允许") }
-                    }
-                }
-            }
-            // 各应用的细项、账号、代你做、每次都问（原来的「设置 · 权限」）
-            if model.agentPermissions != nil { AgentPermissionsTab(model: model) } else { SamplePermissions(model: model) }
         }
     }
 }
@@ -500,225 +658,6 @@ struct LocalAPIRows: View {
                     }
                 }
             }
-        }
-    }
-}
-
-/// 没接核心时（示例）的权限：系统、账号、每次都问（代你做的在各应用自己的页上）。没有行的一节不画标题
-struct SamplePermissions: View {
-    @ObservedObject var model: WindowModel
-    @Environment(\.lk) private var p
-
-    var body: some View {
-        let first = [("系统", !model.permissions.isEmpty), ("账号", !model.accounts.isEmpty),
-                     ("每次询问", !model.eachTime.isEmpty)].first { $0.1 }?.0
-        VStack(alignment: .leading, spacing: 0) {
-            if !model.permissions.isEmpty {
-                section("系统", first: first)
-                LKGroup {
-                    ForEach(Array(model.permissions.enumerated()), id: \.element.id) { i, r in
-                        HStack(spacing: 12) {
-                            AppIcon(tool: r.owner, size: 28)
-                            VStack(alignment: .leading, spacing: 1) {
-                                Text(r.title)
-                                if let s = r.sub { Text(s).font(LKFont.ui(LKType.small)).foregroundStyle(p.mutedFg) }
-                            }
-                            Spacer()
-                            switch r.state {
-                            case .granted: LKLight(state: .ok, label: "已允许")
-                            case .waiting:
-                                LKLight(state: .warn, label: "待允许")
-                                Button("允许") { model.requestPermission(r.id) }.buttonStyle(LKButtonStyle(kind: .primary))
-                            case .notYet:
-                                LKLight(state: .off, label: "未启用")
-                                Button("允许") { model.requestPermission(r.id) }.buttonStyle(LKButtonStyle())
-                            }
-                        }
-                        .lkRow(first: i == 0)
-                    }
-                }
-            }
-            if !model.accounts.isEmpty {
-                section("账号", first: first)
-                LKGroup {
-                    ForEach(Array(model.accounts.enumerated()), id: \.element.id) { i, r in
-                        HStack(spacing: 12) {
-                            AppIcon(tool: r.owner, size: 28)
-                            Text(r.title).font(LKFont.mono(LKType.small))
-                            Spacer()
-                            LKLight(state: .ok, label: r.sub ?? "")
-                            Button("移除") { model.show("授权码会从钥匙串里删掉") }.buttonStyle(LKButtonStyle(kind: .text))
-                        }
-                        .lkRow(first: i == 0)
-                    }
-                }
-            }
-            if !model.eachTime.isEmpty {
-                section("每次询问", first: first)
-                LKGroup {
-                    ForEach(Array(model.eachTime.enumerated()), id: \.element.id) { i, e in
-                        HStack(spacing: 12) {
-                            AppIcon(tool: e.tool, size: 28)
-                            Text(e.title)
-                            Spacer()
-                            LKIcon("lock").foregroundStyle(p.mutedFg).help(e.why).accessibilityLabel(e.why)
-                        }
-                        .lkRow(first: i == 0)
-                    }
-                }
-            }
-        }
-    }
-
-    @ViewBuilder private func section(_ title: String, first: String?) -> some View {
-        if title == first { LKSection(title: title).padding(.top, -LKSpace.x4) } else { LKSection(title: title) }
-    }
-}
-
-/// 接上核心时的「设置 · 权限」（docs/界面接口.md §10）：螺壳名下的和各应用的系统权限、账号、每次都问（代你做的在各应用自己的页上）。
-/// 按钮只照每一行的 `can` 出，点了才交给核心（`POST /permissions`）；每次都问的只列出来，没有按钮。
-struct AgentPermissionsTab: View {
-    @ObservedObject var model: WindowModel
-    @Environment(\.lk) private var p
-
-    var body: some View {
-        let luoke = model.luokePermissions
-        let system = model.agentPermissionRows("system")
-        let accounts = model.agentPermissionRows("account")
-        let each = model.agentPermissionRows("each-time")
-        let first = [("系统", !luoke.isEmpty || !system.isEmpty), ("账号", !accounts.isEmpty),
-                     ("每次询问", !each.isEmpty)].first { $0.1 }?.0
-        VStack(alignment: .leading, spacing: 0) {
-            if first == nil {
-                Text("已安装的应用暂未申请权限").font(LKFont.ui(LKType.small)).foregroundStyle(p.mutedFg)
-            }
-            if !luoke.isEmpty || !system.isEmpty {
-                section("系统", first: first)
-                LKGroup {
-                    ForEach(Array(luoke.enumerated()), id: \.element.id) { i, g in
-                        luokeRow(g).lkRow(first: i == 0)
-                        ForEach(g.rows.filter { $0.kind == "system" }) { r in hostUseRow(r).lkRow(first: false) }
-                    }
-                    ForEach(Array(system.enumerated()), id: \.element.id) { i, r in
-                        appRow(r) { buttons(r, emphasize: r.state != "granted") }.lkRow(first: i == 0 && luoke.isEmpty)
-                    }
-                }
-            }
-            if !accounts.isEmpty {
-                section("账号", first: first)
-                LKGroup {
-                    ForEach(Array(accounts.enumerated()), id: \.element.id) { i, r in
-                        appRow(r) { buttons(r, emphasize: false) }.lkRow(first: i == 0)
-                    }
-                }
-            }
-            if !each.isEmpty {
-                section("每次询问", first: first)
-                LKGroup {
-                    ForEach(Array(each.enumerated()), id: \.element.id) { i, r in
-                        let why = r.facts.isEmpty ? "每次需手动确认" : r.facts.joined(separator: "；")
-                        HStack(spacing: 12) {
-                            AppIcon(tool: r.tool, size: 28)
-                            Text(r.title)
-                            Spacer()
-                            LKIcon("lock").foregroundStyle(p.mutedFg).help(why).accessibilityLabel(why)
-                        }
-                        .lkRow(first: i == 0)
-                    }
-                }
-            }
-        }
-    }
-
-    @ViewBuilder private func section(_ title: String, first: String?) -> some View {
-        if title == first { LKSection(title: title).padding(.top, -LKSpace.x7) } else { LKSection(title: title) }
-    }
-
-    /// 螺壳名下的一项：螺壳的图标，写哪些应用在用（各自看什么在申请的说明里）
-    private func luokeRow(_ g: LuokePermission) -> some View {
-        let users = g.rows.filter(model.hostPermissionOn).reduce(into: [String]()) { out, r in
-            if !out.contains(r.tool.name) { out.append(r.tool.name) }
-        }
-        let (light, label) = Self.light("system", g.state, needed: g.rows.contains { model.isNeeded($0) })
-        return HStack(spacing: 12) {
-            AppIcon(tool: .core, size: 28)
-            VStack(alignment: .leading, spacing: 1) {
-                Text(g.title)
-                Text(users.isEmpty ? "暂无应用使用" : "\(users.joined(separator: "、")) 使用中")
-                    .font(LKFont.ui(LKType.small)).foregroundStyle(p.mutedFg)
-            }
-            Spacer()
-            LKLight(state: light, label: label).help(label)
-            ForEach(g.can, id: \.self) { op in
-                if let r = g.rows.first(where: { $0.can?.contains(op) == true }) { button(op, r, emphasize: g.state != "granted") }
-            }
-        }
-    }
-
-    /// 螺壳名下的一项，这个应用用不用。关了只是用户和螺壳的约定：字上不说系统拦着它
-    private func hostUseRow(_ r: AgentPermission) -> some View {
-        let on = model.hostPermissionOn(r)
-        return HStack(spacing: 12) {
-            AppIcon(tool: r.tool, size: 20)
-            VStack(alignment: .leading, spacing: 1) {
-                Text(r.tool.name)
-                if !on {
-                    Text(Self.hostOffText).font(LKFont.ui(LKType.small)).foregroundStyle(p.mutedFg)
-                }
-            }
-            Spacer()
-            Text("允许").font(LKFont.ui(LKType.small)).foregroundStyle(p.mutedFg).accessibilityHidden(true)
-            LKSwitch(on: Binding(get: { on }, set: { model.setHostPermission(r, on: $0) }), label: "允许\(r.tool.name)使用\(r.title)")
-        }
-        .padding(.leading, 40)      // 和上面螺壳那一行的字对齐
-    }
-
-    static let hostOffText = "未允许"
-
-    /// 应用名下的一项（系统权限、账号）
-    private func appRow<B: View>(_ r: AgentPermission, @ViewBuilder buttons: () -> B) -> some View {
-        let (light, label) = Self.light(r.kind, r.state, needed: model.isNeeded(r))
-        return HStack(spacing: 12) {
-            AppIcon(tool: r.tool, size: 28)
-            Text(r.title)
-            Spacer()
-            LKLight(state: light, label: label).help(label)
-            buttons()
-        }
-    }
-
-    @ViewBuilder private func buttons(_ r: AgentPermission, emphasize: Bool) -> some View {
-        ForEach(r.can ?? [], id: \.self) { op in button(op, r, emphasize: emphasize) }
-    }
-
-    /// 一个操作一个按钮；on、off 是开关，不在这里
-    @ViewBuilder private func button(_ op: String, _ r: AgentPermission, emphasize: Bool) -> some View {
-        let busy = model.permissionPending[r.id] != nil
-        switch op {
-        case "settings":
-            // 一行一个、几行都缺时一屏好几个实底的品牌色（界面规范 §2：一屏两三处）：都画次要按钮，缺的那行写着「没允许」
-            Button { model.permissionAction(r, op) } label: { IconText("打开系统设置", symbol: "settings") }
-                .buttonStyle(LKButtonStyle(kind: .secondary)).disabled(busy)
-        case "request":
-            Button("允许") { model.permissionAction(r, op) }.buttonStyle(LKButtonStyle(kind: .primary)).disabled(busy)
-        case "open":
-            Button { model.permissionAction(r, op) } label: { IconText("打开", symbol: "square-arrow-out-up-right") }
-                .buttonStyle(LKButtonStyle()).disabled(busy)
-        case "remove":
-            Button("移除") { model.permissionAction(r, op) }.buttonStyle(LKButtonStyle(kind: .text)).disabled(busy)
-        default:
-            EmptyView()
-        }
-    }
-
-    /// 状态灯：灯的颜色和读屏、悬停时的一句话
-    static func light(_ kind: String, _ state: String?, needed: Bool) -> (LKLight.State, String) {
-        let account = kind == "account"
-        switch state {
-        case "granted": return (.ok, account ? "已连接" : "已允许")
-        case "denied": return account ? (.off, "未连接") : (.warn, "未允许")
-        case "ask": return needed ? (.warn, "待允许") : (.off, account ? "未连接" : "未允许")
-        default: return (.off, "未知")
         }
     }
 }

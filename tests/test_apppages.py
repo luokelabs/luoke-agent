@@ -224,19 +224,95 @@ class BuilderTest(unittest.TestCase):
                          ("mem_reply", {"ask": 7, "choice": "answer", "text": "是"}))
 
     def test_scan_overview_says_how_many_attention_items_it_left_out(self):
-        """「安全」先列 8 项、收起来的再列 8 项；再多的写明还有几项，不悄悄不画，整页也不超过组件上限"""
+        """「建议处理」先列 5 条、收起来的再列 5 条；再多的写明还有几条，不悄悄不画，整页也不超过组件上限"""
         with open(os.path.join(ROOT, "fixtures", "apppages", "luoke-scan", "built.json"), encoding="utf-8") as f:
             spec = json.load(f)
         over = json.loads(json.dumps(spec["data"]["data/overview"]))
         one = over["attention"]["items"][0]
-        over["attention"]["items"] = [dict(one, finding=f"{one['finding']}-{i}") for i in range(30)]
+        over["attention"]["items"] = [dict(one, finding=f"{one['finding']}-{i}", urgent=True) for i in range(30)]
         over["attention"]["count"] = 30
         msgs = scan.build("overview", {}, lambda u: over if u == "data/overview" else spec["data"][u])
         a2ui.build(msgs, page=True)
         texts = [c.get("text") for c in _components(msgs).values() if c["component"] == "Text"]
-        self.assertIn("另有 14 项未列出", texts)
+        self.assertIn("另有 20 条未列出", texts)
         folds = [c.get("collapsed") for c in _components(msgs).values() if c.get("collapsed")]
-        self.assertIn("其余 22 项", folds)
+        self.assertIn("其余 25 条", folds)
+
+    def test_scan_template_rows_name_what_was_found_and_the_ignored_list_is_in_settings(self):
+        """对话模板写检出的是哪几种（负责人 11-21：「对话模板包含额外内容」看不明白）；不再提醒的撤销在扫描设置里，清理记录留一个入口"""
+        d = os.path.join(ROOT, "fixtures", "luoke-scan", "feedback-152")
+
+        def data(name):
+            with open(os.path.join(d, name), encoding="utf-8") as f:
+                return json.load(f)["reply"]["result"]["contents"][0]["text"]
+        cat, over = data("read-data-category-ai-plugin.json"), data("read-data-overview.json")
+        hist, sets = data("read-data-history.json"), json.loads(json.dumps(data("read-data-settings.json")))
+        read = lambda u: {"data/overview": over, "data/category?id=ai-plugin": cat, "data/history": hist, "data/settings": sets}[u]
+        page = scan.build("category", {"id": "ai-plugin"}, read)
+        a2ui.build(page, page=True)
+        comps = _components(page)
+        texts = [c.get("text") for c in comps.values() if c["component"] == "Text"]
+        self.assertNotIn("对话模板包含额外内容", " ".join(t for t in texts if t), "写检出的是哪几种，不是一句笼统的话")
+        self.assertTrue(any(t and "要求向外发送对话、要求对用户隐瞒" in t for t in texts), texts)
+        self.assertTrue(any(t and t.startswith("要求向外发送对话：") for t in texts), "「为什么有风险」里一种一句")
+        # 设置里一直有「不再提醒」一节；概览不再放入口，清理记录放一个
+        sets["ignored"] = []
+        stexts = [c.get("text") for c in _components(scan.build("settings", {}, read)).values() if c["component"] == "Text"]
+        self.assertIn("不再提醒", stexts)
+        self.assertIn("暂无不再提醒的项目", stexts)
+        sets["ignored"] = [{"finding": "skill.x/1", "rule": "skill.x", "category": "ai-plugin", "path": "~/.claude/skills/x"}]
+        otexts = [c.get("text") for c in _components(scan.build("overview", {}, read)).values() if c["component"] == "Text"]
+        self.assertFalse([t for t in otexts if t and "不再提醒 ·" in t])
+        ctexts = [c.get("text") for c in _components(scan.build("cleaned", {}, read)).values() if c["component"] == "Text"]
+        self.assertIn("不再提醒的项目 · 1", ctexts)
+        # 没有路径的两项（pip、uv 的装依赖时运行脚本）：扫描给了 name 就写是哪个工具的，没给照旧只有规则名
+        sets["ignored"] = [{"finding": "pkg.install-scripts/1", "rule": "pkg.install-scripts", "category": "install-scripts", "path": None, "name": "pip"},
+                           {"finding": "pkg.install-scripts/2", "rule": "pkg.install-scripts", "category": "install-scripts", "path": None, "name": "uv"},
+                           {"finding": "pkg.install-scripts/3", "rule": "pkg.install-scripts", "category": "install-scripts", "path": None}]
+        stexts = [c.get("text") for c in _components(scan.build("settings", {}, read)).values() if c["component"] == "Text"]
+        self.assertIn("pip：装依赖时运行包里的脚本", stexts)
+        self.assertIn("uv：装依赖时运行包里的脚本", stexts)
+        self.assertIn("装依赖时运行包里的脚本", stexts)
+
+    def test_scan_attention_merges_unnamed_rows_and_offers_login_items(self):
+        """没有位置的同一条规则的几项并成一行、写几项（负责人 11-20：不显示是什么应用）；开机启动项没有能清的那一类时给「在登录项中管理」"""
+        with open(os.path.join(ROOT, "fixtures", "apppages", "luoke-scan", "built.json"), encoding="utf-8") as f:
+            spec = json.load(f)
+        over = json.loads(json.dumps(spec["data"]["data/overview"]))
+        base = {"category": None, "path": None, "reveal": None, "severity": "medium", "urgent": False}
+        over["attention"]["items"] = [
+            dict(base, finding=f"permission.stale-grant/{i:012d}", rule="permission.stale-grant") for i in range(3)
+        ] + [dict(base, finding="permission.stale-grant/000000000009", rule="permission.stale-grant", path="/opt/gone/tool",
+                  reveal="/opt/gone/tool"),
+             dict(base, finding="persistence.daemon-writable/000000000001", rule="persistence.daemon-writable", severity="high",
+                  path="/Library/LaunchDaemons/com.example.monitor.plist", reveal="/Library/LaunchDaemons/com.example.monitor.plist")]
+        over["attention"]["count"] = 5
+        msgs = scan.build("overview", {}, lambda u: over if u == "data/overview" else spec["data"][u])
+        a2ui.build(msgs, page=True)
+        comps = _components(msgs)
+        texts = [c.get("text") for c in comps.values() if c["component"] == "Text"]
+        self.assertEqual(texts.count("已删除应用仍保留权限"), 1, "同一种事并成一条，不是四条一样的提示（负责人 11-21）")
+        self.assertIn("4 项", texts)
+        self.assertIn("查看 4 项", [c.get("collapsed") for c in comps.values()], "各项收在下面，点开看")
+        self.assertIn("/opt/gone/tool", texts)
+        self.assertIn("3 项未提供名称", texts, "扫描没给位置的不一行一行列")
+        self.assertIn("中风险 · 应用已删除，授予它的权限仍然有效；同名程序可沿用这些权限", texts, "每条写清为什么要处理")
+        events = [c["action"]["event"] for c in comps.values() if c["component"] == "Button" and "event" in c.get("action", {})]
+        self.assertEqual(sum(e["name"] == "scan_ignore" for e in events), 1, "概览上只有带位置的那一项有单项的动作")
+        self.assertEqual(texts.count("开机启动项"), 1, "有对应的一类：整类一条，不另列单项，也不再列一遍类别（负责人 11-21）")
+        self.assertNotIn("开机启动项可被改写", texts)
+        # 那一项在这一类的详情里：列在「无法在螺壳中移除」下面，能去系统设置的登录项
+        read = lambda u: over if u == "data/overview" else spec["data"][u]
+        page = scan.build("category", {"id": "startup"}, read)
+        a2ui.build(page, page=True)
+        pc = _components(page)
+        ptexts = [c.get("text") for c in pc.values() if c["component"] == "Text"]
+        self.assertIn("无法在螺壳中移除 · 1", ptexts)
+        self.assertIn("com.example.monitor.plist", ptexts)
+        pe = [c["action"]["event"] for c in pc.values() if c["component"] == "Button"]
+        self.assertIn({"name": "scan_open_settings", "context": {"grant": "登录项"}}, pe)
+        foot = [c for c in pc.values() if c.get("placement") == "footer"]
+        self.assertEqual(len(foot), 1, "底下那一排按钮固定在弹窗底部（§4 footerPlacement）")
 
     def test_scan_overview_and_detail_follow_the_mockup(self):
         with open(os.path.join(ROOT, "fixtures", "apppages", "luoke-scan", "built.json"), encoding="utf-8") as f:
@@ -246,9 +322,12 @@ class BuilderTest(unittest.TestCase):
         a2ui.build(msgs, page=True)
         comps = _components(msgs)
         heads = [comps[i]["text"].split(" · ")[0] for i in comps["root"]["children"] if comps[i].get("variant") == "caption"]
-        self.assertEqual(heads, ["检查", "安全", "清理", "已自动清理"], "安全和清理分开，安全在前（负责人 11-15）")
+        self.assertEqual(heads, ["建议处理", "可直接清理", "需确认", "已自动清理"],
+                         "先给结论和建议，不按类别列清单（负责人 11-20）；最上面的结论不加小标题（负责人 11-21）；安全在清理前（负责人 11-15）")
+        first = comps[comps["root"]["children"][0]]
+        self.assertEqual(first["component"], "List", "第一块就是结论那一行")
         text = json.dumps(comps, ensure_ascii=False)
-        self.assertIn("其他 ", text)
+        self.assertIn("均可重建、重新下载或另有一份", text, "可直接清理的写明为什么")
         self.assertNotIn('"page": "mac"', text, "没有这一页，不留死链")
         events = [c["action"]["event"] for c in comps.values() if c["component"] == "Button"]
         self.assertFalse(any(e["name"] == "scan_apply" for e in events), "概览不放清理的按钮：没看过明细不让人直接删")
@@ -256,26 +335,221 @@ class BuilderTest(unittest.TestCase):
         no_fda = dict(spec["data"]["data/overview"], fullDiskAccess="denied", skipped=[{"rule": "x", "reason": "fda"}])
         opened = [c["action"]["event"]["context"] for c in _components(scan.build("overview", {}, lambda u: no_fda if u == "data/overview" else read(u))).values()
                   if c["component"] == "Button" and c["action"]["event"]["name"] == "scan_open_settings"]
-        self.assertEqual(opened, [{"grant": "完全磁盘访问", "permission": "fda"}],
+        self.assertEqual(opened[0], {"grant": "完全磁盘访问", "permission": "fda"},
                          "扫描认的是系统设置那一页的名字（负责人 11-17：写成代号 fda，点了说「不认识这个权限」）")
         opened = [e["context"]["args"]["id"] for e in events if e["name"] == "agent.open_page" and e["context"].get("page") == "category"]
         clean = [i for i in opened if i not in scan.SECURITY_CATS and i != "large-file"]
-        self.assertEqual(len(clean), scan.SHOW_CATS, "清理先列最大的三类；别的在「其他 N 类」；大文件单独一行")
+        over = spec["data"]["data/overview"]
+        want = [c["id"] for c in scan._cats(over) if c["id"] not in scan.SECURITY_CATS and c.get("auto")] + \
+               [c["id"] for c in scan._cats(over) if c["id"] not in scan.SECURITY_CATS and not c.get("auto")][:scan.SHOW_CATS]
+        self.assertEqual(clean, want, "可直接清理的几类全列；需确认的先列最大的三类，别的在「其他 N 类」；大文件单独一行")
         comps = _components(scan.build("category", dict(spec["args"]["category"]), read))
         header = [c for c in comps.values() if c.get("placement") == "header"]
         self.assertEqual(len(header), 1, "类名和大小是弹窗的标题")
         events = [c["action"]["event"] for c in comps.values() if c["component"] == "Button"]
         acts = [e["name"] for e in events]
-        self.assertEqual(acts.count("scan_apply"), 2, "只有两个动作：移到废纸篓、此类不再提醒")
-        self.assertEqual(acts.count("scan_reveal"), scan.ITEM_ROWS, "一页 25 项，每项能在访达中显示")
-        self.assertEqual(acts.count("scan_ignore"), scan.ITEM_ROWS, "每项能单独设为不再提醒")
+        self.assertEqual(acts.count("scan_apply"), 1, "只有一个动作：移到废纸篓（不再放「此类不再提醒」，负责人 11-21）")
+        n1 = acts.count("scan_reveal")
+        self.assertTrue(0 < n1 <= scan.ITEM_ROWS, "一页最多 25 项，每项能在访达中显示")
+        self.assertEqual(acts.count("scan_ignore"), n1, "每项能单独设为不再提醒")
         apply = next(e for e in events if e["name"] == "scan_apply" and "how" in e["context"])
         self.assertEqual(len(apply["context"]["how"]), 41, "翻页不丢：按钮带着全部项的处理方式")
         nxt = [e["context"]["args"] for e in events if e["name"] == "agent.open_page"]
         self.assertIn({"id": "installer", "p": "2"}, nxt)
-        page2 = _components(scan.build("category", {"id": "installer", "p": "2"}, read))
-        self.assertEqual(sum(1 for c in page2.values() if c["component"] == "Button"
-                             and c["action"]["event"]["name"] == "scan_reveal"), 41 - scan.ITEM_ROWS)
+        seen, p = n1, 2
+        while seen < 41 and p < 10:
+            pg = _components(scan.build("category", {"id": "installer", "p": str(p)}, read))
+            seen += sum(1 for c in pg.values() if c["component"] == "Button" and c["action"]["event"]["name"] == "scan_reveal")
+            p += 1
+        self.assertEqual(seen, 41, "各页合起来正好是全部项")
+
+    def test_scan_category_after_cleaning_says_it_is_done(self):
+        """清完了再看这一类：写「清理完成」，不再写「未发现个人文档」（#181）"""
+        data = {"known": True, "bytes": 0, "items": [], "facts": {"userFiles": "none", "rebuilds": 0}}
+        msgs = scan.build("category", {"id": "cache"}, lambda u: data if u.startswith("data/category") else {})
+        a2ui.build(msgs, page=True)
+        text = json.dumps(_components(msgs), ensure_ascii=False)
+        self.assertIn("清理完成", text)
+        self.assertNotIn("未发现个人文档", text)
+
+    def test_scan_category_pages_stay_under_the_component_limit(self):
+        """一项含好几处时名字小块多，一页放得少，整页不超过 400 个组件（#181：缓存一页超了，显示「此页无法显示」）；
+        分了页的各组不再收「其余 N 个」"""
+        for n in (1, 6, 10):
+            items = [{"key": f"k{i}", "plan": "p1", "finding": f"cache/{i}", "group": "cache", "bytes": 1000 * i,
+                      "paths": [f"~/Library/Caches/app{i}/sub{j}" for j in range(n)], "options": ["trash"], "suggested": "trash"}
+                     for i in range(60)]
+            data = {"known": True, "bytes": 10 ** 9, "items": items}
+            read = lambda u: data if u.startswith("data/category") else {}
+            total, p = 0, 1
+            while True:
+                msgs = scan.build("category", {"id": "cache", "p": str(p)}, read)
+                a2ui.build(msgs, page=True)
+                comps = _components(msgs)
+                if p > 1:
+                    self.assertNotIn("其余", json.dumps(comps, ensure_ascii=False), "后面的页全部展开")
+                total += sum(1 for c in comps.values() if c["component"] == "CheckBox")
+                if not any(c["component"] == "Button" and c["action"]["event"]["name"] == "agent.open_page"
+                           and c["action"]["event"]["context"].get("args", {}).get("p") == str(p + 1) for c in comps.values()):
+                    break
+                p += 1
+            self.assertEqual(total, 60, f"{n} 处一项：各页合起来是全部 60 项")
+
+    def _scan_spec(self):
+        with open(os.path.join(ROOT, "fixtures", "apppages", "luoke-scan", "built.json"), encoding="utf-8") as f:
+            return json.load(f)
+
+    def _scan_category(self, cid, data, p=None):
+        """照给的 `data/category` 拼这一类的详情，照页的规矩校验过再返回组件"""
+        args = {"id": cid, "p": str(p)} if p else {"id": cid}
+        msgs = scan.build("category", args, lambda u: data if u.startswith("data/category") else {})
+        self.assertEqual(a2ui.validate(msgs, page=True), [], f"{cid} 第 {p or 1} 页画得出来")
+        return _components(msgs)
+
+    def test_scan_category_with_many_places_per_item_still_draws(self):
+        """一项含好几处的（缓存：一个工具几个缓存文件夹）每项多一排名字；一页照 25 项排会超过页的 400 个组件，
+        整页退成「此页无法显示」（#181）。按组件数分页：每一页都画得出来，各项不丢不重"""
+        one = self._scan_spec()["data"]["data/category?id=cache"]["items"][0]
+        items = [dict(one, key=f"c{i}", finding=f"space.caches/{i:012d}", facts={"cache": f"tool{i}", "tool": f"Tool {i}"},
+                      path=f"~/Library/Caches/tool{i}", paths=[f"~/Library/Caches/tool{i}/part{j}" for j in range(8)])
+                 for i in range(60)]
+        data = {"known": True, "id": "cache", "bytes": 64 << 30, "count": 60, "facts": {"rebuilds": 60, "userFiles": "none"},
+                "items": items, "more": 0}
+        old = scan.PageKit("category")      # 25 项排在一页上要几个组件
+        for it in items[:scan.ITEM_ROWS]:
+            scan._item_row(old, it, "不再提醒")
+        self.assertGreater(len(old.components), a2ui.MAX_PAGE_COMPONENTS, "这份数据照 25 项一页确实超过上限")
+        seen, p, pages = [], 1, None
+        while pages is None or p <= pages:
+            comps = self._scan_category("cache", data, p)
+            self.assertLessEqual(len(comps), a2ui.MAX_PAGE_COMPONENTS)
+            seen += [c["value"]["path"].split("/")[-1] for c in comps.values() if c["component"] == "CheckBox"]
+            pager = next(c["text"] for c in comps.values() if c["component"] == "Text" and c["text"].startswith(f"第 {p} / "))
+            pages = int(pager.split(" / ")[1].split(" ")[0])
+            p += 1
+        self.assertGreater(pages, -(-60 // scan.ITEM_ROWS), "一页放不下 25 项，页数比按项数分的多")
+        self.assertEqual(seen, [it["key"] for it in items], "每项正好在一页上，顺序不变")
+        apply = next(c["action"]["event"]["context"] for c in comps.values() if c["component"] == "Button"
+                     and c["action"]["event"]["name"] == "scan_apply")
+        self.assertEqual(len(apply["how"]), 60, "勾选和处理照旧管全部页")
+        # 样例里的每一类、每一页也都画得出来
+        spec = self._scan_spec()
+        for u, d in spec["data"].items():
+            if u.startswith("data/category?id=") and d.get("known"):
+                for q in range(1, 6):
+                    self._scan_category(u.split("=")[1], d, q)
+
+    def test_scan_category_later_pages_are_listed_in_full(self):
+        """第一页一组先列 2 个、多的收进「其余 N 个」；翻到后面的页全部展开（#181：下一页的内容收着）。
+        标题、判断、组的小标题、翻页、底下的按钮每页都有；「另有 N 项未列出」只在最后一页"""
+        d = dict(self._scan_spec()["data"]["data/category?id=installer"], more=4)
+        first, second = self._scan_category("installer", d), self._scan_category("installer", d, 2)
+        folds = lambda comps: [c["collapsed"] for c in comps.values() if c.get("collapsed")]
+        self.assertEqual(folds(first), [f"其余 {scan.ITEM_ROWS - scan.SHOW_FIRST} 个"])
+        self.assertEqual(folds(second), [], "第 2 页没有收起来的")
+        lists = [c for c in second.values() if c["component"] == "List"]
+        self.assertEqual(len(lists[0]["children"]), 41 - scan.ITEM_ROWS, "这一页的各项直接列在组里")
+        texts = lambda comps: [c.get("text") for c in comps.values() if c["component"] == "Text"]
+        for comps in (first, second):
+            self.assertEqual(len([c for c in comps.values() if c.get("placement") == "header"]), 1)
+            self.assertEqual(len([c for c in comps.values() if c.get("placement") == "footer"]), 1)
+            self.assertIn("判断", texts(comps))
+            self.assertIn("安装包 · 41 个", texts(comps), "组的小标题写全部页的个数")
+        self.assertIn("第 1 / 2 页 · 共 41 项，其他页已勾选的项目一并处理", texts(first))
+        self.assertIn("第 2 / 2 页 · 共 41 项，其他页已勾选的项目一并处理", texts(second))
+        more = "另有 4 项较小的未列出，不会被处理"
+        self.assertNotIn(more, texts(first))
+        self.assertIn(more, texts(second), "没列出的排在最后面，写在最后一页")
+        # 只有一页的照旧：先列 2 个，多的收着
+        few = dict(d, items=d["items"][:5], more=0)
+        self.assertEqual(folds(self._scan_category("installer", few)), ["其余 3 个"])
+
+    def test_scan_duplicates_say_which_copy_stays(self):
+        """重复文件的一项：多出来的每一份、留下的那一份各在哪都写出来（#181：五份一样的 PDF，只看到四个同名的小块，
+        看不出动的是哪几份、留的是哪一份）。动作照旧是一项一个键：整项移走或换成克隆"""
+        home = os.path.expanduser("~")
+        one = self._scan_spec()["data"]["data/category?id=duplicate"]["items"][0]
+        copies = [f"{home}/Downloads/On-chain_Wallet.pdf"] + [f"{home}/Downloads/old {i}/On-chain_Wallet.pdf" for i in range(3)]
+        many = dict(one, key="d1", path=copies[0], reveal=copies[0], paths=copies, pathsMore=0,
+                    facts={"keep": f"{home}/Documents/On-chain_Wallet.pdf", "copies": 4})
+        data = {"known": True, "id": "duplicate", "bytes": 4 << 20, "count": 2, "facts": {}, "items": [many, one], "more": 0}
+        comps = self._scan_category("duplicate", data)
+        texts = [c.get("text") for c in comps.values() if c["component"] == "Text"]
+        self.assertIn("重复的 4 份", texts)
+        for p in ["~/Downloads/On-chain_Wallet.pdf"] + [f"~/Downloads/old {i}/On-chain_Wallet.pdf" for i in range(3)]:
+            self.assertIn(p, texts, "每一份写到能分清是哪一份")
+        self.assertIn("保留的一份", texts)
+        self.assertIn("~/Documents/On-chain_Wallet.pdf", texts)
+        self.assertIn("重复的 1 份", texts, "只多一份的也写两边各在哪")
+        self.assertIn(one["facts"]["keep"], texts)
+        self.assertFalse([c for c in comps.values() if c.get("variant") == "badge" and c.get("text") == "On-chain_Wallet.pdf"],
+                         "不再画一排同名的小块")
+        events = [c["action"]["event"] for c in comps.values() if c["component"] == "Button"]
+        how = [e["context"]["how"] for e in events if e["name"] == "scan_apply"]
+        self.assertEqual(how, [{"d1": "trash", one["key"]: "trash"}, {"d1": "clone", one["key"]: "clone"}])
+        # 列不完的写总数；扫描没给留下的那一份时照别的类画
+        long = dict(many, paths=[f"~/Downloads/{i}/a.pdf" for i in range(20)], pathsMore=3)
+        texts = [c.get("text") for c in self._scan_category("duplicate", dict(data, items=[long])).values() if c["component"] == "Text"]
+        self.assertIn("重复的 23 份", texts)
+        self.assertIn("等 23 份", texts)
+        self.assertEqual(len([t for t in texts if t and t.endswith("/a.pdf")]), scan.CHIPS)
+        bare = dict(many, facts={})
+        texts = [c.get("text") for c in self._scan_category("duplicate", dict(data, items=[bare])).values() if c["component"] == "Text"]
+        self.assertNotIn("保留的一份", texts)
+        self.assertTrue(any(t and t.endswith("其他位置仍保留一份") for t in texts), texts)
+
+    def test_scan_plugin_items_say_why_they_are_risky(self):
+        """插件每项能点开「为什么有风险」：每一种事一句说明；官方插件市场里的写去哪里管（负责人 11-21）"""
+        item = {"key": "k1", "plan": "p1", "finding": "skill.exfil/1", "group": "skill", "reason": "download-exec",
+                "facts": {"agent": "Claude Code 插件", "kinds": ["download-exec", "exfil"], "skill": "cloudflare"},
+                "path": "~/.claude/plugins/x/skills/cloudflare", "options": ["keep", "ignore"], "suggested": "keep"}
+        data = {"known": True, "bytes": 0, "items": [item]}
+        msgs = scan.build("category", {"id": "ai-plugin"}, lambda u: data if u.startswith("data/category") else {})
+        a2ui.build(msgs, page=True)
+        comps = _components(msgs)
+        self.assertIn("为什么有风险", [c.get("collapsed") for c in comps.values()])
+        text = json.dumps(comps, ensure_ascii=False)
+        self.assertIn("会下载并执行代码：脚本中有从网上下载程序后直接运行的写法", text)
+        self.assertIn("会向外发送对话内容：", text)
+        self.assertIn("/plugin", text)
+        self.assertNotIn("此类不再提醒", text)
+        tpl = dict(item, reason="template-extra", facts={}, group="chat-template")
+        text = json.dumps(scan.build("category", {"id": "ai-plugin"}, lambda u: dict(data, items=[tpl]) if u.startswith("data/category") else {}),
+                          ensure_ascii=False)
+        self.assertIn("标准对话格式以外的文字", text)
+
+    def test_scan_settings_lists_ignored_items_by_category_with_undo(self):
+        """不再提醒的都在扫描设置里，按类分开，每项能恢复提醒"""
+        d = {"autoclean": {"on": False}, "ignored": [
+            {"finding": "a/1", "category": "ai-plugin", "path": "~/.codex/skills/imagegen", "rule": "skill.exfil"},
+            {"finding": "a/2", "category": "ai-plugin", "path": "~/.codex/skills/openai-docs", "rule": "skill.exfil"},
+            {"finding": "b/1", "category": "startup", "path": "~/Library/LaunchAgents/x.plist", "rule": "persistence.new"}]}
+        msgs = scan.build("settings", {}, lambda u: d)
+        a2ui.build(msgs, page=True)
+        comps = _components(msgs)
+        texts = [c.get("text") for c in comps.values() if c["component"] == "Text"]
+        self.assertIn("AI 插件和模型模板 · 2", texts)
+        self.assertIn("开机启动项 · 1", texts)
+        undo = [c["action"]["event"]["context"] for c in comps.values() if c["component"] == "Button"
+                and c["action"]["event"]["name"] == "scan_ignore"]
+        self.assertEqual(undo, [{"finding_id": "a/1", "undo": True}, {"finding_id": "a/2", "undo": True}, {"finding_id": "b/1", "undo": True}])
+
+    def test_scan_plugin_skills_that_cannot_be_removed_here_say_where_to_manage_them(self):
+        """官方插件里的 skill 扫描不移除：写清为什么、去 /plugin 管，不用去访达删（负责人 11-21）"""
+        att = {"attention": {"items": [
+            {"rule": "skill.destructive", "finding": "f1", "severity": "high",
+             "path": "~/.claude/plugins/marketplaces/claude-plugins-official/plugins/plugin-dev/skills/hook-development"},
+            {"rule": "skill.agent-tamper", "finding": "f2", "severity": "high",
+             "path": "~/.claude/plugins/marketplaces/claude-plugins-official/plugins/plugin-dev/skills/command-development"}]}}
+        data = {"known": True, "bytes": 0, "items": []}
+        msgs = scan.build("category", {"id": "ai-plugin"},
+                          lambda u: att if u == "data/overview" else data if u.startswith("data/category") else {})
+        a2ui.build(msgs, page=True)
+        text = json.dumps(_components(msgs), ensure_ascii=False)
+        self.assertIn("无法在螺壳中移除 · 2", text)
+        self.assertIn("属于 Claude Code 插件 plugin-dev", text)
+        self.assertIn("/plugin", text)
+        self.assertNotIn("需自行处理", text)
 
     def test_old_habit_asks_are_shown_in_interface_wording(self):
         """记忆库里以前问出来的习惯询问是口语的：画的时候换成新写法，新写法的原样"""
@@ -342,6 +616,69 @@ class BuilderTest(unittest.TestCase):
             ctx = {"plan_id": "p", "selected": {"a": True, "b": False}, "how": {"a": how, "b": "trash"}}
             self.assertEqual(scan.action("scan_apply", ctx), ("scan_apply", {"plan_id": "p", "choices": {"a": [how]}}))
 
+    def test_scan_settings_categories_are_drawn_as_before(self):
+        """扫描把 install-scripts 从 data/overview 的 reclaimable 挪进 settings：页上照旧有这一类，
+        画得和旧数据一模一样；两边都有时只算一次"""
+        d = os.path.join(ROOT, "fixtures", "luoke-scan", "feedback-152")
+
+        def data(u):
+            p = os.path.join(d, "read-" + u.replace("/", "-").replace("?id=", "-") + ".json")
+            if not os.path.exists(p):
+                return None
+            with open(p, encoding="utf-8") as f:
+                return json.load(f)["reply"]["result"]["contents"][0]["text"]
+        old = data("data/overview")
+        self.assertIn("install-scripts", [c["id"] for c in old["reclaimable"]], "样例是旧版扫描录的")
+        new = json.loads(json.dumps(old))
+        new["settings"] = [c for c in new["reclaimable"] if c["id"] == "install-scripts"]
+        new["reclaimable"] = [c for c in new["reclaimable"] if c["id"] != "install-scripts"]
+        for page in ("overview", "more"):
+            before = scan.build(page, {}, lambda u: old if u == "data/overview" else data(u))
+            after = scan.build(page, {}, lambda u: new if u == "data/overview" else data(u))
+            self.assertEqual(after, before, page)
+        self.assertEqual([c["id"] for c in scan._cats(new)], [c["id"] for c in scan._cats(old)])
+        self.assertIn("install-scripts", [c["id"] for c in scan._cats(new)])
+        both = dict(new, reclaimable=old["reclaimable"])
+        self.assertEqual([c["id"] for c in scan._cats(both)].count("install-scripts"), 1, "两边都有只算一次")
+        self.assertEqual([c["id"] for c in scan._cats(dict(new, settings=[]))].count("install-scripts"), 0)
+
+    def test_scan_install_scripts_is_a_setting_not_a_file(self):
+        """装依赖时运行脚本是一项设置的现状：叫工具的名字，不叫配置文件的名字；说明照扫描给的代号写"""
+        from luoke_agent.apppages.scan import _item_name, _why
+        pip = {"key": "i17", "group": "install-scripts", "reason": "scripts-on", "path": None, "reveal": None,
+               "paths": ["~/.config/pip/pip.conf"], "options": ["scripts-off", "keep", "ignore"],
+               "facts": {"tool": "pip", "name": "pip", "cause": "built-from-source", "built": ["pycrypto"], "canApply": True,
+                         "cost": "no-wheel-fails", "config": {"file": "~/.config/pip/pip.conf", "exists": False,
+                                                              "line": "only-binary = :all:"}}}
+        self.assertEqual(_item_name(pip), "pip")
+        why = _why(pip, with_size=False)
+        self.assertIn("构建脚本", why)
+        self.assertIn("pycrypto", why)
+        self.assertIn("装不上", why)
+        self.assertNotIn("pip.conf", why)
+        pnpm = {"key": "i3", "group": "install-scripts", "reason": "scripts-on",
+                "facts": {"tool": "pnpm", "name": "pnpm", "cause": "default-on", "canApply": False, "manual": "upgrade",
+                          "fixedIn": "pnpm 10"}}
+        self.assertIn("pnpm 10", _why(pnpm, with_size=False))
+        store = {"key": "i4", "group": "install-scripts", "reason": "scripts-on",
+                 "facts": {"tool": "pnpm", "name": "pnpm", "cause": "old-store", "canApply": False, "manual": "upgrade", "fixedIn": "pnpm 10"}}
+        self.assertIn("旧版留下的仓库", _why(store, with_size=False))
+        allow = {"key": "i5", "group": "install-scripts", "reason": "scripts-on",
+                 "facts": {"tool": "pnpm", "name": "pnpm", "cause": "allow-all-builds", "canApply": False, "manual": "remove-setting",
+                           "setting": "dangerouslyAllowAllBuilds", "files": ["~/Library/Preferences/pnpm/config.yaml"]}}
+        why = _why(allow, with_size=False)
+        self.assertIn("config.yaml", why)
+        self.assertIn("dangerouslyAllowAllBuilds", why)
+        # 旧版扫描：只有 tool 和 path
+        old = {"key": "i1", "group": "install-scripts", "reason": "scripts-on", "path": "~/.npmrc", "facts": {"tool": "npm"}}
+        self.assertEqual(_item_name(old), "npm")
+        self.assertEqual(_why(old, with_size=False), "安装依赖时自动运行脚本")
+        self.assertEqual(_item_name({"key": "k", "group": "tool-cache", "path": "~/Library/Caches/pip"}), "pip")
+        # 扫描给的标题是英文（给命令行和脚本看的）：页上不用它，规则有自己的中文名字和说明
+        from luoke_agent.apppages.scan import _rule_name, WHY
+        self.assertEqual(_rule_name("pkg.install-scripts"), "装依赖时运行包里的脚本")
+        self.assertIn("默认行为", next(w for p, w in WHY if "pkg.install-scripts".startswith(p)))
+
     def test_search_page_follows_the_mockup(self):
         data = _data("luoke-search", "built.json")
         msgs = search.build("overview", {}, lambda u: data[u])
@@ -382,6 +719,12 @@ class BuilderTest(unittest.TestCase):
         data["data/permissions"] = dict(perms, photos={"on": True, "system": "denied"})
         self.assertIn("系统未允许读取", text())
         self.assertNotIn("再问", text())
+        # 没问过：系统不会自己来问（只在用户点了以后），写去哪里允许；图库没允许不等于图片搜不到
+        data["data/permissions"] = dict(perms, photos={"on": True, "system": "ask"})
+        self.assertIn("尚未允许读取，请在螺壳「设置 · 隐私与权限」中允许；文件夹里的图片照常能搜", text())
+        self.assertNotIn("系统会询问", text())
+        self.assertIn("照片图库", text())
+        data["data/permissions"] = perms
         scope = dict(data["data/scope"])
         data["data/scope"] = dict(scope, picking=True, skipped=[{"id": "s1", "path": "~/Documents/node_modules", "name": "node_modules"}],
                                   folders=[{"id": "f1", "path": "/Volumes/T7/资料", "name": "资料", "kind": "folder", "connected": False}])
@@ -1014,6 +1357,16 @@ class MailFeaturesBackTest(unittest.TestCase):
         nxt = [c["action"]["event"]["context"] for c in _components(msgs).values()
                if c.get("action", {}).get("event", {}).get("context", {}).get("args", {}).get("cursor")]
         self.assertEqual(nxt[0]["args"]["cursor"], str(mail.INBOX_ROWS), "下一页从第 INBOX_ROWS 封起")
+        # 翻到第二页后应同时有「较新」（回到第一页，不带 cursor）和「更早」
+        p2 = self.page("inbox", {"list": "all", "cursor": str(mail.INBOX_ROWS)},
+                       extra={f"data/inbox?account=all&list=all&cursor={mail.INBOX_ROWS}": many})
+        p2_comps = _components(p2)
+        p2_labels = {p2_comps[c["child"]]["text"]: c["action"]["event"]["context"]["args"]
+                     for c in p2_comps.values() if c.get("component") == "Button" and c.get("child") in p2_comps
+                     and c.get("action", {}).get("event", {}).get("name") == "agent.open_page"}
+        self.assertIn("较新", p2_labels)
+        self.assertNotIn("cursor", p2_labels["较新"])
+        self.assertEqual(p2_labels["更早"]["cursor"], str(mail.INBOX_ROWS * 2))
         act = self.read()("data/activity?account=all")
         row = dict(act["items"][0], undoable=True, undone=False,
                    mails=[{"id": 1, "subject": "s", "from": {"name": "n"}}])

@@ -304,10 +304,13 @@ final class AgentAppsTests: XCTestCase {
         XCTAssertTrue(m.agentPermissionRows("each-time").allSatisfy { $0.can == nil }, "每次都问的没有按钮")
         XCTAssertTrue(m.isNeeded(row(m, "luoke-scan", "fda")))
         XCTAssertFalse(m.isNeeded(row(m, "luoke-mail", "contacts")))
-        XCTAssertEqual(AgentPermissionsTab.light("system", "denied", needed: true).1, "未允许")
-        XCTAssertEqual(AgentPermissionsTab.light("system", "ask", needed: true).1, "待允许")
-        XCTAssertEqual(AgentPermissionsTab.light("account", "granted", needed: false).1, "已连接")
-        XCTAssertEqual(AgentPermissionsTab.light("system", nil, needed: false).1, "未知")
+        XCTAssertEqual(CanUseList.light("system", "denied", needed: true).1, "未允许")
+        XCTAssertEqual(CanUseList.light("system", "ask", needed: true).1, "待允许")
+        XCTAssertEqual(CanUseList.light("account", "granted", needed: false).1, "已连接")
+        XCTAssertEqual(CanUseList.light("system", nil, needed: false).1, "未知")
+        let checks = [HostSystemCheck(name: "完全磁盘访问", ok: true), HostSystemCheck(name: "通知", ok: true)]
+        XCTAssertEqual(CanUseList.extraChecks(checks, covered: Set(luoke.map(\.title))).map(\.name), ["通知"],
+                       "螺壳级权限已列出的不重复，保留通知等仅由本体检查的系统权限")
     }
 
     func testPermissionOpsOnlyOnClickAndOnlyWhatTheRowCan() {
@@ -554,7 +557,7 @@ final class AgentAppsTests: XCTestCase {
         m.reportHostPermissions([:], confirmed: ["luoke-scan": ["fda": "2026-11-06T07:00:00Z"]])
         XCTAssertTrue(m.hostPermissionOn(fda), "本体给的")
         XCTAssertEqual(h.calls, [], "本体给的不再交回本体")
-        XCTAssertFalse(AgentPermissionsTab.hostOffText.contains("系统"), "这是约定：不说系统拦着")
+        XCTAssertFalse(CanUseList.hostOffText.contains("系统"), "这是约定：不说系统拦着")
     }
 
     func testErrorsShowAsToast() {

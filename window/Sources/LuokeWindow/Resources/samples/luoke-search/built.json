@@ -342,12 +342,12 @@
        {
         "component": "Text",
         "id": "b26-text",
-        "text": "照片"
+        "text": "照片图库"
        },
        {
         "component": "Text",
         "id": "t27",
-        "text": "照片",
+        "text": "照片图库",
         "variant": "strong"
        },
        {

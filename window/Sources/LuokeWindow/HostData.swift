@@ -160,9 +160,11 @@ public struct HostGeneral: Equatable {
     public var batteryMode: HostBatteryMode
     /// 每天自动检查更新开没开（2026-11-16 加）；旧的本体不给是 nil，这一行不画
     public var autoCheck: Bool?
+    /// 低电量模式时暂停后台开没开（2026-11-21 加）；旧的本体不给是 nil，这一行不画
+    public var pauseOnLowPower: Bool?
 
     public init(loginItem: HostLoginItem, currentVersion: String, latestVersion: String? = nil, lastChecked: Date? = nil,
-                powerMode: HostPowerMode, batteryMode: HostBatteryMode, autoCheck: Bool? = nil) {
+                powerMode: HostPowerMode, batteryMode: HostBatteryMode, autoCheck: Bool? = nil, pauseOnLowPower: Bool? = nil) {
         self.loginItem = loginItem
         self.currentVersion = currentVersion
         self.latestVersion = latestVersion
@@ -170,6 +172,7 @@ public struct HostGeneral: Equatable {
         self.powerMode = powerMode
         self.batteryMode = batteryMode
         self.autoCheck = autoCheck
+        self.pauseOnLowPower = pauseOnLowPower
     }
 }
 
@@ -318,4 +321,6 @@ public enum HostSettingChange: Equatable, Sendable {
     case localAPI(Bool)
     /// 每天自动检查更新（2026-11-16 加）
     case autoCheckUpdates(Bool)
+    /// 低电量模式时暂停后台（2026-11-21 加）
+    case pauseOnLowPower(Bool)
 }

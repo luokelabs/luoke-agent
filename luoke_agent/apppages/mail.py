@@ -560,10 +560,16 @@ def inbox(args: Dict[str, str], read: Read) -> List[dict]:
     # 它的 cursor 是第几封起（offset），下一页从这一页最后一封往后数
     at = int(cursor) if cursor and cursor.isdigit() else 0
     nxt_at = at + INBOX_ROWS if len(items) > INBOX_ROWS else (int(d["cursor"]) if d.get("more") and str(d.get("cursor") or "").isdigit() else None)
-    if not plan and nxt_at:
-        nxt = kit.open_page("更早", "inbox", {"list": lst, "cursor": str(nxt_at),
-                                                **({} if account == "all" else {"account": account})}, variant="borderless")
-        top.append(kit.row([nxt]))
+    if not plan and (at > 0 or nxt_at):
+        base_args = {"list": lst, **({} if account == "all" else {"account": account})}
+        pager_btns: List[str] = []
+        if at > 0:
+            prev_at = max(0, at - INBOX_ROWS)
+            prev_args = base_args if prev_at == 0 else {**base_args, "cursor": str(prev_at)}
+            pager_btns.append(kit.open_page("较新", "inbox", prev_args, variant="borderless"))
+        if nxt_at:
+            pager_btns.append(kit.open_page("更早", "inbox", {**base_args, "cursor": str(nxt_at)}, variant="borderless"))
+        top.append(kit.row(pager_btns))
     return kit.messages(top)
 
 
@@ -622,6 +628,7 @@ def one_mail(args: Dict[str, str], read: Read) -> List[dict]:
                                variant="borderless"))
     if btns:
         top.append(kit.row(btns))
+        kit.components[-1]["placement"] = "footer"      # §4 footerPlacement：固定在弹窗底部，信长了也不用滚到底才点得到
     if len(events) == 1 and (events[0].get("added") or events[0].get("past")):
         e = events[0]
         top.append(kit.text("已加入日程" if e.get("added") else f"日程已过期（{_day(e.get('date'))}）", "caption"))
@@ -804,6 +811,7 @@ def piece(args: Dict[str, str], read: Read) -> List[dict]:
     btns.append(kit.button("移回精选" if back else "已读", "mail_digest_archive", {"account": acct, "id": it["id"], "on": not back},
                            icon="undo-2" if back else "archive"))
     top.append(kit.row(btns))
+    kit.components[-1]["placement"] = "footer"      # §4 footerPlacement：固定在弹窗底部
     return kit.messages(top)
 
 

@@ -213,6 +213,28 @@ final class PageAdditionsTests: XCTestCase {
         XCTAssertNil(m.pageArgs["luoke-scan/page/cleaned"], "去别的标签：不留")
     }
 
+    func testNestedAppDialogsKeepReturnStackAndArgs() throws {
+        let (m, c, _) = connected()
+        defer { withExtendedLifetime(c) {} }
+        c.feed.applyApps(try scanPages(#"[{"id": "overview", "title": "概览"}, {"id": "subs", "title": "订阅体检", "hidden": true}, {"id": "sender", "title": "发件人", "hidden": true}]"#))
+        m.openAgentPage(app: "luoke-scan", page: "overview")
+        m.openAgentPage(app: "luoke-scan", page: "subs", args: ["group": "unsubscribe"])
+        XCTAssertFalse(m.canGoBackInAppDialog, "第一层弹窗没有上一级弹窗")
+        m.openAgentPage(app: "luoke-scan", page: "sender", args: ["key": "news@example.com"])
+        XCTAssertTrue(m.canGoBackInAppDialog, "从弹窗打开另一个弹窗后可返回上一级")
+        XCTAssertEqual(m.appDialog?.page.id, "sender")
+        m.popAppDialog()
+        XCTAssertEqual(m.appDialog?.page.id, "subs", "返回到上一张弹窗")
+        XCTAssertEqual(m.pageArgs["luoke-scan/page/subs"], ["group": "unsubscribe"], "上一张弹窗的参数一并恢复")
+        XCTAssertFalse(m.canGoBackInAppDialog)
+        // 再进一层后点关闭：直接清空栈回到主标签
+        m.openAgentPage(app: "luoke-scan", page: "sender", args: ["key": "news@example.com"])
+        m.closeAppDialog()
+        XCTAssertNil(m.appDialog)
+        XCTAssertTrue(m.appDialogStack.isEmpty)
+        XCTAssertEqual(m.visibleAppTab, "overview")
+    }
+
     func testAllPagesHiddenShowsNoPageUntilOpened() throws {
         let (m, c, wire) = connected()
         defer { withExtendedLifetime(c) {} }
@@ -310,6 +332,24 @@ final class PageAdditionsTests: XCTestCase {
         XCTAssertEqual(s.pressed, "b")
         XCTAssertTrue(wait { wire.bodies("/action").count == 1 && !s.busy })
         XCTAssertNil(s.pressed)
+    }
+
+    /// 一页上点完，这个应用别的取过的标签、弹窗底下那一页也重新取（负责人 11-20：清理完成之后页面还是清理之前的状态）
+    func testOtherFetchedPagesAreReadAgainAfterATap() throws {
+        let (m, c, wire) = connected()
+        let reads = { (p: String) in wire.paths("GET").filter { $0.split(separator: "?").first.map(String.init) == "/apps/luoke-scan/pages/\(p)" }.count }
+        m.go(.scan)
+        XCTAssertTrue(wait { reads("overview") == 1 && reads("status") == 1 }, "别的标签先取好")
+        // 在弹窗（隐藏页）里点：弹窗那一页、底下的概览、别的标签都重新取
+        let sid = "luoke-scan/page/cleaned"
+        wire.set("/apps/luoke-scan/pages/cleaned", page(sid, secureComponents, data: #"{"fields": {"code": ""}}"#))
+        m.openAgentPage(app: "luoke-scan", page: "cleaned")
+        XCTAssertTrue(wait { m.agentPages[sid]?.surface?.surface.secureFieldPaths == ["/fields/code"] })
+        XCTAssertNotNil(m.appDialog)
+        let before = (reads("overview"), reads("status"), reads("cleaned"))
+        let s = try XCTUnwrap(m.agentPages[sid]?.surface)
+        c.action(surfaceId: sid, componentId: "b", context: try s.surface.action("b").context)
+        XCTAssertTrue(wait { reads("overview") == before.0 + 1 && reads("status") == before.1 + 1 && reads("cleaned") == before.2 + 1 })
     }
 
     /// 点完只清这次交出去的那个框（按钮正好引用的），没交的照留（点完重新取这一页也留）；离开这一页全清

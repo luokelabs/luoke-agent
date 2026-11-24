@@ -213,8 +213,8 @@ struct SearchResults: View {
             }
             Spacer(minLength: 0)
             if model.searchSelected == nil {
+                // 没选中时回车是重新搜，不打开（rc3）：只提示怎么选
                 hint("↑↓", "选一条看详情")
-                hint("↩", "打开第一条")
             } else {
                 hint("↩", "打开")
                 if model.selectedHit?.actionIndex(reveal: true) != nil { hint("⌘↩", "在访达中显示") }

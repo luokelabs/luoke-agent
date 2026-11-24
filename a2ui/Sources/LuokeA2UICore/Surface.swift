@@ -96,7 +96,7 @@ public enum A2UI {
     /// 标签（variant badge）的颜色：不写是浅蓝，danger 红，warning 橙，neutral 米色（大小这类不分好坏的，§4 neutralBadge）
     public static let tones: Set<String> = ["danger", "warning", "neutral"]
     /// 应用页里一段的位置（工具协议 §4「宽窗口的侧栏」）：只有 aside，写在根 Column 下面一层的 Column 上
-    public static let placements: Set<String> = ["aside", "header"]
+    public static let placements: Set<String> = ["aside", "header", "footer"]
     /// 应用页怎么排（工具协议 §4 pageSections）：只有 sections，写在页的根 Column 上
     public static let layouts: Set<String> = ["sections"]
 
@@ -347,8 +347,8 @@ public struct Surface {
             guard let c = components[id], let v = c["placement"] else { continue }
             if !(v.string.map { A2UI.placements.contains($0) } ?? false) {
                 problems.append("组件 \(id)：placement 只能是 " + A2UI.placements.sorted().joined(separator: "、"))
-            } else if v.string == "header" {
-                if parents[id] != "root" || !rootIsColumn { problems.append("组件 \(id)：placement header 只能写在根 Column 下面一层") }
+            } else if v.string == "header" || v.string == "footer" {
+                if parents[id] != "root" || !rootIsColumn { problems.append("组件 \(id)：placement \(v.string ?? "") 只能写在根 Column 下面一层") }
             } else if c["component"]?.string != "Column" || parents[id] != "root" || !rootIsColumn {
                 problems.append("组件 \(id)：placement 只能写在根 Column 下面一层的 Column 上")
             }
@@ -483,14 +483,21 @@ public struct Surface {
         return (root["children"]?.array ?? []).compactMap { $0.string }.filter { components[$0]?["placement"]?.string == "header" }
     }
 
+    /// 根 Column 下面写了 `"placement": "footer"` 的（§4 footerPlacement）：以弹窗打开的页把它固定在弹窗底部，
+    /// 内容滚动时不动；不是弹窗的地方照原来的位置画
+    public var footerItems: [String] {
+        guard let root = components["root"], root["component"]?.string == "Column" else { return [] }
+        return (root["children"]?.array ?? []).compactMap { $0.string }.filter { components[$0]?["placement"]?.string == "footer" }
+    }
+
     /// 应用页分段画（工具协议 §4 pageSections）时根下面一层的每一样怎么画；根没写 `"layout": "sections"` 时是 nil。
     /// `aside`：nil 是整页（一栏），true、false 只要侧栏、主栏的段（`placement`）。`Divider` 不画，所以不在里面；
     /// 一段开头的分隔线（原来整页一张卡片时隔开上一段用的）也算在 skip 里不画，跟在它后面的小标题照样提到外面
-    public func pageBlocks(aside: Bool? = nil) -> [PageBlock]? {
+    public func pageBlocks(aside: Bool? = nil, footer: Bool = true) -> [PageBlock]? {
         guard page, let root = components["root"], root["component"]?.string == "Column",
               root["layout"]?.string == "sections" else { return nil }
         let side = Set(asideSections)
-        let header = Set(headerItems)
+        let header = Set(headerItems).union(footer ? [] : footerItems)      // footer 是 false：固定在弹窗底部的那几样不在这里画
         return (root["children"]?.array ?? []).compactMap { $0.string }.filter { !header.contains($0) }.compactMap { id -> PageBlock? in
             guard let c = components[id], let type = c["component"]?.string, type != "Divider" else { return nil }
             if let aside, side.contains(id) != aside { return nil }
@@ -513,9 +520,9 @@ public struct Surface {
     /// 没写 pageSections 的页：根是一列、里面有小标题（`caption`、`h4`、`h5` 的一段字，后面跟着的不是字）时，
     /// 照小标题分段：小标题画在卡片外面，到下一个小标题之前的几样放进一张卡片（走查重画稿：「最近了解到的」在卡片上面）。
     /// 最后孤零零一段字（「还有 1 封等你回复。」这类）不进卡片。第一样不是小标题的页是 nil，照旧整页一张卡片
-    public func headedBlocks() -> [PageBlock]? {
+    public func headedBlocks(footer: Bool = true) -> [PageBlock]? {
         guard page, let root = components["root"], root["component"]?.string == "Column", root["layout"] == nil else { return nil }
-        let header = Set(headerItems)
+        let header = Set(headerItems).union(footer ? [] : footerItems)
         let kids = (root["children"]?.array ?? []).compactMap { $0.string }
             .filter { components[$0]?["component"]?.string != "Divider" && !header.contains($0) }
         func isText(_ id: String) -> Bool { components[id]?["component"]?.string == "Text" }
@@ -583,6 +590,12 @@ public struct Surface {
         }
         flush()
         return out
+    }
+
+    /// 这一段只是一组列表（不收起）：放进卡片时卡片不留边，边距由列表加在每一行里（负责人 11-22）
+    public func plainList(_ id: String) -> Bool {
+        guard let c = components[id] else { return false }
+        return c["component"]?.string == "List" && c["collapsed"] == nil
     }
 
     /// 一排小标签（「最近搜过」「检索范围」下面那排）：应用页根下面一层的一行，里面只有只写字的按钮

@@ -451,9 +451,8 @@ public enum Snapshot {
                 m.settingsDialog = .advanced
             },
             shipped("prefs-privacy", "设置 · 隐私与权限") { $0.go(.prefs, tab: "privacy") },
-            whole("prefs-privacy", "设置 · 隐私与权限 · 系统权限检查（弹窗）", height: 1400) { m in
+            whole("prefs-privacy", "设置 · 隐私与权限 · 整页", height: 1400) { m in
                 m.go(.prefs, tab: "privacy")
-                m.settingsDialog = .checks
             },
             stress("prefs-privacy-empty", "设置 · 隐私与权限 · 没有权限的行（没有行的一节不画标题）") { m in
                 m.agentPermissions = nil
@@ -517,6 +516,11 @@ public enum Snapshot {
             },
             searched("search-nothing", "搜索 · 记忆没找到、邮件助手没回应") { $0.searchAnswer = SearchAnswer(failed: ["螺壳邮件助手"], asked: 2) },
             searched("search-all-failed", "搜索 · 能搜的两个应用都没回应") { $0.searchAnswer = SearchAnswer(failed: ["螺壳邮件助手", "记忆"], asked: 2) },
+            searched("search-nothing-partial", "搜索 · 没找到，螺壳搜索说模型还在加载（带重试）") { m in
+                var a = SearchAnswer(asked: 2)
+                a.partial = ["螺壳还在加载模型，这次只按字词搜"]
+                m.searchAnswer = a
+            },
             // 按类型分组（工具协议 §1b 的 hits，窗口自己画）：示例是编的，缩略图在 SearchSample 里画
             searched("search-hits", "搜索 · 按类型分组") { searchHits($0) },
             searched("search-hits-selected", "搜索 · 选中一条，右边出预览") { m in

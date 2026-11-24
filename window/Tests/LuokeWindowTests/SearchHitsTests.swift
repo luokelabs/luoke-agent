@@ -135,12 +135,18 @@ final class SearchHitsTests: XCTestCase {
         m.runSearch("发票")
         f.applySearch(status: 200, body: Data(Self.answer.utf8))
         XCTAssertNil(m.selectedHit)
-        XCTAssertTrue(m.returnPressed(text: "发票"), "没选：回车开第一条")
-        XCTAssertEqual(b.hits, ["7 luoke-search 1-p3 0"])
+        XCTAssertFalse(m.returnPressed(text: "发票"), "没选：回车是重新搜，不替用户打开第一条（rc3）")
+        XCTAssertFalse(m.returnPressed(text: "发票", reveal: true), "没选：⌘↩ 也不开")
+        XCTAssertTrue(m.showsResults(for: " 发票 "), "⌘↩ 没选中时什么都不做，不当重新搜")
+        XCTAssertTrue(b.hits.isEmpty)
         XCTAssertFalse(m.returnPressed(text: "合同"), "改了字：回车是重新搜")
         XCTAssertFalse(m.returnPressed(text: "合同", reveal: true), "改了字：⌘↩ 不显示上一次的结果")
-        XCTAssertEqual(b.hits.count, 1)
+        XCTAssertFalse(m.showsResults(for: "合同"))
         m.moveSearchSelection(1)
+        XCTAssertTrue(m.returnPressed(text: "发票"), "↓ 选中以后回车打开它")
+        XCTAssertEqual(b.hits, ["7 luoke-search 1-p3 0"])
+        XCTAssertFalse(m.returnPressed(text: "合同"), "选中了、改了字：回车是搜新词（rc3：看着详情输入新词回车）")
+        XCTAssertEqual(b.hits.count, 1)
         XCTAssertEqual(m.selectedHit?.hitID, "1-p3", "↓ 选第一条")
         m.moveSearchSelection(1)
         XCTAssertEqual(m.selectedHit?.hitID, "3", "↓ 照画出来的顺序：同组的下一条")
@@ -159,6 +165,100 @@ final class SearchHitsTests: XCTestCase {
         XCTAssertEqual(b.hits.count, before, "没有在访达中显示的：⌘↩ 什么都不做")
         m.selectHit(m.selectedHit!)
         XCTAssertNil(m.searchSelected, "再点一下取消选中")
+    }
+
+    /// rc3：看着详情、输入新词按回车，第一下搜新词；连按的第二下落在新结果上也只是再搜一次，不打开第一条
+    func testDoubleReturnNeverOpensTheFirstHit() {
+        let (m, f, b) = searching()
+        m.runSearch("发票")
+        f.applySearch(status: 200, body: Data(Self.answer.utf8))
+        m.selectHit(m.searchAnswer!.hits[0])
+        XCTAssertNotNil(m.selectedHit, "点了一条看详情")
+        for _ in 0..<2 {        // 改成新词，回车两下；结果马上就回来了
+            if !m.returnPressed(text: "合同") { m.runSearch("合同") }
+            f.applySearch(status: 200, body: Data(Self.answer.utf8))
+        }
+        XCTAssertEqual(b.queries, ["发票", "合同", "合同"], "两下都是搜")
+        XCTAssertTrue(b.hits.isEmpty, "什么都没打开")
+        XCTAssertNil(m.selectedHit, "新结果里没有选中的")
+    }
+
+    /// rc3：模型还在加载、只按字词搜时没找到，写出原因、能重试，不只是「未找到结果」
+    func testNothingFoundSaysWhy() {
+        let (m, f, b) = searching()
+        m.runSearch("怎么索赔")
+        f.applySearch(status: 200, body: Data(#"""
+        {"search": 4, "asked": 2, "failed": ["邮件助手"], "results": [],
+         "partial": [{"app": "luoke-search", "name": "螺壳搜索", "text": "螺壳还在加载模型，这次只按字词搜"}, {"text": ""}, {"app": "x"}]}
+        """#.utf8))
+        let a = m.searchAnswer!
+        XCTAssertEqual(a.partial, ["螺壳还在加载模型，这次只按字词搜"], "空的、没字的不算")
+        XCTAssertEqual(a.partialNote, "螺壳还在加载模型，这次只按字词搜")
+        XCTAssertEqual(a.lines, ["邮件助手未响应"], "不写「未找到结果」那一行：原因那里写")
+        XCTAssertFalse(a.allFailed)
+        // 有结果时原因不另外写
+        var found = SearchAnswer(hits: [hit("luoke-search", "1", "pdf")])
+        found.partial = ["螺壳还在加载模型，这次只按字词搜"]
+        XCTAssertNil(found.partialNote)
+        // 旧核心不给 partial：照旧
+        m.runSearch("怎么索赔")
+        f.applySearch(status: 200, body: Data(#"{"search": 5, "asked": 1, "failed": [], "results": []}"#.utf8))
+        XCTAssertNil(m.searchAnswer?.partialNote)
+        XCTAssertEqual(m.searchAnswer?.lines, ["未找到结果"])
+        XCTAssertEqual(b.queries, ["怎么索赔", "怎么索赔"])
+    }
+
+    /// rc3：点「最近搜索」的一条，框里换成那一句再搜
+    func testSearchFromThePageFillsTheBox() {
+        let (m, _, b) = searching()
+        XCTAssertEqual(m.searchFill, SearchFill())
+        m.searchFromPage(" 海边 ")
+        XCTAssertEqual(m.searchFill, SearchFill(serial: 1, text: "海边"))
+        XCTAssertEqual(b.queries, ["海边"])
+        XCTAssertEqual(m.searchQuery, "海边")
+        m.searchFromPage("海边")
+        XCTAssertEqual(m.searchFill.serial, 2, "同一句再点也换（框里可能已经改过）")
+        m.searchFromPage("  ")
+        XCTAssertEqual(m.searchFill.serial, 2, "空的不搜")
+        XCTAssertEqual(b.queries, ["海边", "海边"])
+    }
+
+    /// rc3：搜完以后正看着的螺壳搜索页重新取（「最近搜索」立刻更新）；看着别的页不取
+    func testSearchReloadsTheSearchPage() throws {
+        let path = "/tmp/lkw-srch-\(getpid()).sock"
+        let core = try MiniCore(path: path, events: Sample.agentEvents(),
+                                settings: Sample.agentEvents().first { $0.0 == "settings" }!.1)
+        defer { core.stop() }
+        core.route("GET", "/apps", Data(#"""
+        {"apps": [{"id": "luoke-search", "running": true, "pages": [{"id": "overview", "title": "概览"}]},
+                  {"id": "luoke-mail", "running": true, "pages": [{"id": "overview", "title": "概览"}]}]}
+        """#.utf8))
+        let page = Sample.messages("luoke-search/page/overview", [
+            .object(["id": .string("root"), "component": .string("Text"), "text": .string("最近搜索")])])
+        core.route("GET", "/apps/luoke-search/pages/overview", JSONValue.object(["messages": .array(page)]).serialized())
+        core.route("GET", "/apps/luoke-mail/pages/overview", JSONValue.object(["messages": .array(
+            Sample.messages("luoke-mail/page/overview", [.object(["id": .string("root"), "component": .string("Text"),
+                                                                   "text": .string("邮件")])]))]).serialized())
+        core.route("POST", "/search", Data(#"{"search": 1, "asked": 1, "failed": [], "results": []}"#.utf8))
+        let m = Sample.model()
+        m.features = .beta2
+        let c = AgentConnection(socketPath: path, model: m)
+        c.start()
+        defer { c.stop() }
+        XCTAssertTrue(wait { m.agentApps?.count == 2 })
+        m.go(.searchApp)
+        XCTAssertTrue(wait { core.gets("/apps/luoke-search/pages/overview") >= 1 })
+        let before = core.gets("/apps/luoke-search/pages/overview")
+        m.runSearch("海边")
+        XCTAssertTrue(wait { core.posts("/search").count == 1 && core.gets("/apps/luoke-search/pages/overview") > before },
+                      "搜完重新取搜索页")
+        m.go(.mail)
+        XCTAssertTrue(wait { core.gets("/apps/luoke-mail/pages/overview") >= 1 })
+        let search = core.gets("/apps/luoke-search/pages/overview"), mail = core.gets("/apps/luoke-mail/pages/overview")
+        m.runSearch("海边")
+        XCTAssertTrue(wait { core.posts("/search").count == 2 })
+        XCTAssertTrue(settle { core.gets("/apps/luoke-search/pages/overview") == search
+                               && core.gets("/apps/luoke-mail/pages/overview") == mail }, "看着别的页：不取")
     }
 
     func testFilterKeepsOnlyThatKind() {

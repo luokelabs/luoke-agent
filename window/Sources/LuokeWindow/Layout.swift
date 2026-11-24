@@ -79,10 +79,8 @@ extension WindowModel {
         case .today:
             return density == .standard && !done.isEmpty
         case .mail, .scan, .mem, .searchApp, .ime:
-            guard let app = agentApp(for: page) else { return false }
-            let tab = agentTab(app)
-            if tab == nil || tab == app.firstPage { return true }
-            return agentPages[AgentFeed.pageKey(app.id, tab!)]?.surface?.surface.asideSections.isEmpty == false
+            guard let app = agentApp(for: page), let tab = visibleAppTab else { return false }
+            return agentPages[AgentFeed.pageKey(app.id, tab)]?.surface?.surface.asideSections.isEmpty == false
         default:
             return false
         }

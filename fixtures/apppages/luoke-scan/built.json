@@ -3922,7 +3922,81 @@
    ],
    "count": 7,
    "bytes": 65283502897,
-   "partial": false
+   "partial": false,
+   "kinds": [
+    {
+     "kind": "video",
+     "bytes": 65712999628,
+     "count": 214
+    },
+    {
+     "kind": "other",
+     "bytes": 3113851289,
+     "count": 1830
+    },
+    {
+     "kind": "audio",
+     "bytes": 966367641,
+     "count": 96
+    },
+    {
+     "kind": "photo",
+     "bytes": 300647710,
+     "count": 412
+    }
+   ],
+   "years": [
+    {
+     "year": 2026,
+     "bytes": 4402341478
+    },
+    {
+     "year": 2025,
+     "bytes": 14280766259
+    },
+    {
+     "year": 2024,
+     "bytes": 45741401702
+    },
+    {
+     "year": 2023,
+     "bytes": 3543348019
+    },
+    {
+     "year": 2019,
+     "bytes": 2126008811
+    }
+   ],
+   "files": [
+    {
+     "name": "毕业典礼 多机位合成.mov",
+     "path": "~/Movies/Final Cut Projects/毕业典礼.fcpbundle/Render Files/毕业典礼 多机位合成.mov",
+     "bytes": 19756849561,
+     "changed": "2024-01-08",
+     "in": "~/Movies/Final Cut Projects/毕业典礼.fcpbundle/Render Files"
+    },
+    {
+     "name": "A001_C003.mov",
+     "path": "~/Movies/Final Cut Projects/毕业典礼.fcpbundle/Original Media/A001_C003.mov",
+     "bytes": 10415295692,
+     "changed": "2023-06-30",
+     "in": "~/Movies/Final Cut Projects/毕业典礼.fcpbundle/Original Media"
+    },
+    {
+     "name": "二零二三年大学毕业典礼全程录像（含校长致辞和学生代表发言）完整版.mp4",
+     "path": "~/Movies/二零二三年大学毕业典礼全程录像（含校长致辞和学生代表发言）完整版.mp4",
+     "bytes": 7258494730,
+     "changed": "2024-02-27",
+     "in": "~/Movies"
+    },
+    {
+     "name": "屏幕录制 2025-06-12.mov",
+     "path": "~/Movies/录屏/屏幕录制 2025-06-12.mov",
+     "bytes": 5583457484,
+     "changed": "2025-06-12",
+     "in": "~/Movies/录屏"
+    }
+   ]
   },
   "data/usage": {
    "complete": true,

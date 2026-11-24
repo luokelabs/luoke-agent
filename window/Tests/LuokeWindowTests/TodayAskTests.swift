@@ -30,4 +30,8 @@ final class TodayAskTests: XCTestCase {
         m.urgent = [UrgentItem(id: "u1", tool: .mail, title: "银行：异常登录提醒", time: "09:10", primary: "看看", primarySymbol: nil, secondary: "不用")]
         XCTAssertEqual(TodayHello(model: m).line, "有件急事要你看：银行：异常登录提醒", "有急事先说急事")
     }
+
+    func testDeckDotsThreshold() {
+        XCTAssertEqual(TodayPage.deckDots, 8, "8 张以内画圆点，超过后改显示页码")
+    }
 }

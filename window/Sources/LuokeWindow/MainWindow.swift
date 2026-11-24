@@ -1,4 +1,5 @@
 import LuokeA2UI
+import LuokeA2UICore
 import SwiftUI
 
 /// 螺壳的主窗口：侧栏、当前页、底部的搜索和问螺壳、浮在上面的提示和权限说明。螺壳只有这一个窗口（11-10 定）：
@@ -322,11 +323,22 @@ struct WindowAppearance: NSViewRepresentable {
     }
 }
 
-/// 弹窗的外框：压暗底下，中间一张卡片，标题和 ×（Esc）
-struct LKDialog<Content: View>: View {
+/// 弹窗的外框：压暗底下，中间一张卡片，标题、可选的返回上一级按钮和 ×（Esc）
+struct LKDialog<Content: View, Footer: View>: View {
     let title: String
+    var back: (() -> Void)? = nil
     let close: () -> Void
     @ViewBuilder var content: Content
+    /// 固定在底部的一排（按钮）：内容滚动时不动（负责人 11-21：弹窗里的按钮在页面最底端，滑过去才看得到）
+    @ViewBuilder var footer: Footer
+
+    init(title: String, back: (() -> Void)? = nil, close: @escaping () -> Void, @ViewBuilder content: () -> Content, @ViewBuilder footer: () -> Footer) {
+        self.title = title
+        self.back = back
+        self.close = close
+        self.content = content()
+        self.footer = footer()
+    }
     @Environment(\.lk) private var p
     @Environment(\.lkSnapshot) private var snapshot
 
@@ -345,16 +357,34 @@ struct LKDialog<Content: View>: View {
                 .contentShape(Rectangle())
                 .onTapGesture { close() }
             VStack(alignment: .leading, spacing: 0) {
-                HStack(alignment: .center, spacing: LKSpace.x3) {
+                HStack(alignment: .center, spacing: LKSpace.x2) {
+                    if let back {
+                        Button(action: back) {
+                            LKIcon("chevron-left", size: 16).foregroundStyle(p.mutedFg).frame(width: 28, height: 28).contentShape(Rectangle())
+                        }
+                        .buttonStyle(.plainPointer)
+                        .keyboardShortcut(.cancelAction)
+                        .help("返回上一级（Esc）")
+                        .accessibilityLabel("返回上一级")
+                    }
                     Text(title).font(LKFont.ui(LKType.lead, .semibold)).accessibilityAddTraits(.isHeader)
                     Spacer(minLength: LKSpace.x4)
-                    Button(action: close) {
-                        LKIcon("x").foregroundStyle(p.mutedFg).frame(width: 28, height: 28).contentShape(Rectangle())
+                    if back == nil {
+                        Button(action: close) {
+                            LKIcon("x").foregroundStyle(p.mutedFg).frame(width: 28, height: 28).contentShape(Rectangle())
+                        }
+                        .buttonStyle(.plainPointer)
+                        .keyboardShortcut(.cancelAction)
+                        .help("关闭（Esc）")
+                        .accessibilityLabel("关闭")
+                    } else {
+                        Button(action: close) {
+                            LKIcon("x").foregroundStyle(p.mutedFg).frame(width: 28, height: 28).contentShape(Rectangle())
+                        }
+                        .buttonStyle(.plainPointer)
+                        .help("关闭")
+                        .accessibilityLabel("关闭")
                     }
-                    .buttonStyle(.plainPointer)
-                    .keyboardShortcut(.cancelAction)
-                    .help("关闭（Esc）")
-                    .accessibilityLabel("关闭")
                 }
                 .padding(.bottom, LKSpace.x3)
                 ViewThatFits(in: .vertical) {
@@ -366,6 +396,7 @@ struct LKDialog<Content: View>: View {
                         ScrollView { content }.scrollBounceBehavior(.basedOnSize)
                     }
                 }
+                footer
             }
             .padding(EdgeInsets(top: LKSpace.x5, leading: LKSpace.x6, bottom: LKSpace.x5, trailing: LKSpace.x5))
             // 不定最小宽度：右边栏拉出来、窗口窄时内容区可能不到 460，定了最小宽度弹窗会比内容区宽，左边被切掉、右边伸出去
@@ -378,6 +409,12 @@ struct LKDialog<Content: View>: View {
     }
 }
 
+extension LKDialog where Footer == EmptyView {
+    init(title: String, back: (() -> Void)? = nil, close: @escaping () -> Void, @ViewBuilder content: () -> Content) {
+        self.init(title: title, back: back, close: close, content: content, footer: { EmptyView() })
+    }
+}
+
 /// 应用的隐藏页以弹窗打开（走查重画稿：邮件助手的设置和处理记录、记忆设置、扫描一类的详情）：
 /// 压暗底下，中间一张卡片，标题和 ×（Esc）；里面是工具给的这一页
 struct AppDialogView: View {
@@ -387,8 +424,30 @@ struct AppDialogView: View {
     @Environment(\.lk) private var p
 
     var body: some View {
-        LKDialog(title: title, close: { model.closeAppDialog() }) { body(AgentFeed.pageKey(app.id, ref.id)) }
+        let sid = AgentFeed.pageKey(app.id, ref.id)
+        LKDialog(title: title,
+                 back: model.canGoBackInAppDialog ? { model.popAppDialog() } : nil,
+                 close: { model.closeAppDialog() },
+                 content: { body(sid) },
+                 footer: { footer(sid) })
     }
+
+    /// 页上写了 `"placement": "footer"` 的几样（工具协议 §4 footerPlacement）：固定在弹窗底部，上面一条线和内容隔开
+    @ViewBuilder private func footer(_ sid: String) -> some View {
+        if let s = model.agentPages[sid]?.surface, Self.sectioned(s.surface), !s.surface.footerItems.isEmpty {
+            VStack(alignment: .leading, spacing: 0) {
+                Rectangle().fill(p.border).frame(height: 1)
+                ForEach(s.surface.footerItems, id: \.self) { fid in
+                    SurfaceView(model: s, part: .section(fid, skip: 0)) { cid, _, ctx in model.tapPage(sid, componentId: cid, context: ctx) }
+                        .padding(.top, LKSpace.x3)
+                }
+            }
+            .padding(.top, LKSpace.x3)
+        }
+    }
+
+    /// 分段画的页才把 footer 拿出来固定；整页一张卡片画的照原来的位置
+    static func sectioned(_ s: Surface) -> Bool { (s.pageBlocks(aside: nil) ?? s.headedBlocks()) != nil }
 
     /// 页上放在标题那一行的一段字（「旧安装包 · 205 MB」）就是弹窗的标题；没有就用页名
     private var title: String {
@@ -400,7 +459,7 @@ struct AppDialogView: View {
 
     @ViewBuilder private func body(_ sid: String) -> some View {
         if let s = model.agentPages[sid]?.surface {
-            if let blocks = s.surface.pageBlocks(aside: nil) ?? s.surface.headedBlocks() {
+            if let blocks = s.surface.pageBlocks(aside: nil, footer: false) ?? s.surface.headedBlocks(footer: false) {
                 PageSections(model: s, blocks: blocks) { cid, _, ctx in model.tapPage(sid, componentId: cid, context: ctx) }
                     .environment(\.lkInDialog, true)
             } else {

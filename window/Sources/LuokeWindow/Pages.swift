@@ -207,6 +207,11 @@ struct AgentAppBody: View {
     @Environment(\.lk) private var p
     @Environment(\.lkLayout) private var layout
 
+    /// 「待允许」那一行读屏念的：缺什么，点了去哪一页。页名照设置里画出来的标签（权限并进了「隐私与权限」）
+    static func needsLabel(_ needs: String) -> String {
+        "待允许：\(needs)，前往设置 · \(PrefsTab.permissions.shownTab.title)"
+    }
+
     /// 标签只画窗口里的页（`pages`），同一个编号只画一次（编号撞了 SwiftUI 会把一个标签画两遍）。
     /// 应用自己界面的页（`ui.pages`）不画成标签：窗口不打开应用自己的界面（11-09 定），要用户做的事由应用做成窗口里的页
     /// （负责人 11-08，agent#62）。`ui.pages` 照旧用来核对 `POST /open` 和卡片上「去设置」的 `page`
@@ -278,7 +283,7 @@ struct AgentAppBody: View {
             .buttonStyle(.plainPointer)
             .lkCard(padding: EdgeInsets(top: 11, leading: 14, bottom: 11, trailing: 14))
             .padding(.bottom, 16)
-            .accessibilityLabel("待允许：\(model.needsText(app))，前往设置 · 权限")
+            .accessibilityLabel(Self.needsLabel(model.needsText(app)))
         }
         let tabs = AgentAppBody.tabs(app)
         if tabs.count > 1 {
@@ -800,12 +805,18 @@ struct PageSections: View {
         case .card(let id, let title, let skip):
             VStack(alignment: .leading, spacing: 8) {
                 if let title { titleView(title) }
-                SurfaceView(model: model, part: .section(id, skip: skip), onAction: onAction).lkCard()
+                if skip == 0, model.surface.plainList(id) {
+                    flushList(id)
+                } else {
+                    SurfaceView(model: model, part: .section(id, skip: skip), onAction: onAction).lkCard()
+                }
             }
         case .group(let title, let ids):
             VStack(alignment: .leading, spacing: 8) {
                 if let title { titleView(title) }
-                if ids.count == 1, model.surface.chipRow(ids[0]) {
+                if ids.count == 1, model.surface.plainList(ids[0]) {
+                    flushList(ids[0])
+                } else if ids.count == 1, model.surface.chipRow(ids[0]) {
                     // 小标题下面只有一排小标签（「最近搜过」「检索范围」）：不放进卡片
                     SurfaceView(model: model, part: .section(ids[0], skip: 0), onAction: onAction)
                 } else if !ids.isEmpty {
@@ -817,6 +828,15 @@ struct PageSections: View {
                 }
             }
         }
+    }
+
+    /// 卡片里只是一组行：卡片不留边，行自己带边距，停上去的底色铺满卡片（负责人 11-22）
+    private func flushList(_ id: String) -> some View {
+        SurfaceView(model: model, part: .section(id, skip: 0), onAction: onAction)
+            .environment(\.a2uiListInset, LKInsets.card)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .clipShape(RoundedRectangle(cornerRadius: p.cardRadius, style: .continuous))
+            .background(CardSurface())
     }
 
     private func titleView(_ t: SectionTitle) -> some View {
