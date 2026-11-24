@@ -240,6 +240,29 @@ class FolderPageTest(unittest.TestCase):
         text = json.dumps(scan.build("status", {}, lambda u: data[u]), ensure_ascii=False)
         self.assertNotIn("未统计的占用", text)
         self.assertIn("以上合计约", text)
+        # 扫描 0.3.46 起对过账（reconcile）：家目录外量到的一行，只有系统能看、说不清的一行；大得反常时点出可能是什么
+        usage["complete"] = True
+        usage["reconcile"] = {"day": "2026-11-24", "total": 1_800_000_000_000, "used": 1_600_000_000_000, "purgeable": 0,
+                              "parts": [{"id": "home", "bytes": 400_000_000_000}, {"id": "applications", "bytes": 60_000_000_000},
+                                        {"id": "macos", "bytes": 40_000_000_000}],
+                              "measured": 500_000_000_000, "unmeasured": [{"id": "spotlight-index", "why": "root", "blocks": False}],
+                              "complete": True, "unexplained": 170_000_000_000, "threshold": 90_000_000_000, "over": True}
+        msgs = scan.build("status", {}, lambda u: data[u])
+        a2ui.build(msgs, page=True)
+        text = json.dumps(msgs, ensure_ascii=False)
+        for want in ("macOS、应用和其他位置", "100 GB", "无法统计的占用", "170 GB", "Spotlight 索引异常", "如何查看"):
+            self.assertIn(want, text)
+        self.assertNotIn("未统计的占用", text)
+        self.assertNotIn("APFS 克隆", text)
+        usage["reconcile"].update(unexplained=0, over=False)
+        text = json.dumps(scan.build("status", {}, lambda u: data[u]), ensure_ascii=False)
+        self.assertNotIn("无法统计的占用", text)
+        self.assertNotIn("如何查看", text)
+        usage["reconcile"].update(complete=False, unexplained=None)
+        usage["complete"] = False
+        text = json.dumps(scan.build("status", {}, lambda u: data[u]), ensure_ascii=False)
+        self.assertNotIn("无法统计的占用", text)
+        self.assertIn("以上合计约", text, "没量全：照旧")
 
     def test_growth_is_a_line_of_its_own(self):
         page = [{"updateComponents": {"components": [

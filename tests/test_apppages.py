@@ -363,6 +363,22 @@ class BuilderTest(unittest.TestCase):
             p += 1
         self.assertEqual(seen, 41, "各页合起来正好是全部项")
 
+    def test_scan_duplicates_say_where_they_compared(self):
+        """重复文件写明这一轮比了哪些地方（luoke-scan#234 的 `compared`）：电脑里有 5 份、这里只列 2 份时看得出为什么"""
+        item = {"key": "k1", "plan": "p1", "finding": "dup/1", "group": "duplicate", "bytes": 10 ** 8,
+                "paths": ["/Users/x/Movies/a.mov"], "facts": {"keep": "/Users/x/Pictures/a.mov"}, "options": ["trash", "clone"], "suggested": "trash"}
+        data = {"known": True, "bytes": 10 ** 8, "items": [item],
+                "compared": {"places": ["Movies", "Pictures"], "noAccess": ["Downloads", "Desktop"], "partial": [],
+                             "minBytes": 10485760, "finished": True}}
+        msgs = scan.build("category", {"id": "duplicate"}, lambda u: data if u.startswith("data/category") else {})
+        a2ui.build(msgs, page=True)
+        text = json.dumps(_components(msgs), ensure_ascii=False)
+        self.assertIn("只比较了「影片」「图片」中 10 MB 以上的文件", text)
+        self.assertIn("「下载」「桌面」需开启完全磁盘访问后才会比较", text)
+        text = json.dumps(scan.build("category", {"id": "duplicate"}, lambda u: dict(data, compared=None) if u.startswith("data/category") else {}),
+                          ensure_ascii=False)
+        self.assertNotIn("只比较了", text, "旧版扫描没有 compared：不写")
+
     def test_scan_category_after_cleaning_says_it_is_done(self):
         """清完了再看这一类：写「清理完成」，不再写「未发现个人文档」（#181）"""
         data = {"known": True, "bytes": 0, "items": [], "facts": {"userFiles": "none", "rebuilds": 0}}
@@ -498,6 +514,39 @@ class BuilderTest(unittest.TestCase):
         self.assertNotIn("保留的一份", texts)
         self.assertTrue(any(t and t.endswith("其他位置仍保留一份") for t in texts), texts)
 
+    def test_scan_duplicates_let_the_user_pick_the_copy_that_stays(self):
+        """扫描给了全部几份（`facts.members`）时，留哪一份是一个单选，默认是扫描建议的那份（负责人 11-24 定，#181 第 3 条）；
+        选了别的一份，点「移到废纸篓」时发给扫描的 `keep`；没勾、换成克隆的不带"""
+        home = os.path.expanduser("~")
+        one = self._scan_spec()["data"]["data/category?id=duplicate"]["items"][0]
+        members = [f"{home}/Documents/On-chain_Wallet.pdf"] + [f"{home}/Downloads/old {i}/On-chain_Wallet.pdf" for i in range(4)]
+        many = dict(one, key="d1", path=members[1], reveal=members[1], paths=members[1:], pathsMore=0,
+                    facts={"keep": members[0], "copies": 4, "members": members})
+        data = {"known": True, "id": "duplicate", "bytes": 4 << 20, "count": 2, "facts": {}, "items": [many, one], "more": 0}
+        msgs = scan.build("category", {"id": "duplicate"}, lambda u: data if u.startswith("data/category") else {})
+        a2ui.build(msgs, page=True)
+        comps = _components(msgs)
+        pickers = [c for c in comps.values() if c["component"] == "ChoicePicker"]
+        self.assertEqual(len(pickers), 1, "给了 members 的那一项才能选")
+        self.assertEqual([o["value"] for o in pickers[0]["options"]], members)
+        self.assertEqual(pickers[0]["options"][0]["label"], "~/Documents/On-chain_Wallet.pdf")
+        model = next(m["updateDataModel"]["value"] for m in msgs if "updateDataModel" in m)
+        self.assertEqual(model["choices"]["keep-d1"], [members[0]], "默认选扫描建议留的那份")
+        apply = next(c["action"]["event"]["context"] for c in comps.values() if c["component"] == "Button"
+                     and c["action"]["event"]["name"] == "scan_apply" and c["action"]["event"]["context"]["how"].get("d1") == "trash")
+        self.assertEqual(apply["keep"], {"path": "/choices"})
+        # 点了：选的那份发给扫描；没勾的项不带
+        ctx = dict(apply, selected={"d1": True, one["key"]: True}, keep={"keep-d1": [members[3]]})
+        name, args = scan.action("scan_apply", ctx)
+        self.assertEqual(args["keep"], {"d1": members[3]})
+        name, args = scan.action("scan_apply", dict(ctx, selected={"d1": False, one["key"]: True}))
+        self.assertNotIn("keep", args)
+        clone = next(c["action"]["event"]["context"] for c in comps.values() if c["component"] == "Button"
+                     and c["action"]["event"]["name"] == "scan_apply" and c["action"]["event"]["context"]["how"].get("d1") == "clone")
+        self.assertNotIn("keep", clone, "换成克隆的几份都留着，不用选")
+        name, args = scan.action("scan_apply", dict(clone, selected={"d1": True}))
+        self.assertNotIn("keep", args)
+
     def test_scan_plugin_items_say_why_they_are_risky(self):
         """插件每项能点开「为什么有风险」：每一种事一句说明；官方插件市场里的写去哪里管（负责人 11-21）"""
         item = {"key": "k1", "plan": "p1", "finding": "skill.exfil/1", "group": "skill", "reason": "download-exec",
@@ -517,6 +566,62 @@ class BuilderTest(unittest.TestCase):
         text = json.dumps(scan.build("category", {"id": "ai-plugin"}, lambda u: dict(data, items=[tpl]) if u.startswith("data/category") else {}),
                           ensure_ascii=False)
         self.assertIn("标准对话格式以外的文字", text)
+
+    def test_scan_plugin_items_say_where_the_rule_found_it_and_what_the_model_wrote(self):
+        """插件每项写出规则在哪个文件第几行查到的（扫描的 facts.hits，#212），说明里写明的标出来；
+        本机模型的说明原样放、写明是本机模型写的；只有代号和行号，没有原文"""
+        hits = [{"kinds": ["download-exec"], "severity": "high", "files": ["SKILL.md"], "part": None,
+                 "lines": [5, 9], "linesMore": 2, "declared": False},
+                {"kinds": ["exfil"], "severity": "low", "files": ["scripts/sync.sh"], "part": None,
+                 "lines": [3], "linesMore": 0, "declared": True}] + \
+               [{"kinds": ["unreadable"], "severity": "low", "files": [f"bin/{i}"], "part": None, "lines": [],
+                 "linesMore": 0, "declared": False} for i in range(5)]
+        item = {"key": "k1", "plan": "p1", "finding": "skill.exfil/1", "group": "skill", "reason": "download-exec",
+                "facts": {"agent": "Claude Code 插件", "kinds": ["download-exec", "exfil"], "skill": "s", "hits": hits,
+                          "hitsMore": 1},
+                "modelNotes": [{"kind": "skill-review", "source": "local-model", "task": "luoke-scan.skills",
+                                "text": "它实际在做的：同步笔记", "at": "2026-11-24T00:00:00Z"}],
+                "path": "~/.claude/skills/s", "options": ["trash", "keep", "ignore"], "suggested": "keep"}
+        data = {"known": True, "bytes": 0, "items": [item]}
+        msgs = scan.build("category", {"id": "ai-plugin"}, lambda u: data if u.startswith("data/category") else {})
+        a2ui.build(msgs, page=True)
+        texts = [c.get("text") for c in _components(msgs).values() if c["component"] == "Text"]
+        self.assertIn("会下载并执行代码：SKILL.md 第 5、9 行等 4 处", texts)
+        self.assertIn("会向外发送对话内容：scripts/sync.sh 第 3 行（插件说明中已写明）", texts)
+        self.assertIn("另有 3 处", texts, "最多列 5 处，其余和 hitsMore 合成一句")
+        self.assertIn("本机模型的说明（仅供参考）：它实际在做的：同步笔记", texts)
+        tpl = dict(item, reason="template-extra", group="chat-template", modelNotes=[],
+                   facts={"kinds": ["exfil"], "hits": [{"kinds": ["exfil", "hidden"], "severity": None,
+                                                        "files": ["tokenizer_config.json"], "part": "template",
+                                                        "lines": [], "linesMore": 0, "declared": False}]})
+        msgs = scan.build("category", {"id": "ai-plugin"}, lambda u: dict(data, items=[tpl]) if u.startswith("data/category") else {})
+        texts = [c.get("text") for c in _components(msgs).values() if c["component"] == "Text"]
+        self.assertIn("要求向外发送对话、含不可见字符：tokenizer_config.json（对话模板）", texts)
+
+    def test_scan_attention_rows_say_the_specifics_from_facts(self):
+        """安全设置、进程、键盘的每一行写出具体情况（扫描的 facts，#212）；能直达设置页的给按钮"""
+        att = {"attention": {"items": [
+            {"rule": "posture.filevault", "finding": "posture.filevault", "severity": "high",
+             "facts": {"setting": "filevault", "grant": "FileVault"}},
+            {"rule": "posture.screen-lock-delay", "finding": "p2", "severity": "low",
+             "facts": {"setting": "screen-lock-delay", "grant": None, "delaySeconds": 600}},
+            {"rule": "posture.trusted-roots", "finding": "p3", "severity": "medium",
+             "facts": {"setting": "trusted-roots", "grant": None, "certs": ["mkcert", "Proxy", "Corp", "X"], "certsMore": 1}}]},
+            "scanned": {"finished": "2026-11-24T00:00:00Z"}}
+        msgs = scan.build("status", {}, lambda u: att if u == "data/overview" else {})
+        a2ui.build(msgs, page=True)
+        text = json.dumps(_components(msgs), ensure_ascii=False)
+        self.assertIn("10 分钟后才要求密码", text)
+        self.assertIn("mkcert、Proxy、Corp 等 5 个", text)
+        self.assertIn('"grant": "FileVault"', text)
+        rows = [{"rule": "keyboard.unvouched", "facts": {"program": "/opt/homebrew/bin/skhd",
+                                                        "signature": {"kind": "unsigned", "team": None}}},
+                {"rule": "keyboard.watchers", "facts": {"programs": ["Raycast", "1Password", "BTT", "Alfred"]}},
+                {"rule": "process.pile-up", "facts": {"program": "/usr/sbin/lsof", "count": 30}},
+                {"rule": "process.orphan", "facts": {"count": 1, "oldest": [{"name": "node", "pid": 1, "hours": 3}]}},
+                {"rule": "posture.firewall", "facts": {"setting": "firewall", "grant": None}}]
+        self.assertEqual([scan._fact_detail(r) for r in rows],
+                         ["skhd · 没有签名", "Raycast、1Password、BTT 等 4 个", "lsof · 30 个进程", "node", ""])
 
     def test_scan_settings_lists_ignored_items_by_category_with_undo(self):
         """不再提醒的都在扫描设置里，按类分开，每项能恢复提醒"""

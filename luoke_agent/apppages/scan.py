@@ -708,6 +708,7 @@ def _usage_folders(read: Read) -> Optional[Tuple[str, List[Tuple[str, str, float
 
 # 未统计的占用超过这么多就点出可能的原因（macOS 和常用应用一般几十 GB）
 GAP_BIG = 100 * 10**9
+UNSEEN_BIG_NOTE = "高于常见水平，可能是 Spotlight 索引异常、本地快照或文稿的历史版本"
 GAP_BIG_NOTE = "高于常见水平，可能是 Spotlight 索引异常、本地快照或虚拟机磁盘"
 GAP_BIG_HOW = ("Spotlight 索引计入「系统设置 → 通用 → 储存空间」中的「系统数据」。在「系统设置 → Spotlight」中将代码、模型等"
                "文件很多的文件夹设为不搜索，可减小索引；索引损坏时需要重建，重建期间 Spotlight 搜索结果不完整")
@@ -735,6 +736,17 @@ def _usage_gap(read: Read, disk: dict) -> Optional[int]:
     if not all(isinstance(x, (int, float)) and not isinstance(x, bool) for x in (measured, total, free)) or measured <= 0:
         return None
     return int(total - free - measured)
+
+
+def _reconcile(read: Read) -> Optional[dict]:
+    """扫描 0.3.46 起的对账（`data/usage` 的 `reconcile`，luoke-scan#226/#227）：量全了才用，否则 None（照旧用 `_usage_gap`）"""
+    r = (_usage_raw(read) or {}).get("reconcile")
+    if not isinstance(r, dict) or r.get("complete") is not True:
+        return None
+    parts = [p for p in r.get("parts") or [] if isinstance(p, dict) and isinstance(p.get("bytes"), (int, float))]
+    return {"elsewhere": int(sum(p["bytes"] for p in parts if p.get("id") != "home")),
+            "unexplained": int(r.get("unexplained") or 0), "over": r.get("over") is True,
+            "unmeasured": [u.get("id") for u in r.get("unmeasured") or [] if isinstance(u, dict)]}
 
 
 def _ymd(s: Any) -> str:
@@ -980,21 +992,33 @@ def status(args: Dict[str, str], read: Read) -> List[dict]:
                 rows.append(kit.item(name, grew or None, right, strong=False))
         # 对账：硬盘已用减去扫描量到的，剩下的单列一行（负责人 11-23：看不见的占用要能看到；量全了才算，
         # 没有完全磁盘访问时差额里混着没量的文件夹，不列）
-        gap = _usage_gap(read, disk)
+        rec = _reconcile(read)
+        gap = None if rec else _usage_gap(read, disk)
         over = gap is not None and gap < 0
         gap = None if gap is None or gap <= 0 else gap
-        if gap is not None:
+        if rec:
+            # 扫描对过账：家目录外量得到的（应用、资源库、macOS 本身……）一行，量不到的说不清的一行（只有系统能看的地方）
+            listed = (_usage_raw(read) or {}).get("listedBytes") or 0
+            frac = lambda b: min(b / listed, 1.0) if listed else 0.0
+            if rec["elsewhere"] > 0:
+                rows.append(kit.item("macOS、应用和其他位置", None, [kit.text(size(rec["elsewhere"]), "caption"), bar(frac(rec["elsewhere"]))],
+                                     strong=False))
+            if rec["unexplained"] > 0:
+                sub = UNSEEN_BIG_NOTE if rec["over"] else "只有系统能读取的位置，如 Spotlight 索引、本地快照"
+                rows.append(kit.item("无法统计的占用", sub, [kit.text(size(rec["unexplained"]), "caption"), bar(frac(rec["unexplained"]))],
+                                     strong=False))
+        elif gap is not None:
             listed = (_usage_raw(read) or {}).get("listedBytes") or 0
             sub = GAP_BIG_NOTE if gap >= GAP_BIG else "macOS、应用和其他未统计的位置"
             rows.append(kit.item("未统计的占用", sub, [kit.text(size(gap), "caption"), bar(min(gap / listed, 1.0) if listed else 0.0)],
                                  strong=False))
         top.append(kit.list(rows))
-        if gap is not None and gap >= GAP_BIG:
+        if (rec and rec["over"]) or (gap is not None and gap >= GAP_BIG):
             top.append(kit.fold("如何查看", [kit.text(GAP_BIG_HOW)]))
         elif over:
             # 负责人的 Mac 实测（11-23）：同一个模型克隆在 5 个文件夹里，各算一份，量到的比已用多 167 GB
             top.append(kit.text(CLONE_NOTE, "caption"))
-        elif total and gap is None:
+        elif total and gap is None and not rec:
             top.append(kit.text(f"以上合计约 {total}，其余为未列出的小文件夹、系统和应用", "caption"))
     if usage is not None and usage[0]:
         if not folders:
@@ -1062,9 +1086,12 @@ def status(args: Dict[str, str], read: Read) -> List[dict]:
 def _attention_row(kit: PageKit, a: dict) -> str:
     """要注意的一项：是什么、风险多高、在哪；点进能处理它的那一类；能在访达中显示、设为不再提醒"""
     name = _rule_name(a.get("rule"))
-    where = (a.get("path") or "").rstrip("/").split("/")[-1]
+    where = _fact_detail(a) or (a.get("path") or "").rstrip("/").split("/")[-1]
     sub = " · ".join(x for x in ("需尽快处理" if a.get("urgent") else SEVERITY.get(a.get("severity"), ""), where) if x)
     btns = []
+    grant = (a.get("facts") or {}).get("grant") if str(a.get("rule") or "").startswith("posture.") else None
+    if isinstance(grant, str) and grant:
+        btns.append(kit.button("打开系统设置", "scan_open_settings", {"grant": grant}, icon="settings", variant="borderless"))
     if a.get("reveal") and a.get("finding"):
         btns.append(kit.button("在访达中显示", "scan_reveal", {"finding_id": a["finding"]}, icon="folder", variant="borderless"))
     if a.get("finding"):
@@ -1078,6 +1105,43 @@ def _attention_row(kit: PageKit, a: dict) -> str:
         btns.append(opened)
     return kit.item(name, sub or None, btns, open=opened,
                     icon="shield-alert" if a.get("urgent") or a.get("severity") == "high" else "triangle-alert")
+
+
+SIGNATURE_WORD = {"adhoc": "临时签名", "unsigned": "没有签名", "invalid": "签名后被改过", "script": "脚本",
+                  "missing": "程序已不在", "deleted": "程序已删除", "unknown": "未查看签名"}
+
+
+def _names(xs: Any, n: int = 3) -> str:
+    """几个名字：前 n 个用顿号连起来，多的写「等 N 个」"""
+    xs = [x.rstrip("/").rsplit("/", 1)[-1] for x in xs or [] if isinstance(x, str) and x]
+    return "、".join(xs[:n]) + (f" 等 {len(xs)} 个" if len(xs) > n else "")
+
+
+def _fact_detail(a: dict) -> str:
+    """要注意的一项下面那行里写的具体情况（扫描的 facts，#212）：几分钟、几天、哪几个程序；没有就空"""
+    f, rule = a.get("facts") or {}, str(a.get("rule") or "")
+    if not isinstance(f, dict) or not f:
+        return ""
+    num = lambda k: f.get(k) if isinstance(f.get(k), int) else None
+    if rule == "posture.screen-lock-delay" and num("delaySeconds"):
+        return f"{num('delaySeconds') // 60} 分钟后才要求密码"
+    if rule == "posture.pending-updates" and num("pending"):
+        return f"{num('pending')} 个更新待安装" + (f"，{num('uptimeDays')} 天未重启" if num("uptimeDays") else "")
+    if rule == "posture.xprotect-stale" and _ymd(f.get("updated")):
+        return f"{_ymd(f.get('updated'))}更新"
+    if rule == "posture.trusted-roots" and f.get("certs"):
+        more = (num("certsMore") or 0) + len(f["certs"])
+        return "、".join(str(c) for c in f["certs"][:3]) + (f" 等 {more} 个" if more > 3 else "")
+    if rule == "keyboard.watchers":
+        return _names(f.get("programs"))
+    if rule == "keyboard.unvouched":
+        sig = SIGNATURE_WORD.get(((f.get("signature") or {}).get("kind")) or "", "")
+        return " · ".join(x for x in (_names([f.get("program")]), sig) if x)
+    if rule.startswith("process."):
+        who = _names([f.get("program") or f.get("library")]) or _names([o.get("name") for o in f.get("oldest") or []
+                                                                         if isinstance(o, dict)])
+        return " · ".join(x for x in (who, f"{num('count')} 个进程" if (num("count") or 0) > 1 else "") if x)
+    return ""
 
 
 def _cats(d: dict) -> List[dict]:
@@ -1188,10 +1252,50 @@ def _risk_detail(it: dict) -> List[str]:
                 lines.append(f"{SKILL_DETAIL[k][0]}：{SKILL_DETAIL[k][1]}")
         if lines:
             lines.append("以上由扫描规则按写法判断，不代表插件一定有恶意；来源可信、用途相符的可设为不再提醒")
+    lines += _hit_lines(it)
     manage = SKILL_MANAGE.get(str(f.get("agent") or ""))
     if lines and manage and "trash" not in (it.get("options") or []):
         lines.append(manage)
     return lines
+
+
+SHOW_HITS = 5   # 「为什么有风险」里最多列几处
+TEMPLATE_PART = {"template": "对话模板", "system": "默认系统提示", "messages": "预设对话"}
+
+
+def _hit_lines(it: dict) -> List[str]:
+    """规则在哪里查到的（扫描的 `facts.hits`，luoke-agent#212）：一处一句，写哪种、哪个文件第几行；
+    说明里写明了要做的标出来。只有代号、文件名和行号，没有原文"""
+    f = it.get("facts") or {}
+    hits = [h for h in f.get("hits") or [] if isinstance(h, dict)]
+    out: List[str] = []
+    for h in hits[:SHOW_HITS]:
+        kinds = [k for k in h.get("kinds") or [] if isinstance(k, str)]
+        what = "、".join((TEMPLATE_SIGNS.get(k) or (None,))[0] or k for k in kinds) if h.get("part") \
+            else "、".join(SKILL_KINDS.get(k, k) for k in kinds)
+        files = [x for x in h.get("files") or [] if isinstance(x, str)]
+        where = "、".join(files[:3]) + (f" 等 {len(files)} 个文件" if len(files) > 3 else "")
+        if h.get("part") in TEMPLATE_PART:
+            where = f"{where}（{TEMPLATE_PART[h['part']]}）" if where else TEMPLATE_PART[h["part"]]
+        ln = [str(n) for n in h.get("lines") or [] if isinstance(n, int)]
+        if ln:
+            more = h.get("linesMore") or 0
+            where += f" 第 {'、'.join(ln)} 行" + (f"等 {len(ln) + more} 处" if more else "")
+        line = "：".join(x for x in (what, where or "整个插件") if x)
+        if h.get("declared"):
+            line += "（插件说明中已写明）"
+        out.append(line)
+    rest = len(hits) - len(out) + (f.get("hitsMore") or 0)
+    if rest > 0:
+        out.append(f"另有 {rest} 处")
+    return (["查到的位置"] + out) if out else []
+
+
+def _model_notes(it: dict) -> List[str]:
+    """本机模型对这一项写的说明（扫描的 `modelNotes`）：是内容不是结论，原样放、写明是本机模型写的"""
+    notes = [n.get("text").strip() for n in it.get("modelNotes") or []
+             if isinstance(n, dict) and n.get("source") == "local-model" and isinstance(n.get("text"), str) and n["text"].strip()]
+    return [f"本机模型的说明（仅供参考）：{t[:300]}" for t in notes[:3]]
 
 
 CHIPS = 6       # 一项下面最多画几个名字小块
@@ -1302,9 +1406,23 @@ def _tilde(path: str) -> str:
     return "~/" + path[len(home):] if path.startswith(home) else path
 
 
+KEEP_CHOICES = 12      # 一组重复文件最多几份能在这里选留哪份；再多的照扫描定的留
+
+
+def _members(it: dict) -> List[str]:
+    """重复文件这一组的每一份（扫描的 `facts.members`，第一份是扫描建议留的）；份数超过 KEEP_CHOICES 或没给时是 []"""
+    m = [p for p in (it.get("facts") or {}).get("members") or [] if isinstance(p, str) and p]
+    return m if 2 <= len(m) <= KEEP_CHOICES else []
+
+
 def _copies(kit: PageKit, it: dict) -> List[str]:
-    """重复文件的一项：多出来的每一份在哪（移走或换成克隆的是它们）、留下的那一份在哪（扫描的 `paths`、`facts.keep`）。几份的文件名一样，
-    只写名字分不出是哪一份；留哪一份是扫描定的，这里照写。扫描没给留下的那一份时返回 []，照别的类画"""
+    """重复文件的一项：几份各在哪、留哪一份。扫描给了全部几份（`facts.members`）时画成单选，默认选扫描建议的那份，
+    用户能换（负责人 11-24 定）；没给时照写扫描定的留哪份（`paths`、`facts.keep`）。
+    扫描没给留下的那一份时返回 []，照别的类画"""
+    members = _members(it)
+    if members:
+        return [kit.text(f"重复的 {len(members)} 份，选择保留哪一份", "caption"),
+                kit.choice(f"keep-{it['key']}", [(p, _short(_tilde(p))) for p in members], members[0])]
     keep = (it.get("facts") or {}).get("keep")
     paths = [p for p in it.get("paths") or [] if isinstance(p, str) and p] or ([it["path"]] if it.get("path") else [])
     if not isinstance(keep, str) or not keep or not paths:
@@ -1343,6 +1461,7 @@ def _item_row(kit: PageKit, it: dict, ignore_word: str) -> str:
     detail = _risk_detail(it)
     if detail:
         left.append(kit.fold("为什么有风险", [kit.text(x, "caption") for x in detail]))
+    left += [kit.text(x, "caption") for x in _model_notes(it)]
     # 标签单独一块、按钮一排单独一块：按钮那一排里只有按钮，窗口才把它们画成只有图标（字是悬停提示）
     return kit.row([kit.column(left)] + badge + [kit.row(btns)], justify="spaceBetween")
 
@@ -1362,6 +1481,28 @@ def _item_pages(items: List[dict], ignore_word: str, room: int) -> List[List[dic
         pages[-1].append(it)
         used += cost
     return pages
+
+
+HOME_DIRS = {"Downloads": "下载", "Desktop": "桌面", "Documents": "文稿", "Movies": "影片", "Music": "音乐", "Pictures": "图片"}
+
+
+def _compared(c: Any) -> str:
+    """重复文件这一轮比了哪些地方（扫描的 `compared`，luoke-scan#234）：测试者知道有 5 份、这里只列了 2 份时，看得出另几份在哪儿没比"""
+    if not isinstance(c, dict):
+        return ""
+    name = lambda xs: "".join(f"「{HOME_DIRS.get(x, x)}」" for x in xs if isinstance(x, str))
+    places, no = c.get("places") or [], c.get("noAccess") or []
+    mb = (c.get("minBytes") or 0) // (1024 * 1024)
+    parts = []
+    if places:
+        parts.append(f"只比较了{name(places)}中" + (f" {mb} MB 以上" if mb else "") + "的文件")
+    if no:
+        parts.append(f"{name(no)}需开启完全磁盘访问后才会比较")
+    if c.get("partial"):
+        parts.append(f"{name(c['partial'])}文件太多，只比较了一部分")
+    if c.get("finished") is False:
+        parts.append("这一轮还没比较完，列出的是上一轮的结果")
+    return "；".join(parts)
 
 
 def category(args: Dict[str, str], read: Read) -> List[dict]:
@@ -1384,10 +1525,15 @@ def category(args: Dict[str, str], read: Read) -> List[dict]:
     judge = _judgement(d) if items else ""
     if judge:
         top.append(kit.column([kit.text("判断", "caption"), kit.text(judge)]))
+    scope = _compared(d.get("compared")) if cid == "duplicate" else ""
+    if scope:
+        top.append(kit.text(scope, "caption"))
     plans: Dict[str, List[dict]] = {}
     for it in items:        # 勾选管全部：没画在这一页的也在数据里，照建议勾着
         plans.setdefault(it["plan"], []).append(it)
         kit.data.setdefault("checks", {})[it["key"]] = it.get("suggested") not in (None, "keep", "ignore")
+        if _members(it):        # 留哪一份：没画在这一页的照扫描建议的留
+            kit.data.setdefault("choices", {})[f"keep-{it['key']}"] = [_members(it)[0]]
     whole: Dict[str, List[dict]] = {}      # 组标题上的个数和大小算全部页的，不只这一页
     for it in items:
         whole.setdefault(it.get("group") or "", []).append(it)
@@ -1417,7 +1563,8 @@ def category(args: Dict[str, str], read: Read) -> List[dict]:
         # 只有一个方案时按钮上写勾了几项、跟着勾选变（§4 countChecks），一项没勾时不画；几个方案各管一部分的照旧不写数
         counted = len(plans) == 1
         bid = kit.button(f"{label} {{n}} 项" if counted else label, "scan_apply",
-                         {"plan_id": plan, "selected": {"path": "/checks"}, "how": {i["key"]: _how(i) for i in its}},
+                         dict({"plan_id": plan, "selected": {"path": "/checks"}, "how": {i["key"]: _how(i) for i in its}},
+                              **({"keep": {"path": "/choices"}} if any(_members(i) for i in its) else {})),
                          variant="primary" if not btns else None,
                          confirm={"title": TITLES.get(word, f"{word}所选项目？"), "text": note + ("；需要输入 Mac 密码" if needs_pw else ""),
                                   "label": word})
@@ -1474,7 +1621,14 @@ def action(name: str, ctx: Dict[str, Any]) -> Tuple[str, Dict[str, Any]]:
         how = ctx.get("how") if isinstance(ctx.get("how"), dict) else {}
         ok = HOW + ("clone",)
         picked = {k: [how[k] if how.get(k) in ok else "trash"] for k, on in ctx["selected"].items() if on is True and k in how}
-        return name, {"plan_id": ctx.get("plan_id"), "choices": picked}
+        out = {"plan_id": ctx.get("plan_id"), "choices": picked}
+        # 重复文件选了留哪一份：只对勾了、移到废纸篓的项发（扫描的 `keep`，luoke-scan#234）；扫描执行前再核一遍
+        chose = ctx.get("keep") if isinstance(ctx.get("keep"), dict) else {}
+        keep = {k: v[0] for k, v in ((key[len("keep-"):], val) for key, val in chose.items() if isinstance(key, str) and key.startswith("keep-"))
+                if picked.get(k) == ["trash"] and isinstance(v, list) and len(v) == 1 and isinstance(v[0], str)}
+        if keep:
+            out["keep"] = keep
+        return name, out
     return name, ctx
 
 
