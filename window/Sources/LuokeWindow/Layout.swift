@@ -71,13 +71,13 @@ struct RailSplit<Main: View, Rail: View>: View {
 
 extension WindowModel {
     /// 这一页在这一档里有没有侧栏。页和底部的搜索框都照它，搜索框才跟得上主栏。
-    /// 「今天」（标准，不在逐件处理）：有「已经替你做了」；
+    /// 「今天」：有「已经替你做了」；
     /// 接上核心的应用页：第一页（下面有「这个应用」），或者工具在这一页写了 `"placement": "aside"` 的段
     func hasRail(_ layout: LKLayout) -> Bool {
-        guard layout == .wide, focus == nil else { return false }
+        guard layout == .wide else { return false }
         switch page {
         case .today:
-            return density == .standard && !done.isEmpty
+            return !done.isEmpty
         case .mail, .scan, .mem, .searchApp, .ime:
             guard let app = agentApp(for: page), let tab = visibleAppTab else { return false }
             return agentPages[AgentFeed.pageKey(app.id, tab)]?.surface?.surface.asideSections.isEmpty == false

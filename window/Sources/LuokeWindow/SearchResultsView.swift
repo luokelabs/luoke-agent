@@ -10,6 +10,8 @@ struct SearchResults: View {
     let answer: SearchAnswer
     /// 离屏截图：系统的滚动视图画不出来，平铺、截掉多的
     let snapshot: Bool
+    /// 结果最高多少（连顶上一行和页脚）：螺壳搜索页给内容区剩下的高
+    var height: CGFloat = SearchResults.height
     @Environment(\.lk) private var p
 
     static let name: CGFloat = 12
@@ -27,7 +29,7 @@ struct SearchResults: View {
                     scrolling(SearchPreview(model: model, hit: hit)).frame(width: 300)
                 }
             }
-            .frame(maxHeight: Self.height - 92)
+            .frame(maxHeight: height - 92)
             .fixedSize(horizontal: false, vertical: true)
             Rectangle().fill(p.border).frame(height: 1)
             footer
@@ -36,7 +38,7 @@ struct SearchResults: View {
 
     @ViewBuilder private func scrolling(_ content: some View) -> some View {
         if snapshot {
-            content.fixedSize(horizontal: false, vertical: true).frame(maxHeight: Self.height - 92, alignment: .top)
+            content.fixedSize(horizontal: false, vertical: true).frame(maxHeight: height - 92, alignment: .top)
                 .fixedSize(horizontal: false, vertical: true).clipped()
         } else {
             ScrollViewReader { proxy in
@@ -47,7 +49,7 @@ struct SearchResults: View {
                         if let id { withAnimation(.easeOut(duration: 0.15)) { proxy.scrollTo(id) } }
                     }
             }
-            .frame(maxHeight: Self.height - 92).fixedSize(horizontal: false, vertical: true)
+            .frame(maxHeight: height - 92).fixedSize(horizontal: false, vertical: true)
         }
     }
 

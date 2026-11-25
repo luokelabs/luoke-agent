@@ -38,6 +38,11 @@
      },
      {
       "hidden": true,
+      "id": "change",
+      "title": "更改处理方式"
+     },
+     {
+      "hidden": true,
       "id": "piece",
       "title": "精选"
      },
@@ -119,7 +124,6 @@
   "read-data-digest-all.json",
   "read-data-digest-today-all.json",
   "read-data-inbox-all.json",
-  "read-data-old.json",
   "read-data-today-all.json",
   "read-outbox.json",
   "read-page-legacy-settings.json",
@@ -906,6 +910,145 @@
     }
    ]
   },
+  "change": {
+   "messages": [
+    {
+     "createSurface": {
+      "catalogId": "ai.luoke/a2ui/agent/1",
+      "surfaceId": "luoke-mail/page/change"
+     },
+     "version": "v0.9"
+    },
+    {
+     "updateComponents": {
+      "components": [
+       {
+        "children": [
+         "t1",
+         "k3",
+         "k4",
+         "r5"
+        ],
+        "component": "Column",
+        "id": "root"
+       },
+       {
+        "component": "Text",
+        "id": "t1",
+        "text": "下周评审的时间",
+        "variant": "strong"
+       },
+       {
+        "action": {
+         "event": {
+          "context": {
+           "account": "me@company.example",
+           "action": {
+            "path": "/choices/change/0"
+           },
+           "ids": [
+            4019
+           ],
+           "remember": {
+            "path": "/choices/remember/0"
+           }
+          },
+          "name": "mail_change"
+         }
+        },
+        "child": "b2-text",
+        "component": "Button",
+        "id": "b2",
+        "variant": "primary"
+       },
+       {
+        "component": "Text",
+        "id": "b2-text",
+        "text": "更改"
+       },
+       {
+        "component": "ChoicePicker",
+        "id": "k3",
+        "label": "改成",
+        "options": [
+         {
+          "label": "回复",
+          "value": "reply"
+         },
+         {
+          "label": "加入日程",
+          "value": "schedule"
+         },
+         {
+          "label": "加星标",
+          "value": "follow_up"
+         },
+         {
+          "label": "归档",
+          "value": "archive"
+         },
+         {
+          "label": "删除",
+          "value": "ignore"
+         }
+        ],
+        "value": {
+         "path": "/choices/change"
+        }
+       },
+       {
+        "component": "ChoicePicker",
+        "id": "k4",
+        "label": "以后",
+        "options": [
+         {
+          "label": "仅此邮件",
+          "value": "none"
+         },
+         {
+          "label": "此发件人今后同样处理",
+          "value": "sender"
+         },
+         {
+          "label": "此域名今后同样处理",
+          "value": "domain"
+         }
+        ],
+        "value": {
+         "path": "/choices/remember"
+        }
+       },
+       {
+        "children": [
+         "b2"
+        ],
+        "component": "Row",
+        "id": "r5"
+       }
+      ],
+      "surfaceId": "luoke-mail/page/change"
+     },
+     "version": "v0.9"
+    },
+    {
+     "updateDataModel": {
+      "path": "/",
+      "surfaceId": "luoke-mail/page/change",
+      "value": {
+       "choices": {
+        "change": [
+         "archive"
+        ],
+        "remember": [
+         "none"
+        ]
+       }
+      }
+     },
+     "version": "v0.9"
+    }
+   ]
+  },
   "clean": {
    "messages": [
     {
@@ -921,12 +1064,10 @@
        {
         "children": [
          "k2",
-         "t3",
-         "l30",
-         "t33",
-         "l43",
-         "t44",
-         "l83"
+         "k4",
+         "k6",
+         "l33",
+         "r36"
         ],
         "component": "Column",
         "id": "root"
@@ -938,7 +1079,9 @@
            "args": {
             "account": {
              "path": "/choices/account/0"
-            }
+            },
+            "group": "unsubscribe",
+            "view": "subs"
            },
            "page": "clean"
           },
@@ -980,10 +1123,99 @@
         }
        },
        {
+        "action": {
+         "event": {
+          "context": {
+           "args": {
+            "view": {
+             "path": "/choices/view/0"
+            }
+           },
+           "page": "clean"
+          },
+          "name": "agent.open_page"
+         }
+        },
+        "child": "b3-text",
+        "component": "Button",
+        "id": "b3"
+       },
+       {
         "component": "Text",
-        "id": "t3",
-        "text": "可退订 · 3 个发件人",
-        "variant": "caption"
+        "id": "b3-text",
+        "text": "切换视图"
+       },
+       {
+        "component": "ChoicePicker",
+        "id": "k4",
+        "options": [
+         {
+          "label": "订阅体检",
+          "value": "subs"
+         },
+         {
+          "label": "旧邮件",
+          "value": "old"
+         }
+        ],
+        "submit": "b3",
+        "value": {
+         "path": "/choices/view"
+        }
+       },
+       {
+        "action": {
+         "event": {
+          "context": {
+           "args": {
+            "group": {
+             "path": "/choices/group/0"
+            },
+            "view": "subs"
+           },
+           "page": "clean"
+          },
+          "name": "agent.open_page"
+         }
+        },
+        "child": "b5-text",
+        "component": "Button",
+        "id": "b5"
+       },
+       {
+        "component": "Text",
+        "id": "b5-text",
+        "text": "切换分组"
+       },
+       {
+        "component": "ChoicePicker",
+        "id": "k6",
+        "options": [
+         {
+          "label": "建议退订 3",
+          "value": "unsubscribe"
+         },
+         {
+          "label": "无法退订 1",
+          "value": "no_way"
+         },
+         {
+          "label": "可疑 1",
+          "value": "suspicious"
+         },
+         {
+          "label": "已处理 1",
+          "value": "handled"
+         },
+         {
+          "label": "建议保留 1",
+          "value": "keep"
+         }
+        ],
+        "submit": "b5",
+        "value": {
+         "path": "/choices/group"
+        }
        },
        {
         "action": {
@@ -995,33 +1227,33 @@
           "name": "mail_unsubscribe"
          }
         },
-        "child": "b4-row",
+        "child": "b7-row",
         "component": "Button",
         "confirm": {
          "label": "退订",
          "text": "退订后无法在螺壳中撤销",
          "title": "退订「某电商促销」？"
         },
-        "id": "b4",
+        "id": "b7",
         "variant": "borderless"
        },
        {
         "component": "Icon",
-        "id": "b4-icon",
+        "id": "b7-icon",
         "name": "mail-x"
        },
        {
         "component": "Text",
-        "id": "b4-text",
+        "id": "b7-text",
         "text": "退订"
        },
        {
         "children": [
-         "b4-icon",
-         "b4-text"
+         "b7-icon",
+         "b7-text"
         ],
         "component": "Row",
-        "id": "b4-row"
+        "id": "b7-row"
        },
        {
         "action": {
@@ -1033,28 +1265,28 @@
           "name": "mail_sender_keep"
          }
         },
-        "child": "b5-row",
+        "child": "b8-row",
         "component": "Button",
-        "id": "b5",
+        "id": "b8",
         "variant": "borderless"
        },
        {
         "component": "Icon",
-        "id": "b5-icon",
+        "id": "b8-icon",
         "name": "bell-off"
        },
        {
         "component": "Text",
-        "id": "b5-text",
+        "id": "b8-text",
         "text": "保留，不再提示"
        },
        {
         "children": [
-         "b5-icon",
-         "b5-text"
+         "b8-icon",
+         "b8-text"
         ],
         "component": "Row",
-        "id": "b5-row"
+        "id": "b8-row"
        },
        {
         "action": {
@@ -1069,53 +1301,53 @@
           "name": "agent.open_page"
          }
         },
-        "child": "b6-text",
+        "child": "b9-text",
         "component": "Button",
-        "id": "b6"
+        "id": "b9"
        },
        {
         "component": "Text",
-        "id": "b6-text",
+        "id": "b9-text",
         "text": "这个发件人"
        },
        {
         "component": "Text",
-        "id": "t7",
+        "id": "t10",
         "text": "某电商促销",
         "variant": "strong"
        },
        {
         "component": "Text",
-        "id": "t8",
+        "id": "t11",
         "text": "每周 5 封，均未读，支持一键退订",
         "variant": "caption"
        },
        {
         "children": [
-         "t7",
-         "t8"
+         "t10",
+         "t11"
         ],
         "component": "Column",
-        "id": "c9"
+        "id": "c12"
        },
        {
         "children": [
-         "b4",
-         "b5",
-         "b6"
+         "b7",
+         "b8",
+         "b9"
         ],
         "component": "Row",
-        "id": "r10"
+        "id": "r13"
        },
        {
         "children": [
-         "c9",
-         "r10"
+         "c12",
+         "r13"
         ],
         "component": "Row",
-        "id": "r11",
+        "id": "r14",
         "justify": "spaceBetween",
-        "open": "b6"
+        "open": "b9"
        },
        {
         "action": {
@@ -1127,33 +1359,33 @@
           "name": "mail_unsubscribe"
          }
         },
-        "child": "b12-row",
+        "child": "b15-row",
         "component": "Button",
         "confirm": {
          "label": "退订",
          "text": "退订后无法在螺壳中撤销",
          "title": "退订「某课程平台」？"
         },
-        "id": "b12",
+        "id": "b15",
         "variant": "borderless"
        },
        {
         "component": "Icon",
-        "id": "b12-icon",
+        "id": "b15-icon",
         "name": "mail-x"
        },
        {
         "component": "Text",
-        "id": "b12-text",
+        "id": "b15-text",
         "text": "退订"
        },
        {
         "children": [
-         "b12-icon",
-         "b12-text"
+         "b15-icon",
+         "b15-text"
         ],
         "component": "Row",
-        "id": "b12-row"
+        "id": "b15-row"
        },
        {
         "action": {
@@ -1165,28 +1397,28 @@
           "name": "mail_sender_keep"
          }
         },
-        "child": "b13-row",
+        "child": "b16-row",
         "component": "Button",
-        "id": "b13",
+        "id": "b16",
         "variant": "borderless"
        },
        {
         "component": "Icon",
-        "id": "b13-icon",
+        "id": "b16-icon",
         "name": "bell-off"
        },
        {
         "component": "Text",
-        "id": "b13-text",
+        "id": "b16-text",
         "text": "保留，不再提示"
        },
        {
         "children": [
-         "b13-icon",
-         "b13-text"
+         "b16-icon",
+         "b16-text"
         ],
         "component": "Row",
-        "id": "b13-row"
+        "id": "b16-row"
        },
        {
         "action": {
@@ -1201,53 +1433,53 @@
           "name": "agent.open_page"
          }
         },
-        "child": "b14-text",
+        "child": "b17-text",
         "component": "Button",
-        "id": "b14"
+        "id": "b17"
        },
        {
         "component": "Text",
-        "id": "b14-text",
+        "id": "b17-text",
         "text": "这个发件人"
        },
        {
         "component": "Text",
-        "id": "t15",
+        "id": "t18",
         "text": "某课程平台",
         "variant": "strong"
        },
        {
         "component": "Text",
-        "id": "t16",
+        "id": "t19",
         "text": "每周 2 封，均未读，支持一键退订",
         "variant": "caption"
        },
        {
         "children": [
-         "t15",
-         "t16"
+         "t18",
+         "t19"
         ],
         "component": "Column",
-        "id": "c17"
+        "id": "c20"
        },
        {
         "children": [
-         "b12",
-         "b13",
-         "b14"
+         "b15",
+         "b16",
+         "b17"
         ],
         "component": "Row",
-        "id": "r18"
+        "id": "r21"
        },
        {
         "children": [
-         "c17",
-         "r18"
+         "c20",
+         "r21"
         ],
         "component": "Row",
-        "id": "r19",
+        "id": "r22",
         "justify": "spaceBetween",
-        "open": "b14"
+        "open": "b17"
        },
        {
         "action": {
@@ -1259,33 +1491,33 @@
           "name": "mail_unsubscribe"
          }
         },
-        "child": "b20-row",
+        "child": "b23-row",
         "component": "Button",
         "confirm": {
          "label": "退订",
          "text": "退订后无法在螺壳中撤销",
          "title": "退订「某会员通讯」？"
         },
-        "id": "b20",
+        "id": "b23",
         "variant": "borderless"
        },
        {
         "component": "Icon",
-        "id": "b20-icon",
+        "id": "b23-icon",
         "name": "mail-x"
        },
        {
         "component": "Text",
-        "id": "b20-text",
+        "id": "b23-text",
         "text": "退订"
        },
        {
         "children": [
-         "b20-icon",
-         "b20-text"
+         "b23-icon",
+         "b23-text"
         ],
         "component": "Row",
-        "id": "b20-row"
+        "id": "b23-row"
        },
        {
         "action": {
@@ -1297,28 +1529,28 @@
           "name": "mail_sender_keep"
          }
         },
-        "child": "b21-row",
+        "child": "b24-row",
         "component": "Button",
-        "id": "b21",
+        "id": "b24",
         "variant": "borderless"
        },
        {
         "component": "Icon",
-        "id": "b21-icon",
+        "id": "b24-icon",
         "name": "bell-off"
        },
        {
         "component": "Text",
-        "id": "b21-text",
+        "id": "b24-text",
         "text": "保留，不再提示"
        },
        {
         "children": [
-         "b21-icon",
-         "b21-text"
+         "b24-icon",
+         "b24-text"
         ],
         "component": "Row",
-        "id": "b21-row"
+        "id": "b24-row"
        },
        {
         "action": {
@@ -1333,53 +1565,53 @@
           "name": "agent.open_page"
          }
         },
-        "child": "b22-text",
+        "child": "b25-text",
         "component": "Button",
-        "id": "b22"
+        "id": "b25"
        },
        {
         "component": "Text",
-        "id": "b22-text",
+        "id": "b25-text",
         "text": "这个发件人"
        },
        {
         "component": "Text",
-        "id": "t23",
+        "id": "t26",
         "text": "某会员通讯",
         "variant": "strong"
        },
        {
         "component": "Text",
-        "id": "t24",
+        "id": "t27",
         "text": "每月 4 封，已读 1 封，支持一键退订",
         "variant": "caption"
        },
        {
         "children": [
-         "t23",
-         "t24"
+         "t26",
+         "t27"
         ],
         "component": "Column",
-        "id": "c25"
+        "id": "c28"
        },
        {
         "children": [
-         "b20",
-         "b21",
-         "b22"
+         "b23",
+         "b24",
+         "b25"
         ],
         "component": "Row",
-        "id": "r26"
+        "id": "r29"
        },
        {
         "children": [
-         "c25",
-         "r26"
+         "c28",
+         "r29"
         ],
         "component": "Row",
-        "id": "r27",
+        "id": "r30",
         "justify": "spaceBetween",
-        "open": "b22"
+        "open": "b25"
        },
        {
         "action": {
@@ -1395,55 +1627,37 @@
           "name": "mail_unsubscribe"
          }
         },
-        "child": "b28-text",
+        "child": "b31-text",
         "component": "Button",
         "confirm": {
          "label": "全部退订",
          "text": "某电商促销、某课程平台、某会员通讯。退订后无法在螺壳中撤销；如需重新订阅，需在对方网站操作",
          "title": "退订这 3 个发件人？"
         },
-        "id": "b28",
+        "id": "b31",
         "variant": "primary"
        },
        {
         "component": "Text",
-        "id": "b28-text",
+        "id": "b31-text",
         "text": "全部退订（3）"
        },
        {
         "children": [
-         "b28"
+         "b31"
         ],
         "component": "Row",
-        "id": "r29"
+        "id": "r32"
        },
        {
         "children": [
-         "r11",
-         "r19",
-         "r27",
-         "r29"
+         "r14",
+         "r22",
+         "r30",
+         "r32"
         ],
         "component": "List",
-        "id": "l30"
-       },
-       {
-        "action": {
-         "event": {
-          "context": {
-           "page": "subs"
-          },
-          "name": "agent.open_page"
-         }
-        },
-        "child": "b31-text",
-        "component": "Button",
-        "id": "b31"
-       },
-       {
-        "component": "Text",
-        "id": "b31-text",
-        "text": "订阅体检"
+        "id": "l33"
        },
        {
         "action": {
@@ -1454,592 +1668,43 @@
           "name": "mail_subscriptions_check"
          }
         },
-        "child": "b32-row",
+        "child": "b34-row",
         "component": "Button",
-        "id": "b32",
+        "id": "b34",
         "variant": "borderless"
        },
        {
         "component": "Icon",
-        "id": "b32-icon",
+        "id": "b34-icon",
         "name": "refresh-cw"
        },
        {
         "component": "Text",
-        "id": "b32-text",
+        "id": "b34-text",
         "text": "重新检查"
        },
        {
         "children": [
-         "b32-icon",
-         "b32-text"
+         "b34-icon",
+         "b34-text"
         ],
         "component": "Row",
-        "id": "b32-row"
-       },
-       {
-        "component": "Text",
-        "id": "t33",
-        "text": "订阅体检",
-        "variant": "caption"
-       },
-       {
-        "component": "Text",
-        "id": "t34",
-        "text": "全部结果"
+        "id": "b34-row"
        },
        {
         "component": "Text",
         "id": "t35",
-        "text": "建议退订 3、可疑 1",
+        "text": "上次检查：11月10日，建议退订的约占 2.7 MB",
         "variant": "caption"
        },
        {
         "children": [
-         "t34",
-         "t35"
-        ],
-        "component": "Column",
-        "id": "c36"
-       },
-       {
-        "children": [
-         "b31"
+         "t35",
+         "b34"
         ],
         "component": "Row",
-        "id": "r37"
-       },
-       {
-        "children": [
-         "c36",
-         "r37"
-        ],
-        "component": "Row",
-        "id": "r38",
-        "justify": "spaceBetween",
-        "open": "b31"
-       },
-       {
-        "component": "Text",
-        "id": "t39",
-        "text": "上次检查：11月10日"
-       },
-       {
-        "children": [
-         "t39"
-        ],
-        "component": "Column",
-        "id": "c40"
-       },
-       {
-        "children": [
-         "b32"
-        ],
-        "component": "Row",
-        "id": "r41"
-       },
-       {
-        "children": [
-         "c40",
-         "r41"
-        ],
-        "component": "Row",
-        "id": "r42",
+        "id": "r36",
         "justify": "spaceBetween"
-       },
-       {
-        "children": [
-         "r38",
-         "r42"
-        ],
-        "component": "List",
-        "id": "l43"
-       },
-       {
-        "component": "Text",
-        "id": "t44",
-        "text": "可归档的旧邮件",
-        "variant": "caption"
-       },
-       {
-        "action": {
-         "event": {
-          "context": {
-           "account": "me@company.example",
-           "key": "notice|from:noreply@post.example",
-           "on": true,
-           "scope": "inbox"
-          },
-          "name": "mail_old_keep"
-         }
-        },
-        "child": "b45-row",
-        "component": "Button",
-        "id": "b45",
-        "variant": "borderless"
-       },
-       {
-        "component": "Icon",
-        "id": "b45-icon",
-        "name": "bell-off"
-       },
-       {
-        "component": "Text",
-        "id": "b45-text",
-        "text": "保留，不再提示"
-       },
-       {
-        "children": [
-         "b45-icon",
-         "b45-text"
-        ],
-        "component": "Row",
-        "id": "b45-row"
-       },
-       {
-        "action": {
-         "event": {
-          "context": {
-           "account": "me@company.example",
-           "count": 41,
-           "keys": [
-            "notice|from:noreply@post.example"
-           ]
-          },
-          "name": "mail_old_archive"
-         }
-        },
-        "child": "b46-text",
-        "component": "Button",
-        "id": "b46",
-        "tooltip": "标为已读、移出收件箱，不会删除；能在处理记录里撤销"
-       },
-       {
-        "component": "Text",
-        "id": "b46-text",
-        "text": "归档"
-       },
-       {
-        "component": "Text",
-        "id": "t47",
-        "text": "半年前的快递和验证码通知",
-        "variant": "strong"
-       },
-       {
-        "component": "Text",
-        "id": "t48",
-        "text": "通知，41 封，5.3 MB",
-        "variant": "caption"
-       },
-       {
-        "children": [
-         "t47",
-         "t48"
-        ],
-        "component": "Column",
-        "id": "c49"
-       },
-       {
-        "children": [
-         "b45",
-         "b46"
-        ],
-        "component": "Row",
-        "id": "r50"
-       },
-       {
-        "children": [
-         "c49",
-         "r50"
-        ],
-        "component": "Row",
-        "id": "r51",
-        "justify": "spaceBetween"
-       },
-       {
-        "action": {
-         "event": {
-          "context": {
-           "account": "me@company.example",
-           "key": "promotion|from:ad@store.example",
-           "on": true,
-           "scope": "inbox"
-          },
-          "name": "mail_old_keep"
-         }
-        },
-        "child": "b52-row",
-        "component": "Button",
-        "id": "b52",
-        "variant": "borderless"
-       },
-       {
-        "component": "Icon",
-        "id": "b52-icon",
-        "name": "bell-off"
-       },
-       {
-        "component": "Text",
-        "id": "b52-text",
-        "text": "保留，不再提示"
-       },
-       {
-        "children": [
-         "b52-icon",
-         "b52-text"
-        ],
-        "component": "Row",
-        "id": "b52-row"
-       },
-       {
-        "action": {
-         "event": {
-          "context": {
-           "account": "me@company.example",
-           "count": 310,
-           "keys": [
-            "promotion|from:ad@store.example"
-           ],
-           "scope": "inbox"
-          },
-          "name": "mail_old_trash"
-         }
-        },
-        "child": "b53-text",
-        "component": "Button",
-        "confirm": {
-         "label": "移到已删除",
-         "text": "如未开启处理模式，需先在设置 ·「更多」中开启。邮箱清空「已删除」前可撤销",
-         "title": "把「某店」的 310 封移到已删除？"
-        },
-        "id": "b53"
-       },
-       {
-        "component": "Text",
-        "id": "b53-text",
-        "text": "移到已删除"
-       },
-       {
-        "component": "Text",
-        "id": "t54",
-        "text": "某店",
-        "variant": "strong"
-       },
-       {
-        "component": "Text",
-        "id": "t55",
-        "text": "推广邮件，310 封，40 MB",
-        "variant": "caption"
-       },
-       {
-        "children": [
-         "t54",
-         "t55"
-        ],
-        "component": "Column",
-        "id": "c56"
-       },
-       {
-        "children": [
-         "b52",
-         "b53"
-        ],
-        "component": "Row",
-        "id": "r57"
-       },
-       {
-        "children": [
-         "c56",
-         "r57"
-        ],
-        "component": "Row",
-        "id": "r58",
-        "justify": "spaceBetween"
-       },
-       {
-        "action": {
-         "event": {
-          "context": {
-           "account": "me@company.example",
-           "key": "promotion|from:ad2@store.example",
-           "on": true,
-           "scope": "inbox"
-          },
-          "name": "mail_old_keep"
-         }
-        },
-        "child": "b59-row",
-        "component": "Button",
-        "id": "b59",
-        "variant": "borderless"
-       },
-       {
-        "component": "Icon",
-        "id": "b59-icon",
-        "name": "bell-off"
-       },
-       {
-        "component": "Text",
-        "id": "b59-text",
-        "text": "保留，不再提示"
-       },
-       {
-        "children": [
-         "b59-icon",
-         "b59-text"
-        ],
-        "component": "Row",
-        "id": "b59-row"
-       },
-       {
-        "action": {
-         "event": {
-          "context": {
-           "account": "me@company.example",
-           "count": 22,
-           "keys": [
-            "promotion|from:ad2@store.example"
-           ],
-           "scope": "inbox"
-          },
-          "name": "mail_old_trash"
-         }
-        },
-        "child": "b60-text",
-        "component": "Button",
-        "confirm": {
-         "label": "移到已删除",
-         "text": "如未开启处理模式，需先在设置 ·「更多」中开启。邮箱清空「已删除」前可撤销",
-         "title": "把「另一家店」的 22 封移到已删除？"
-        },
-        "id": "b60"
-       },
-       {
-        "component": "Text",
-        "id": "b60-text",
-        "text": "移到已删除"
-       },
-       {
-        "component": "Text",
-        "id": "t61",
-        "text": "另一家店",
-        "variant": "strong"
-       },
-       {
-        "component": "Text",
-        "id": "t62",
-        "text": "推广邮件，22 封，2.9 MB",
-        "variant": "caption"
-       },
-       {
-        "children": [
-         "t61",
-         "t62"
-        ],
-        "component": "Column",
-        "id": "c63"
-       },
-       {
-        "children": [
-         "b59",
-         "b60"
-        ],
-        "component": "Row",
-        "id": "r64"
-       },
-       {
-        "children": [
-         "c63",
-         "r64"
-        ],
-        "component": "Row",
-        "id": "r65",
-        "justify": "spaceBetween"
-       },
-       {
-        "action": {
-         "event": {
-          "context": {
-           "account": "me@company.example",
-           "count": 332,
-           "keys": [
-            "promotion|from:ad@store.example",
-            "promotion|from:ad2@store.example"
-           ],
-           "scope": "inbox"
-          },
-          "name": "mail_old_trash"
-         }
-        },
-        "child": "b66-text",
-        "component": "Button",
-        "confirm": {
-         "label": "移到已删除",
-         "text": "推广邮件 332 封，约 43 MB。如未开启处理模式，需先在设置 ·「更多」中开启。邮箱清空「已删除」前可撤销",
-         "title": "将这 2 组的 332 封移到已删除？"
-        },
-        "id": "b66"
-       },
-       {
-        "component": "Text",
-        "id": "b66-text",
-        "text": "全部移到已删除"
-       },
-       {
-        "component": "Text",
-        "id": "t67",
-        "text": "建议移到已删除的全部分组",
-        "variant": "strong"
-       },
-       {
-        "component": "Text",
-        "id": "t68",
-        "text": "2 组，共 332 封",
-        "variant": "caption"
-       },
-       {
-        "children": [
-         "t67",
-         "t68"
-        ],
-        "component": "Column",
-        "id": "c69"
-       },
-       {
-        "children": [
-         "b66"
-        ],
-        "component": "Row",
-        "id": "r70"
-       },
-       {
-        "children": [
-         "c69",
-         "r70"
-        ],
-        "component": "Row",
-        "id": "r71",
-        "justify": "spaceBetween"
-       },
-       {
-        "action": {
-         "event": {
-          "context": {
-           "account": "me@company.example",
-           "on": false,
-           "scope": "inbox"
-          },
-          "name": "mail_old_judge"
-         }
-        },
-        "child": "b72-text",
-        "component": "Button",
-        "id": "b72",
-        "variant": "borderless"
-       },
-       {
-        "component": "Text",
-        "id": "b72-text",
-        "text": "暂停"
-       },
-       {
-        "component": "Text",
-        "id": "t73",
-        "text": "已分析 1180 / 1211 封旧邮件（me@company.example）",
-        "variant": "strong"
-       },
-       {
-        "component": "Text",
-        "id": "t74",
-        "text": "本机模型分析中",
-        "variant": "caption"
-       },
-       {
-        "children": [
-         "t73",
-         "t74"
-        ],
-        "component": "Column",
-        "id": "c75"
-       },
-       {
-        "children": [
-         "b72"
-        ],
-        "component": "Row",
-        "id": "r76"
-       },
-       {
-        "children": [
-         "c75",
-         "r76"
-        ],
-        "component": "Row",
-        "id": "r77",
-        "justify": "spaceBetween"
-       },
-       {
-        "action": {
-         "event": {
-          "context": {
-           "args": {
-            "account": "me@company.example",
-            "scope": "inbox"
-           },
-           "page": "old"
-          },
-          "name": "agent.open_page"
-         }
-        },
-        "child": "b78-text",
-        "component": "Button",
-        "id": "b78"
-       },
-       {
-        "component": "Text",
-        "id": "b78-text",
-        "text": "全部旧邮件"
-       },
-       {
-        "component": "Text",
-        "id": "t79",
-        "text": "全部分组，含已归档的旧邮件"
-       },
-       {
-        "children": [
-         "t79"
-        ],
-        "component": "Column",
-        "id": "c80"
-       },
-       {
-        "children": [
-         "b78"
-        ],
-        "component": "Row",
-        "id": "r81"
-       },
-       {
-        "children": [
-         "c80",
-         "r81"
-        ],
-        "component": "Row",
-        "id": "r82",
-        "justify": "spaceBetween",
-        "open": "b78"
-       },
-       {
-        "children": [
-         "r51",
-         "r58",
-         "r65",
-         "r71",
-         "r77",
-         "r82"
-        ],
-        "component": "List",
-        "id": "l83"
        }
       ],
       "surfaceId": "luoke-mail/page/clean"
@@ -2054,6 +1719,12 @@
        "choices": {
         "account": [
          "all"
+        ],
+        "group": [
+         "unsubscribe"
+        ],
+        "view": [
+         "subs"
         ]
        }
       }
@@ -4578,6 +4249,7 @@
       "components": [
        {
         "children": [
+         "b22",
          "t1",
          "t2",
          "t5",
@@ -4585,8 +4257,7 @@
          "t4",
          "r7",
          "t20",
-         "l21",
-         "c26"
+         "l21"
         ],
         "component": "Column",
         "id": "root"
@@ -4780,117 +4451,42 @@
         "action": {
          "event": {
           "context": {
-           "account": "me@company.example",
-           "action": {
-            "path": "/choices/change/0"
+           "args": {
+            "account": "me@company.example",
+            "id": "4019"
            },
-           "ids": [
-            4019
-           ],
-           "remember": {
-            "path": "/choices/remember/0"
-           }
+           "page": "change"
           },
-          "name": "mail_change"
+          "name": "agent.open_page"
          }
         },
-        "child": "b22-text",
+        "child": "b22-row",
         "component": "Button",
-        "id": "b22"
+        "id": "b22",
+        "placement": "header",
+        "tooltip": "更改处理方式，可同时保存为规则",
+        "variant": "borderless"
+       },
+       {
+        "component": "Icon",
+        "id": "b22-icon",
+        "name": "pencil-line"
        },
        {
         "component": "Text",
         "id": "b22-text",
-        "text": "更改"
-       },
-       {
-        "component": "ChoicePicker",
-        "id": "k23",
-        "label": "改成",
-        "options": [
-         {
-          "label": "回复",
-          "value": "reply"
-         },
-         {
-          "label": "加入日程",
-          "value": "schedule"
-         },
-         {
-          "label": "加星标",
-          "value": "follow_up"
-         },
-         {
-          "label": "归档",
-          "value": "archive"
-         },
-         {
-          "label": "删除",
-          "value": "ignore"
-         }
-        ],
-        "value": {
-         "path": "/choices/change"
-        }
-       },
-       {
-        "component": "ChoicePicker",
-        "id": "k24",
-        "label": "以后",
-        "options": [
-         {
-          "label": "仅此邮件",
-          "value": "none"
-         },
-         {
-          "label": "此发件人今后同样处理",
-          "value": "sender"
-         },
-         {
-          "label": "此域名今后同样处理",
-          "value": "domain"
-         }
-        ],
-        "value": {
-         "path": "/choices/remember"
-        }
+        "text": "更改处理方式"
        },
        {
         "children": [
-         "b22"
+         "b22-icon",
+         "b22-text"
         ],
         "component": "Row",
-        "id": "r25"
-       },
-       {
-        "children": [
-         "k23",
-         "k24",
-         "r25"
-        ],
-        "collapsed": "更改处理方式，可同时保存为规则",
-        "component": "Column",
-        "id": "c26"
+        "id": "b22-row"
        }
       ],
       "surfaceId": "luoke-mail/page/mail"
-     },
-     "version": "v0.9"
-    },
-    {
-     "updateDataModel": {
-      "path": "/",
-      "surfaceId": "luoke-mail/page/mail",
-      "value": {
-       "choices": {
-        "change": [
-         "archive"
-        ],
-        "remember": [
-         "none"
-        ]
-       }
-      }
      },
      "version": "v0.9"
     }

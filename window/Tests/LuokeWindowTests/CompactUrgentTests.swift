@@ -32,40 +32,20 @@ final class CompactUrgentTests: XCTestCase {
     func testTwoHundredUrgentItemsAreAtMostThreeDistinctRows() {
         let m = Self.replay()
         XCTAssertEqual(m.urgent.count, StressSample.urgentReplay)
-        let shown = TodayCompact.urgentRows(m.urgent, all: false)
+        let shown = TodayPage.visibleUrgent(m.urgent, all: false)
         XCTAssertLessThanOrEqual(shown.stacks.count, 3, "急事最多 3 行")
         XCTAssertEqual(shown.stacks.reduce(0) { $0 + $1.count } + shown.more, m.urgent.count, "其余的都算进「还有 N 件急事」")
         XCTAssertGreaterThan(shown.more, 0)
-        let rows = shown.stacks.map(TodayCompact.urgentText)
-        XCTAssertEqual(Set(rows.map { "\($0.title)|\($0.sub ?? "")" }).count, rows.count, "一屏里每行分得清：\(rows)")
         let mail = shown.stacks.first { $0.count > 1 }
         XCTAssertEqual(mail?.count, StressSample.urgentReplay - 5, "200 封可疑邮件叠成一行")
-        XCTAssertEqual(mail.map(TodayCompact.urgentText)?.title, "200 封可疑邮件")
-        XCTAssertNotNil(mail.map(TodayCompact.urgentText)?.sub, "后面是第一件的副标题")
-        let all = TodayCompact.urgentRows(m.urgent, all: true)
+        let all = TodayPage.visibleUrgent(m.urgent, all: true)
         XCTAssertEqual(all.more, 0, "点了「还有 N 件急事」：都列出来")
-        let allRows = all.stacks.map(TodayCompact.urgentText)
-        XCTAssertEqual(Set(allRows.map { "\($0.title)|\($0.sub ?? "")" }).count, allRows.count, "列全了也分得清：\(allRows)")
-    }
-
-    func testOpenedStackRowsAreTellApartBySubtitle() throws {
-        let m = Self.replay()
-        let stack = try XCTUnwrap(TodayCompact.urgentRows(m.urgent, all: false).stacks.first { $0.count > 1 })
-        let lines = stack.map { TodayCompact.urgentText([$0]) }
-        XCTAssertTrue(lines.allSatisfy { $0.sub != nil }, "点开的每一件都有副标题")
-        // 一屏（760 高的窗口里不到 20 行）里的每一行分得清：任意连着的 20 行，副标题没有两行一样
-        let screen = 20
-        for start in 0...(lines.count - screen) {
-            let rows = lines[start..<(start + screen)].map { $0.sub ?? "" }
-            XCTAssertEqual(Set(rows).count, screen, "第 \(start + 1) 行起的一屏：\(rows)")
-        }
     }
 
     func testSubtitleComesFromTheCardRoot() throws {
         let m = Self.replay()
         let u = try XCTUnwrap(m.urgent.first { $0.surface != nil && $0.tool == .mail })
         XCTAssertEqual(u.surface?.surface.subtitle, StressSample.mailSubtitle(0))
-        XCTAssertEqual(TodayCompact.chooseLabel, "选择")
     }
 
     /// §4 countWeights：窗口里按钮的字（卡片里、紧凑的表和逐件处理另画的按钮）照 weights 数，选一下就跟着变

@@ -177,88 +177,6 @@ final class BehaviourTests: XCTestCase {
 
     // MARK: 逐件处理
 
-    func testFocusShowsOneCardAtATime() {
-        XCTAssertNil(m.focus)
-        m.enterFocus()
-        XCTAssertEqual(m.focus?.ids, ["plan", "ask-mem", "perm-calendar", "ai"])
-        XCTAssertEqual(m.focusCurrent?.id, "plan")
-        m.skipFocus(viaKey: true)
-        XCTAssertEqual(m.focusCurrent?.id, "ask-mem", "↓ 跳过")
-        XCTAssertEqual(m.focus?.viaKey, true)
-        m.answerFocusPrimary()
-        XCTAssertFalse(m.cards.contains { $0.id == "ask-mem" }, "⏎ 答主要的那个（对）")
-        XCTAssertEqual(m.done.first?.text, "记下了：在准备硕士答辩")
-        XCTAssertEqual(m.focusAnswered, 1)
-        XCTAssertEqual(m.focusCurrent?.id, "perm-calendar")
-        m.skipFocus()
-        m.skipFocus()
-        XCTAssertNil(m.focusCurrent, "过完一遍")
-        XCTAssertEqual(m.focusLeft, 3, "跳过的三件还在「今天」里")
-        m.exitFocus()
-        XCTAssertNil(m.focus)
-        XCTAssertEqual(m.page, .today)
-    }
-
-    func testFocusEndsWithNothingLeftWhenAllAnswered() throws {
-        m.enterFocus()
-        for id in try XCTUnwrap(m.focus?.ids) {   // 有按钮的都点一下；工具还没答完的先跳过
-            guard let c = m.focusCurrent, c.id == id, let a = SurfaceDigest(c.surface.surface).actions.first else { continue }
-            m.answerFocus(a.id)
-            if m.focusCurrent?.id == id { m.skipFocus() }
-        }
-        XCTAssertEqual(m.focus?.tapped, ["plan", "ask-mem", "perm-calendar"], "「ai」那张没有按钮，点不了")
-        m.cards = []   // 工具都答完了，收走
-        XCTAssertNil(m.focusCurrent)
-        XCTAssertEqual(m.focusLeft, 0)
-        XCTAssertEqual(m.focusAnswered, 3, "点过的三件算答了；没点过的「ai」被收走不算")
-    }
-
-    func testFocusDoesNotCountCardsTheToolsTookBack() {
-        m.enterFocus()
-        m.cards = []
-        XCTAssertNil(m.focusCurrent)
-        XCTAssertEqual(m.focusLeft, 0)
-        XCTAssertEqual(m.focusAnswered, 0, "用户没点：工具收走的不算答了")
-        XCTAssertEqual(m.focus?.ids, [], "收走的从这一轮里去掉")
-    }
-
-    func testFocusStaysPutWhenAToolReplacesTheCard() throws {
-        m.enterFocus()
-        m.skipFocus()
-        let c = try XCTUnwrap(m.focusCurrent)
-        XCTAssertEqual(c.id, "ask-mem")
-        // 工具把正看着的这张换成新编号（邮件的方案重算时就会这样）
-        var cards = m.cards
-        let i = try XCTUnwrap(cards.firstIndex { $0.id == c.id })
-        cards[i] = TodayCard(id: "ask-mem-2", tool: c.tool, time: c.time, surface: c.surface)
-        m.cards = cards
-        XCTAssertEqual(m.focusAnswered, 0, "用户没点，不算答了")
-        XCTAssertEqual(m.focusCurrent?.id, "ask-mem-2", "还在这一件，摆换上来的那张")
-        XCTAssertEqual(m.focus?.ids, ["plan", "ask-mem-2", "perm-calendar", "ai"], "新的顶在原来的位置")
-        // 跳过了的被换掉，换上来的照旧算跳过
-        cards = m.cards
-        let j = try XCTUnwrap(cards.firstIndex { $0.id == "plan" })
-        cards[j] = TodayCard(id: "plan-2", tool: cards[j].tool, time: cards[j].time, surface: cards[j].surface)
-        m.cards = cards
-        XCTAssertEqual(m.focus?.skipped.contains("plan-2"), true)
-        XCTAssertEqual(m.focusCurrent?.id, "ask-mem-2")
-        // 点了以后不见了，才算答了
-        m.answerFocusPrimary()
-        XCTAssertEqual(m.focusAnswered, 1)
-        XCTAssertEqual(m.focusCurrent?.id, "perm-calendar")
-    }
-
-    func testFocusNeedsSomethingToDecideAndLeavesOnNavigation() {
-        let cards = m.cards
-        m.cards = []
-        m.enterFocus()
-        XCTAssertNil(m.focus, "没有要你决定的：按钮是灰的，也进不去")
-        m.cards = cards
-        m.enterFocus()
-        m.go(.prefs)
-        XCTAssertNil(m.focus, "去别的页就收起")
-    }
-
     func testCardDigestFindsTitleDetailAndPrimary() {
         let plan = SurfaceDigest(m.cards[0].surface.surface)
         XCTAssertEqual(plan.title, "5 封新邮件")
@@ -292,21 +210,6 @@ final class BehaviourTests: XCTestCase {
         XCTAssertEqual(d.actions.map(\.label), ["交回", "打开网页"], "打开网页、没写 site 的不列")
         XCTAssertEqual(d.actions.map(\.site), [nil, "example.com"], "网站画在按钮后面")
         XCTAssertNil(d.primary, "没标 primary：⏎ 不答")
-    }
-
-    func testFocusAnswersOnceWhileTheCardIsBusy() throws {
-        m.enterFocus()
-        m.skipFocus()
-        let c = try XCTUnwrap(m.focusCurrent)
-        XCTAssertEqual(c.id, "ask-mem")
-        c.surface.busy = true
-        m.answerFocusPrimary()
-        m.answerFocus("b2")
-        XCTAssertTrue(m.cards.contains { $0.id == "ask-mem" }, "上一下点按还没答完：⏎、按钮都不再交")
-        XCTAssertEqual(m.focusAnswered, 0)
-        c.surface.busy = false
-        m.answerFocusPrimary()
-        XCTAssertFalse(m.cards.contains { $0.id == "ask-mem" })
     }
 
     // MARK: 简报
@@ -364,15 +267,6 @@ final class BehaviourTests: XCTestCase {
     }
 
     // MARK: 设置 · 显示
-
-    func testTodayHasOneDensity() {
-        // 「今天」只有一种密度（2026-11-13 负责人定）：以前记下的「紧凑」不再拿出来
-        defaults.set("compact", forKey: WindowModel.densityKey)
-        XCTAssertEqual(Sample.model(defaults: defaults).density, .standard)
-        m.setDensity(.compact)
-        XCTAssertNil(Sample.model(defaults: defaults).density == .compact ? "remembered" : nil, "不记")
-        XCTAssertEqual(PrefsTab.shown.map(\.title), ["通用", "模型", "隐私与权限"], "设计规范 §18.7")
-    }
 
     // MARK: 活动
 
@@ -437,6 +331,41 @@ final class BehaviourTests: XCTestCase {
         m.settingsDialog = .alerts
         m.selectPrefsTab(.general)
         XCTAssertNil(m.settingsDialog)
+    }
+
+    /// UX-09：螺壳搜索的设置是隐藏页，标题右边的齿轮打开成弹窗；底下还是概览（最近搜索）
+    func testSearchSettingsOpenAsADialogFromTheGear() {
+        let m = Sample.model()
+        m.features = .beta2
+        let f = AgentFeed(model: m)
+        Sample.applyAgentApps(f, search: "built")
+        m.go(.searchApp)
+        let app = try? XCTUnwrap(m.agentApp(for: .searchApp))
+        XCTAssertEqual(app?.pages.filter { $0.hidden && $0.icon != nil }.map(\.id), ["settings"], "齿轮只有设置一个")
+        XCTAssertTrue(m.searchBarShown)
+        XCTAssertFalse(m.hasBottomBar, "搜索框在标题下面，底部没有条")
+        m.selectAppTab("settings")
+        XCTAssertEqual(m.appDialog?.page.id, "settings")
+        XCTAssertEqual(m.visibleAppTab, "overview", "弹窗底下还是概览")
+        m.closeAppDialog()
+        XCTAssertNil(m.appDialog)
+        withExtendedLifetime(f) {}
+    }
+
+    /// UX-10：记忆不算应用，在应用管理里单独一节、放在最后
+    func testMemoryIsItsOwnSectionInAppManagement() {
+        let rows = [HostAppRow(id: "luoke-mem", tool: .mem, tagline: "", version: "1", state: .installed, bundled: true),
+                    HostAppRow(id: "luoke-mail", tool: .mail, tagline: "", version: "1", state: .installed, bundled: true)]
+        let s = AddAppsPage.sections(rows)
+        XCTAssertEqual(s.luoke.map(\.id), ["luoke-mail"], "应用里没有记忆")
+        XCTAssertEqual(s.core.map(\.id), ["luoke-mem"])
+        // 本体的清单不列记忆（螺壳自带的组件）：窗口补一行，「核心组件」不是空的
+        let mem = HostAppRow(id: "luoke-mem", tool: .mem, tagline: "", version: "", state: .installed, bundled: true)
+        let only = AddAppsPage.sections(rows.filter { $0.tool != .mem }, memory: mem)
+        XCTAssertEqual(only.core.map(\.id), ["luoke-mem"])
+        XCTAssertEqual(AddAppsPage.sections(rows, memory: mem).core.count, 1, "清单里有就用清单的，不重复")
+        let m = Sample.model()
+        XCTAssertEqual(m.memoryAppRow?.tool, m.apps.contains { $0.id == .mem } ? .mem : nil, "侧栏有记忆才补")
     }
 
     func testNestedAppDialogsReturnStack() {

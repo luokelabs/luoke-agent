@@ -91,53 +91,20 @@ struct AppPage: View {
     let page: Page
     @Environment(\.lk) private var p
     @Environment(\.lkLayout) private var layout
+    /// 螺壳搜索页：内容区多高、结果上面那一截（标题、搜索框、「待允许」）多高，都是量出来的；结果用满剩下的高
+    @State private var height: CGFloat = 640
+    @State private var headHeight: CGFloat = 150
 
     var body: some View {
         let entry = model.apps.first { $0.id == page }
         let tool = entry?.tool ?? page.appTool ?? .core
         let agent = model.agentApp(for: page)
         let data = agent == nil ? model.appPages[page] : nil
+        if page == .searchApp, model.searchBarShown, let agent {
+            searchPage(tool, agent, entry)
+        } else {
         PageScroll(railed: model.hasRail(layout)) {
-            HStack(spacing: 14) {
-                VStack(alignment: .leading, spacing: 2) {
-                    Text(tool.name).font(LKFont.ui(LKType.title, .semibold)).accessibilityAddTraits(.isHeader)
-                    // 走查重画稿：标题下面不写「在运行 · 一句话」；只有出了事（没在运行、连不上螺壳）才写一行
-                    if agent.map({ !$0.running || !model.coreReachable }) ?? false {
-                    HStack(spacing: 6) {
-                        // 版本号不放标题下面（和模型名一样是技术细节）：在下面「这个应用 › 版本」里
-                        if let agent, !model.coreReachable {
-                            // 连不上螺壳：不写绿点和这一轮的数（那是上次的），写清楚是连不上
-                            LKLight(state: .off, label: WindowModel.offlineShort)
-                            Text(WindowModel.offlineShort).font(LKFont.ui(LKType.caption)).foregroundStyle(p.mutedFg)
-                            if let t = agent.summary?.text, !t.isEmpty {
-                                Text("·").font(LKFont.ui(LKType.caption)).foregroundStyle(p.mutedFg)
-                                Text(model.lastSeen.map { "\(model.seenText($0)) 时看到：\(t)" } ?? "上次看到：\(t)").font(LKFont.ui(LKType.caption)).foregroundStyle(p.mutedFg).lineLimit(1)
-                            }
-                        } else if let agent {
-                            // 绿点只管「在运行」，挨着它写出来；这一轮找到了什么用「·」隔开，不让绿色读成「一切正常」
-                            LKLight(state: agent.running ? .ok : .off, label: agent.running ? "运行中" : "未运行")
-                            Text(agent.running ? "运行中" : "未运行")
-                                .font(LKFont.ui(LKType.caption)).foregroundStyle(p.mutedFg)
-                            if agent.running, let t = agent.summary?.text, !t.isEmpty {
-                                Text("·").font(LKFont.ui(LKType.caption)).foregroundStyle(p.mutedFg)
-                                Text(t).font(LKFont.ui(LKType.caption)).foregroundStyle(p.fg).lineLimit(1)
-                            }
-                        }
-                    }
-                    }
-                }
-                Spacer()
-                // §4 headerPlacement：页上写了放在标题那一行的（邮件助手切换邮箱）。有标签栏的应用，它画在标签那一行的右边、
-                // 和设置这些图标挨着（负责人 11-17：放在标题旁边不靠右、容易被忽略）；只有一页的应用照旧在标题这一行
-                if let agent, AgentAppBody.tabs(agent).count <= 1 {
-                    AgentAppBody.headerItems(agent, model: model)
-                }
-                // 只有一页（没有标签栏）时，设置、处理记录这类图标放在标题右边（走查重画稿 · 扫描）
-                if let agent, AgentAppBody.tabs(agent).count <= 1 {
-                    AgentAppBody.pageIcons(agent, model: model)
-                }
-            }
-            .padding(.bottom, 14)
+            titleRow(tool, agent)
             if let agent {
                 AgentAppBody(model: model, app: agent, entry: entry)
             } else if data == nil, model.agentApps != nil {
@@ -194,6 +161,78 @@ struct AppPage: View {
                 }
             }
         }
+        }
+    }
+
+    /// 螺壳搜索页（UX-09）：搜索框在标题下面，外面不套滚动区（结果自己滚，不两层一起滚）。没搜时下面是这一页（最近搜索），
+    /// 自己一个滚动区；搜了以后结果在正文里整页画，栏宽放到内容区全宽，高用满剩下的（量出来的，不写死）。
+    /// 搜索框一直在同一个位置，换成结果时不重建，框里的字和光标都还在
+    @ViewBuilder private func searchPage(_ tool: ToolIcon, _ agent: AgentApp, _ entry: AppEntry?) -> some View {
+        let results = model.searchOpen
+        let pad = layout == .narrow ? LKInsets.columnNarrow : LKInsets.column
+        VStack(alignment: .leading, spacing: 0) {
+            VStack(alignment: .leading, spacing: 0) {
+                titleRow(tool, agent)
+                SearchField(model: model).padding(.bottom, 14)
+                AgentAppBody(model: model, app: agent, entry: entry, showPage: false)    // 只有「待允许」那一行
+            }
+            .onGeometryChange(for: CGFloat.self, of: { $0.size.height }) { headHeight = $0 }
+            if results {
+                SearchPanel(model: model, height: max(240, height - headHeight - pad.top - pad.bottom))
+            } else {
+                PageScroll(padding: EdgeInsets(), maxWidth: nil) {
+                    AgentAppBody(model: model, app: agent, entry: entry, showNeeds: false)
+                }
+            }
+        }
+        .padding(pad)
+        .frame(maxWidth: results ? .infinity : LKColumn.width, alignment: .topLeading)
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
+        .onGeometryChange(for: CGFloat.self, of: { $0.size.height }) { height = $0 }
+    }
+
+    /// 标题那一行：应用名，出了事才写的一行状态，只有一页时的页头几样和图标
+    @ViewBuilder private func titleRow(_ tool: ToolIcon, _ agent: AgentApp?) -> some View {
+        HStack(spacing: 14) {
+            VStack(alignment: .leading, spacing: 2) {
+                Text(tool.name).font(LKFont.ui(LKType.title, .semibold)).accessibilityAddTraits(.isHeader)
+                // 走查重画稿：标题下面不写「在运行 · 一句话」；只有出了事（没在运行、连不上螺壳）才写一行
+                if agent.map({ !$0.running || !model.coreReachable }) ?? false {
+                HStack(spacing: 6) {
+                    // 版本号不放标题下面（和模型名一样是技术细节）：在下面「这个应用 › 版本」里
+                    if let agent, !model.coreReachable {
+                        // 连不上螺壳：不写绿点和这一轮的数（那是上次的），写清楚是连不上
+                        LKLight(state: .off, label: WindowModel.offlineShort)
+                        Text(WindowModel.offlineShort).font(LKFont.ui(LKType.caption)).foregroundStyle(p.mutedFg)
+                        if let t = agent.summary?.text, !t.isEmpty {
+                            Text("·").font(LKFont.ui(LKType.caption)).foregroundStyle(p.mutedFg)
+                            Text(model.lastSeen.map { "\(model.seenText($0)) 时看到：\(t)" } ?? "上次看到：\(t)").font(LKFont.ui(LKType.caption)).foregroundStyle(p.mutedFg).lineLimit(1)
+                        }
+                    } else if let agent {
+                        // 绿点只管「在运行」，挨着它写出来；这一轮找到了什么用「·」隔开，不让绿色读成「一切正常」
+                        LKLight(state: agent.running ? .ok : .off, label: agent.running ? "运行中" : "未运行")
+                        Text(agent.running ? "运行中" : "未运行")
+                            .font(LKFont.ui(LKType.caption)).foregroundStyle(p.mutedFg)
+                        if agent.running, let t = agent.summary?.text, !t.isEmpty {
+                            Text("·").font(LKFont.ui(LKType.caption)).foregroundStyle(p.mutedFg)
+                            Text(t).font(LKFont.ui(LKType.caption)).foregroundStyle(p.fg).lineLimit(1)
+                        }
+                    }
+                }
+                }
+            }
+            Spacer()
+            // §4 headerPlacement：页上写了放在标题那一行的（邮件助手切换邮箱）。有标签栏的应用，它画在标签那一行的右边、
+            // 和设置这些图标挨着（负责人 11-17：放在标题旁边不靠右、容易被忽略）；只有一页的应用照旧在标题这一行
+            if let agent, AgentAppBody.tabs(agent).count <= 1 {
+                AgentAppBody.headerItems(agent, model: model)
+            }
+            // 只有一页（没有标签栏）时，设置、处理记录这类图标放在标题右边（走查重画稿 · 扫描）
+            if let agent, AgentAppBody.tabs(agent).count <= 1 {
+                AgentAppBody.pageIcons(agent, model: model)
+            }
+        }
+        .padding(.bottom, 14)
     }
 }
 
@@ -204,6 +243,10 @@ struct AgentAppBody: View {
     @ObservedObject var model: WindowModel
     let app: AgentApp
     let entry: AppEntry?
+    /// 画不画标签和这一页；螺壳搜索页上「待允许」那一行和这一页分开画（UX-09：搜索框夹在中间）
+    var showPage = true
+    /// 画不画「待允许」那一行
+    var showNeeds = true
     @Environment(\.lk) private var p
     @Environment(\.lkLayout) private var layout
 
@@ -270,7 +313,7 @@ struct AgentAppBody: View {
 
     /// 缺的权限、标签、这一页（`part`：分两栏时只画主栏的段）
     @ViewBuilder private func content(_ tab: String?, part: SurfacePart) -> some View {
-        if !app.needs.isEmpty {
+        if showNeeds && !app.needs.isEmpty {
             Button { model.go(.prefs, tab: PrefsTab.permissions.rawValue) } label: {
                 HStack(spacing: 12) {
                     LKIcon("lock").foregroundStyle(p.warning).frame(width: 18)
@@ -294,7 +337,7 @@ struct AgentAppBody: View {
                 }
             }
         }
-        if let tab {
+        if let tab, showPage {
             let sid = AgentFeed.pageKey(app.id, tab)
             if let s = model.agentPages[sid]?.surface {
                 if let blocks = s.surface.pageBlocks(aside: part == .all ? nil : part == .aside) ?? (part == .all ? s.surface.headedBlocks() : nil) {
@@ -491,12 +534,22 @@ struct AddAppsPage: View {
         }
     }
 
+    /// 分节：记忆不算应用（负责人 11-14），不排在应用中间，单独一节「核心组件」放在最后（UX-10）。
+    /// 本体的应用清单不列记忆（它是螺壳自带的组件，不是装的应用）：侧栏有记忆、清单里没有时，窗口照核心给的记忆补一行（`memory`）
+    static func sections(_ rows: [HostAppRow], memory: HostAppRow? = nil) -> (luoke: [HostAppRow], poweredBy: [HostAppRow], core: [HostAppRow]) {
+        var core = rows.filter { $0.tool == .mem }
+        if core.isEmpty, let memory { core = [memory] }
+        let apps = rows.filter { $0.tool != .mem }
+        return (apps.filter { $0.origin == .luoke }, apps.filter { $0.origin == .poweredBy }, core)
+    }
+
     var body: some View {
         let rows = model.appRows
         PageScroll() {       // 边距、一栏多宽和设置、各应用的页一样（#173：原来照旧的两列卡片稿单独定的，现在是一张列表）
             PageHeader(title: "应用管理")
-            group("螺壳出品", rows.filter { $0.origin == .luoke })
-            group("Powered by 螺壳", rows.filter { $0.origin == .poweredBy }) {
+            let s = Self.sections(rows, memory: model.memoryAppRow)
+            group("螺壳出品", s.luoke)
+            group("Powered by 螺壳", s.poweredBy) {
                 // 空的时候：一行「还没有第三方应用」、一句说明，右边「欢迎接入」（走查重画稿）
                 SettingsGroup {
                     SettingsRow(title: "暂无第三方应用", note: "第三方应用可接入螺壳，使用这台 Mac 上的模型和记忆") {
@@ -507,6 +560,7 @@ struct AddAppsPage: View {
                     }
                 }
             }
+            group("核心组件", s.core)
             if let n = model.appsNotice { notice(n) }
         }
     }
@@ -571,6 +625,8 @@ struct AppTile: View {
             .contentShape(Rectangle())
             .onTapGesture { if expandable { withAnimation(.easeOut(duration: 0.15)) { toggle() } } }
             .accessibilityAddTraits(expandable ? .isButton : [])
+            // 读屏念出是哪个应用、什么状态（不写的话整行只念「按钮」）
+            .accessibilityLabel([row.name, AddAppsPage.line(row.tool) ?? row.tagline].filter { !$0.isEmpty }.joined(separator: "，"))
             // 读屏的「激活」、辅助功能的按下也要能展开（只挂点按手势的话按下没反应）
             .accessibilityAction { if expandable { toggle() } }
             if open && expandable { details.padding(.leading, AddAppsPage.iconSize + 12).padding(.top, 6).padding(.bottom, 4) }

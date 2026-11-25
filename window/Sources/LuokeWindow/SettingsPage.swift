@@ -376,9 +376,6 @@ struct CanUseList: View {
     /// 已授权的螺壳级权限点击后就地展开，显示并单独开关各应用的权限
     @State private var expanded: Set<String> = []
 
-    /// 关掉某个应用使用螺壳名下的权限时显示的状态文字（约定：不说系统拦着）
-    static let hostOffText = "未允许"
-
     /// 状态灯：灯的颜色和读屏、悬停时的一句话
     static func light(_ kind: String, _ state: String?, needed: Bool) -> (LKLight.State, String) {
         let account = kind == "account"
@@ -390,15 +387,16 @@ struct CanUseList: View {
         }
     }
 
-    /// 过滤掉已在螺壳级权限中展示的同名项（如完全磁盘访问、照片），保留通知等仅由本体检查的系统权限
+    /// 过滤掉已在螺壳级权限中展示的同一种（如完全磁盘访问、照片图库），保留通知等仅由本体检查的系统权限。
+    /// 按权限的 key 比（`covered` 是螺壳级权限的 id），不按名字：本体叫「照片」、应用叫「照片图库」，按名字会列两行
     static func extraChecks(_ checks: [HostSystemCheck], covered: Set<String>) -> [HostSystemCheck] {
-        checks.filter { !covered.contains($0.name) }
+        checks.filter { c in c.key.map { !covered.contains($0) } ?? true }
     }
 
     var body: some View {
         if model.agentPermissions != nil {
             let groups = model.luokePermissions
-            let extras = Self.extraChecks(systemChecks, covered: Set(groups.map(\.title)))
+            let extras = Self.extraChecks(systemChecks, covered: Set(groups.map(\.id)))
             let system = model.agentPermissionRows("system")
             let accounts = model.agentPermissionRows("account")
             let each = model.agentPermissionRows("each-time")
@@ -434,7 +432,7 @@ struct CanUseList: View {
                 }
             }
         } else {
-            let extras = Self.extraChecks(systemChecks, covered: Set(model.permissions.map(\.title)))
+            let extras = Self.extraChecks(systemChecks, covered: Set(model.permissions.map(\.id)))
             if !model.permissions.isEmpty || !extras.isEmpty || !model.accounts.isEmpty {
                 SettingsHeading(title: "螺壳的权限")
                 SettingsGroup {
@@ -468,17 +466,13 @@ struct CanUseList: View {
         }
     }
 
-    /// 本体检查的系统权限状态（如通知）：正常亮绿灯，未允许亮黄灯（通知未允许时可直接打开系统设置）
+    /// 本体检查的系统权限状态（如通知）：正常亮绿灯，未允许亮黄灯（通知未允许时可直接打开系统设置，经连接的 settingsOpener）
     @ViewBuilder private func systemCheckRow(_ c: HostSystemCheck) -> some View {
         let label = c.ok ? "已允许" : "未允许"
         SettingsRow(title: c.name, note: c.detail ?? label) {
-            if !c.ok && c.name == "通知" {
-                Button("打开系统设置") {
-                    if let u = URL(string: "x-apple.systempreferences:com.apple.Notifications-Settings.extension") {
-                        NSWorkspace.shared.open(u)
-                    }
-                }
-                .buttonStyle(LKButtonStyle(kind: .secondary))
+            if !c.ok && c.key == HostSystemCheck.notifications {
+                Button("打开系统设置") { model.openSystemSettings(HostSystemCheck.notificationSettings) }
+                    .buttonStyle(LKButtonStyle(kind: .secondary))
             }
             LKLight(state: c.ok ? .ok : .warn, label: label).help(label)
         }
@@ -513,9 +507,12 @@ struct CanUseList: View {
         let canExpand = g.state == "granted" && appRows.count > 1
         let isOpen = canExpand && expanded.contains(g.id)
         let missing = Self.light("system", g.state, needed: g.rows.contains { model.isNeeded($0) }).1
+        // 没给时也写哪些应用要用（本体的系统检查里同一种权限并进这一行，不再单列一行「照片 · 螺壳搜索要用」）
+        let wants = g.rows.reduce(into: [String]()) { out, r in if !out.contains(r.tool.name) { out.append(r.tool.name) } }
+        let wanted = wants.isEmpty ? "" : " · \(wants.joined(separator: "、"))要用"
         // 完全磁盘访问这类在系统设置里给的：macOS 要螺壳退出再打开才算数，没重开时这里照旧是没允许
         let note = g.state == "granted" ? (users.isEmpty ? "暂无应用使用" : "\(users.joined(separator: "、")) 使用中")
-            : g.can.first == "settings" ? "\(missing)，允许后需重新打开螺壳" : missing
+            : g.can.first == "settings" ? "\(missing)，允许后需重新打开螺壳\(wanted)" : missing + wanted
         VStack(alignment: .leading, spacing: 0) {
             SettingsRow(title: g.title, note: note) {
                 if canExpand {
@@ -550,12 +547,8 @@ struct CanUseList: View {
                         let on = model.hostPermissionOn(r)
                         HStack(spacing: 10) {
                             AppIcon(tool: r.tool, size: 18)
-                            VStack(alignment: .leading, spacing: 1) {
-                                Text(r.tool.name).font(LKFont.ui(LKType.small))
-                                if !on {
-                                    Text(Self.hostOffText).font(LKFont.ui(LKType.caption)).foregroundStyle(p.mutedFg)
-                                }
-                            }
+                            // 关掉的应用不再在名字下面写「未允许」：开关已经是关的
+                            Text(r.tool.name).font(LKFont.ui(LKType.small))
                             Spacer(minLength: LKSpace.x3)
                             LKSwitch(on: Binding(get: { on }, set: { model.setHostPermission(r, on: $0) }),
                                      label: "允许\(r.tool.name)使用\(g.title)")

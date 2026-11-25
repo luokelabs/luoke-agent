@@ -16,6 +16,19 @@ public enum ToolIcon: String, CaseIterable, Sendable {
         }
     }
 
+    /// 深色下的点缀色：取自各应用图标的底色、和官网深色里同一应用用的亮色（luoke-brand 11-23）。
+    /// 只用在卡片左上角的淡光、细边这类不放字的地方
+    var accent: Color {
+        switch self {
+        case .mail: return .hex(0x8EC3EE)     // 蓝
+        case .scan: return .hex(0xB9A8EE)     // 紫
+        case .mem: return .hex(0xFFA77A)      // 橘
+        case .search: return .hex(0xF0CF7A)   // 黄
+        case .ime: return .hex(0x8FD3A2)      // 绿
+        case .core: return .hex(0xFF9AA8)     // 珊瑚粉
+        }
+    }
+
     /// Resources 里的图（`<名字>.png`）
     var imageName: String {
         switch self {
@@ -45,7 +58,15 @@ struct AppIcon: View {
 
     var body: some View {
         Group {
-            if let image = Resources.image(tool.imageName) {
+            if tool == .mem && size >= 24 {
+                // 记忆不算应用（负责人 11-14）：画线条的大脑，不画应用那种彩色方块（UX-10）。大的（应用管理一行 34）垫一块浅灰圆角底，
+                // 和旁边应用的方块一样有分量，不是一根细线飘着
+                RoundedRectangle(cornerRadius: size * 0.22, style: .continuous).fill(p.muted)
+                    .overlay { LKIcon("brain", size: size * 0.6).foregroundStyle(p.fg) }
+            } else if tool == .mem {
+                // 小的（右边栏任务、历史、权限按应用展开）和侧栏一样只画线条
+                LKIcon("brain", size: size * 0.8).foregroundStyle(p.fg)
+            } else if let image = Resources.image(tool.imageName) {
                 Image(nsImage: image).resizable().interpolation(.high)
             } else {
                 RoundedRectangle(cornerRadius: size * 0.22, style: .continuous).fill(p.muted)

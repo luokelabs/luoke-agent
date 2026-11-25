@@ -14,6 +14,12 @@
      {
       "id": "apps",
       "title": "各应用"
+     },
+     {
+      "hidden": true,
+      "icon": "sliders-horizontal",
+      "id": "more",
+      "title": "高级设置"
      }
     ],
     "running": true,
@@ -883,13 +889,7 @@
          "l102",
          "t103",
          "l130",
-         "t131",
-         "l158",
-         "c195",
-         "t212",
-         "l213",
-         "t225",
-         "l226"
+         "l137"
         ],
         "component": "Column",
         "id": "root"
@@ -2159,797 +2159,65 @@
         "id": "l130"
        },
        {
-        "component": "Text",
-        "id": "t131",
-        "text": "使用统计",
-        "variant": "caption"
-       },
-       {
         "action": {
          "event": {
           "context": {
-           "op": "reset_usage"
+           "page": "more"
           },
-          "name": "ime_do"
+          "name": "agent.open_page"
          }
         },
-        "child": "b132-text",
+        "child": "b131-text",
         "component": "Button",
-        "confirm": {
-         "label": "清零",
-         "text": "最近 7 天的次数将全部清除，无法恢复。",
-         "title": "清零使用统计？"
-        },
-        "id": "b132"
+        "id": "b131"
        },
        {
         "component": "Text",
-        "id": "b132-text",
-        "text": "清零"
+        "id": "b131-text",
+        "text": "高级设置"
+       },
+       {
+        "component": "Text",
+        "id": "t132",
+        "text": "高级设置"
        },
        {
         "component": "Text",
         "id": "t133",
-        "text": "最近 7 天",
-        "variant": "strong"
-       },
-       {
-        "component": "Text",
-        "id": "t134",
-        "text": "仅在本机统计次数，不记录输入内容和应用；密码框、暂停所有记录期间和禁止记录的应用中不统计",
+        "text": "使用统计、开发模式和文件",
         "variant": "caption"
        },
        {
         "children": [
-         "t133",
-         "t134"
+         "t132",
+         "t133"
         ],
         "component": "Column",
-        "id": "c135"
+        "id": "c134"
        },
        {
         "children": [
-         "b132"
+         "b131"
         ],
         "component": "Row",
-        "id": "r136"
+        "id": "r135"
        },
        {
         "children": [
-         "c135",
+         "c134",
+         "r135"
+        ],
+        "component": "Row",
+        "id": "r136",
+        "justify": "spaceBetween",
+        "open": "b131"
+       },
+       {
+        "children": [
          "r136"
         ],
-        "component": "Row",
-        "id": "r137",
-        "justify": "spaceBetween"
-       },
-       {
-        "component": "Text",
-        "id": "t138",
-        "text": "1111 次"
-       },
-       {
-        "component": "Text",
-        "id": "t139",
-        "text": "上屏"
-       },
-       {
-        "children": [
-         "t139"
-        ],
-        "component": "Column",
-        "id": "c140"
-       },
-       {
-        "children": [
-         "t138"
-        ],
-        "component": "Row",
-        "id": "r141"
-       },
-       {
-        "children": [
-         "c140",
-         "r141"
-        ],
-        "component": "Row",
-        "id": "r142",
-        "justify": "spaceBetween"
-       },
-       {
-        "component": "Text",
-        "id": "t143",
-        "text": "89%"
-       },
-       {
-        "component": "Text",
-        "id": "t144",
-        "text": "所选候选中首选占比"
-       },
-       {
-        "children": [
-         "t144"
-        ],
-        "component": "Column",
-        "id": "c145"
-       },
-       {
-        "children": [
-         "t143"
-        ],
-        "component": "Row",
-        "id": "r146"
-       },
-       {
-        "children": [
-         "c145",
-         "r146"
-        ],
-        "component": "Row",
-        "id": "r147",
-        "justify": "spaceBetween"
-       },
-       {
-        "component": "Text",
-        "id": "t148",
-        "text": "7%"
-       },
-       {
-        "component": "Text",
-        "id": "t149",
-        "text": "上屏后立即退格占比"
-       },
-       {
-        "children": [
-         "t149"
-        ],
-        "component": "Column",
-        "id": "c150"
-       },
-       {
-        "children": [
-         "t148"
-        ],
-        "component": "Row",
-        "id": "r151"
-       },
-       {
-        "children": [
-         "c150",
-         "r151"
-        ],
-        "component": "Row",
-        "id": "r152",
-        "justify": "spaceBetween"
-       },
-       {
-        "component": "Text",
-        "id": "t153",
-        "text": "显示 65 次，展开 18 次，选用 13 次（共 37 字）"
-       },
-       {
-        "component": "Text",
-        "id": "t154",
-        "text": "联想"
-       },
-       {
-        "children": [
-         "t154"
-        ],
-        "component": "Column",
-        "id": "c155"
-       },
-       {
-        "children": [
-         "t153"
-        ],
-        "component": "Row",
-        "id": "r156"
-       },
-       {
-        "children": [
-         "c155",
-         "r156"
-        ],
-        "component": "Row",
-        "id": "r157",
-        "justify": "spaceBetween"
-       },
-       {
-        "children": [
-         "r137",
-         "r142",
-         "r147",
-         "r152",
-         "r157"
-        ],
         "component": "List",
-        "id": "l158"
-       },
-       {
-        "component": "Text",
-        "id": "t159",
-        "text": "210 次"
-       },
-       {
-        "component": "Text",
-        "id": "t160",
-        "text": "11-13"
-       },
-       {
-        "children": [
-         "t160"
-        ],
-        "component": "Column",
-        "id": "c161"
-       },
-       {
-        "children": [
-         "t159"
-        ],
-        "component": "Row",
-        "id": "r162"
-       },
-       {
-        "children": [
-         "c161",
-         "r162"
-        ],
-        "component": "Row",
-        "id": "r163",
-        "justify": "spaceBetween"
-       },
-       {
-        "component": "Text",
-        "id": "t164",
-        "text": "180 次"
-       },
-       {
-        "component": "Text",
-        "id": "t165",
-        "text": "11-14"
-       },
-       {
-        "children": [
-         "t165"
-        ],
-        "component": "Column",
-        "id": "c166"
-       },
-       {
-        "children": [
-         "t164"
-        ],
-        "component": "Row",
-        "id": "r167"
-       },
-       {
-        "children": [
-         "c166",
-         "r167"
-        ],
-        "component": "Row",
-        "id": "r168",
-        "justify": "spaceBetween"
-       },
-       {
-        "component": "Text",
-        "id": "t169",
-        "text": "0 次"
-       },
-       {
-        "component": "Text",
-        "id": "t170",
-        "text": "11-15"
-       },
-       {
-        "children": [
-         "t170"
-        ],
-        "component": "Column",
-        "id": "c171"
-       },
-       {
-        "children": [
-         "t169"
-        ],
-        "component": "Row",
-        "id": "r172"
-       },
-       {
-        "children": [
-         "c171",
-         "r172"
-        ],
-        "component": "Row",
-        "id": "r173",
-        "justify": "spaceBetween"
-       },
-       {
-        "component": "Text",
-        "id": "t174",
-        "text": "95 次"
-       },
-       {
-        "component": "Text",
-        "id": "t175",
-        "text": "11-16"
-       },
-       {
-        "children": [
-         "t175"
-        ],
-        "component": "Column",
-        "id": "c176"
-       },
-       {
-        "children": [
-         "t174"
-        ],
-        "component": "Row",
-        "id": "r177"
-       },
-       {
-        "children": [
-         "c176",
-         "r177"
-        ],
-        "component": "Row",
-        "id": "r178",
-        "justify": "spaceBetween"
-       },
-       {
-        "component": "Text",
-        "id": "t179",
-        "text": "260 次"
-       },
-       {
-        "component": "Text",
-        "id": "t180",
-        "text": "11-17"
-       },
-       {
-        "children": [
-         "t180"
-        ],
-        "component": "Column",
-        "id": "c181"
-       },
-       {
-        "children": [
-         "t179"
-        ],
-        "component": "Row",
-        "id": "r182"
-       },
-       {
-        "children": [
-         "c181",
-         "r182"
-        ],
-        "component": "Row",
-        "id": "r183",
-        "justify": "spaceBetween"
-       },
-       {
-        "component": "Text",
-        "id": "t184",
-        "text": "312 次"
-       },
-       {
-        "component": "Text",
-        "id": "t185",
-        "text": "11-18"
-       },
-       {
-        "children": [
-         "t185"
-        ],
-        "component": "Column",
-        "id": "c186"
-       },
-       {
-        "children": [
-         "t184"
-        ],
-        "component": "Row",
-        "id": "r187"
-       },
-       {
-        "children": [
-         "c186",
-         "r187"
-        ],
-        "component": "Row",
-        "id": "r188",
-        "justify": "spaceBetween"
-       },
-       {
-        "component": "Text",
-        "id": "t189",
-        "text": "54 次"
-       },
-       {
-        "component": "Text",
-        "id": "t190",
-        "text": "11-19"
-       },
-       {
-        "children": [
-         "t190"
-        ],
-        "component": "Column",
-        "id": "c191"
-       },
-       {
-        "children": [
-         "t189"
-        ],
-        "component": "Row",
-        "id": "r192"
-       },
-       {
-        "children": [
-         "c191",
-         "r192"
-        ],
-        "component": "Row",
-        "id": "r193",
-        "justify": "spaceBetween"
-       },
-       {
-        "children": [
-         "r163",
-         "r168",
-         "r173",
-         "r178",
-         "r183",
-         "r188",
-         "r193"
-        ],
-        "component": "List",
-        "id": "l194"
-       },
-       {
-        "children": [
-         "l194"
-        ],
-        "collapsed": "每日上屏次数",
-        "component": "Column",
-        "id": "c195"
-       },
-       {
-        "action": {
-         "event": {
-          "context": {
-           "engine": "quanpin",
-           "on": true,
-           "op": "dev_mode"
-          },
-          "name": "ime_do"
-         }
-        },
-        "child": "b196-text",
-        "component": "Button",
-        "confirm": {
-         "label": "开启",
-         "text": "开启后在本机记录此输入方案的按键和候选，保存在记录文件夹中，保留 7 天；密码框、暂停所有记录期间和禁止记录的应用中不记录。",
-         "title": "开启「全拼」的开发模式？"
-        },
-        "id": "b196",
-        "on": false,
-        "variant": "switch"
-       },
-       {
-        "component": "Text",
-        "id": "b196-text",
-        "text": "记录「全拼」的输入"
-       },
-       {
-        "component": "Text",
-        "id": "t197",
-        "text": "记录「全拼」的输入",
-        "variant": "strong"
-       },
-       {
-        "children": [
-         "t197"
-        ],
-        "component": "Column",
-        "id": "c198"
-       },
-       {
-        "children": [
-         "b196"
-        ],
-        "component": "Row",
-        "id": "r199"
-       },
-       {
-        "children": [
-         "c198",
-         "r199"
-        ],
-        "component": "Row",
-        "id": "r200",
-        "justify": "spaceBetween"
-       },
-       {
-        "action": {
-         "event": {
-          "context": {
-           "engine": "xiaohe",
-           "on": false,
-           "op": "dev_mode"
-          },
-          "name": "ime_do"
-         }
-        },
-        "child": "b201-text",
-        "component": "Button",
-        "id": "b201",
-        "on": true,
-        "variant": "switch"
-       },
-       {
-        "component": "Text",
-        "id": "b201-text",
-        "text": "记录「小鹤双拼」的输入"
-       },
-       {
-        "component": "Text",
-        "id": "t202",
-        "text": "记录「小鹤双拼」的输入",
-        "variant": "strong"
-       },
-       {
-        "children": [
-         "t202"
-        ],
-        "component": "Column",
-        "id": "c203"
-       },
-       {
-        "children": [
-         "b201"
-        ],
-        "component": "Row",
-        "id": "r204"
-       },
-       {
-        "children": [
-         "c203",
-         "r204"
-        ],
-        "component": "Row",
-        "id": "r205",
-        "justify": "spaceBetween"
-       },
-       {
-        "action": {
-         "event": {
-          "context": {
-           "item": "~/.luoke/ime/records"
-          },
-          "name": "agent.reveal"
-         }
-        },
-        "child": "b206-row",
-        "component": "Button",
-        "id": "b206",
-        "variant": "borderless"
-       },
-       {
-        "component": "Icon",
-        "id": "b206-icon",
-        "name": "folder"
-       },
-       {
-        "component": "Text",
-        "id": "b206-text",
-        "text": "在访达中显示"
-       },
-       {
-        "children": [
-         "b206-icon",
-         "b206-text"
-        ],
-        "component": "Row",
-        "id": "b206-row"
-       },
-       {
-        "component": "Text",
-        "id": "t207",
-        "text": "记录文件夹",
-        "variant": "strong"
-       },
-       {
-        "component": "Text",
-        "id": "t208",
-        "text": "开发模式的记录，保留 7 天",
-        "variant": "caption"
-       },
-       {
-        "children": [
-         "t207",
-         "t208"
-        ],
-        "component": "Column",
-        "id": "c209"
-       },
-       {
-        "children": [
-         "b206"
-        ],
-        "component": "Row",
-        "id": "r210"
-       },
-       {
-        "children": [
-         "c209",
-         "r210"
-        ],
-        "component": "Row",
-        "id": "r211",
-        "justify": "spaceBetween"
-       },
-       {
-        "component": "Text",
-        "id": "t212",
-        "text": "开发模式",
-        "variant": "caption"
-       },
-       {
-        "children": [
-         "r200",
-         "r205",
-         "r211"
-        ],
-        "component": "List",
-        "id": "l213"
-       },
-       {
-        "action": {
-         "event": {
-          "context": {
-           "item": "~/.luoke/ime/engines"
-          },
-          "name": "agent.reveal"
-         }
-        },
-        "child": "b214-row",
-        "component": "Button",
-        "id": "b214",
-        "variant": "borderless"
-       },
-       {
-        "component": "Icon",
-        "id": "b214-icon",
-        "name": "folder"
-       },
-       {
-        "component": "Text",
-        "id": "b214-text",
-        "text": "在访达中显示"
-       },
-       {
-        "children": [
-         "b214-icon",
-         "b214-text"
-        ],
-        "component": "Row",
-        "id": "b214-row"
-       },
-       {
-        "component": "Text",
-        "id": "t215",
-        "text": "引擎文件夹",
-        "variant": "strong"
-       },
-       {
-        "component": "Text",
-        "id": "t216",
-        "text": "用于放置自制引擎",
-        "variant": "caption"
-       },
-       {
-        "children": [
-         "t215",
-         "t216"
-        ],
-        "component": "Column",
-        "id": "c217"
-       },
-       {
-        "children": [
-         "b214"
-        ],
-        "component": "Row",
-        "id": "r218"
-       },
-       {
-        "children": [
-         "c217",
-         "r218"
-        ],
-        "component": "Row",
-        "id": "r219",
-        "justify": "spaceBetween"
-       },
-       {
-        "action": {
-         "event": {
-          "context": {
-           "item": "~/.luoke/ime/settings.json"
-          },
-          "name": "agent.reveal"
-         }
-        },
-        "child": "b220-row",
-        "component": "Button",
-        "id": "b220",
-        "variant": "borderless"
-       },
-       {
-        "component": "Icon",
-        "id": "b220-icon",
-        "name": "folder"
-       },
-       {
-        "component": "Text",
-        "id": "b220-text",
-        "text": "在访达中显示"
-       },
-       {
-        "children": [
-         "b220-icon",
-         "b220-text"
-        ],
-        "component": "Row",
-        "id": "b220-row"
-       },
-       {
-        "component": "Text",
-        "id": "t221",
-        "text": "设置文件",
-        "variant": "strong"
-       },
-       {
-        "children": [
-         "t221"
-        ],
-        "component": "Column",
-        "id": "c222"
-       },
-       {
-        "children": [
-         "b220"
-        ],
-        "component": "Row",
-        "id": "r223"
-       },
-       {
-        "children": [
-         "c222",
-         "r223"
-        ],
-        "component": "Row",
-        "id": "r224",
-        "justify": "spaceBetween"
-       },
-       {
-        "component": "Text",
-        "id": "t225",
-        "text": "文件",
-        "variant": "caption"
-       },
-       {
-        "children": [
-         "r219",
-         "r224"
-        ],
-        "component": "List",
-        "id": "l226"
+        "id": "l137"
        }
       ],
       "surfaceId": "luoke-ime/page/settings"
@@ -7486,6 +6754,832 @@
     }
    ],
    "page": "apps"
+  },
+  "more": {
+   "messages": [
+    {
+     "createSurface": {
+      "catalogId": "ai.luoke/a2ui/agent/1",
+      "surfaceId": "luoke-ime/page/more"
+     },
+     "version": "v0.9"
+    },
+    {
+     "updateComponents": {
+      "components": [
+       {
+        "children": [
+         "t1",
+         "l28",
+         "c65",
+         "t82",
+         "l83",
+         "t95",
+         "l96"
+        ],
+        "component": "Column",
+        "id": "root"
+       },
+       {
+        "component": "Text",
+        "id": "t1",
+        "text": "使用统计",
+        "variant": "caption"
+       },
+       {
+        "action": {
+         "event": {
+          "context": {
+           "op": "reset_usage"
+          },
+          "name": "ime_do"
+         }
+        },
+        "child": "b2-text",
+        "component": "Button",
+        "confirm": {
+         "label": "清零",
+         "text": "最近 7 天的次数将全部清除，无法恢复。",
+         "title": "清零使用统计？"
+        },
+        "id": "b2"
+       },
+       {
+        "component": "Text",
+        "id": "b2-text",
+        "text": "清零"
+       },
+       {
+        "component": "Text",
+        "id": "t3",
+        "text": "最近 7 天",
+        "variant": "strong"
+       },
+       {
+        "component": "Text",
+        "id": "t4",
+        "text": "仅在本机统计次数，不记录输入内容和应用；密码框、暂停所有记录期间和禁止记录的应用中不统计",
+        "variant": "caption"
+       },
+       {
+        "children": [
+         "t3",
+         "t4"
+        ],
+        "component": "Column",
+        "id": "c5"
+       },
+       {
+        "children": [
+         "b2"
+        ],
+        "component": "Row",
+        "id": "r6"
+       },
+       {
+        "children": [
+         "c5",
+         "r6"
+        ],
+        "component": "Row",
+        "id": "r7",
+        "justify": "spaceBetween"
+       },
+       {
+        "component": "Text",
+        "id": "t8",
+        "text": "1111 次"
+       },
+       {
+        "component": "Text",
+        "id": "t9",
+        "text": "上屏"
+       },
+       {
+        "children": [
+         "t9"
+        ],
+        "component": "Column",
+        "id": "c10"
+       },
+       {
+        "children": [
+         "t8"
+        ],
+        "component": "Row",
+        "id": "r11"
+       },
+       {
+        "children": [
+         "c10",
+         "r11"
+        ],
+        "component": "Row",
+        "id": "r12",
+        "justify": "spaceBetween"
+       },
+       {
+        "component": "Text",
+        "id": "t13",
+        "text": "89%"
+       },
+       {
+        "component": "Text",
+        "id": "t14",
+        "text": "所选候选中首选占比"
+       },
+       {
+        "children": [
+         "t14"
+        ],
+        "component": "Column",
+        "id": "c15"
+       },
+       {
+        "children": [
+         "t13"
+        ],
+        "component": "Row",
+        "id": "r16"
+       },
+       {
+        "children": [
+         "c15",
+         "r16"
+        ],
+        "component": "Row",
+        "id": "r17",
+        "justify": "spaceBetween"
+       },
+       {
+        "component": "Text",
+        "id": "t18",
+        "text": "7%"
+       },
+       {
+        "component": "Text",
+        "id": "t19",
+        "text": "上屏后立即退格占比"
+       },
+       {
+        "children": [
+         "t19"
+        ],
+        "component": "Column",
+        "id": "c20"
+       },
+       {
+        "children": [
+         "t18"
+        ],
+        "component": "Row",
+        "id": "r21"
+       },
+       {
+        "children": [
+         "c20",
+         "r21"
+        ],
+        "component": "Row",
+        "id": "r22",
+        "justify": "spaceBetween"
+       },
+       {
+        "component": "Text",
+        "id": "t23",
+        "text": "显示 65 次，展开 18 次，选用 13 次（共 37 字）"
+       },
+       {
+        "component": "Text",
+        "id": "t24",
+        "text": "联想"
+       },
+       {
+        "children": [
+         "t24"
+        ],
+        "component": "Column",
+        "id": "c25"
+       },
+       {
+        "children": [
+         "t23"
+        ],
+        "component": "Row",
+        "id": "r26"
+       },
+       {
+        "children": [
+         "c25",
+         "r26"
+        ],
+        "component": "Row",
+        "id": "r27",
+        "justify": "spaceBetween"
+       },
+       {
+        "children": [
+         "r7",
+         "r12",
+         "r17",
+         "r22",
+         "r27"
+        ],
+        "component": "List",
+        "id": "l28"
+       },
+       {
+        "component": "Text",
+        "id": "t29",
+        "text": "210 次"
+       },
+       {
+        "component": "Text",
+        "id": "t30",
+        "text": "11-13"
+       },
+       {
+        "children": [
+         "t30"
+        ],
+        "component": "Column",
+        "id": "c31"
+       },
+       {
+        "children": [
+         "t29"
+        ],
+        "component": "Row",
+        "id": "r32"
+       },
+       {
+        "children": [
+         "c31",
+         "r32"
+        ],
+        "component": "Row",
+        "id": "r33",
+        "justify": "spaceBetween"
+       },
+       {
+        "component": "Text",
+        "id": "t34",
+        "text": "180 次"
+       },
+       {
+        "component": "Text",
+        "id": "t35",
+        "text": "11-14"
+       },
+       {
+        "children": [
+         "t35"
+        ],
+        "component": "Column",
+        "id": "c36"
+       },
+       {
+        "children": [
+         "t34"
+        ],
+        "component": "Row",
+        "id": "r37"
+       },
+       {
+        "children": [
+         "c36",
+         "r37"
+        ],
+        "component": "Row",
+        "id": "r38",
+        "justify": "spaceBetween"
+       },
+       {
+        "component": "Text",
+        "id": "t39",
+        "text": "0 次"
+       },
+       {
+        "component": "Text",
+        "id": "t40",
+        "text": "11-15"
+       },
+       {
+        "children": [
+         "t40"
+        ],
+        "component": "Column",
+        "id": "c41"
+       },
+       {
+        "children": [
+         "t39"
+        ],
+        "component": "Row",
+        "id": "r42"
+       },
+       {
+        "children": [
+         "c41",
+         "r42"
+        ],
+        "component": "Row",
+        "id": "r43",
+        "justify": "spaceBetween"
+       },
+       {
+        "component": "Text",
+        "id": "t44",
+        "text": "95 次"
+       },
+       {
+        "component": "Text",
+        "id": "t45",
+        "text": "11-16"
+       },
+       {
+        "children": [
+         "t45"
+        ],
+        "component": "Column",
+        "id": "c46"
+       },
+       {
+        "children": [
+         "t44"
+        ],
+        "component": "Row",
+        "id": "r47"
+       },
+       {
+        "children": [
+         "c46",
+         "r47"
+        ],
+        "component": "Row",
+        "id": "r48",
+        "justify": "spaceBetween"
+       },
+       {
+        "component": "Text",
+        "id": "t49",
+        "text": "260 次"
+       },
+       {
+        "component": "Text",
+        "id": "t50",
+        "text": "11-17"
+       },
+       {
+        "children": [
+         "t50"
+        ],
+        "component": "Column",
+        "id": "c51"
+       },
+       {
+        "children": [
+         "t49"
+        ],
+        "component": "Row",
+        "id": "r52"
+       },
+       {
+        "children": [
+         "c51",
+         "r52"
+        ],
+        "component": "Row",
+        "id": "r53",
+        "justify": "spaceBetween"
+       },
+       {
+        "component": "Text",
+        "id": "t54",
+        "text": "312 次"
+       },
+       {
+        "component": "Text",
+        "id": "t55",
+        "text": "11-18"
+       },
+       {
+        "children": [
+         "t55"
+        ],
+        "component": "Column",
+        "id": "c56"
+       },
+       {
+        "children": [
+         "t54"
+        ],
+        "component": "Row",
+        "id": "r57"
+       },
+       {
+        "children": [
+         "c56",
+         "r57"
+        ],
+        "component": "Row",
+        "id": "r58",
+        "justify": "spaceBetween"
+       },
+       {
+        "component": "Text",
+        "id": "t59",
+        "text": "54 次"
+       },
+       {
+        "component": "Text",
+        "id": "t60",
+        "text": "11-19"
+       },
+       {
+        "children": [
+         "t60"
+        ],
+        "component": "Column",
+        "id": "c61"
+       },
+       {
+        "children": [
+         "t59"
+        ],
+        "component": "Row",
+        "id": "r62"
+       },
+       {
+        "children": [
+         "c61",
+         "r62"
+        ],
+        "component": "Row",
+        "id": "r63",
+        "justify": "spaceBetween"
+       },
+       {
+        "children": [
+         "r33",
+         "r38",
+         "r43",
+         "r48",
+         "r53",
+         "r58",
+         "r63"
+        ],
+        "component": "List",
+        "id": "l64"
+       },
+       {
+        "children": [
+         "l64"
+        ],
+        "collapsed": "每日上屏次数",
+        "component": "Column",
+        "id": "c65"
+       },
+       {
+        "action": {
+         "event": {
+          "context": {
+           "engine": "quanpin",
+           "on": true,
+           "op": "dev_mode"
+          },
+          "name": "ime_do"
+         }
+        },
+        "child": "b66-text",
+        "component": "Button",
+        "confirm": {
+         "label": "开启",
+         "text": "开启后在本机记录此输入方案的按键和候选，保存在记录文件夹中，保留 7 天；密码框、暂停所有记录期间和禁止记录的应用中不记录。",
+         "title": "开启「全拼」的开发模式？"
+        },
+        "id": "b66",
+        "on": false,
+        "variant": "switch"
+       },
+       {
+        "component": "Text",
+        "id": "b66-text",
+        "text": "记录「全拼」的输入"
+       },
+       {
+        "component": "Text",
+        "id": "t67",
+        "text": "记录「全拼」的输入",
+        "variant": "strong"
+       },
+       {
+        "children": [
+         "t67"
+        ],
+        "component": "Column",
+        "id": "c68"
+       },
+       {
+        "children": [
+         "b66"
+        ],
+        "component": "Row",
+        "id": "r69"
+       },
+       {
+        "children": [
+         "c68",
+         "r69"
+        ],
+        "component": "Row",
+        "id": "r70",
+        "justify": "spaceBetween"
+       },
+       {
+        "action": {
+         "event": {
+          "context": {
+           "engine": "xiaohe",
+           "on": false,
+           "op": "dev_mode"
+          },
+          "name": "ime_do"
+         }
+        },
+        "child": "b71-text",
+        "component": "Button",
+        "id": "b71",
+        "on": true,
+        "variant": "switch"
+       },
+       {
+        "component": "Text",
+        "id": "b71-text",
+        "text": "记录「小鹤双拼」的输入"
+       },
+       {
+        "component": "Text",
+        "id": "t72",
+        "text": "记录「小鹤双拼」的输入",
+        "variant": "strong"
+       },
+       {
+        "children": [
+         "t72"
+        ],
+        "component": "Column",
+        "id": "c73"
+       },
+       {
+        "children": [
+         "b71"
+        ],
+        "component": "Row",
+        "id": "r74"
+       },
+       {
+        "children": [
+         "c73",
+         "r74"
+        ],
+        "component": "Row",
+        "id": "r75",
+        "justify": "spaceBetween"
+       },
+       {
+        "action": {
+         "event": {
+          "context": {
+           "item": "~/.luoke/ime/records"
+          },
+          "name": "agent.reveal"
+         }
+        },
+        "child": "b76-row",
+        "component": "Button",
+        "id": "b76",
+        "variant": "borderless"
+       },
+       {
+        "component": "Icon",
+        "id": "b76-icon",
+        "name": "folder"
+       },
+       {
+        "component": "Text",
+        "id": "b76-text",
+        "text": "在访达中显示"
+       },
+       {
+        "children": [
+         "b76-icon",
+         "b76-text"
+        ],
+        "component": "Row",
+        "id": "b76-row"
+       },
+       {
+        "component": "Text",
+        "id": "t77",
+        "text": "记录文件夹",
+        "variant": "strong"
+       },
+       {
+        "component": "Text",
+        "id": "t78",
+        "text": "开发模式的记录，保留 7 天",
+        "variant": "caption"
+       },
+       {
+        "children": [
+         "t77",
+         "t78"
+        ],
+        "component": "Column",
+        "id": "c79"
+       },
+       {
+        "children": [
+         "b76"
+        ],
+        "component": "Row",
+        "id": "r80"
+       },
+       {
+        "children": [
+         "c79",
+         "r80"
+        ],
+        "component": "Row",
+        "id": "r81",
+        "justify": "spaceBetween"
+       },
+       {
+        "component": "Text",
+        "id": "t82",
+        "text": "开发模式",
+        "variant": "caption"
+       },
+       {
+        "children": [
+         "r70",
+         "r75",
+         "r81"
+        ],
+        "component": "List",
+        "id": "l83"
+       },
+       {
+        "action": {
+         "event": {
+          "context": {
+           "item": "~/.luoke/ime/engines"
+          },
+          "name": "agent.reveal"
+         }
+        },
+        "child": "b84-row",
+        "component": "Button",
+        "id": "b84",
+        "variant": "borderless"
+       },
+       {
+        "component": "Icon",
+        "id": "b84-icon",
+        "name": "folder"
+       },
+       {
+        "component": "Text",
+        "id": "b84-text",
+        "text": "在访达中显示"
+       },
+       {
+        "children": [
+         "b84-icon",
+         "b84-text"
+        ],
+        "component": "Row",
+        "id": "b84-row"
+       },
+       {
+        "component": "Text",
+        "id": "t85",
+        "text": "引擎文件夹",
+        "variant": "strong"
+       },
+       {
+        "component": "Text",
+        "id": "t86",
+        "text": "用于放置自制引擎",
+        "variant": "caption"
+       },
+       {
+        "children": [
+         "t85",
+         "t86"
+        ],
+        "component": "Column",
+        "id": "c87"
+       },
+       {
+        "children": [
+         "b84"
+        ],
+        "component": "Row",
+        "id": "r88"
+       },
+       {
+        "children": [
+         "c87",
+         "r88"
+        ],
+        "component": "Row",
+        "id": "r89",
+        "justify": "spaceBetween"
+       },
+       {
+        "action": {
+         "event": {
+          "context": {
+           "item": "~/.luoke/ime/settings.json"
+          },
+          "name": "agent.reveal"
+         }
+        },
+        "child": "b90-row",
+        "component": "Button",
+        "id": "b90",
+        "variant": "borderless"
+       },
+       {
+        "component": "Icon",
+        "id": "b90-icon",
+        "name": "folder"
+       },
+       {
+        "component": "Text",
+        "id": "b90-text",
+        "text": "在访达中显示"
+       },
+       {
+        "children": [
+         "b90-icon",
+         "b90-text"
+        ],
+        "component": "Row",
+        "id": "b90-row"
+       },
+       {
+        "component": "Text",
+        "id": "t91",
+        "text": "设置文件",
+        "variant": "strong"
+       },
+       {
+        "children": [
+         "t91"
+        ],
+        "component": "Column",
+        "id": "c92"
+       },
+       {
+        "children": [
+         "b90"
+        ],
+        "component": "Row",
+        "id": "r93"
+       },
+       {
+        "children": [
+         "c92",
+         "r93"
+        ],
+        "component": "Row",
+        "id": "r94",
+        "justify": "spaceBetween"
+       },
+       {
+        "component": "Text",
+        "id": "t95",
+        "text": "文件",
+        "variant": "caption"
+       },
+       {
+        "children": [
+         "r89",
+         "r94"
+        ],
+        "component": "List",
+        "id": "l96"
+       }
+      ],
+      "surfaceId": "luoke-ime/page/more"
+     },
+     "version": "v0.9"
+    }
+   ],
+   "page": "more"
   }
  }
 }

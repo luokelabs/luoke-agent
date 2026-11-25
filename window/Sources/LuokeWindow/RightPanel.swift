@@ -240,6 +240,8 @@ struct RightPanel: View {
 
     @ObservedObject var model: WindowModel
     @Environment(\.lk) private var p
+    /// 鼠标在顶上那一句上：换成内存、GPU 两条和百分比
+    @State private var hoveringLoad = false
 
     var body: some View {
         VStack(spacing: 0) {
@@ -277,9 +279,9 @@ struct RightPanel: View {
     /// 在做什么看右上角那一粒和下面的「任务」）
     private var header: some View {
         HStack(spacing: LKSpace.x3) {
-            // 这台 Mac 现在多忙（负责人 11-13：内存、GPU 放在右边栏顶上；以后有了 CPU、神经网络引擎再加）
-            meter("RAM", model.machineLoad?.ram, MachineLoad.ramColor(p.dark))
-            meter("GPU", model.machineLoad?.gpu, MachineLoad.gpuColor(p.dark))
+            // 这台 Mac 现在多忙（负责人 11-13：内存、GPU 放在右边栏顶上；以后有了 CPU、神经网络引擎再加）。
+            // 平时写成一句话，百分比条放到鼠标悬停时（UX-11：去极客化）
+            load
             Spacer(minLength: 0)
             Button { model.closePanel() } label: {
                 LKIcon("x", size: 16).foregroundStyle(p.mutedFg).frame(width: 30, height: 30).contentShape(Rectangle())
@@ -290,6 +292,29 @@ struct RightPanel: View {
         }
         .padding(.leading, LKSpace.x4).padding(.trailing, LKSpace.x3)
         .padding(.top, LKSpace.x3).padding(.bottom, LKSpace.x1)
+    }
+
+    /// 一句话（「这台 Mac：资源充足」）；鼠标放上去换成内存、GPU 两条和百分比
+    @ViewBuilder private var load: some View {
+        if let l = model.machineLoad, let line = l.summary {
+            ZStack(alignment: .leading) {
+                if hoveringLoad {
+                    HStack(spacing: LKSpace.x3) {
+                        meter("RAM", l.ram, MachineLoad.ramColor(p.dark))
+                        meter("GPU", l.gpu, MachineLoad.gpuColor(p.dark))
+                    }
+                } else {
+                    Text(line).font(LKFont.ui(LKType.caption)).foregroundStyle(l.strained ? p.warningText : p.mutedFg).lineLimit(1)
+                }
+            }
+            // 热区占满 × 左边那一截、宽度不跟着里面变：两条比一句话宽，热区跟着缩放的话鼠标在边上会来回闪
+            .frame(maxWidth: .infinity, minHeight: 30, maxHeight: 30, alignment: .leading)
+            .contentShape(Rectangle())
+            .onHover { hoveringLoad = $0 }
+            .help(l.detail)
+            .accessibilityElement(children: .ignore)
+            .accessibilityLabel("\(line)。\(l.detail)")
+        }
     }
 
     /// 一样资源：名字（它的颜色）、一条短的进度、百分比

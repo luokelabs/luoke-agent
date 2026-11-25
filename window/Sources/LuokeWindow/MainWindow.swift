@@ -222,8 +222,8 @@ private struct ContentArea: View {
                 .frame(minWidth: 0, maxWidth: .infinity, minHeight: 0, maxHeight: .infinity, alignment: .topLeading)
                 if model.hostPage != nil {
                     // 本体的一页：底部不画搜索和问螺壳
-                } else if model.features.contains(.ask) && model.focus == nil { AskLayer(model: model) }
-                else if model.searchBarShown { SearchLayer(model: model) }
+                } else if model.features.contains(.ask) { AskLayer(model: model) }
+                // 只有搜索（没有问螺壳）时底部不放条：搜索框在螺壳搜索页的标题下面（AppPage，UX-09）
                 // 应用的隐藏页、设置底下的链接：弹窗盖在内容区中间（走查重画稿）
                 if model.sheet == nil, let d = model.appDialog { AppDialogView(model: model, app: d.app, ref: d.page) }
                 else if model.sheet == nil, model.page == .prefs, let d = model.settingsDialog { SettingsDialogView(model: model, dialog: d) }
@@ -246,13 +246,10 @@ struct TitleBar: View {
 
     var body: some View {
         HStack(spacing: 0) {
-            // 「逐件处理」开着时先不画收起按钮（返回今天再收起侧栏）
-            if model.focus == nil {
-                SidebarToggle(model: model).padding(.leading, WindowControls.toggleMinX)
-            }
+            SidebarToggle(model: model).padding(.leading, WindowControls.toggleMinX)
             Spacer(minLength: 0)
             // 右上角的胶囊：右边栏收着、不是本体的一页占着时才有
-            if !model.panelOpen && model.hostPage == nil && model.focus == nil {
+            if !model.panelOpen && model.hostPage == nil {
                 OutputPill(model: model).padding(.trailing, LKSpace.x3)
             }
         }
@@ -331,11 +328,18 @@ struct LKDialog<Content: View, Footer: View>: View {
     @ViewBuilder var content: Content
     /// 固定在底部的一排（按钮）：内容滚动时不动（负责人 11-21：弹窗里的按钮在页面最底端，滑过去才看得到）
     @ViewBuilder var footer: Footer
+    /// 最宽多少：一般 600；读信这类要看长正文的放宽（UX-14：邮件详情 700）
+    var maxWidth: CGFloat = 600
+    /// 标题那一行 × 左边的几样（页上写了 `"placement": "header"` 的按钮：邮件详情的「更改处理方式」）
+    var trailing: AnyView? = nil
 
-    init(title: String, back: (() -> Void)? = nil, close: @escaping () -> Void, @ViewBuilder content: () -> Content, @ViewBuilder footer: () -> Footer) {
+    init(title: String, back: (() -> Void)? = nil, close: @escaping () -> Void, maxWidth: CGFloat = 600, trailing: AnyView? = nil,
+         @ViewBuilder content: () -> Content, @ViewBuilder footer: () -> Footer) {
         self.title = title
         self.back = back
         self.close = close
+        self.maxWidth = maxWidth
+        self.trailing = trailing
         self.content = content()
         self.footer = footer()
     }
@@ -369,6 +373,7 @@ struct LKDialog<Content: View, Footer: View>: View {
                     }
                     Text(title).font(LKFont.ui(LKType.lead, .semibold)).accessibilityAddTraits(.isHeader)
                     Spacer(minLength: LKSpace.x4)
+                    if let trailing { trailing }
                     if back == nil {
                         Button(action: close) {
                             LKIcon("x").foregroundStyle(p.mutedFg).frame(width: 28, height: 28).contentShape(Rectangle())
@@ -400,7 +405,7 @@ struct LKDialog<Content: View, Footer: View>: View {
             }
             .padding(EdgeInsets(top: LKSpace.x5, leading: LKSpace.x6, bottom: LKSpace.x5, trailing: LKSpace.x5))
             // 不定最小宽度：右边栏拉出来、窗口窄时内容区可能不到 460，定了最小宽度弹窗会比内容区宽，左边被切掉、右边伸出去
-            .frame(maxWidth: 600)
+            .frame(maxWidth: maxWidth)
             .background(RoundedRectangle(cornerRadius: LKRadius.sheet, style: .continuous).fill(p.card)
                 .shadow(color: p.shadow.opacity(p.dark ? 0.6 : 0.35), radius: 20, y: 18))
             .overlay { if p.dark { RoundedRectangle(cornerRadius: LKRadius.sheet, style: .continuous).strokeBorder(p.border, lineWidth: 1) } }
@@ -428,8 +433,26 @@ struct AppDialogView: View {
         LKDialog(title: title,
                  back: model.canGoBackInAppDialog ? { model.popAppDialog() } : nil,
                  close: { model.closeAppDialog() },
+                 maxWidth: Self.widePages.contains(sid) ? 700 : 600,
+                 trailing: headerButtons(sid),
                  content: { body(sid) },
                  footer: { footer(sid) })
+    }
+
+    /// 要看长正文的弹窗放宽到 700（UX-14：读信）
+    static let widePages: Set<String> = [AgentFeed.pageKey("luoke-mail", "mail")]
+
+    /// 页上放在标题那一行的按钮（不是当标题用的那段字）：画在 × 左边
+    private func headerButtons(_ sid: String) -> AnyView? {
+        guard let s = model.agentPages[sid]?.surface else { return nil }
+        let ids = s.surface.headerItems.filter { s.surface.components[$0]?["component"]?.string == "Button" }
+        guard !ids.isEmpty else { return nil }
+        return AnyView(HStack(spacing: LKSpace.x1) {
+            ForEach(ids, id: \.self) { hid in
+                SurfaceView(model: s, part: .section(hid, skip: 0)) { cid, _, ctx in model.tapPage(sid, componentId: cid, context: ctx) }
+                    .fixedSize()
+            }
+        })
     }
 
     /// 页上写了 `"placement": "footer"` 的几样（工具协议 §4 footerPlacement）：固定在弹窗底部，上面一条线和内容隔开
@@ -705,7 +728,8 @@ struct NavPill: View {
     @Environment(\.lk) private var p
 
     var body: some View {
-        RoundedRectangle(cornerRadius: p.controlRadius, style: .continuous).fill(p.selection)
+        // 深色下选中的一行用一层淡珊瑚粉，不只是灰上加灰（负责人 11-24：深色太素）
+        RoundedRectangle(cornerRadius: p.controlRadius, style: .continuous).fill(p.dark ? p.brand.opacity(0.16) : p.selection)
             .matchedGeometryEffect(id: "nav-pill", in: ns)
     }
 }
@@ -753,7 +777,7 @@ struct NavRow: View {
             HStack(spacing: LKSpace.x3) {
                 Group {
                     if let tool { AppIcon(tool: tool, size: 18) } else if let symbol {
-                        LKIcon(symbol, size: 16).foregroundStyle(on ? p.fg : p.mutedFg).frame(width: 18)
+                        LKIcon(symbol, size: 16).foregroundStyle(on ? (p.dark ? p.brand : p.fg) : p.mutedFg).frame(width: 18)
                     }
                 }
                 .overlay(alignment: .bottomTrailing) {

@@ -32,20 +32,21 @@ public struct Palette: Equatable {
         danger: .hex(0xB33A27), dangerSoft: .hex(0xF9ECEA), brandText: .hex(0xBF2D45), dangerFill: .hex(0xC2412D),
         warningText: .hex(0x8F590C), dark: false)
 
-    /// 深色是暖色：深棕的底、奶油色的字，不用中性灰（v2）。深色下用状态色写的字直接用原色
+    /// 深色是带一点暖的灰（石色）的底、近白的字，不用棕（luoke-brand 11-23：深色模式不用棕，和官网深色一致）。
+    /// 彩色的浅底（品牌、成功、警告、危险、标签）保留各自色相，不再偏棕。深色下用状态色写的字直接用原色
     public static let dark = Palette(
-        bg: .hex(0x1F1511), fg: .hex(0xFBF3E8), card: .hex(0x2C1F19), sidebar: .hex(0x261A15),
-        primary: .hex(0xFDF4E4), primaryFg: .hex(0x2B1A12), muted: .hex(0x372720), mutedFg: .hex(0xBBA596),
-        border: .hex(0x3B2A22), input: .hex(0x4A382E), brand: .hex(0xF2707F), brandSoft: .hex(0x4A2329),
-        success: .hex(0x5CC98A), successSoft: .hex(0x16301F), warning: .hex(0xE8B45A), warningSoft: .hex(0x33280F),
-        danger: .hex(0xF07A66), dangerSoft: .hex(0x472C24), brandText: .hex(0xF2707F), dangerFill: .hex(0xF07A66),
-        info: .hex(0x9DBCEB), infoSoft: .hex(0x1C2737), warningText: .hex(0xE8B45A), successText: .hex(0x5CC98A), dark: true)
+        bg: .hex(0x1C1B19), fg: .hex(0xFAF8F5), card: .hex(0x262422), sidebar: .hex(0x22211F),
+        primary: .hex(0xF2707F), primaryFg: .hex(0x1C1B19), muted: .hex(0x2F2D2A), mutedFg: .hex(0xB5AFA8),
+        border: .hex(0x353330), input: .hex(0x45423E), brand: .hex(0xF2707F), brandSoft: .hex(0x3F2329),
+        success: .hex(0x5CC98A), successSoft: .hex(0x16301F), warning: .hex(0xE8B45A), warningSoft: .hex(0x352D1C),
+        danger: .hex(0xF07A66), dangerSoft: .hex(0x45282A), brandText: .hex(0xF2707F), dangerFill: .hex(0xF07A66),
+        info: .hex(0x9DBCEB), infoSoft: .hex(0x1E2838), warningText: .hex(0xE8B45A), successText: .hex(0x5CC98A), dark: true)
 
     /// 首页那一组（v2 §2「首页和小精灵换的值」）：首页和共用的侧栏。底更暖；别的同工作台。主按钮原来用品牌粉，负责人 11-17 定回深棕（粉的像删除、提示条像报错），品牌粉只留给吉祥物和强调
     public static let homeLight = Palette.light.with(bg: 0xFFF8EE, sidebar: 0xFBEEDC, card: 0xFFFFFF, muted: 0xF6ECDF,
                                                      border: 0xF0E4D4)
-    public static let homeDark = Palette.dark.with(bg: 0x241713, sidebar: 0x1D120E, card: 0x32221B, muted: 0x3B2921,
-                                                   border: 0x402D24)
+    public static let homeDark = Palette.dark.with(bg: 0x1F1E1C, sidebar: 0x161514, card: 0x2A2826, muted: 0x33312E,
+                                                   border: 0x393734)
 
     private func with(bg: UInt32, sidebar: UInt32, card: UInt32, muted: UInt32, border: UInt32) -> Palette {
         var p = self
@@ -65,8 +66,8 @@ public struct Palette: Equatable {
         }
     }
 
-    /// 实心红按钮上的字：工作台的 primary-foreground（浅色奶白、深色墨棕），首页那组也是这个
-    public var dangerFillFg: Color { dark ? .hex(0x2B1A12) : .hex(0xFDF8F1) }
+    /// 实心红按钮上的字：工作台的 primary-foreground（浅色奶白、深色暖灰），首页那组也是这个
+    public var dangerFillFg: Color { dark ? .hex(0x1C1B19) : .hex(0xFDF8F1) }
     /// 次一级按钮、分段的底：字色的 6 %（深色 8 %）
     public var tint: Color { fg.opacity(dark ? 0.08 : 0.06) }
     /// 悬停：字色的 10 %
@@ -116,8 +117,6 @@ enum LKRadius {
     static let small: CGFloat = 6
     /// 浮在上面的面板（要权限）
     static let sheet: CGFloat = 20
-    /// 逐件处理的面板
-    static let focus: CGFloat = 16
 }
 
 /// 高度

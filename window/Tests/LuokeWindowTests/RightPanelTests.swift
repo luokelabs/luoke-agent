@@ -99,4 +99,17 @@ final class RightPanelTests: XCTestCase {
         m.perform(.togglePanel)
         XCTAssertFalse(m.panelOpen)
     }
+
+    /// UX-11：右边栏顶上平时写一句话，百分比放在悬停里
+    func testMachineLoadReadsAsOneLine() {
+        XCTAssertEqual(MachineLoad(ram: 0.4, gpu: 0.1).summary, "这台 Mac：资源充足")
+        XCTAssertEqual(MachineLoad(ram: 0.8, gpu: 0.1).summary, "这台 Mac：内存偏紧")
+        XCTAssertEqual(MachineLoad(ram: 0.95, gpu: 0.9).summary, "这台 Mac：内存紧张，GPU 繁忙")
+        XCTAssertNil(MachineLoad(ram: nil, gpu: 0.5).summary, "读不到内存不写")
+        XCTAssertFalse(MachineLoad(ram: 0.4, gpu: 0.1).strained)
+        XCTAssertTrue(MachineLoad(ram: 0.4, gpu: 0.8).strained)
+        let d = MachineLoad(ram: 0.62, gpu: 0.12).detail
+        XCTAssertTrue(d.hasPrefix("内存约 ") && d.hasSuffix(" GB"), d)
+        XCTAssertFalse(d.contains("%"), "百分比悬停时两条上有，提示里不重复")
+    }
 }

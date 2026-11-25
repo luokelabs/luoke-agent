@@ -2,49 +2,25 @@ import AppKit
 import LuokeA2UI
 import SwiftUI
 
-/// 底部的搜索框（⌘K）：只搜索，不问螺壳。按回车把词直接给应用，结果是应用给的 A2UI 卡片，浮在当前页上，Esc 收起。
-struct SearchLayer: View {
+/// 螺壳搜索页上的搜索框（⌘K）：在页标题下面、正文最上面（UX-09，原来浮在窗口底部）。只搜索，不问螺壳：按回车把词直接给应用，
+/// 结果在它下面的正文里整页画（`SearchPanel(inline:)`），Esc 收起。
+struct SearchField: View {
     @ObservedObject var model: WindowModel
     @Environment(\.lk) private var p
     @Environment(\.lkSnapshot) private var snapshot
-    @Environment(\.lkLayout) private var layout
     @State private var text = ""
     @FocusState private var focused: Bool
-    /// 结果面板加搜索框的高：面板出来时实底跟着往上延，后面的字整行淡掉，不在面板上沿露半截
-    @State private var stackHeight: CGFloat = 0
-    /// 底部那一段多高：离底 18 + 框 48 + 上面渐隐 18
-    static let band: CGFloat = 84
 
     var body: some View {
-        ZStack(alignment: .bottom) {
-            // 搜索框后面是实底，上沿往上只渐隐 18（和离底一样，负责人 11-13：上面空得太多）：滚到下面的内容不会半截透出来
-            LinearGradient(stops: [.init(color: p.bg.opacity(0), location: 0), .init(color: p.bg.opacity(0.9), location: 0.15),
-                                   .init(color: p.bg, location: 0.215), .init(color: p.bg, location: 1)], startPoint: .top, endPoint: .bottom)
-                .frame(height: model.searchOpen ? max(Self.band, stackHeight + 18 + 18) : Self.band)
-                .allowsHitTesting(false)
-            if model.searchOpen {
-                Color.black.opacity(p.dark ? 0.35 : 0.08)
-                    .contentShape(Rectangle())
-                    .onTapGesture { model.closeSearch() }
-            }
-            VStack(spacing: 10) {
-                if model.searchOpen { SearchPanel(model: model) }
-                field
-            }
-            .onGeometryChange(for: CGFloat.self, of: { $0.size.height }) { stackHeight = $0 }
-            // 和页面那一栏同宽、同一条中线（PageScroll：最宽 700，左右各留 LKInsets.column，窄的时候留得少）；
-            // 宽窗口里页有侧栏时跟着主栏往左挪，不骑在两栏中间
-            .frame(maxWidth: LKColumn.width - LKInsets.column.leading - LKInsets.column.trailing)
-            .padding(.horizontal, layout == .narrow ? LKInsets.columnNarrow.leading : LKInsets.column.leading)
-            .offset(x: model.hasRail(layout) ? -LKColumn.railShift : 0)
-            .padding(.bottom, 18)
-        }
+        field
         .onChange(of: model.searchFocus) {
             model.pendingSearchFocus = false
             focused = true
         }
         // 页上发起的搜索（点「最近搜索」的一条）：框里换成搜的那一句，看得出在搜什么、能接着改
         .onChange(of: model.searchFill) { text = model.searchFill.text }
+        // 结果开着时框里是搜的那一句（视图重建过也一样）
+        .task { if text.isEmpty && model.searchOpen { text = model.searchQuery } }
         // 窗口打开时系统把光标放进第一个输入框：不要（负责人 11-14），⌘K 或点了才进去；
         // 但从别的页按 ⌘K 跳过来时（pendingSearchFocus），直接聚焦且不踢掉焦点
         .onAppear {
@@ -111,6 +87,18 @@ struct SearchLayer: View {
                         focused = false
                     }
             }
+            // 框里有字或结果开着：一个 ×，点了清空、收起结果，回到最近搜索（只用鼠标的也退得回来；键盘是 Esc）
+            if !text.isEmpty || model.searchOpen {
+                Button {
+                    text = ""
+                    model.closeSearch()
+                } label: {
+                    LKIcon("x", size: 14).foregroundStyle(p.mutedFg).frame(width: 22, height: 22).contentShape(Rectangle())
+                }
+                .buttonStyle(.plainPointer)
+                .help("清除")
+                .accessibilityLabel("清除搜索")
+            }
             Kbd(text: "⌘K")
         }
         .background {
@@ -123,27 +111,28 @@ struct SearchLayer: View {
             }
         }
         .padding(EdgeInsets(top: 6, leading: 14, bottom: 6, trailing: 14))
-        .frame(maxWidth: .infinity, minHeight: 48, maxHeight: 48)
+        .frame(maxWidth: .infinity, minHeight: 44, maxHeight: 44)
+        // 在页里、不再浮在内容上：不要影子，描一圈边和别的输入框一样
         .background(RoundedRectangle(cornerRadius: LKRadius.sheet, style: .continuous).fill(p.card))
-        .shadow(color: .black.opacity(p.dark ? 0.35 : 0.1), radius: 12, y: 6)   // 不描边：浅色靠影子，深色靠卡片色
+        .overlay(RoundedRectangle(cornerRadius: LKRadius.sheet, style: .continuous).strokeBorder(p.input, lineWidth: 1))
     }
 }
 
-/// 搜索框上面的结果：一个应用一段，放不下就滚动
+/// 搜索框下面的结果（螺壳搜索页的正文里）：一个应用一段，放不下就滚动。`height`：结果最高多少，页给的是内容区剩下的高
 struct SearchPanel: View {
     @ObservedObject var model: WindowModel
+    var height: CGFloat = SearchResults.height
     @Environment(\.lk) private var p
     @Environment(\.lkSnapshot) private var snapshot
 
     var body: some View {
         if let a = model.searchAnswer, !a.hits.isEmpty {
             // 给了 hits 的：按类型分组自己画（SearchResults），顶上一行和页脚贴着面板的边
-            SearchResults(model: model, answer: a, snapshot: snapshot)
+            SearchResults(model: model, answer: a, snapshot: snapshot, height: height)
                 .frame(maxWidth: .infinity, alignment: .leading)
-                .background(RoundedRectangle(cornerRadius: LKRadius.sheet, style: .continuous).fill(p.card.opacity(0.97)))
+                .background(RoundedRectangle(cornerRadius: LKRadius.sheet, style: .continuous).fill(p.card))
                 .clipShape(RoundedRectangle(cornerRadius: LKRadius.sheet, style: .continuous))
                 .overlay(RoundedRectangle(cornerRadius: LKRadius.sheet, style: .continuous).strokeBorder(p.border, lineWidth: 1))
-                .shadow(color: .black.opacity(0.18), radius: 25, y: 12)
         } else {
             cardsPanel
         }
@@ -152,19 +141,18 @@ struct SearchPanel: View {
     private var cardsPanel: some View {
         Group {
             if snapshot {   // 离屏画不出系统的滚动视图：平铺，多出来的从下面截掉（和 PageScroll 一样）
-                content.fixedSize(horizontal: false, vertical: true).frame(maxHeight: 460, alignment: .top)
+                content.fixedSize(horizontal: false, vertical: true).frame(maxHeight: height - 60, alignment: .top)
                     .fixedSize(horizontal: false, vertical: true).clipped()   // 结果少时不撑满
             } else {
                 ScrollView { content }.scrollIndicators(.never)    // 和 SearchResults 一样：滚动条一出一收会抖
-                    .frame(maxHeight: 460)
+                    .frame(maxHeight: height - 60)
                     .fixedSize(horizontal: false, vertical: true)     // 结果少时不撑满
             }
         }
             .padding(14)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .background(RoundedRectangle(cornerRadius: LKRadius.sheet, style: .continuous).fill(p.card.opacity(0.97)))
+        .background(RoundedRectangle(cornerRadius: LKRadius.sheet, style: .continuous).fill(p.card))
         .overlay(RoundedRectangle(cornerRadius: LKRadius.sheet, style: .continuous).strokeBorder(p.border, lineWidth: 1))
-        .shadow(color: .black.opacity(0.18), radius: 25, y: 12)
     }
 
     private var content: some View {

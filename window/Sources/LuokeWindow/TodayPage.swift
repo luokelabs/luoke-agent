@@ -79,21 +79,16 @@ struct TodayPage: View {
     }
 
     var body: some View {
-        ZStack(alignment: .topLeading) {
-            if model.focus != nil {
-                FocusPanel(model: model, ns: ns)
-                    .transition(.asymmetric(insertion: reduce ? .opacity : .identity,
-                                            removal: reduce ? .opacity : .opacity.combined(with: .scale(scale: 0.985))))
-            } else if model.density == .compact {
-                TodayCompact(model: model)
-                    .transition(.asymmetric(insertion: .identity, removal: .opacity.animation(Motion.exit(Motion.focusFade, reduce: reduce))))
-            } else {
-                TodayStandard(model: model, ns: ns)
-                    .transition(.asymmetric(insertion: .identity, removal: .opacity.animation(Motion.exit(Motion.focusFade, reduce: reduce))))
-            }
+        // 只有一种密度（负责人 11-13）：紧凑的表和「逐件处理」没有入口，已删（UX-12）
+        TodayStandard(model: model, ns: ns)
+    }
+
+    /// 菜单栏里点了一行急事：等展开的那几行画出来，滚到那一叠，再把请求清掉
+    static func scrollToUrgent(_ j: UrgentJump, model: WindowModel, proxy: ScrollViewProxy, reduce: Bool) {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
+            withAnimation(Motion.enter(Motion.reflow, reduce: reduce)) { proxy.scrollTo("urgent:\(j.id)", anchor: .top) }
+            if model.urgentJump == j { model.urgentJump = nil }
         }
-        .animation(model.focus == nil ? Motion.exit(Motion.focusExit, reduce: reduce) : Motion.drawer(Motion.focusGrow, reduce: reduce),
-                   value: model.focus != nil)
     }
 }
 
@@ -156,6 +151,8 @@ struct TodayStandard: View {
     @Environment(\.lkLayout) private var layout
     /// 点了「还有 n 件」
     @State private var allDone = false
+    /// 顶上那一条提示（应用没在运行、通知没开……）点开了：一条一行列全
+    @State private var noticesOpen = false
     /// 「待确认」那一张现在摆的是第几件
     @State private var deckIndex = 0
     /// 展开了的那几叠「要你决定」（相近的卡片放成一叠，见 `TodayStack`）；急事的在 `model.urgentOpenStacks`
@@ -167,7 +164,7 @@ struct TodayStandard: View {
         }
     }
     /// 第一张卡片能长成面板（刚从面板回来的那一下不能）
-    @State private var heroReady: Bool
+    @State private var heroReady = true
     @State private var known: Ids
     @State private var frames: [String: CGRect] = [:]
     @State private var flight: Flight?
@@ -180,7 +177,6 @@ struct TodayStandard: View {
     init(model: WindowModel, ns: Namespace.ID) {
         _model = ObservedObject(wrappedValue: model)
         self.ns = ns
-        _heroReady = State(initialValue: model.entrance != .fromFocus)
         _known = State(initialValue: Ids(cards: model.cards.map(\.id), done: model.done.map(\.id)))
     }
 
@@ -195,18 +191,14 @@ struct TodayStandard: View {
         let main = all.filter { !side.contains($0) }
         ScrollViewReader { proxy in
             page(railed: railed, all: all, main: main, side: side, proxy: proxy)
-                .onChange(of: model.urgentJump) { _, j in if let j { TodayCompact.scroll(to: j, model: model, proxy: proxy, reduce: reduce) } }
-                .onAppear { if let j = model.urgentJump { TodayCompact.scroll(to: j, model: model, proxy: proxy, reduce: reduce) } }
+                .onChange(of: model.urgentJump) { _, j in if let j { TodayPage.scrollToUrgent(j, model: model, proxy: proxy, reduce: reduce) } }
+                .onAppear { if let j = model.urgentJump { TodayPage.scrollToUrgent(j, model: model, proxy: proxy, reduce: reduce) } }
         }
         .onPreferenceChange(IconFrames.self) { f in
             frames = f
             launchPending()
         }
         .onChange(of: ids) { old, new in changed(old, new) }
-        .onAppear {
-            guard !heroReady else { return }
-            DispatchQueue.main.asyncAfter(deadline: .now() + Motion.focusGrow) { heroReady = true }
-        }
     }
 
     /// 整页（`body` 包上滚动的处理）
@@ -273,20 +265,6 @@ struct TodayStandard: View {
 
     private var header: some View {
         PageHeader(title: "今天", note: model.dateLine)
-    }
-
-    /// 「待确认」那一段标题右端的「逐件处理」：它处理的就是这一段里的事（右上角只留窗口顶上那一粒）
-    @ViewBuilder private var focusButton: some View {
-        if !model.cards.isEmpty {
-            Button { model.enterFocus() } label: {
-                HStack(spacing: LKSpace.x1 + 2) {
-                    Text("逐件处理")
-                    LKCount(value: model.cards.count, delay: Motion.counterAt).foregroundStyle(p.mutedFg)
-                }
-            }
-            .buttonStyle(LKButtonStyle())
-            .help("待确认的 \(model.cards.count) 件逐件显示：⏎ 回答，↓ 跳过，Esc 返回")
-        }
     }
 
     /// 螺壳没响应：下面的卡片是上次拿到的。窗口每 2 秒自己重连，所以不放「再试一次」；按钮照常能点，做不成会提示。
@@ -534,18 +512,38 @@ struct TodayStandard: View {
         }
     }
 
+    /// 核心的几句不挡事（应用没在运行、通知没开）：压成一行提示条，不占一张卡片（UX-12）。
+    /// 一条一句话 + 右边一个按钮（负责人 11-16）；不止一条时这一行写第一条和「另有 N 项」，点开一条一行列全
     @ViewBuilder private var notices: some View {
         let notices = model.shownNotices
-        if !notices.isEmpty {
-            // 一条一行：提示图标 + 一句话 + 右边一个按钮（负责人 11-16）；行和行之间一条线
+        if let first = notices.first {
+            let rest = notices.count - 1
             VStack(alignment: .leading, spacing: 0) {
-                ForEach(Array(notices.enumerated()), id: \.element.id) { i, n in
-                    NoticeLine(row: n, action: model.noticeAction(n))
-                        .padding(.vertical, LKSpace.x2)
-                        .overlay(alignment: .top) { if i > 0 { Rectangle().fill(p.border).frame(height: 1) } }
+                ForEach(Array((noticesOpen ? notices : [first]).enumerated()), id: \.element.id) { i, n in
+                    HStack(spacing: LKSpace.x2) {
+                        LKIcon("circle-alert", size: 14).foregroundStyle(p.warning).accessibilityHidden(true)
+                        NoticeLine(row: n, action: model.noticeAction(n), compact: true)
+                        if i == 0 && rest > 0 {
+                            Button {
+                                withAnimation(Motion.enter(Motion.reflow, reduce: reduce)) { noticesOpen.toggle() }
+                            } label: {
+                                HStack(spacing: 4) {
+                                    Text(noticesOpen ? "收起" : "另有 \(rest) 项").font(LKFont.ui(LKType.caption))
+                                    LKIcon("chevron-right", size: 11).rotationEffect(.degrees(noticesOpen ? 90 : 0))
+                                }
+                                .foregroundStyle(p.mutedFg)
+                            }
+                            .buttonStyle(.plainPointer)
+                        }
+                    }
+                    .padding(.vertical, 6)
+                    .overlay(alignment: .top) { if i > 0 { Rectangle().fill(p.border).frame(height: 1) } }
                 }
             }
-            .lkCard()
+            .padding(.horizontal, LKSpace.x3)
+            // 不透明的浅黄底加一圈淡黄细边：深色下半透明的浅黄几乎看不见（走查 11-24）
+            .background(RoundedRectangle(cornerRadius: LKRadius.small, style: .continuous).fill(p.warningSoft))
+            .overlay(RoundedRectangle(cornerRadius: LKRadius.small, style: .continuous).strokeBorder(p.warning.opacity(0.25), lineWidth: 1))
             .padding(.bottom, LKSpace.x4)
         }
     }
@@ -921,14 +919,21 @@ struct UrgentBanner: View {
         }
         .padding(LKInsets.card)
         .frame(maxWidth: .infinity, alignment: .leading)
-        // 急事的卡片浅红底、一圈淡红边，和别的卡片一眼分得开（负责人 11-13）
+        // 急事的卡片浅红底、一圈淡红边，和别的卡片一眼分得开（负责人 11-13）。
+        // 深色下整块铺红会发棕发脏（品牌 11-23），改成灰卡片 + 左上角一团淡红光 + 同色细边，和官网深色的大卡片一个做法
         .background {
             ZStack {
                 CardSurface()
-                RoundedRectangle(cornerRadius: p.cardRadius, style: .continuous).fill(p.danger.opacity(p.dark ? 0.14 : 0.06))
+                if p.dark {
+                    RoundedRectangle(cornerRadius: p.cardRadius, style: .continuous)
+                        .fill(EllipticalGradient(colors: [p.danger.opacity(0.26), p.danger.opacity(0)], center: .topLeading,
+                                                 startRadiusFraction: 0, endRadiusFraction: 0.75))
+                } else {
+                    RoundedRectangle(cornerRadius: p.cardRadius, style: .continuous).fill(p.danger.opacity(0.06))
+                }
             }
         }
-        .overlay { RoundedRectangle(cornerRadius: p.cardRadius, style: .continuous).strokeBorder(p.danger.opacity(p.dark ? 0.45 : 0.32), lineWidth: 1) }
+        .overlay { RoundedRectangle(cornerRadius: p.cardRadius, style: .continuous).strokeBorder(p.danger.opacity(p.dark ? 0.38 : 0.32), lineWidth: 1) }
         .accessibilityElement(children: .contain)
         .accessibilityLabel("急事：\(item.title)")
     }
@@ -963,7 +968,7 @@ struct CardFrame: View {
         }
         .padding(LKInsets.card)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .background { CardSurface().lkHero(hero) }
+        .background { CardSurface(glow: card.tool.accent).lkHero(hero) }
         .accessibilityElement(children: .contain)
     }
 }
@@ -1050,31 +1055,6 @@ struct DisabledWhileBusy: ViewModifier {
 }
 
 /// 一叠下面那一行：「还有 7 封」展开、「收起」
-/// 「要你决定」段标题下面的「按类处理」：不止一件的那几类，每类一块（应用图标、名字、件数），点了进「逐件处理」只走这一类
-struct CategoryPicks: View {
-    @ObservedObject var model: WindowModel
-    let picks: [DecideCategory]
-    @Environment(\.lk) private var p
-
-    var body: some View {
-        HStack(alignment: .firstTextBaseline, spacing: LKSpace.x3) {
-            Text("按类处理").font(LKFont.ui(LKType.small)).foregroundStyle(p.mutedFg).fixedSize()
-            Wrap(spacing: LKSpace.x2) {
-                ForEach(picks) { c in
-                    LKChip(on: false, action: { model.enterFocus(category: c.id) }) {
-                        AppIcon(tool: c.tool, size: 14)
-                        Text(c.name).lineLimit(1)
-                        LKCount(value: c.ids.count).foregroundStyle(p.mutedFg)
-                    }
-                    .help("「\(c.name)」的 \(c.ids.count) 件逐件显示：⏎ 回答，↓ 跳过，Esc 返回")
-                    .accessibilityLabel("逐件处理「\(c.name)」的 \(c.ids.count) 件")
-                }
-            }
-        }
-        .padding(.bottom, LKSpace.x3)
-    }
-}
-
 struct StackToggle: View {
     let more: Int
     let unit: String
@@ -1205,7 +1185,7 @@ struct TodayHello: View {
                         .lineSpacing(LKSpace.x1 + 2)
                         .fixedSize(horizontal: false, vertical: true)
                         .padding(.horizontal, LKSpace.x4).padding(.vertical, LKSpace.x3)
-                        .background(RoundedRectangle(cornerRadius: 18, style: .continuous).fill(p.card)
+                        .background(BubbleSurface()
                             .shadow(color: p.shadow.opacity(p.dark ? 0 : 0.06), radius: 1, y: 1))
                         .padding(.bottom, LKSpace.x2)
                         .accessibilityLabel(note.title + "：" + words)
@@ -1222,7 +1202,7 @@ struct TodayHello: View {
                             return .handled
                         })
                         .padding(.horizontal, LKSpace.x4).padding(.vertical, LKSpace.x3)
-                        .background(RoundedRectangle(cornerRadius: 18, style: .continuous).fill(p.card)
+                        .background(BubbleSurface()
                             .shadow(color: p.shadow.opacity(p.dark ? 0 : 0.06), radius: 1, y: 1))
                         .padding(.bottom, LKSpace.x2)
                         .accessibilityLabel(note.title)
@@ -1230,7 +1210,7 @@ struct TodayHello: View {
                     Text(line)
                         .font(LKFont.ui(LKType.lead))
                         .padding(.horizontal, LKSpace.x4).padding(.vertical, LKSpace.x3)
-                        .background(RoundedRectangle(cornerRadius: 18, style: .continuous).fill(p.card)
+                        .background(BubbleSurface()
                             .shadow(color: p.shadow.opacity(p.dark ? 0 : 0.06), radius: 1, y: 1))
                         .padding(.bottom, LKSpace.x2)
                 }
@@ -1239,5 +1219,22 @@ struct TodayHello: View {
             .padding(.bottom, LKSpace.x2)
             .accessibilityElement(children: brief == nil ? .combine : .contain)
         }
+    }
+}
+
+/// 吉祥物的气泡：卡片底；深色下从吉祥物那一侧透出一点珊瑚粉的光、加一圈淡粉细边，让它说的话在一片灰里亮一点
+struct BubbleSurface: View {
+    @Environment(\.lk) private var p
+
+    var body: some View {
+        let shape = RoundedRectangle(cornerRadius: 18, style: .continuous)
+        shape.fill(p.card)
+            .overlay {
+                if p.dark {
+                    shape.fill(EllipticalGradient(colors: [p.brand.opacity(0.20), p.brand.opacity(0)], center: .leading,
+                                                  startRadiusFraction: 0, endRadiusFraction: 0.6))
+                    shape.strokeBorder(p.brand.opacity(0.28), lineWidth: 1)
+                }
+            }
     }
 }

@@ -18,12 +18,12 @@
 | UX-06 | P1 | 右边栏入口 | 补充顶部「显示」菜单项与 `⌥⌘S` 快捷键（保留 `OutputPill` 原貌与原始注释） | `luoke-agent` `Menus.swift` | ✅ 已修复 |
 | UX-07 | P1 | 设置与权限 | 简报频率/免打扰提到「通用」；卸载标红；移除重复的「系统权限检查」弹窗及废弃视图代码，将按应用展开/本体系统检查（含通知，去重）/应用自有权限/账号移除/每次询问全部收口至「隐私与权限」 | `luoke-agent` `SettingsPage.swift`, `Model.swift`, `Menus.swift`, `Snapshot.swift` | ✅ 已修复 |
 | UX-08 | P1 | 邮件助手 | 收件箱列表仅支持单向「更早」翻页，补齐对称的「较新 / 更早」双向翻页 | `luoke-agent` `apppages/mail.py` | ✅ 已修复 |
-| UX-09 | P1 | 搜索页排布 | 「螺壳搜索」页首屏为配置项，搜索框压在底部；仅在搜索页将搜索框和结果放进正文、设置收进右上角齿轮（其他页保持全局搜索逻辑） | `luoke-agent` `SearchBox.swift`, `SearchResultsView.swift`, `apppages/search.py` | 📋 待推进（Phase 2） |
-| UX-10 | P1 | 侧栏与记忆 | 彻底落实「记忆不算应用」（应用管理、任务列表、图标统一）；「应用」默认展开/收起交负责人定 | `luoke-agent` `MainWindow.swift`, `Pages.swift`, `Model.swift` | 📋 待推进（Phase 2） |
-| UX-11 | P1 | 右边栏内容 | 保留 RAM/GPU 资源感知初衷，翻译成人话表达（百分比放悬停）；任务队列具名化并合并同类 | `luoke-agent` `RightPanel.swift` + `luoke-core` | 📋 待推进（Phase 2） |
-| UX-12 | P1 | 「今天」首屏 | 顶部系统提示卡压成单行；`FocusMode` / `TodayCompact` 系有意留给截图和测试，不加入口（仅评估是否清理） | `luoke-agent` `TodayPage.swift` | ⏸ 按需评估 |
-| UX-13 | P2 | 输入法设置 | 12 个分组拆页/折叠低频项（风险低，前端可先行）；「添加应用」需 `luoke-ime` 配合 | `luoke-agent` `apppages/ime.py` + `luoke-ime` | 📋 待推进（Phase 3） |
-| UX-14 | P2 | 邮件清理与详情 | 「清理」页分段拆分、详情弹窗适当加宽（先出实物图）；批量操作待邮件后端支持 | `luoke-agent` `apppages/mail.py`, `MainWindow.swift` | 📋 待推进（Phase 3） |
+| UX-09 | P1 | 搜索页排布 | 「螺壳搜索」页首屏为配置项，搜索框压在底部；仅在搜索页将搜索框和结果放进正文、设置收进右上角齿轮（其他页保持全局搜索逻辑） | `luoke-agent` `SearchBox.swift`, `SearchResultsView.swift`, `Pages.swift`, `apppages/search.py` | ✅ 已修复 |
+| UX-10 | P1 | 侧栏与记忆 | 彻底落实「记忆不算应用」（应用管理、任务列表、图标统一）；「应用」默认展开/收起交负责人定 | `luoke-agent` `MainWindow.swift`, `Pages.swift`, `Model.swift` | ✅ 已修复 |
+| UX-11 | P1 | 右边栏内容 | 保留 RAM/GPU 资源感知初衷，翻译成人话表达（百分比放悬停）；任务队列具名化并合并同类 | `luoke-agent` `RightPanel.swift` + `luoke-core` | 🟡 部分修复（第 1 点） |
+| UX-12 | P1 | 「今天」首屏 | 顶部系统提示卡压成单行；`FocusMode` / `TodayCompact` 系有意留给截图和测试，不加入口（仅评估是否清理） | `luoke-agent` `TodayPage.swift` | ✅ 已修复 |
+| UX-13 | P2 | 输入法设置 | 12 个分组拆页/折叠低频项（风险低，前端可先行）；「添加应用」需 `luoke-ime` 配合 | `luoke-agent` `apppages/ime.py` + `luoke-ime` | 🟡 部分修复（拆页） |
+| UX-14 | P2 | 邮件清理与详情 | 「清理」页分段拆分、详情弹窗适当加宽（先出实物图）；批量操作待邮件后端支持 | `luoke-agent` `apppages/mail.py`, `MainWindow.swift` | 🟡 部分修复（前两点） |
 | UX-15 | P2 | 记忆体验 | 手动添加记忆涉及产品决策与写入，交负责人定（不在 `ui-refactor` 上改数据格式） | `luoke-agent` `apppages/mem.py` + `luoke-mem` | ⏸ 待拍板 |
 | UX-16 | P2 | 扫描页分工 | 扫描刚改版合进 `main`，等团队反馈（#181）回来再动 | `luoke-agent` `apppages/scan.py` | ⏸ 等反馈 |
 | UX-17 | P2 | A2UI 底层能力 | 扩展新组件需跨仓库同步协议与拷贝文件，代价大，暂缓；截断列表按具体页面单独处理 | `luoke-agent` `a2ui/`, `luoke_agent/a2ui.py` | ⏸ 暂缓 |
@@ -70,6 +70,7 @@
   - 将「简报频率」「免打扰」直接提至「设置 · 通用 → 提醒」卡片，并在卡片末行放标准入口行「按应用分类设置 ›」（同时移除弹窗顶部重复项）；
   - 页底「卸载螺壳」以 `p.danger` 视觉区隔；
   - 「设置 · 隐私与权限」中已授权的多应用螺壳级权限行新增「按应用」展开按钮，可就地单独开关各应用权限。
+- **收尾（11-24）**：本体的系统检查带上 `key`（和应用清单权限的 id 同一套：`fda`、`photos`，通知是 `notifications`），权限页按 key 去重，「照片」「照片图库」不再各列一行，没允许时那一行写哪些应用要用；通知那一行按 key 认，「打开系统设置」经连接的 `settingsOpener`（`WindowBackend.openSystemSettings`），不在视图里直接开；按应用展开后关掉的应用下面不再写「未允许」；搜索设置里文件、照片开着但系统没允许时不画开着的开关，换成「允许 / 打开系统设置」和「关闭」。luoke-core 的 `systemChecks()` 同步带 key。
 
 ### UX-08：邮件助手收件箱双向翻页
 - **问题描述**：`mail.py` 收件箱每页最多 14 封，底部只有单向「更早」按钮，翻到第 2 页后无法回到上一页。
@@ -81,29 +82,31 @@
 
 ### Phase 2：全局信息架构与核心界面排布
 
-#### UX-09：「螺壳搜索」页搜索框置顶 + 配置收口
-- **现状问题**：进入「螺壳搜索」首屏是检索范围、权限、索引方式等配置项，搜索框压在最底端；结果浮层限高 520pt，开启 300pt 右侧预览后左侧缩略图网格十分局促。
-- **修改计划**：
-  1. 在 `page == .searchApp` 时，将搜索输入框置顶在标题下方，下方直接展示最近搜索标签与整页流式结果（左右分栏预览可充分利用内容区全高与全宽）；
-  2. 将「检索范围 / 权限 / 建立索引」抽为 `search.py` 的隐藏页 `settings`（图标 `settings`，右上角弹窗打开），与邮件、扫描、记忆保持完全一致的模式；
-  3. 全局底部输入条留待未来 `.ask`（搜索 + 问螺壳）能力上线时统一启用。
-- **涉及文件**：`luoke-agent/luoke_agent/apppages/search.py`、`window/Sources/LuokeWindow/Pages.swift`、`SearchBox.swift`、`SearchResultsView.swift`。
+#### UX-09：「螺壳搜索」页搜索框置顶 + 配置收口（✅ 已修复）
+- **问题**：进入「螺壳搜索」首屏是检索范围、权限、索引方式等配置项，搜索框压在最底端；结果浮层限高 520pt，开启 300pt 右侧预览后左侧缩略图网格十分局促。
+- **做法**：
+  1. `page == .searchApp` 时搜索框（`SearchField`，原 `SearchLayer`）画在页标题下面、正文最上面，底部不再画条（`hasBottomBar` 只看问螺壳）；下面是最近搜索；按回车后结果（`SearchPanel(height:)`）在正文里整页画，栏宽放开到内容区全宽、高用满剩下的高，最近搜索先收起，「待允许」一行照旧在上面；
+  2. 「检索范围 / 权限 / 建立索引」抽为 `search.py` 的隐藏页 `settings`（「搜索设置」，图标 `settings`），只有一个标签，齿轮在标题右边，弹窗打开；索引没好时概览上写一行状态、点了进设置；
+  3. ⌘K、「前往 › 搜索」照旧走 `focusSearch()` 和 `pendingSearchFocus`，窗口刚打开不放光标（负责人 11-14）；全局底部输入条留待 `.ask` 上线时统一启用。
+- **测试**：`test_apppages` 的 `test_search_page_follows_the_mockup`、`test_search_page_states`；`BehaviourTests.testSearchSettingsOpenAsADialogFromTheGear`、`Beta2Tests.testTheSearchBoxIsOnlyOnTheSearchAppsPage`；截图 `search-built-settings`。
 
-#### UX-10：左侧栏导航层级与「记忆」归属统一
+#### UX-10：左侧栏导航层级与「记忆」归属统一（✅ 已修复）
 - **现状问题**：`appsExpanded` 默认 `false`，导致邮件/扫描/搜索等高频应用被折叠；「记忆」在侧栏独立为一级入口并用线条大脑图标，但在「应用管理」与任务列表中又作为应用并列并用彩色笔记本图标。
 - **修改计划**（需先与负责人确认产品决策）：
   1. 评估是否将已安装应用默认展开展示，并将「应用管理」移至应用分组标题右侧动作位或侧栏底部设置上方；
   2. 统一「记忆」身份：若定为螺壳内置核心能力，在「应用管理」中单列为「核心组件」或移出普通应用安装列表，并统一侧栏、任务栏、历史记录中的视觉图标。
 - **涉及文件**：`window/Sources/LuokeWindow/MainWindow.swift`、`Pages.swift`、`Model.swift`、`BehaviourTests.swift`。
+- **做法（11-24）**：`AppIcon(tool: .mem)` 在哪里都画和侧栏一样的线条大脑（应用管理、右边栏任务和历史、权限页按应用展开）；应用管理里记忆不排在应用中间，单独一节「核心组件」放在最后（`AddAppsPage.sections`）。「应用」一组默认收起不改。测试 `BehaviourTests.testMemoryIsItsOwnSectionInAppManagement`。
 
-#### UX-11：右边栏去极客化与任务队列可读性
+#### UX-11：右边栏去极客化与任务队列可读性（🟡 部分修复（第 1 点））
 - **现状问题**：顶部常驻 `RAM / GPU` 硬件监控条与整体温和调性冲突；排队列表中同应用的多个后台任务都叫「后台整理」，难以分辨且无法操作。
 - **修改计划**：
   1. 将 `RAM / GPU` 监控条收口至「设置 → 模型」或胶囊/栏头悬停提示；右边栏顶部聚焦「今日产出 + 进行中任务」；
   2. 与 `luoke-core` 协商在 `/tasks` 数据中细化任务类型名称（如「同步新邮件」「分析旧邮件」「全盘磁盘检查」），同应用同类型排队任务合并展示，并补充「立即运行 / 暂停」动作。
 - **涉及文件**：`window/Sources/LuokeWindow/RightPanel.swift`、`luoke-core` 调度状态接口。
+- **做法（11-24，第 1 点）**：右边栏顶上的 RAM/GPU 保留，平时写一句话（`MachineLoad.summary`：「这台 Mac：资源充足 / 内存偏紧 / 内存紧张，GPU 繁忙」，偏紧以上标黄），鼠标放上去换成原来的两条和百分比，悬停提示写「内存 62%（约 79 GB / 128 GB）· GPU 12%」。原来没有颜色阈值，新定内存 ≥ 75% 偏紧、≥ 90% 紧张，GPU ≥ 70% 繁忙（`MachineLoad.ramTight / ramFull / gpuBusyAt`）。螺壳自己用了多少内存窗口读不到，所以写的是整台 Mac。第 2 点（任务具名、合并同类）要 luoke-core 的 `/tasks` 配合，这次不做。测试 `RightPanelTests.testMachineLoadReadsAsOneLine`。
 
-#### UX-12：「今天」首屏减负与孤岛视图清理
+#### UX-12：「今天」首屏减负与孤岛视图清理（✅ 已修复）
 - **现状问题**：系统提示卡 + 吉祥物气泡 + 已自动处理叠放后易将「待确认」推出首屏；代码中仍残留无 UI 入口的 `FocusMode.swift` 与 `TodayCompact.swift`。
 - **修改计划**：
   1. 将非阻塞的系统提示（应用未运行、通知未开）压缩为紧凑单行提示条；优化吉祥物气泡在首屏的占位高度与空态边界；
@@ -111,23 +114,26 @@
 - **涉及文件**：`window/Sources/LuokeWindow/TodayPage.swift`、`FocusMode.swift`、`TodayCompact.swift`。
 
 ---
+- **做法（11-24）**：没有入口的紧凑「今天」（`TodayCompact`）和「逐件处理」（`FocusMode`）删掉，连同只为它们存在的 `Density`、`setDensity`、`FocusSession`、`focus` 和进出逐件处理的方法、「按类处理」（`DecideCategory`、`CategoryPicks`）、`compactExpanded`、动效里 `focus*`/`next*` 的时长、`LKRadius.focus`、手写的长方案卡片，以及截图场景（`focus*`、`compact-*`、`wide-compact-2560`、`full-today-compact`）和测试（`DecideCategoryTests`、`FocusReplaceTests`、`BehaviourTests` 里逐件处理和密度的几个、`LayoutTests.testCompactTodayAndFocusHaveNoRail`）。急事滚动（`TodayPage.scrollToUrgent`）和测试用的 feed 改写（`FeedEdits`）挪出来留着。「今天」顶上核心的提示（应用没在运行、通知没开）从一张卡片压成一行浅黄的提示条：写第一条和它的按钮，不止一条时右边「另有 N 项」，点开一条一行。截图 `stress-today-notices-two`。
 
 ### Phase 3：各子应用深修与 A2UI 能力升级
 
-#### UX-13：输入法超长设置页拆分与「各应用」添加入口
+#### UX-13：输入法超长设置页拆分与「各应用」添加入口（🟡 部分修复（拆页））
 - **现状问题**：`ime.py` 单页堆叠 12 个分组（高频输入配置、7 天统计、开发模式、文件路径全混在一列）；「各应用」页只能被动提示去输入法菜单点选。
 - **修改计划**：
   1. 将低频项（「使用统计」「开发模式」「文件」）移至折叠区或右上角辅助弹窗，主「设置」页聚焦日常输入、语音、候选窗与记忆记录；
   2. 协同 `luoke-ime` 在「各应用」页增加 `+ 添加应用`（弹出系统应用选择器）。
 - **涉及文件**：`luoke-agent/luoke_agent/apppages/ime.py`、`luoke-ime`。
+- **做法（11-24）**：「设置」一页只留日常用的（输入方式、模糊音、语音、中英文、排版、候选窗口、联想、记忆记录）；词语（清除已学、恢复已忘记）、使用统计、开发模式、文件挪进隐藏页 `more`「高级设置」，图标 `sliders-horizontal`，在标签栏右端，弹窗打开（`ime.more`，要的数据还是 `data/settings`）。词语原清单里没点名，判断是低频，一起挪了。「添加应用」要 luoke-ime 配合，这次不做。测试 `ImeSettingsTest.test_low_frequency_groups_are_in_advanced`，截图 `ime-more-normal`（`SAMPLE_VIEWS["more"]`）。
 
-#### UX-14：邮件助手「清理」拆分、收件箱批量操作与详情阅读空间
+#### UX-14：邮件助手「清理」拆分、收件箱批量操作与详情阅读空间（🟡 部分修复（前两点））
 - **现状问题**：「清理」页同时混排订阅与旧邮件四段内容且多层弹窗嵌套；收件箱只能逐封操作；600pt 弹窗阅读长信和编辑草稿偏窄。
 - **修改计划**：
   1. 「清理」页内用顶部分段控件拆分为 `订阅体检` 与 `旧邮件` 两个平级视图，直接平铺各自分组，减少二级弹窗；
   2. 邮件详情弹窗适当放宽最大宽度（如 `680–720pt`），将低频的「更改处理方式并建规则」移至右上角菜单；
   3. 协同 `luoke-mail` 评估收件箱多选批量归档/标已读支持。
 - **涉及文件**：`luoke-agent/luoke_agent/apppages/mail.py`、`window/Sources/LuokeWindow/MainWindow.swift`。
+- **做法（11-24，前两点）**：「清理」顶上分段「订阅体检 / 旧邮件」，两个平级的视图，各自就是原来点开的弹窗的全部内容（分组、按钮、重新检查），直接铺在页上，切换分组、邮箱、范围都回到清理页（`subs`、`old` 加了 `host`，隐藏页照旧在，卡片和旧链接点得进去）；「全部退订」挪进订阅体检的「建议退订」那一组。只为旧清理页存在的 `_old_reads`、`_old_bulk_rows`、`CLEAN_ROWS` 删了。邮件详情弹窗最宽 700（`AppDialogView.widePages`）；「更改处理方式，可同时保存为规则」从正文最下面的折叠挪到弹窗标题那一行右边的按钮（页上 `placement: header` 的按钮，`LKDialog` 新加 `trailing`），点开隐藏页 `change`（返回栈回到这封信）。批量操作要邮件助手后端支持，这次不做。测试 `test_clean_is_two_flat_views`、`test_opened_mail_has_all_ways_draft_and_rule`，截图 `mail-built-clean-old`、`mail-built-change`。
 
 #### UX-15：记忆主动录入、去重「待确认」与筛选解耦
 - **现状问题**：用户无法主动添加记忆；「待确认」在「今天」与「记忆 · 概览」两处交互手势不一致；「全部记忆」10 项筛选混排内容类型与状态。
@@ -160,3 +166,12 @@
   - `luoke-agent/tests/test_apppages.py`：96/96 通过；
   - `luoke-core/app`：`LuokeCoreTests` 编译无错，所有非沙箱受限用例（含 `FirstRun`）全部通过。
 - **后续每阶段落地前**：均需同步更新 `docs/主窗口.md` 与对应单元测试，并通过 `ScreenshotTests` 全量浅/深色渲染核验。
+
+## 走查补修（11-24，`.handoff/ui-refactor-review.md`）
+
+1. luoke-core 自己窗口里的深色危险按钮改成描边（红框红字，停上去铺 `lkDangerSoft`），和主窗口一致。
+2. 螺壳搜索页：框里有字或结果开着时有个 ×（清空并收起结果）；页不再套一层滚动区，没搜时只有最近搜索那一块自己滚，搜了以后结果的高照量出来的标题、搜索框、「待允许」高度算，不写死；搜索框换成结果时不重建，字和光标都在。
+3. 右边栏「这台 Mac」那一行的悬停热区占满 × 左边那一截，不跟着里面变宽变窄；悬停提示只写「内存约 x / y GB」，不和两条上的百分比重复。
+4. 输入法：词语（清除已学、恢复已忘记）留回「设置」页；页底一行「高级设置」点进去（标签栏右端的图标照旧在），里面是使用统计、开发模式和文件。
+5. 应用管理里记忆的图标（24 以上）垫一块浅灰圆角底；「今天」顶上的提示条底色不再半透明，加一圈 1 px 的淡黄边，深色下也看得清。
+6. 应用管理的「核心组件」原来是空的：本体的应用清单不列记忆（螺壳自带的组件，`Apps.load` 跳过 component），窗口在侧栏有记忆、清单里没有时补一行（`WindowModel.memoryAppRow`，螺壳自带、不能单独卸载）。

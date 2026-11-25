@@ -162,7 +162,7 @@ final class AgentFeedTests: XCTestCase {
         XCTAssertEqual(m.toast?.text, "记下了：对。")
         f.handle("a2ui", Data(#"{"version":"v0.9","deleteSurface":{"surfaceId":"memory/ask-7"}}"#.utf8))
         XCTAssertEqual(m.cards.map(\.id), ["luoke-mail/new-1", "memory/ask-7"] + scanIDs("decide"), "核心删了卡片：下一份 feed 到之前照旧画着")
-        f.handle("feed", FocusReplaceTests.lastFeed(Sample.agentEvents()) { FocusReplaceTests.removing($0, "memory/ask-7") })
+        f.handle("feed", FeedEdits.lastFeed(Sample.agentEvents()) { FeedEdits.removing($0, "memory/ask-7") })
         XCTAssertEqual(m.cards.map(\.id), ["luoke-mail/new-1"] + scanIDs("decide"), "feed 里没有了：收走")
         var got: [AgentNotification] = []
         f.onNotify = { got.append($0) }

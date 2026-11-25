@@ -49,7 +49,8 @@ private struct LKButtonBody: View {
         let (bg, fg): (Color, Color) = {
             switch kind {
             case .primary: return (p.primary, p.primaryFg)
-            case .danger: return (p.dangerSoft, p.danger)       // 对照稿的 .btn.danger（工具协议 §4 destructive）
+            // 对照稿的 .btn.danger（工具协议 §4 destructive）。深色下主按钮是珊瑚粉，危险按钮改成描边（停上去才铺淡红），两者一眼分得开（11-24）
+            case .danger: return (p.dark ? (hover ? p.dangerSoft : .clear) : p.dangerSoft, p.danger)
             // 停上去深一层，看得出能点（负责人 11-14：没有悬停效果）
             case .secondary: return (hover ? p.fg.opacity(p.dark ? 0.16 : 0.13) : p.tint, p.fg)
             case .text: return (hover ? p.soft : .clear, p.fg)
@@ -73,6 +74,11 @@ private struct LKButtonBody: View {
             .frame(height: height)
             .foregroundStyle(fg)
             .background(RoundedRectangle(cornerRadius: r, style: .continuous).fill(bg))
+            .overlay {
+                if kind == .danger && p.dark {
+                    RoundedRectangle(cornerRadius: r, style: .continuous).strokeBorder(p.danger.opacity(0.6), lineWidth: 1)
+                }
+            }
             .brightness(!hover ? 0 : kind == .primary ? (p.dark ? -0.06 : 0.08) : kind == .danger ? (p.dark ? 0.06 : -0.03) : 0)
             .opacity(enabled ? 1 : 0.45)
             .contentShape(Rectangle())
@@ -454,6 +460,8 @@ struct CardSurface: View {
     var fill: Color?
     /// 不写就是这一组的卡片圆角
     var radius: CGFloat?
+    /// 深色下左上角的一团淡彩光和同色细边（luoke-brand 11-23 官网深色大卡片的做法）：颜色取卡片所属应用的色相。浅色不画
+    var glow: Color? = nil
     @Environment(\.lk) private var p
     @Environment(\.lkInDialog) private var inDialog
 
@@ -463,6 +471,13 @@ struct CardSurface: View {
             shape.fill(fill ?? p.bg)
         } else if p.dark {
             shape.fill(fill ?? p.card)
+                .overlay {
+                    if let glow {
+                        shape.fill(EllipticalGradient(colors: [glow.opacity(0.22), glow.opacity(0)], center: .topLeading,
+                                                      startRadiusFraction: 0, endRadiusFraction: 0.7))
+                        shape.strokeBorder(glow.opacity(0.26), lineWidth: 1)
+                    }
+                }
         } else {
             shape.fill(fill ?? p.card)
                 .shadow(color: p.shadow.opacity(0.06), radius: 1, y: 1)
@@ -724,7 +739,7 @@ struct LKSelect: View {
 }
 
 /// 滚动区；截图时平铺（离屏画不出系统的滚动视图）。maxWidth：内容那一栏最宽多少（连边距）
-/// 各页共用一栏（`LKColumn.width`）：今天、应用页、设置……同样的边距、同样最宽（搜索框和它对齐，见 SearchLayer）。
+/// 各页共用一栏（`LKColumn.width`）：今天、应用页、设置……同样的边距、同样最宽（螺壳搜索页的搜索框在这一栏里，见 SearchField）。
 /// 窄的时候两边边距收窄；`railed`（宽窗口里这一页有侧栏，见 `WindowModel.hasRail`）时一组放得下主栏和侧栏，页自己用 `RailSplit` 分
 struct PageScroll<Content: View>: View {
     var padding: EdgeInsets = LKInsets.column
@@ -749,7 +764,7 @@ struct PageScroll<Content: View>: View {
         } else {
             ScrollViewReader { proxy in   // 键盘焦点到了看不见的地方：滚过去（KeyFocusRing）
                 ScrollView { inner }.scrollIndicators(.never)
-                    // 滚到中间：底部浮着搜索框，滚到底边会被它挡住
+                    // 滚到中间：底部可能浮着问螺壳的输入条，滚到底边会被它挡住
                     .environment(\.a2uiRevealFocus) { id in withAnimation(.easeOut(duration: 0.2)) { proxy.scrollTo(id, anchor: .center) } }
             }
         }

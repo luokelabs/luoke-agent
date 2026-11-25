@@ -3,8 +3,9 @@
 """搜索的应用页：照它给的原始数据（luoke-search docs/窗口接口.md「应用页的原始数据」，`data/…`）拼，
 样子照批过的效果图（走查重画稿「搜索的应用页（第二稿）」）。页上的字都在这里写，搜索只给事实和动作（顶层 ADR 0028）。
 
-一页从上到下：最近搜索（点了就搜，能清除）；检索范围（一个文件夹一行，写状态；添加、跳过的）；
-权限（文件、照片两个开关）；建立索引（自动 / 手动，进度只在这一行）。都摊开，不点进二级页（负责人的批注）。"""
+「概览」：搜索框由窗口画在页标题下面（UX-09），页上只放最近搜索（点了就搜，能清除），索引没好时写一行状态。
+设置挪进隐藏页 `settings`（标题右边的齿轮，弹窗打开，和邮件助手、记忆一样）：检索范围（一个文件夹一行，写状态；添加、跳过的）；
+权限（文件、照片两个开关）；建立索引（自动 / 手动，进度只在这一行）。弹窗里都摊开，不再点进下一层（负责人的批注）。"""
 from __future__ import annotations
 
 import os
@@ -17,10 +18,10 @@ APP = "luoke-search"
 # 这里没有的代号照清单写的
 KIND_NAMES = {"needs-setup": "检索范围未设置", "needs-access": "权限申请", "index-ready": "索引建立完成"}
 PERMISSION_NAMES = {"photos": "照片图库", "folders": "读取个人文件夹和 iCloud 云盘", "quicktime": "控制 QuickTime Player 跳转到视频位置"}
-PAGE_NEEDS = {"overview": ("recent", "scope", "permissions", "index")}
-NEEDS = PAGE_NEEDS["overview"]
+PAGE_NEEDS = {"overview": ("recent", "index"), "settings": ("scope", "permissions", "index")}
+NEEDS = ("recent", "scope", "permissions", "index")
 BUILT = set(PAGE_NEEDS)
-PAGES = [{"id": "overview", "title": "概览"}]
+PAGES = [{"id": "overview", "title": "概览"}, {"id": "settings", "title": "搜索设置", "hidden": True, "icon": "settings"}]
 SET = "search_settings_apply"
 
 # 常见的文件夹叫它在访达里的名字
@@ -35,7 +36,7 @@ Read = Callable[[str], Any]
 
 
 def build(page: str, args: Dict[str, str], read: Read) -> List[dict]:
-    return {"overview": overview}[page](args, read)
+    return {"overview": overview, "settings": settings}[page](args, read)
 
 
 def folder_name(f: dict) -> str:
@@ -123,13 +124,10 @@ def summary(read: Read) -> Optional[str]:
 
 def overview(args: Dict[str, str], read: Read) -> List[dict]:
     recent = read("data/recent") or {}
-    scope = read("data/scope") or {}
-    perms = read("data/permissions") or {}
     ix = read("data/index") or {}
     kit = PageKit("overview")
-    setup = ix.get("state") == "needs_setup"
 
-    # 搜用窗口底部的搜索框；这里只放最近搜过的，点了交给它；能清除（负责人 11-15：清除最近搜过的没了）
+    # 搜索框是窗口画在页标题下面的那一个（UX-09）；这里只放最近搜过的，点了交给它；能清除（负责人 11-15：清除最近搜过的没了）
     top = []
     queries = [q for q in recent.get("queries") or [] if isinstance(q, str) and q][:5]
     if queries:
@@ -137,6 +135,22 @@ def overview(args: Dict[str, str], read: Read) -> List[dict]:
         clear = kit.button("清除", SET, {"clear_recent": True}, variant="borderless",
                            confirm={"title": "清除最近搜索？", "text": "仅清除搜索记录，不影响索引。", "label": "清除"})
         top.append(kit.row([kit.row([kit.button(q, "agent.search", {"q": q}) for q in queries]), clear], justify="spaceBetween"))
+    # 索引没好（没选范围、在建、暂停）时写一行状态，点进设置；好了不写（设置弹窗里有）
+    if ix.get("state") in ("needs_setup", "building", "paused"):
+        go = kit.open_page("设置", "settings", variant="borderless")
+        top.append(kit.list([kit.item("索引", _index_line(ix), [go], open=go, strong=False)]))
+    if not top:
+        top.append(kit.text("暂无最近搜索", "caption"))
+    return kit.messages(top)
+
+
+def settings(args: Dict[str, str], read: Read) -> List[dict]:
+    scope = read("data/scope") or {}
+    perms = read("data/permissions") or {}
+    ix = read("data/index") or {}
+    kit = PageKit("settings")
+    setup = ix.get("state") == "needs_setup"
+    top = []
 
     # 检索范围：每个文件夹一行，写状态（没接上、系统不让读）；外接盘、添加各一行；跳过的收起来，能取消跳过
     top.append(kit.heading("检索范围"))
@@ -161,7 +175,8 @@ def overview(args: Dict[str, str], read: Read) -> List[dict]:
                  for s in skipped[:SKIPPED_ROWS]]
         top.append(kit.fold(f"已跳过 {len(skipped)} 个", [kit.list(srows)]))
 
-    # 权限：文件、照片图库两个开关；系统那一层没允许时写清楚去哪里允许（负责人 11-15：写「打开时会再问」是错的，系统不会再问）。
+    # 权限：文件、照片图库两个开关；系统那一层没允许时（负责人 11-15：写「打开时会再问」是错的，系统不会再问）不画开着的开关，
+    # 免得开关开着、下面又写没允许（两种状态打架）：换成和「今天」卡片一样的按钮，没问过是「允许」、拒过是「打开系统设置」，旁边能关掉。
     # 照片图库没允许时搜索不读图库、也不打开图库里的照片，系统也不会自己来问（只在用户点了「允许」以后问）；
     # 检索范围里的图片文件走「文件」，照常能搜能开：写明白，免得看着像「没允许却打得开」（2026-11-23 的测试反馈）。
     # 还没选检索范围时点开关一律被拒：不放开关，写先做什么
@@ -175,13 +190,15 @@ def overview(args: Dict[str, str], read: Read) -> List[dict]:
         if setup:
             rows.append(kit.item(title, "添加检索范围后可设置", strong=True))
             continue
-        sub = None
-        if on and p.get("system") == "denied":
-            sub = "系统未允许读取，请在螺壳「设置 · 隐私与权限」中允许" + ("；文件夹里的图片照常能搜" if key == "photos" else "")
-        elif on and p.get("system") == "ask":
-            sub = "尚未允许读取，请在螺壳「设置 · 隐私与权限」中允许" + ("；文件夹里的图片照常能搜" if key == "photos" else "")
+        system = p.get("system")
+        if on and system in ("denied", "ask"):
+            sub = ("系统未允许读取" if system == "denied" else "尚未允许读取") + ("；文件夹里的图片照常能搜" if key == "photos" else "")
+            go = kit.button("打开系统设置" if system == "denied" else "允许", "search_open_system_settings", {"pane": key})
+            off = kit.button("关闭", SET, {key: False}, variant="borderless")
+            rows.append(kit.item(title, sub, [off, go]))
+            continue
         sw = kit.button(title, SET, {key: not on}, variant="switch", on=on)
-        rows.append(kit.item(title, sub, [sw]))
+        rows.append(kit.item(title, None, [sw]))
     top.append(kit.list(rows))
 
     top.append(kit.heading("建立索引"))

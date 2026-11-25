@@ -10,6 +10,12 @@
      {
       "id": "overview",
       "title": "概览"
+     },
+     {
+      "hidden": true,
+      "icon": "settings",
+      "id": "settings",
+      "title": "搜索设置"
      }
     ],
     "running": true,
@@ -44,12 +50,7 @@
         "children": [
          "t1",
          "r6",
-         "t7",
-         "l19",
-         "t20",
-         "l31",
-         "t32",
-         "c39"
+         "l13"
         ],
         "component": "Column",
         "id": "root"
@@ -138,8 +139,101 @@
         "justify": "spaceBetween"
        },
        {
+        "action": {
+         "event": {
+          "context": {
+           "page": "settings"
+          },
+          "name": "agent.open_page"
+         }
+        },
+        "child": "b7-text",
+        "component": "Button",
+        "id": "b7",
+        "variant": "borderless"
+       },
+       {
         "component": "Text",
-        "id": "t7",
+        "id": "b7-text",
+        "text": "设置"
+       },
+       {
+        "component": "Text",
+        "id": "t8",
+        "text": "索引"
+       },
+       {
+        "component": "Text",
+        "id": "t9",
+        "text": "正在建立索引 62%",
+        "variant": "caption"
+       },
+       {
+        "children": [
+         "t8",
+         "t9"
+        ],
+        "component": "Column",
+        "id": "c10"
+       },
+       {
+        "children": [
+         "b7"
+        ],
+        "component": "Row",
+        "id": "r11"
+       },
+       {
+        "children": [
+         "c10",
+         "r11"
+        ],
+        "component": "Row",
+        "id": "r12",
+        "justify": "spaceBetween",
+        "open": "b7"
+       },
+       {
+        "children": [
+         "r12"
+        ],
+        "component": "List",
+        "id": "l13"
+       }
+      ],
+      "surfaceId": "luoke-search/page/overview"
+     },
+     "version": "v0.9"
+    }
+   ]
+  },
+  "settings": {
+   "messages": [
+    {
+     "createSurface": {
+      "catalogId": "ai.luoke/a2ui/agent/1",
+      "surfaceId": "luoke-search/page/settings"
+     },
+     "version": "v0.9"
+    },
+    {
+     "updateComponents": {
+      "components": [
+       {
+        "children": [
+         "t1",
+         "l13",
+         "t14",
+         "l25",
+         "t26",
+         "c33"
+        ],
+        "component": "Column",
+        "id": "root"
+       },
+       {
+        "component": "Text",
+        "id": "t1",
         "text": "检索范围",
         "variant": "caption"
        },
@@ -152,67 +246,67 @@
           "name": "search_settings_apply"
          }
         },
-        "child": "b8-row",
+        "child": "b2-row",
         "component": "Button",
         "confirm": {
          "label": "移除",
          "text": "移出后不再搜索其中的文件，可随时重新添加。",
          "title": "将「office」移出检索范围？"
         },
-        "id": "b8",
+        "id": "b2",
         "variant": "borderless"
        },
        {
         "component": "Icon",
-        "id": "b8-icon",
+        "id": "b2-icon",
         "name": "x"
        },
        {
         "component": "Text",
-        "id": "b8-text",
+        "id": "b2-text",
         "text": "移除"
        },
        {
         "children": [
-         "b8-icon",
-         "b8-text"
+         "b2-icon",
+         "b2-text"
         ],
         "component": "Row",
-        "id": "b8-row"
+        "id": "b2-row"
        },
        {
         "component": "Text",
-        "id": "t9",
+        "id": "t3",
         "text": "office"
        },
        {
         "component": "Text",
-        "id": "t10",
+        "id": "t4",
         "text": "~/样例/office",
         "variant": "caption"
        },
        {
         "children": [
-         "t9",
-         "t10"
+         "t3",
+         "t4"
         ],
         "component": "Column",
-        "id": "c11"
+        "id": "c5"
        },
        {
         "children": [
-         "b8"
+         "b2"
         ],
         "component": "Row",
-        "id": "r12"
+        "id": "r6"
        },
        {
         "children": [
-         "c11",
-         "r12"
+         "c5",
+         "r6"
         ],
         "component": "Row",
-        "id": "r13",
+        "id": "r7",
         "justify": "spaceBetween"
        },
        {
@@ -224,54 +318,54 @@
           "name": "search_settings_apply"
          }
         },
-        "child": "b14-text",
+        "child": "b8-text",
         "component": "Button",
-        "id": "b14"
+        "id": "b8"
        },
        {
         "component": "Text",
-        "id": "b14-text",
+        "id": "b8-text",
         "text": "选择"
        },
        {
         "component": "Text",
-        "id": "t15",
+        "id": "t9",
         "text": "添加文件夹"
        },
        {
         "children": [
-         "t15"
+         "t9"
         ],
         "component": "Column",
-        "id": "c16"
+        "id": "c10"
        },
        {
         "children": [
-         "b14"
+         "b8"
         ],
         "component": "Row",
-        "id": "r17"
+        "id": "r11"
        },
        {
         "children": [
-         "c16",
-         "r17"
+         "c10",
+         "r11"
         ],
         "component": "Row",
-        "id": "r18",
+        "id": "r12",
         "justify": "spaceBetween"
        },
        {
         "children": [
-         "r13",
-         "r18"
+         "r7",
+         "r12"
         ],
         "component": "List",
-        "id": "l19"
+        "id": "l13"
        },
        {
         "component": "Text",
-        "id": "t20",
+        "id": "t14",
         "text": "权限",
         "variant": "caption"
        },
@@ -284,44 +378,44 @@
           "name": "search_settings_apply"
          }
         },
-        "child": "b21-text",
+        "child": "b15-text",
         "component": "Button",
-        "id": "b21",
+        "id": "b15",
         "on": true,
         "variant": "switch"
        },
        {
         "component": "Text",
-        "id": "b21-text",
+        "id": "b15-text",
         "text": "文件"
        },
        {
         "component": "Text",
-        "id": "t22",
+        "id": "t16",
         "text": "文件",
         "variant": "strong"
        },
        {
         "children": [
-         "t22"
+         "t16"
         ],
         "component": "Column",
-        "id": "c23"
+        "id": "c17"
        },
        {
         "children": [
-         "b21"
+         "b15"
         ],
         "component": "Row",
-        "id": "r24"
+        "id": "r18"
        },
        {
         "children": [
-         "c23",
-         "r24"
+         "c17",
+         "r18"
         ],
         "component": "Row",
-        "id": "r25",
+        "id": "r19",
         "justify": "spaceBetween"
        },
        {
@@ -333,57 +427,57 @@
           "name": "search_settings_apply"
          }
         },
-        "child": "b26-text",
+        "child": "b20-text",
         "component": "Button",
-        "id": "b26",
+        "id": "b20",
         "on": false,
         "variant": "switch"
        },
        {
         "component": "Text",
-        "id": "b26-text",
+        "id": "b20-text",
         "text": "照片图库"
        },
        {
         "component": "Text",
-        "id": "t27",
+        "id": "t21",
         "text": "照片图库",
         "variant": "strong"
        },
        {
         "children": [
-         "t27"
+         "t21"
         ],
         "component": "Column",
-        "id": "c28"
+        "id": "c22"
        },
        {
         "children": [
-         "b26"
+         "b20"
         ],
         "component": "Row",
-        "id": "r29"
+        "id": "r23"
        },
        {
         "children": [
-         "c28",
-         "r29"
+         "c22",
+         "r23"
         ],
         "component": "Row",
-        "id": "r30",
+        "id": "r24",
         "justify": "spaceBetween"
        },
        {
         "children": [
-         "r25",
-         "r30"
+         "r19",
+         "r24"
         ],
         "component": "List",
-        "id": "l31"
+        "id": "l25"
        },
        {
         "component": "Text",
-        "id": "t32",
+        "id": "t26",
         "text": "建立索引",
         "variant": "caption"
        },
@@ -398,18 +492,18 @@
           "name": "search_settings_apply"
          }
         },
-        "child": "b33-text",
+        "child": "b27-text",
         "component": "Button",
-        "id": "b33"
+        "id": "b27"
        },
        {
         "component": "Text",
-        "id": "b33-text",
+        "id": "b27-text",
         "text": "切换方式"
        },
        {
         "component": "ChoicePicker",
-        "id": "k34",
+        "id": "k28",
         "options": [
          {
           "label": "自动",
@@ -420,56 +514,56 @@
           "value": "manual"
          }
         ],
-        "submit": "b33",
+        "submit": "b27",
         "value": {
          "path": "/choices/mode"
         }
        },
        {
         "component": "Text",
-        "id": "t35",
+        "id": "t29",
         "text": "方式",
         "variant": "strong"
        },
        {
         "component": "Text",
-        "id": "t36",
+        "id": "t30",
         "text": "正在建立索引 62%",
         "variant": "caption"
        },
        {
         "children": [
-         "t35",
-         "t36"
+         "t29",
+         "t30"
         ],
         "component": "Column",
-        "id": "c37"
+        "id": "c31"
        },
        {
         "children": [
-         "c37",
-         "k34"
+         "c31",
+         "k28"
         ],
         "component": "Row",
-        "id": "r38",
+        "id": "r32",
         "justify": "spaceBetween"
        },
        {
         "children": [
-         "r38"
+         "r32"
         ],
         "component": "Column",
-        "id": "c39"
+        "id": "c33"
        }
       ],
-      "surfaceId": "luoke-search/page/overview"
+      "surfaceId": "luoke-search/page/settings"
      },
      "version": "v0.9"
     },
     {
      "updateDataModel": {
       "path": "/",
-      "surfaceId": "luoke-search/page/overview",
+      "surfaceId": "luoke-search/page/settings",
       "value": {
        "choices": {
         "mode": [

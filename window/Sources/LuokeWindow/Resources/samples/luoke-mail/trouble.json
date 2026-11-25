@@ -38,6 +38,11 @@
      },
      {
       "hidden": true,
+      "id": "change",
+      "title": "更改处理方式"
+     },
+     {
+      "hidden": true,
       "id": "piece",
       "title": "精选"
      },
@@ -119,7 +124,6 @@
   "read-data-digest-all.json",
   "read-data-digest-today-all.json",
   "read-data-inbox-all.json",
-  "read-data-old.json",
   "read-data-today-all.json",
   "read-outbox.json",
   "read-page-legacy-settings.json",
@@ -888,10 +892,12 @@
       "components": [
        {
         "children": [
+         "k2",
          "t3",
-         "l12",
-         "t13",
-         "l20"
+         "l7",
+         "k9",
+         "l17",
+         "r20"
         ],
         "component": "Column",
         "id": "root"
@@ -900,7 +906,12 @@
         "action": {
          "event": {
           "context": {
-           "page": "subs"
+           "args": {
+            "view": {
+             "path": "/choices/view/0"
+            }
+           },
+           "page": "clean"
           },
           "name": "agent.open_page"
          }
@@ -912,50 +923,36 @@
        {
         "component": "Text",
         "id": "b1-text",
-        "text": "订阅体检"
+        "text": "切换视图"
        },
        {
-        "action": {
-         "event": {
-          "context": {
-           "account": "all"
-          },
-          "name": "mail_subscriptions_check"
+        "component": "ChoicePicker",
+        "id": "k2",
+        "options": [
+         {
+          "label": "订阅体检",
+          "value": "subs"
+         },
+         {
+          "label": "旧邮件",
+          "value": "old"
          }
-        },
-        "child": "b2-row",
-        "component": "Button",
-        "id": "b2",
-        "variant": "borderless"
-       },
-       {
-        "component": "Icon",
-        "id": "b2-icon",
-        "name": "refresh-cw"
-       },
-       {
-        "component": "Text",
-        "id": "b2-text",
-        "text": "重新检查"
-       },
-       {
-        "children": [
-         "b2-icon",
-         "b2-text"
         ],
-        "component": "Row",
-        "id": "b2-row"
+        "submit": "b1",
+        "value": {
+         "path": "/choices/view"
+        }
        },
        {
         "component": "Text",
         "id": "t3",
-        "text": "订阅体检",
+        "text": "分析状态",
         "variant": "caption"
        },
        {
         "component": "Text",
         "id": "t4",
-        "text": "全部结果"
+        "text": "1 个发件人未经本机模型分析（无法连接模型服务），建议仅依据收信和阅读情况"
        },
        {
         "children": [
@@ -966,128 +963,224 @@
        },
        {
         "children": [
-         "b1"
+         "c5"
         ],
         "component": "Row",
-        "id": "r6"
-       },
-       {
-        "children": [
-         "c5",
-         "r6"
-        ],
-        "component": "Row",
-        "id": "r7",
-        "justify": "spaceBetween",
-        "open": "b1"
-       },
-       {
-        "component": "Text",
-        "id": "t8",
-        "text": "上次检查：10月20日"
-       },
-       {
-        "children": [
-         "t8"
-        ],
-        "component": "Column",
-        "id": "c9"
-       },
-       {
-        "children": [
-         "b2"
-        ],
-        "component": "Row",
-        "id": "r10"
-       },
-       {
-        "children": [
-         "c9",
-         "r10"
-        ],
-        "component": "Row",
-        "id": "r11",
+        "id": "r6",
         "justify": "spaceBetween"
        },
        {
         "children": [
-         "r7",
-         "r11"
+         "r6"
         ],
         "component": "List",
-        "id": "l12"
-       },
-       {
-        "component": "Text",
-        "id": "t13",
-        "text": "旧邮件",
-        "variant": "caption"
+        "id": "l7"
        },
        {
         "action": {
          "event": {
           "context": {
-           "account": "all",
-           "scope": "inbox"
+           "args": {
+            "group": {
+             "path": "/choices/group/0"
+            },
+            "view": "subs"
+           },
+           "page": "clean"
           },
-          "name": "mail_old_scan"
+          "name": "agent.open_page"
          }
         },
-        "child": "b14-text",
+        "child": "b8-text",
         "component": "Button",
-        "id": "b14",
-        "variant": "primary"
+        "id": "b8"
        },
        {
         "component": "Text",
-        "id": "b14-text",
-        "text": "开始检查"
+        "id": "b8-text",
+        "text": "切换分组"
+       },
+       {
+        "component": "ChoicePicker",
+        "id": "k9",
+        "options": [
+         {
+          "label": "无法退订 1",
+          "value": "no_way"
+         }
+        ],
+        "submit": "b8",
+        "value": {
+         "path": "/choices/group"
+        }
+       },
+       {
+        "action": {
+         "event": {
+          "context": {
+           "account": "me@example.com",
+           "action": "archive",
+           "key": "list:promo.shop.example"
+          },
+          "name": "mail_sender_rule"
+         }
+        },
+        "child": "b10-row",
+        "component": "Button",
+        "id": "b10",
+        "variant": "borderless"
+       },
+       {
+        "component": "Icon",
+        "id": "b10-icon",
+        "name": "archive"
        },
        {
         "component": "Text",
-        "id": "t15",
-        "text": "尚未检查收件箱中的旧邮件",
+        "id": "b10-text",
+        "text": "今后一律归档"
+       },
+       {
+        "children": [
+         "b10-icon",
+         "b10-text"
+        ],
+        "component": "Row",
+        "id": "b10-row"
+       },
+       {
+        "action": {
+         "event": {
+          "context": {
+           "args": {
+            "account": "me@example.com",
+            "key": "list:promo.shop.example"
+           },
+           "page": "sender"
+          },
+          "name": "agent.open_page"
+         }
+        },
+        "child": "b11-text",
+        "component": "Button",
+        "id": "b11"
+       },
+       {
+        "component": "Text",
+        "id": "b11-text",
+        "text": "这个发件人"
+       },
+       {
+        "component": "Text",
+        "id": "t12",
+        "text": "某某商城",
         "variant": "strong"
        },
        {
         "component": "Text",
-        "id": "t16",
-        "text": "仅读取邮件头，完成后列出可归档的分组",
+        "id": "t13",
+        "text": "每月 1 封，均未读，没有退订方式",
         "variant": "caption"
        },
        {
         "children": [
-         "t15",
-         "t16"
+         "t12",
+         "t13"
         ],
         "component": "Column",
-        "id": "c17"
+        "id": "c14"
        },
        {
         "children": [
-         "b14"
+         "b10",
+         "b11"
         ],
         "component": "Row",
-        "id": "r18"
+        "id": "r15"
        },
        {
         "children": [
-         "c17",
-         "r18"
+         "c14",
+         "r15"
         ],
         "component": "Row",
-        "id": "r19",
-        "justify": "spaceBetween"
+        "id": "r16",
+        "justify": "spaceBetween",
+        "open": "b11"
        },
        {
         "children": [
-         "r19"
+         "r16"
         ],
         "component": "List",
-        "id": "l20"
+        "id": "l17"
+       },
+       {
+        "action": {
+         "event": {
+          "context": {
+           "account": "all"
+          },
+          "name": "mail_subscriptions_check"
+         }
+        },
+        "child": "b18-row",
+        "component": "Button",
+        "id": "b18",
+        "variant": "borderless"
+       },
+       {
+        "component": "Icon",
+        "id": "b18-icon",
+        "name": "refresh-cw"
+       },
+       {
+        "component": "Text",
+        "id": "b18-text",
+        "text": "重新检查"
+       },
+       {
+        "children": [
+         "b18-icon",
+         "b18-text"
+        ],
+        "component": "Row",
+        "id": "b18-row"
+       },
+       {
+        "component": "Text",
+        "id": "t19",
+        "text": "上次检查：10月20日",
+        "variant": "caption"
+       },
+       {
+        "children": [
+         "t19",
+         "b18"
+        ],
+        "component": "Row",
+        "id": "r20",
+        "justify": "spaceBetween"
        }
       ],
       "surfaceId": "luoke-mail/page/clean"
+     },
+     "version": "v0.9"
+    },
+    {
+     "updateDataModel": {
+      "path": "/",
+      "surfaceId": "luoke-mail/page/clean",
+      "value": {
+       "choices": {
+        "group": [
+         "no_way"
+        ],
+        "view": [
+         "subs"
+        ]
+       }
+      }
      },
      "version": "v0.9"
     }

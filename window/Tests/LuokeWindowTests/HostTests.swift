@@ -237,6 +237,18 @@ final class HostTests: XCTestCase {
         XCTAssertEqual(opened.count, 1, "只开系统设置的地址")
     }
 
+    /// 通知那一行的「打开系统设置」也走连接的 settingsOpener，不在视图里直接开
+    func testNotificationSettingsGoThroughTheConnection() {
+        let m = WindowModel()
+        let c = AgentConnection(model: m) { _, _, _ in (200, Data(#"{"rows":[]}"#.utf8)) }
+        m.backend = c
+        var opened: [URL] = []
+        c.settingsOpener = { opened.append($0) }
+        m.openSystemSettings(HostSystemCheck.notificationSettings)
+        XCTAssertEqual(opened, [HostSystemCheck.notificationSettings])
+        withExtendedLifetime(c) {}
+    }
+
     private func fire(_ item: NSMenuItem) {
         _ = (item.target as AnyObject?)?.perform(item.action, with: item)
     }

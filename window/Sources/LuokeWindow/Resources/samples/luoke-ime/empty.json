@@ -14,6 +14,12 @@
      {
       "id": "apps",
       "title": "各应用"
+     },
+     {
+      "hidden": true,
+      "icon": "sliders-horizontal",
+      "id": "more",
+      "title": "高级设置"
      }
     ],
     "running": true,
@@ -150,12 +156,7 @@
          "l102",
          "t103",
          "l114",
-         "t115",
-         "l120",
-         "t135",
-         "l136",
-         "t148",
-         "l149"
+         "l121"
         ],
         "component": "Column",
         "id": "root"
@@ -1285,21 +1286,32 @@
         "id": "l114"
        },
        {
+        "action": {
+         "event": {
+          "context": {
+           "page": "more"
+          },
+          "name": "agent.open_page"
+         }
+        },
+        "child": "b115-text",
+        "component": "Button",
+        "id": "b115"
+       },
+       {
         "component": "Text",
-        "id": "t115",
-        "text": "使用统计",
-        "variant": "caption"
+        "id": "b115-text",
+        "text": "高级设置"
        },
        {
         "component": "Text",
         "id": "t116",
-        "text": "最近 7 天",
-        "variant": "strong"
+        "text": "高级设置"
        },
        {
         "component": "Text",
         "id": "t117",
-        "text": "暂无统计",
+        "text": "使用统计、开发模式和文件",
         "variant": "caption"
        },
        {
@@ -1312,316 +1324,27 @@
        },
        {
         "children": [
-         "c118"
+         "b115"
         ],
         "component": "Row",
-        "id": "r119",
-        "justify": "spaceBetween"
+        "id": "r119"
        },
        {
         "children": [
+         "c118",
          "r119"
         ],
-        "component": "List",
-        "id": "l120"
-       },
-       {
-        "action": {
-         "event": {
-          "context": {
-           "engine": "quanpin",
-           "on": true,
-           "op": "dev_mode"
-          },
-          "name": "ime_do"
-         }
-        },
-        "child": "b121-text",
-        "component": "Button",
-        "confirm": {
-         "label": "开启",
-         "text": "开启后在本机记录此输入方案的按键和候选，保存在记录文件夹中，保留 7 天；密码框、暂停所有记录期间和禁止记录的应用中不记录。",
-         "title": "开启「全拼」的开发模式？"
-        },
-        "id": "b121",
-        "on": false,
-        "variant": "switch"
-       },
-       {
-        "component": "Text",
-        "id": "b121-text",
-        "text": "记录「全拼」的输入"
-       },
-       {
-        "component": "Text",
-        "id": "t122",
-        "text": "记录「全拼」的输入",
-        "variant": "strong"
-       },
-       {
-        "children": [
-         "t122"
-        ],
-        "component": "Column",
-        "id": "c123"
-       },
-       {
-        "children": [
-         "b121"
-        ],
         "component": "Row",
-        "id": "r124"
+        "id": "r120",
+        "justify": "spaceBetween",
+        "open": "b115"
        },
        {
         "children": [
-         "c123",
-         "r124"
-        ],
-        "component": "Row",
-        "id": "r125",
-        "justify": "spaceBetween"
-       },
-       {
-        "action": {
-         "event": {
-          "context": {
-           "engine": "xiaohe",
-           "on": true,
-           "op": "dev_mode"
-          },
-          "name": "ime_do"
-         }
-        },
-        "child": "b126-text",
-        "component": "Button",
-        "confirm": {
-         "label": "开启",
-         "text": "开启后在本机记录此输入方案的按键和候选，保存在记录文件夹中，保留 7 天；密码框、暂停所有记录期间和禁止记录的应用中不记录。",
-         "title": "开启「小鹤双拼」的开发模式？"
-        },
-        "id": "b126",
-        "on": false,
-        "variant": "switch"
-       },
-       {
-        "component": "Text",
-        "id": "b126-text",
-        "text": "记录「小鹤双拼」的输入"
-       },
-       {
-        "component": "Text",
-        "id": "t127",
-        "text": "记录「小鹤双拼」的输入",
-        "variant": "strong"
-       },
-       {
-        "children": [
-         "t127"
-        ],
-        "component": "Column",
-        "id": "c128"
-       },
-       {
-        "children": [
-         "b126"
-        ],
-        "component": "Row",
-        "id": "r129"
-       },
-       {
-        "children": [
-         "c128",
-         "r129"
-        ],
-        "component": "Row",
-        "id": "r130",
-        "justify": "spaceBetween"
-       },
-       {
-        "component": "Text",
-        "id": "t131",
-        "text": "记录文件夹",
-        "variant": "strong"
-       },
-       {
-        "component": "Text",
-        "id": "t132",
-        "text": "尚无记录",
-        "variant": "caption"
-       },
-       {
-        "children": [
-         "t131",
-         "t132"
-        ],
-        "component": "Column",
-        "id": "c133"
-       },
-       {
-        "children": [
-         "c133"
-        ],
-        "component": "Row",
-        "id": "r134",
-        "justify": "spaceBetween"
-       },
-       {
-        "component": "Text",
-        "id": "t135",
-        "text": "开发模式",
-        "variant": "caption"
-       },
-       {
-        "children": [
-         "r125",
-         "r130",
-         "r134"
+         "r120"
         ],
         "component": "List",
-        "id": "l136"
-       },
-       {
-        "action": {
-         "event": {
-          "context": {
-           "item": "~/.luoke/ime/engines"
-          },
-          "name": "agent.reveal"
-         }
-        },
-        "child": "b137-row",
-        "component": "Button",
-        "id": "b137",
-        "variant": "borderless"
-       },
-       {
-        "component": "Icon",
-        "id": "b137-icon",
-        "name": "folder"
-       },
-       {
-        "component": "Text",
-        "id": "b137-text",
-        "text": "在访达中显示"
-       },
-       {
-        "children": [
-         "b137-icon",
-         "b137-text"
-        ],
-        "component": "Row",
-        "id": "b137-row"
-       },
-       {
-        "component": "Text",
-        "id": "t138",
-        "text": "引擎文件夹",
-        "variant": "strong"
-       },
-       {
-        "component": "Text",
-        "id": "t139",
-        "text": "用于放置自制引擎",
-        "variant": "caption"
-       },
-       {
-        "children": [
-         "t138",
-         "t139"
-        ],
-        "component": "Column",
-        "id": "c140"
-       },
-       {
-        "children": [
-         "b137"
-        ],
-        "component": "Row",
-        "id": "r141"
-       },
-       {
-        "children": [
-         "c140",
-         "r141"
-        ],
-        "component": "Row",
-        "id": "r142",
-        "justify": "spaceBetween"
-       },
-       {
-        "action": {
-         "event": {
-          "context": {
-           "item": "~/.luoke/ime/settings.json"
-          },
-          "name": "agent.reveal"
-         }
-        },
-        "child": "b143-row",
-        "component": "Button",
-        "id": "b143",
-        "variant": "borderless"
-       },
-       {
-        "component": "Icon",
-        "id": "b143-icon",
-        "name": "folder"
-       },
-       {
-        "component": "Text",
-        "id": "b143-text",
-        "text": "在访达中显示"
-       },
-       {
-        "children": [
-         "b143-icon",
-         "b143-text"
-        ],
-        "component": "Row",
-        "id": "b143-row"
-       },
-       {
-        "component": "Text",
-        "id": "t144",
-        "text": "设置文件",
-        "variant": "strong"
-       },
-       {
-        "children": [
-         "t144"
-        ],
-        "component": "Column",
-        "id": "c145"
-       },
-       {
-        "children": [
-         "b143"
-        ],
-        "component": "Row",
-        "id": "r146"
-       },
-       {
-        "children": [
-         "c145",
-         "r146"
-        ],
-        "component": "Row",
-        "id": "r147",
-        "justify": "spaceBetween"
-       },
-       {
-        "component": "Text",
-        "id": "t148",
-        "text": "文件",
-        "variant": "caption"
-       },
-       {
-        "children": [
-         "r142",
-         "r147"
-        ],
-        "component": "List",
-        "id": "l149"
+        "id": "l121"
        }
       ],
       "surfaceId": "luoke-ime/page/settings"

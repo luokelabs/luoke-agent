@@ -95,27 +95,6 @@ enum SettingsAction {
     case checkUpdates, upgrade, retryDownloads, copyKey, rotateKey, export, uninstall
 }
 
-/// 「今天」的密度（设置 · 显示）：标准是卡片，紧凑是一张表。只记在这台 Mac 的这个窗口里
-public enum Density: String, CaseIterable, Sendable {
-    case standard, compact
-
-    public var title: String { self == .standard ? "标准" : "紧凑" }
-}
-
-/// 「逐件处理」：进来时要你决定的那几件，一次摆一件。答了的从 `cards` 里走掉，跳过的记在这里
-public struct FocusSession: Equatable {
-    /// 这一轮的几件，进来时定下。工具换掉一张卡片时，新的那张顶在旧的位置；工具收走的从这里去掉
-    public internal(set) var ids: [String]
-    public internal(set) var skipped: [String] = []
-    /// 用户在逐件处理里点过的：只有这些不见了才算答了
-    public internal(set) var tapped: Set<String> = []
-    /// 上一下是键盘上按的：换下一件只淡入淡出
-    public internal(set) var viaKey = false
-    /// 从「按类处理」进来的：只走这一类（`DecideCategory.id`）、顶上写它的名字；从「逐件处理」进来的是 nil，走全部
-    public internal(set) var category: String? = nil
-    public internal(set) var categoryName: String? = nil
-}
-
 /// 简报：从「今天」里现有的拼出来，打开时定下；答了的那件在简报里划掉
 public struct BriefNote: Equatable {
     public struct Pending: Equatable, Identifiable {
@@ -155,8 +134,8 @@ public struct BriefNote: Equatable {
     }
 }
 
-/// 下一次画出来的内容怎么进场（换了页、从「逐件处理」回来）
-public enum Entrance: Sendable { case none, page, fromFocus }
+/// 下一次画出来的内容怎么进场（换了页）
+public enum Entrance: Sendable { case none, page }
 
 /// 侧栏「应用」下面的一行：装好的应用
 public struct AppEntry: Identifiable, Equatable {
@@ -302,18 +281,6 @@ enum TodayStack {
         }
         return "\(n) \(unit)：\(t)"
     }
-}
-
-/// 「要你决定」里的一类：同一个应用、同一类（和一叠的分法一样，见 `TodayStack`）。「今天」上同一类的挨着摆，
-/// 「逐件处理」照这个次序走；有两类以上时，段标题下面「按类处理」列出不止一件的那几类，点了只走那一类
-public struct DecideCategory: Identifiable, Equatable {
-    /// `TodayStack.key`
-    public let id: String
-    public let tool: ToolIcon
-    /// 这一类叫什么：工具清单 `reports` 里的名字（和「设置 · 提醒 · 每类事」同一个），没有就是应用的名字
-    public let name: String
-    /// 这一类的卡片，次序照「今天」
-    public let ids: [String]
 }
 
 /// 「已经替你做了」的一行
@@ -465,9 +432,7 @@ extension WindowModel {
             guard let host else { return nil }
             return ("检查更新", { host.checkForUpdates() })
         case "notifications":
-            return ("打开系统设置", {
-                if let u = URL(string: "x-apple.systempreferences:com.apple.Notifications-Settings.extension") { NSWorkspace.shared.open(u) }
-            })
+            return ("打开系统设置", { [weak self] in self?.openSystemSettings(HostSystemCheck.notificationSettings) })
         case "ask_notifications":
             guard let host else { return nil }
             return ("开启通知", { host.askNotifications() })
@@ -914,10 +879,6 @@ public final class WindowModel: ObservableObject {
     @Published public private(set) var appDialogStack: [AppDialogEntry] = []
     @Published public private(set) var sidebarMini = false
     @Published public private(set) var appsExpanded = false
-    /// 「今天」的密度（设置 · 显示）
-    @Published public private(set) var density: Density = .standard
-    /// 「逐件处理」；nil 是没在处理
-    @Published public internal(set) var focus: FocusSession?
     /// 「今天」最上面的简报；nil 是收着
     @Published public private(set) var briefNote: BriefNote?
     /// 下一次画出来的内容怎么进场（只给动效用）
@@ -933,7 +894,7 @@ public final class WindowModel: ObservableObject {
     @Published public internal(set) var searchAnswer: SearchAnswer?
     /// 加一就把光标放进搜索框（⌘K、菜单）
     @Published public private(set) var searchFocus = 0
-    /// 跨页按 ⌘K 跳到搜索页时记住待聚焦请求，避免 SearchLayer.onAppear 误踢掉光标
+    /// 跨页按 ⌘K 跳到搜索页时记住待聚焦请求，避免 SearchField.onAppear 误踢掉光标
     var pendingSearchFocus = false
     /// 选中的那条结果（`WindowHit.id`）：右边出预览，回车打开它
     @Published public internal(set) var searchSelected: String?
@@ -1007,14 +968,10 @@ public final class WindowModel: ObservableObject {
     /// 菜单栏里点了一行急事：「今天」滚到那一叠（叠里第一件的编号）。页面滚过去以后清掉
     @Published public var urgentJump: UrgentJump?
     var urgentJumpCount = 0
-    /// 紧凑的「今天」里点了「选一下」、展开成标准卡片的那几行（卡片编号）
-    @Published public var compactExpanded: Set<String> = []
     @Published public var urgent: [UrgentItem] = []
     /// 核心说的菜单栏小点（`/feed` 的 `dot`：有「当场说」的急事、主动提醒开着）；nil 是没接核心，照有没有急事
     @Published public internal(set) var agentDot: Bool?
-    @Published public var cards: [TodayCard] = [] {
-        didSet { if focus != nil { followReplacedCards(old: oldValue) } }
-    }
+    @Published public var cards: [TodayCard] = []
     @Published public var done: [DoneRow] = []
     @Published public var quiet: [QuietRow] = []
     /// 核心的几句状态（某个应用没在运行、通知被关了……），画在「今天」最下面
@@ -1141,7 +1098,6 @@ public final class WindowModel: ObservableObject {
     static let panelGrewKey = "luoke.window.panelGrew"
     static let panelShiftedKey = "luoke.window.panelShifted"
     static let appsKey = "luoke.window.appsExpanded"
-    static let densityKey = "luoke.window.density"
     static let appearanceKey = "luoke.window.appearance"
 
     /// defaults：侧栏收起、「应用」展开、「今天」的密度记在哪（nil 就不记）
@@ -1150,8 +1106,6 @@ public final class WindowModel: ObservableObject {
         sidebarMini = defaults?.bool(forKey: Self.sidebarKey) ?? false
         panelOpen = defaults?.bool(forKey: Self.panelKey) ?? false
         appsExpanded = defaults?.bool(forKey: Self.appsKey) ?? false
-        // 「今天」只有一种密度（2026-11-13 负责人定）：以前记下的「紧凑」不再拿出来；紧凑的画法只留给截图、测试看
-        density = .standard
         appearance = Appearance(rawValue: defaults?.string(forKey: Self.appearanceKey) ?? "") ?? .system
     }
 
@@ -1279,9 +1233,8 @@ public final class WindowModel: ObservableObject {
         guard mayNavigate() else { openingArgs = nil; return }
         if handOff(p, tab: tab) { openingArgs = nil; return }
         let p = shows(p) ? p : .today
-        if p != page || focus != nil { entrance = .page }
+        if p != page { entrance = .page }
         if p != .today { closeBrief() }       // 简报是它在「今天」说的那一句：离开「今天」就说完了，回来不再说一遍
-        focus = nil
         settingsDialog = nil      // 设置页里开着的弹窗（关于螺壳……）跟着这一页走：换页、换标签就关掉（#170）
         forgetUnsent()
         let prevDialog = p == page ? appDialog : nil
@@ -1482,6 +1435,11 @@ public final class WindowModel: ObservableObject {
         return out
     }
 
+    /// 打开系统设置的一页：交给连接（`AgentConnection.settingsOpener`）；没接核心时直接开
+    public func openSystemSettings(_ url: URL) {
+        if let backend { backend.openSystemSettings(url) } else { NSWorkspace.shared.open(url) }
+    }
+
     /// 不在螺壳名下的某一种（system、account、delegate、each-time）
     public func agentPermissionRows(_ kind: String) -> [AgentPermission] {
         (agentPermissions ?? []).filter { !$0.onLuoke && $0.kind == kind }
@@ -1616,16 +1574,16 @@ public final class WindowModel: ObservableObject {
     /// 结果面板开着：在搜，或者有答复
     public var searchOpen: Bool { searching || searchAnswer != nil }
 
-    /// 底部有一条（问螺壳或搜索框）：提示要让开
+    /// 底部有一条（问螺壳）：提示要让开。只有搜索时搜索框在螺壳搜索页的标题下面，底部没有条
     public var hasBottomBar: Bool {
-        focus == nil && hostPage == nil && hostTakeover == nil && (features.contains(.ask) || searchBarShown)
+        hostPage == nil && hostTakeover == nil && features.contains(.ask)
     }
 
-    /// 底部的搜索框画不画。只有搜索、还没有问螺壳的时候，它只在螺壳搜索的页上（负责人 11-17：别的页上先不放，
-    /// 等有了问螺壳再全局放）
+    /// 搜索框画不画。只有搜索、还没有问螺壳的时候，它只在螺壳搜索的页上（负责人 11-17：别的页上先不放，
+    /// 等有了问螺壳再全局放），画在页标题下面、正文最上面，结果在它下面整页画（UX-09）
     public var searchBarShown: Bool {
         features.contains(.search) && !features.contains(.ask) && page == .searchApp
-            && focus == nil && hostPage == nil && hostTakeover == nil
+            && hostPage == nil && hostTakeover == nil
             && (agentApps == nil || agentApp(for: .searchApp) != nil)      // 搜索停用、没装时不放框（#172：看着能用）
     }
 
@@ -1823,10 +1781,6 @@ public final class WindowModel: ObservableObject {
 
     // MARK: 「今天」的样子
 
-    public func setDensity(_ d: Density) {
-        density = d
-    }
-
     /// 外观（设置 · 通用，走查重画稿）：跟随系统、浅色、深色；记在这台 Mac 的这个窗口里
     @Published public private(set) var appearance: Appearance = .system
     public func setAppearance(_ a: Appearance) {
@@ -1856,8 +1810,7 @@ public final class WindowModel: ObservableObject {
     /// 点了简报的通知：回「今天」，简报放在最上面。核心的数据还没到时，到了再拼
     public func openBrief(time: String? = nil) {
         guard mayNavigate() else { return }
-        if page != .today || focus != nil { entrance = .page }
-        focus = nil
+        if page != .today { entrance = .page }
         if page != .today { go(.today) }
         if waitingForFeed {
             briefNote = nil
@@ -1886,128 +1839,8 @@ public final class WindowModel: ObservableObject {
         if userInfo[AgentNotification.userInfoKey] as? String == "brief" { openBrief() } else { go(.today) }
     }
 
-    // MARK: 逐件处理
-
-    /// 进「逐件处理」：从要你决定的第一件开始，次序和「今天」页上一样（同一类的挨着，一类处理完再下一类）。
-    /// 给了 `category`（「按类处理」里点的那一类）就只走这一类；这一类已经没有卡片了就不进
-    public func enterFocus(category: String? = nil) {
-        let all = decideCategories
-        let picked = category.map { id in all.filter { $0.id == id } } ?? all
-        let ids = picked.flatMap(\.ids)
-        guard !ids.isEmpty else { return }
-        closeAsk()
-        focus = FocusSession(ids: ids, category: category, categoryName: category == nil ? nil : picked.first?.name)
-    }
-
-    /// 「要你决定」分成的几类，次序照「今天」页上（第一张出现的位置）
-    public var decideCategories: [DecideCategory] {
-        TodayStack.cards(cards).map { g in
-            DecideCategory(id: TodayStack.key(g[0].tool, g[0].kind, g[0].title), tool: g[0].tool,
-                           name: categoryName(tool: g[0].tool, kind: g[0].kind), ids: g.map(\.id))
-        }
-    }
-
-    /// 「按类处理」列哪几类：有两类以上时，不止一件的那几类（只有一类时页头的「逐件处理」就是它；
-    /// 一类只有一件时点开那张卡片就是了）
-    public var categoriesToPick: [DecideCategory] {
-        let all = decideCategories
-        guard all.count > 1 else { return [] }
-        return all.filter { $0.ids.count > 1 }
-    }
-
-    /// 一类事的名字：核心推来的每类事（`kinds`，编号是「应用:类」）里的，核心给不出名字时（「这一类事」）写应用的名字
-    func categoryName(tool: ToolIcon, kind: String?) -> String {
-        if let k = kind, !k.isEmpty,
-           let s = kinds.first(where: { $0.tool == tool && ($0.id == k || $0.id.hasSuffix(":" + k)) }),
-           !s.title.isEmpty, s.title != Self.unnamedKind {
-            return s.title
-        }
-        return tool.name
-    }
-
     /// 核心没有这一类的名字时写的（luoke_agent/agent.py `_label`）
     static let unnamedKind = "这一类事"
-
-    /// 回「今天」
-    public func exitFocus() {
-        guard focus != nil else { return }
-        entrance = .fromFocus
-        focus = nil
-    }
-
-    /// 正摆着的那一件：进来时的那几件里，还没答、没跳过的第一件
-    public var focusCurrent: TodayCard? {
-        guard let f = focus else { return nil }
-        for id in f.ids where !f.skipped.contains(id) {
-            if let c = cards.first(where: { $0.id == id }) { return c }
-        }
-        return nil
-    }
-
-    /// 进来以后答了几件：用户点过、已经不在要你决定里的。工具换掉、收走的不算
-    public var focusAnswered: Int {
-        guard let f = focus else { return 0 }
-        return f.ids.filter { id in f.tapped.contains(id) && !cards.contains { $0.id == id } }.count
-    }
-
-    /// 逐件处理时要你决定的变了：用户没点就不见了的那件，同一类（同一个应用、同一类事，`TodayStack.key`，
-    /// 也就是 `DecideCategory.id`）这次新出了一张，就是工具把它换掉了，新的顶在原来的位置（正看着的就还是这一件，不跳）；
-    /// 没有同一类的顶上，是工具收走了，从这一轮里去掉。同一个应用别的类的新卡片不算换上来的：只走一类时这一轮里
-    /// 不混进别的类，走全部时也不在同一个应用里换到别的类上
-    private func followReplacedCards(old: [TodayCard]) {
-        guard var f = focus else { return }
-        let present = Set(cards.map(\.id))
-        let before = Set(old.map(\.id))
-        let key = { (c: TodayCard) in TodayStack.key(c.tool, c.kind, c.title) }
-        var fresh = cards.filter { !before.contains($0.id) && !f.ids.contains($0.id) }
-        var ids: [String] = []
-        for id in f.ids {
-            if present.contains(id) || f.tapped.contains(id) { ids.append(id); continue }
-            guard let gone = old.first(where: { $0.id == id }).map(key), f.category.map({ $0 == gone }) ?? true,
-                  let i = fresh.firstIndex(where: { key($0) == gone }) else { continue }
-            let new = fresh.remove(at: i).id
-            ids.append(new)
-            if f.skipped.contains(id) { f.skipped.append(new) }
-        }
-        guard ids != f.ids else { return }
-        f.ids = ids
-        focus = f
-    }
-
-    /// 只走了一类、这一类都答完了，「要你决定」里还有别的事：这一类的名字（逐件处理的最后一屏照它说「这一类完了」）
-    public var focusCategoryDone: String? {
-        guard let name = focus?.categoryName, focusCurrent == nil, focusLeft == 0, !cards.isEmpty else { return nil }
-        return name
-    }
-
-    /// 跳过了、还在要你决定里的
-    public var focusLeft: Int {
-        guard let f = focus else { return 0 }
-        return f.ids.filter { id in cards.contains { $0.id == id } }.count
-    }
-
-    public func skipFocus(viaKey: Bool = false) {
-        guard var f = focus, let c = focusCurrent else { return }
-        f.skipped.append(c.id)
-        f.viaKey = viaKey
-        focus = f
-    }
-
-    /// 点了正摆着那件的一个按钮（键盘的 ⏎ 是标了 primary 的那个）；这张卡片正在处理上一下点按时不算
-    public func answerFocus(_ actionId: String, viaKey: Bool = false) {
-        guard var f = focus, let c = focusCurrent, !c.surface.busy,
-              let (name, ctx) = try? c.surface.surface.action(actionId) else { return }
-        f.viaKey = viaKey
-        f.tapped.insert(c.id)
-        focus = f
-        tap(card: c, componentId: actionId, name: name, context: ctx)
-    }
-
-    /// ⏎：答标了 primary 的那个按钮，没标的不答
-    public func answerFocusPrimary(viaKey: Bool = true) {
-        guard let c = focusCurrent, let a = SurfaceDigest(c.surface.surface).primary else { return }
-        answerFocus(a.id, viaKey: viaKey)
-    }
 
     // MARK: 今天里的点按
 
@@ -2300,6 +2133,12 @@ public final class WindowModel: ObservableObject {
     public func hostSettingsChanged() { hostDataTick &+= 1 }
 
     /// 「应用管理」画的行：本体给了数据就照它，没有就照窗口自己的目录（示例）
+    /// 应用管理「核心组件」里记忆那一行：本体的清单不列记忆（螺壳自带的组件），侧栏有记忆时照核心给的补一行（螺壳自带、不能单独卸载）
+    var memoryAppRow: HostAppRow? {
+        guard apps.contains(where: { $0.id == .mem }) else { return nil }
+        return HostAppRow(id: agentApp(for: .mem)?.id ?? "luoke-mem", tool: .mem, tagline: "", version: "", state: .installed, bundled: true)
+    }
+
     public var appRows: [HostAppRow] {
         _ = hostDataTick
         if let s = host?.appsSnapshot() { return s.rows }

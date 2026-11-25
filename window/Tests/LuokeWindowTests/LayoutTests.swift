@@ -35,15 +35,6 @@ final class LayoutTests: XCTestCase {
         XCTAssertFalse(m.hasRail(.wide), "顺便看看留在主栏：没有做了的，照旧一栏居中")
     }
 
-    func testCompactTodayAndFocusHaveNoRail() {
-        let m = Sample.model()
-        m.enterFocus()
-        XCTAssertFalse(m.hasRail(.wide), "逐件处理盖住「今天」")
-        m.exitFocus()
-        m.setDensity(.compact)
-        XCTAssertFalse(m.hasRail(.wide), "紧凑是一张表，不分两栏")
-    }
-
     func testDoneListsMoreRowsInTheRail() {
         let rows = (1...9).map { DoneRow(id: "d\($0)", tool: .mail, text: "第 \($0) 件", time: "09:0\($0)", undoLabel: "撤销") }
         let rail = TodayPage.visibleDone(rows, all: false, deciding: true, railed: true)

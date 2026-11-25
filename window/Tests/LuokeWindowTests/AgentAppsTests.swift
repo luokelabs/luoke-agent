@@ -308,8 +308,10 @@ final class AgentAppsTests: XCTestCase {
         XCTAssertEqual(CanUseList.light("system", "ask", needed: true).1, "待允许")
         XCTAssertEqual(CanUseList.light("account", "granted", needed: false).1, "已连接")
         XCTAssertEqual(CanUseList.light("system", nil, needed: false).1, "未知")
-        let checks = [HostSystemCheck(name: "完全磁盘访问", ok: true), HostSystemCheck(name: "通知", ok: true)]
-        XCTAssertEqual(CanUseList.extraChecks(checks, covered: Set(luoke.map(\.title))).map(\.name), ["通知"],
+        // 按 key 去重：本体叫「照片」、应用叫「照片图库」，是同一种（photos），只列一行
+        let checks = [HostSystemCheck(key: "fda", name: "完全磁盘访问", ok: true), HostSystemCheck(key: "photos", name: "照片", ok: false),
+                      HostSystemCheck(key: HostSystemCheck.notifications, name: "通知", ok: true)]
+        XCTAssertEqual(CanUseList.extraChecks(checks, covered: Set(luoke.map(\.id) + ["photos"])).map(\.name), ["通知"],
                        "螺壳级权限已列出的不重复，保留通知等仅由本体检查的系统权限")
     }
 
@@ -557,7 +559,6 @@ final class AgentAppsTests: XCTestCase {
         m.reportHostPermissions([:], confirmed: ["luoke-scan": ["fda": "2026-11-06T07:00:00Z"]])
         XCTAssertTrue(m.hostPermissionOn(fda), "本体给的")
         XCTAssertEqual(h.calls, [], "本体给的不再交回本体")
-        XCTAssertFalse(CanUseList.hostOffText.contains("系统"), "这是约定：不说系统拦着")
     }
 
     func testErrorsShowAsToast() {

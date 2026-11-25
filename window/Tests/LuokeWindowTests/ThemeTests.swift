@@ -35,11 +35,11 @@ final class ThemeTests: XCTestCase {
         XCTAssertEqual(Palette.light.fg, .hex(0x2B1A12))
         XCTAssertEqual(Palette.light.primary, .hex(0x3A1F14))
         XCTAssertEqual(Palette.light.brand, .hex(0xE8556B))
-        XCTAssertEqual(Palette.dark.bg, .hex(0x1F1511))
-        XCTAssertEqual(Palette.dark.card, .hex(0x2C1F19))
-        XCTAssertEqual(Palette.dark.fg, .hex(0xFBF3E8))
-        XCTAssertEqual(Palette.dark.primary, .hex(0xFDF4E4))
-        XCTAssertEqual(Palette.dark.primaryFg, .hex(0x2B1A12))
+        XCTAssertEqual(Palette.dark.bg, .hex(0x1C1B19))
+        XCTAssertEqual(Palette.dark.card, .hex(0x262422))
+        XCTAssertEqual(Palette.dark.fg, .hex(0xFAF8F5))
+        XCTAssertEqual(Palette.dark.primary, .hex(0xF2707F))
+        XCTAssertEqual(Palette.dark.primaryFg, .hex(0x1C1B19))
     }
 
     /// 首页那一组只换规范列的几样，别的同工作台；主按钮和工作台一样是深棕（负责人 11-17：品牌粉像删除、像报错）
@@ -48,8 +48,8 @@ final class ThemeTests: XCTestCase {
         XCTAssertEqual(Palette.homeLight.sidebar, .hex(0xFBEEDC))
         XCTAssertEqual(Palette.homeLight.primary, Palette.light.primary)
         XCTAssertEqual(Palette.homeLight.primaryFg, Palette.light.primaryFg)
-        XCTAssertEqual(Palette.homeDark.bg, .hex(0x241713))
-        XCTAssertEqual(Palette.homeDark.card, .hex(0x32221B))
+        XCTAssertEqual(Palette.homeDark.bg, .hex(0x1F1E1C))
+        XCTAssertEqual(Palette.homeDark.card, .hex(0x2A2826))
         XCTAssertEqual(Palette.homeDark.primary, Palette.dark.primary)
         XCTAssertEqual(Palette.homeLight.fg, Palette.light.fg)
         XCTAssertEqual(Palette.homeDark.mutedFg, Palette.dark.mutedFg)
@@ -74,7 +74,6 @@ final class ThemeTests: XCTestCase {
         // 卡片和按钮的圆角跟着哪一组：工作台 12 / 10，首页 18 / 12（界面规范 v2 §2、§11）
         for p in [Palette.light, Palette.dark] { XCTAssertEqual([p.cardRadius, p.controlRadius], [12, 10]) }
         for p in [Palette.homeLight, Palette.homeDark] { XCTAssertEqual([p.cardRadius, p.controlRadius], [18, 12]) }
-        XCTAssertEqual(LKRadius.focus, 16)
         for v in [LKSpace.x1, LKSpace.x2, LKSpace.x3, LKSpace.x4, LKSpace.x5, LKSpace.x6, LKSpace.x7, LKSpace.x8, LKSpace.x11, LKSpace.x14] {
             XCTAssertEqual(v.truncatingRemainder(dividingBy: 4), 0, "\(v)")
         }
@@ -117,7 +116,6 @@ final class ThemeTests: XCTestCase {
         XCTAssertEqual(Motion.cardLeave, 0.13)
         XCTAssertEqual(Motion.reflow, 0.32)
         XCTAssertEqual(Motion.flight, 0.44)
-        XCTAssertEqual(Motion.focusGrow, 0.42)
         XCTAssertEqual(Motion.pill, 0.28)
         XCTAssertEqual(Motion.thumb, 0.24)
         // 飞的那一程：两头在图标位上，中间往左边空白处偏，路上从 28 缩到 20

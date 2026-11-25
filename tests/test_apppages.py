@@ -785,17 +785,33 @@ class BuilderTest(unittest.TestCase):
         self.assertIn("默认行为", next(w for p, w in WHY if "pkg.install-scripts".startswith(p)))
 
     def test_search_page_follows_the_mockup(self):
+        """UX-09：概览只放最近搜索（搜索框是窗口画在标题下面的）；检索范围、权限、建立索引在齿轮打开的「搜索设置」弹窗里摊开"""
         data = _data("luoke-search", "built.json")
+        self.assertIn({"id": "settings", "title": "搜索设置", "hidden": True, "icon": "settings"}, search.PAGES, "齿轮打开设置")
         msgs = search.build("overview", {}, lambda u: data[u])
         a2ui.build(msgs, page=True)
         comps = _components(msgs)
         root = comps["root"]["children"]
-        self.assertFalse(any(c["component"] == "TextField" for c in comps.values()), "搜用窗口底部的搜索框，页上不再放一个")
+        self.assertFalse(any(c["component"] == "TextField" for c in comps.values()), "搜索框由窗口画，页上不再放一个")
         heads = [comps[i]["text"] for i in root if comps[i].get("variant") == "caption"]
-        self.assertEqual(heads, ["最近搜索", "检索范围", "权限", "建立索引"], "都摊开，不点进二级页")
+        self.assertEqual(heads, ["最近搜索"], "设置挪进弹窗")
         events = [(c["action"]["event"]["name"], c["action"]["event"]["context"]) for c in comps.values() if c["component"] == "Button"]
         self.assertIn(("agent.search", {"q": "客户名单"}), events, "点最近搜索的就搜")
         self.assertIn(("search_settings_apply", {"clear_recent": True}), events, "最近搜索能清除")
+        self.assertIn(("agent.open_page", {"page": "settings"}), events, "索引在建：一行状态，点进设置")
+        self.assertIn("正在建立索引 62%", json.dumps(msgs, ensure_ascii=False))
+        data2 = dict(data, **{"data/index": dict(data["data/index"], state="ready")})
+        quiet = json.dumps(search.build("overview", {}, lambda u: data2[u]), ensure_ascii=False)
+        self.assertNotIn("索引已是最新", quiet, "索引好了不在概览上写")
+        data3 = dict(data2, **{"data/recent": {"queries": []}})
+        self.assertIn("暂无最近搜索", json.dumps(search.build("overview", {}, lambda u: data3[u]), ensure_ascii=False))
+
+        msgs = search.build("settings", {}, lambda u: data[u])
+        a2ui.build(msgs, page=True)
+        comps = _components(msgs)
+        heads = [comps[i]["text"] for i in comps["root"]["children"] if comps[i].get("variant") == "caption"]
+        self.assertEqual(heads, ["检索范围", "权限", "建立索引"], "弹窗里都摊开，不再点进下一层")
+        events = [(c["action"]["event"]["name"], c["action"]["event"]["context"]) for c in comps.values() if c["component"] == "Button"]
         self.assertIn(("search_settings_apply", {"add_folder": True}), events)
         self.assertIn(("search_settings_apply", {"photos": True}), events, "照片关着：点了打开")
         self.assertNotIn("4035", json.dumps(msgs, ensure_ascii=False))
@@ -804,7 +820,7 @@ class BuilderTest(unittest.TestCase):
     def test_search_page_states(self):
         """暂停的原因按代号写；系统没允许照片时写去哪里允许；跳过的能取消；选文件夹时自己刷新；没选范围时不放开关"""
         data = dict(_data("luoke-search", "built.json"))
-        build = lambda: search.build("overview", {}, lambda u: data[u])
+        build = lambda: search.build("settings", {}, lambda u: data[u])
         text = lambda: json.dumps(build(), ensure_ascii=False)
         events = lambda: [(c["action"]["event"]["name"], c["action"]["event"]["context"]) for c in _components(build()).values()
                           if c["component"] == "Button"]
@@ -826,7 +842,12 @@ class BuilderTest(unittest.TestCase):
         self.assertNotIn("再问", text())
         # 没问过：系统不会自己来问（只在用户点了以后），写去哪里允许；图库没允许不等于图片搜不到
         data["data/permissions"] = dict(perms, photos={"on": True, "system": "ask"})
-        self.assertIn("尚未允许读取，请在螺壳「设置 · 隐私与权限」中允许；文件夹里的图片照常能搜", text())
+        self.assertIn("尚未允许读取；文件夹里的图片照常能搜", text())
+        # 开关开着、下面却写没允许：不再两种状态一起出现，换成「允许」按钮，能关掉
+        photo_buttons = [(n, c) for n, c in events() if c.get("pane") == "photos" or "photos" in c]
+        self.assertCountEqual(photo_buttons, [("search_settings_apply", {"photos": False}), ("search_open_system_settings", {"pane": "photos"})])
+        self.assertFalse(any(c["component"] == "Button" and c.get("variant") == "switch" and "photos" in json.dumps(c["action"])
+                             for c in _components(build()).values()), "没允许时不画开着的开关")
         self.assertNotIn("系统会询问", text())
         self.assertIn("照片图库", text())
         data["data/permissions"] = perms
@@ -1326,12 +1347,29 @@ class MailFeaturesBackTest(unittest.TestCase):
 
     def test_clean_offers_the_checks_when_never_run(self):
         never = {"scanned_at": None, "groups": [], "total": 0, "judged": 0}
-        msgs = self.page("clean", extra={"data/clean?account=all": {"subscriptions": None, "archive": None},
-                                         "data/old?account=me%40company.example": never, "data/old?account=me%40mail.example": never})
-        ev = self.events(msgs)
-        self.assertIn("mail_subscriptions_check", ev, "没检查过订阅：给「检查订阅」")
-        self.assertIn("mail_old_scan", ev, "没看过旧邮件：给「看一遍」")
-        self.assertNotIn("暂无可清理的邮件", json.dumps(msgs, ensure_ascii=False), "还没查过不能说没有要清的")
+        extra = {"data/clean?account=all": {"subscriptions": None, "archive": None},
+                 "data/old?account=me%40company.example": never, "data/old?account=me%40mail.example": never}
+        msgs = self.page("clean", extra=extra)
+        self.assertIn("mail_subscriptions_check", self.events(msgs), "没检查过订阅：给「检查订阅」")
+        msgs = self.page("clean", {"view": "old"}, extra=extra)
+        self.assertIn("mail_old_scan", self.events(msgs), "没看过旧邮件：给「开始检查」")
+        self.assertNotIn("暂无可清理的旧邮件", json.dumps(msgs, ensure_ascii=False), "还没查过不能说没有要清的")
+
+    def test_clean_is_two_flat_views(self):
+        """UX-14：清理顶上分段「订阅体检 / 旧邮件」，各自铺开分组，切换回到清理页（不再先列一部分、再点进弹窗看全部）"""
+        for view, picker in (("subs", "/choices/group"), ("old", "/choices/part")):
+            with self.subTest(view):
+                msgs = self.page("clean", {} if view == "subs" else {"view": view})
+                comps = _components(msgs)
+                seg = next(c for c in comps.values() if c["component"] == "ChoicePicker" and c["value"]["path"] == "/choices/view")
+                self.assertEqual([o["value"] for o in seg["options"]], ["subs", "old"])
+                self.assertTrue(any(c["component"] == "ChoicePicker" and c["value"]["path"] == picker for c in comps.values()),
+                                "分组直接铺在页上")
+                opens = [c["action"]["event"]["context"] for c in comps.values()
+                         if c.get("action", {}).get("event", {}).get("name") == "agent.open_page"]
+                self.assertFalse([o for o in opens if o["page"] in ("subs", "old")], "不再点进订阅体检、旧邮件的弹窗")
+                self.assertTrue(all(o["page"] != "clean" or o.get("args", {}).get("view") in (None, view)
+                                    or isinstance(o.get("args", {}).get("view"), dict) for o in opens))
 
     def test_subscription_check_shows_every_group_and_takes_decisions_back(self):
         msgs = self.page("subs", {"group": "handled"})
@@ -1341,7 +1379,8 @@ class MailFeaturesBackTest(unittest.TestCase):
         self.assertIn("mail_sender_reset", self.events(msgs), "已处理的能撤回")
         self.assertIn("退订后仍在发送", json.dumps(msgs, ensure_ascii=False))
         clean = json.dumps(self.page("clean"), ensure_ascii=False)
-        self.assertIn("建议退订 3、可疑 1", clean)
+        self.assertIn("建议退订 3", clean)
+        self.assertIn("可疑 1", clean)
 
     def test_sender_says_how_much_history_and_how_to_unsubscribe_by_mail(self):
         msgs = self.page("sender", {"account": "me@mail.example", "key": "from:notice@forum.example"})
@@ -1380,24 +1419,6 @@ class MailFeaturesBackTest(unittest.TestCase):
         self.assertIn("无法统计旧邮件数量：" + mail.REASONS["login_refused"], text)
         self.assertNotIn('"refresh"', json.dumps(msgs))
         self.assertIn("mail_sender_history", self.events(msgs))
-
-    def test_clean_bulk_rows_name_the_mailbox_and_the_unlisted_groups(self):
-        # #165：一个邮箱、一种做法一行（不是一排主按钮）；写整个地址、几组几封、其中几组没列在上面
-        from luoke_agent.apppages.kit import PageKit
-        kit = PageKit("clean")
-        groups = [{"account": "1234567@mail.example", "key": f"a{i}", "action": "archive", "count": 10, "title": f"甲{i}"} for i in range(3)]
-        groups += [{"account": "me@mail.example", "key": f"t{i}", "action": "trash", "count": 5, "title": f"乙{i}"} for i in range(2)]
-        groups += [{"account": "me@mail.example", "key": "one", "action": "archive", "count": 1, "title": "丙"}]
-        rows = mail._old_bulk_rows(kit, groups, "inbox", 2)
-        msgs = kit.messages([kit.list(rows)])
-        a2ui.build(msgs, page=True)
-        text = json.dumps(msgs, ensure_ascii=False)
-        self.assertEqual(len(rows), 2, "只有一组的不另给")
-        self.assertIn("1234567@mail.example", text)
-        self.assertIn("建议归档 3 组，共 30 封，含未列出的 1 组", text)
-        self.assertIn("建议移到已删除 2 组，共 10 封，含未列出的 2 组", text)
-        btns = [c for c in _components(msgs).values() if c["component"] == "Button"]
-        self.assertTrue(all(c.get("confirm") and c.get("variant") != "primary" for c in btns))
 
     def test_old_mail_has_every_kind_and_scope(self):
         msgs = self.page("old")
@@ -1491,10 +1512,16 @@ class MailFeaturesBackTest(unittest.TestCase):
                    draft_text="王老师您好：周五下午可以。")
         msgs = self.page("mail", args, extra={uri: one})
         ev = self.events(msgs)
-        for name in ("mail_draft", "mail_act", "mail_draft_save", "mail_change"):
+        for name in ("mail_draft", "mail_act", "mail_draft_save"):
             self.assertIn(name, ev)
         comps = _components(msgs)
-        self.assertTrue(any(c.get("collapsed") for c in comps.values()), "改成别的处理方式收起来")
+        # UX-14：改成别的处理方式不再收在正文最下面，是标题那一行右边的按钮，点开下一层
+        head = [c for c in comps.values() if c.get("placement") == "header"]
+        self.assertEqual([c["action"]["event"]["context"] for c in head], [{"page": "change", "args": args}])
+        msgs = self.page("change", args, extra={uri: one})
+        self.assertIn("mail_change", self.events(msgs))
+        gone = dict(one, ways=["complete", "calendar"])
+        self.assertNotIn("mail_change", self.events(self.page("change", args, extra={uri: gone})), "已不在收件箱：改不了")
         self.assertTrue(any(c.get("variant") == "longText" for c in comps.values()), "草稿是几行高的框")
 
     def test_settings_more_and_rules(self):
@@ -1802,11 +1829,14 @@ class ImeSettingsTest(unittest.TestCase):
         with open(os.path.join(ROOT, "fixtures", "luoke-ime", name, file), encoding="utf-8") as f:
             return json.load(f)["reply"]["result"]["contents"][0]["text"]
 
-    def _page(self, data: dict):
+    def _page(self, data: dict, pages=("settings", "more")):
+        """「设置」和「高级设置」两页合起来看（UX-13 把不常用的几组挪进了「高级设置」）"""
         from luoke_agent.apppages import ime
-        msgs = ime.build("settings", {}, lambda uri: data if uri == "data/settings" else None)
-        a2ui.build(msgs, page=True)
-        comps = _components(msgs)
+        comps = {}
+        for page in pages:
+            msgs = ime.build(page, {}, lambda uri: data if uri == "data/settings" else None)
+            a2ui.build(msgs, page=True)
+            comps.update({f"{page}/{k}": v for k, v in _components(msgs).items()})
         texts = [c["text"] for c in comps.values() if c["component"] == "Text"]
         buttons = [(c["action"]["event"]["name"], c["action"]["event"]["context"], c) for c in comps.values()
                    if c["component"] == "Button"]
@@ -1854,6 +1884,23 @@ class ImeSettingsTest(unittest.TestCase):
         reveals = [ctx["item"] for name, ctx, _c in buttons if name == "agent.reveal"]
         self.assertEqual(reveals, ["~/.luoke/ime/records", "~/.luoke/ime/engines", "~/.luoke/ime/settings.json"])
 
+    def test_low_frequency_groups_are_in_advanced(self):
+        """UX-13：「设置」只放日常用的；词语、使用统计、开发模式、文件在「高级设置」（标签栏右端的图标打开）"""
+        from luoke_agent.apppages import ime
+        self.assertIn({"id": "more", "title": "高级设置", "hidden": True, "icon": "sliders-horizontal"}, ime.PAGES)
+        d = self._scenario("normal")
+        main, _b = self._page(d, pages=("settings",))
+        adv, _b = self._page(d, pages=("more",))
+        for word in ("输入方式", "语音输入", "候选窗口", "记忆记录", "已学词语", "已忘记词语"):
+            self.assertIn(word, main)
+            self.assertNotIn(word, adv)
+        for word in ("使用统计", "开发模式", "引擎文件夹"):
+            self.assertIn(word, adv)
+            self.assertNotIn(word, main)
+        # 词语留在主页（日常纠错）；页底一行「高级设置」点进去（标签栏右端的图标不好发现）
+        _t, buttons = self._page(d, pages=("settings",))
+        self.assertIn(("agent.open_page", {"page": "more"}), [(n, ctx) for n, ctx, _c in buttons])
+
     def test_confirms(self):
         """清除、清零、开启开发模式要确认；关闭开发模式、恢复一个词不用"""
         _texts, buttons = self._page(self._scenario("normal"))
@@ -1884,7 +1931,8 @@ class ImeSettingsTest(unittest.TestCase):
         self.assertFalse([1 for _n, ctx, _c in buttons if ctx.get("op") == "dev_mode"])
         texts, buttons = self._page({"state": "unreadable", "paths": d["paths"]})
         self.assertIn("设置文件无法读取", texts)
-        self.assertEqual([name for name, _ctx, _c in buttons], ["agent.reveal", "agent.reveal"])
+        self.assertEqual(sorted(name for name, _ctx, _c in buttons), ["agent.open_page", "agent.reveal", "agent.reveal"],
+                         "读不到设置文件：只剩找到它的两样，和进「高级设置」的那一行")
         for bad in (None, {}, {"settings": "x", "forgotten": [], "usage": {"days": [1, {"date": 3}]}, "dev": {"engines": [1]},
                                "learned": {"engine": 1}, "paths": []}):
             a2ui.build(ime.build("settings", {}, lambda uri: bad), page=True)
@@ -1919,7 +1967,7 @@ class ImeSettingsTest(unittest.TestCase):
         self.assertIsNone(apppages.builds(S(), "apps"), "0.1.109 只列了 data/settings：「各应用」照旧画它自己的页")
         self.assertEqual([(p["id"], p.get("hidden")) for p in apppages.pages(S(), [{"id": "settings", "title": "设置"},
                                                                                 {"id": "apps", "title": "各应用"}])],
-                         [("settings", None), ("apps", None)])
+                         [("settings", None), ("apps", None), ("more", True)], "「高级设置」也只要 data/settings")
         S.data = ["settings", "apps"]
         self.assertIs(apppages.builds(S(), "apps"), ime)
         S.data = []

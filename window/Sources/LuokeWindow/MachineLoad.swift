@@ -52,6 +52,30 @@ public struct MachineLoad: Equatable, Sendable {
         return best
     }
 
+    /// 内存用到这么多算偏紧、紧张；GPU 忙到这么多算繁忙（右边栏顶上那一句和圆环用同一套）
+    static let ramTight = 0.75
+    static let ramFull = 0.9
+    static let gpuBusyAt = 0.7
+
+    /// 右边栏顶上的一句话（UX-11：不摆百分比，百分比放在悬停里）。读不到内存时 nil
+    public var summary: String? {
+        guard let ram else { return nil }
+        let mem = ram >= Self.ramFull ? "内存紧张" : ram >= Self.ramTight ? "内存偏紧" : nil
+        let busy = (gpu ?? 0) >= Self.gpuBusyAt ? "GPU 繁忙" : nil
+        let parts = [mem, busy].compactMap { $0 }
+        return "这台 Mac：" + (parts.isEmpty ? "资源充足" : parts.joined(separator: "，"))
+    }
+
+    /// 那一句要不要标黄：内存紧张、偏紧或 GPU 繁忙
+    public var strained: Bool { (ram ?? 0) >= Self.ramTight || (gpu ?? 0) >= Self.gpuBusyAt }
+
+    /// 悬停提示：「内存约 79 / 128 GB」。百分比悬停时两条上已经有，这里只写用了多少 GB，不重复
+    public var detail: String {
+        let total = Double(ProcessInfo.processInfo.physicalMemory) / 1_073_741_824
+        guard let ram else { return "" }
+        return "内存约 \(Int((ram * total).rounded())) / \(Int(total.rounded())) GB"
+    }
+
     /// 「62%」；读不到写「—」
     static func percent(_ v: Double?) -> String { v.map { "\(Int(($0 * 100).rounded()))%" } ?? "—" }
 

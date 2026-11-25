@@ -54,7 +54,8 @@ final class Beta2Tests: XCTestCase {
         return (m, AgentFeed(model: m), b)
     }
 
-    /// 只有搜索、还没有问螺壳时，底部的搜索框只在螺壳搜索的页上（负责人 11-17）；⌘K 先去那一页；离开那一页结果面板收起
+    /// 只有搜索、还没有问螺壳时，搜索框只在螺壳搜索的页上（负责人 11-17），在页标题下面、底部没有条（UX-09）；
+    /// ⌘K 先去那一页；离开那一页结果面板收起
     func testTheSearchBoxIsOnlyOnTheSearchAppsPage() throws {
         let (m, _, b) = searching()
         XCTAssertEqual(m.page, .today)
@@ -63,7 +64,8 @@ final class Beta2Tests: XCTestCase {
         let before = m.searchFocus
         m.focusSearch()
         XCTAssertEqual(m.page, .searchApp, "⌘K：先去螺壳搜索的页")
-        XCTAssertTrue(m.searchBarShown && m.hasBottomBar)
+        XCTAssertTrue(m.searchBarShown)
+        XCTAssertFalse(m.hasBottomBar, "搜索框在页标题下面，底部没有条，提示不用让开")
         XCTAssertTrue(m.pendingSearchFocus, "跨页跳转后保留待聚焦标志，不让 onAppear 踢掉光标")
         XCTAssertEqual(m.searchFocus, before + 1, "再把光标放进搜索框")
         m.runSearch("合同")

@@ -288,15 +288,24 @@ public struct HostModels: Equatable {
 }
 
 public struct HostSystemCheck: Equatable {
+    /// 是哪一种权限：和应用清单里权限的 `id` 同一套（`fda`、`photos`），通知是 `notifications`。
+    /// 权限页按它去重、认通知那一行，不按显示的名字比
+    public var key: String?
     public var name: String
     public var ok: Bool
     public var detail: String?
 
-    public init(name: String, ok: Bool, detail: String? = nil) {
+    public init(key: String? = nil, name: String, ok: Bool, detail: String? = nil) {
+        self.key = key
         self.name = name
         self.ok = ok
         self.detail = detail
     }
+
+    /// 通知那一行的 key
+    public static let notifications = "notifications"
+    /// 通知设置的那一页
+    public static let notificationSettings = URL(string: "x-apple.systempreferences:com.apple.Notifications-Settings.extension")!
 }
 
 public struct HostPrivacy: Equatable {

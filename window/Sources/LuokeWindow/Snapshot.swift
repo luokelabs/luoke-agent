@@ -197,7 +197,13 @@ public enum Snapshot {
                     m.go(.mail)
                     m.selectAppTab(id)
                 }
-            } + [("settings", "设置"), ("activity", "处理记录"), ("mail", "一封信"), ("piece", "一条精选"),
+            } + [
+                // 清理的「旧邮件」分段（UX-14：订阅体检、旧邮件是清理页上两个平级的视图）
+                shipped("mail-built-clean-old", "邮件助手 · 清理 · 旧邮件（核心照原始数据拼）", mail: "pages") { m in
+                    m.go(.mail)
+                    m.openAgentPage(app: "luoke-mail", page: "clean", args: ["view": "old"])
+                },
+            ] + [("settings", "设置"), ("activity", "处理记录"), ("mail", "一封信"), ("change", "更改处理方式"), ("piece", "一条精选"),
                  // 负责人 11-16：弹窗也要对图，都加进来
                  ("subs", "订阅体检"), ("old", "旧邮件"), ("sender", "发件人"), ("sources", "精选来源"), ("job", "后台任务"),
                  ("done", "已处理的邮件")].map { id, title in
@@ -236,6 +242,13 @@ public enum Snapshot {
                 if !m.appsExpanded { m.toggleApps() }
                 m.go(.searchApp)
             },
+            // 检索范围、权限、建立索引挪进齿轮打开的「搜索设置」弹窗（UX-09）
+            window("search-built-settings", "搜索 · 设置（齿轮打开的弹窗）") { m in
+                fed(m, scan: ToolSample.fullScan, mail: ToolSample.defaultMail, beta2: true, search: "built")
+                if !m.appsExpanded { m.toggleApps() }
+                m.go(.searchApp)
+                m.selectAppTab("settings")
+            },
         ]
         /// 输入法的设置页和「各应用」，核心照它录的 data/settings、data/apps 拼（ADR 0028；设置页归主窗口，负责人 11-19）：平常的、空的，各带一张整页
         let imeBuilt: [Screen] = ToolSample.scenarios("luoke-ime").flatMap { sc -> [Screen] in
@@ -251,6 +264,19 @@ public enum Snapshot {
                 }
             }
         }
+        /// 「高级设置」：标签栏右端的图标打开的弹窗（UX-13：词语、使用统计、开发模式、文件）
+        let imeMore: [Screen] = (ToolSample.load("luoke-ime", "normal")?.views["more"]).map { view in
+            [window("ime-more-normal", "输入法 · 高级设置（图标打开的弹窗）") { m in
+                fed(m, scan: ToolSample.fullScan, mail: ToolSample.defaultMail, beta2: true, ime: "normal")
+                if !m.appsExpanded { m.toggleApps() }
+                m.go(.ime)
+                m.selectAppTab(view.page)
+                if let s = try? Surface.build(view.messages, page: true) {
+                    m.agentPages[AgentFeed.pageKey("luoke-ime", view.page)] = AgentPage(app: "luoke-ime", page: view.page,
+                                                                                         surface: SurfaceModel(surface: s))
+                }
+            }]
+        } ?? []
         /// 从输入法菜单的「此应用的设置」带着应用进来、它还没单独设置过：排在最前，写明尚未单独设置
         let imeTarget: [Screen] = (ToolSample.load("luoke-ime", "normal")?.views["apps-target"]).map { view in
             [window("ime-apps-target", "输入法 · 各应用：从菜单点进来的应用还没单独设置过") { m in
@@ -345,7 +371,7 @@ public enum Snapshot {
                            primary: "是我", primarySymbol: nil, secondary: "不是我", kind: "login"),
             ]
         }
-        /// 按类处理：邮件要你决定的复制 2 份，再插 3 件记忆想问的（手写的示意：记忆还没有录的样例），和邮件交错着来
+        /// 要你决定有两类：邮件要你决定的复制 2 份，再插 3 件记忆想问的（手写的示意：记忆还没有录的样例），和邮件交错着来
         func kinds(_ name: String, _ title: String, _ then: @escaping (WindowModel) -> Void = { _ in }) -> Screen {
             stress(name, title, decide: 2) { m in
                 if let ask = Sample.model().cards.first(where: { $0.tool == .mem }) {
@@ -354,14 +380,6 @@ public enum Snapshot {
                     m.cards.append(contentsOf: asks.dropFirst())
                     m.kinds.append(KindSetting(id: "luoke-mem:question", tool: .mem, title: "记忆的待确认事项", level: .brief))
                 }
-                then(m)
-            }
-        }
-        /// 紧凑的「今天」急事的回放（#54）：邮件助手 200 件可疑邮件（每件一句不同的副标题）+ 扫描报毒的 2 件 + 别的应用 3 件 = 205 件
-        func flood(_ name: String, _ title: String, _ then: @escaping (WindowModel) -> Void = { _ in }) -> Screen {
-            stress(name, title, flood: StressSample.urgentReplay - 5) { m in
-                moreUrgent(m)
-                m.setDensity(.compact)
                 then(m)
             }
         }
@@ -393,17 +411,6 @@ public enum Snapshot {
                     $0.accessory == "luoke-mail" ? InstalledApp(accessory: $0.accessory, version: $0.version, update: "0.19.0") : $0
                 })
             },
-            shipped("focus", "逐件处理") { $0.enterFocus() },
-            whole("focus", "逐件处理", height: 1600) { $0.enterFocus() },
-            shipped("focus-end", "逐件处理 · 都答完了") { m in
-                m.enterFocus()
-                m.focus?.tapped = Set(m.cards.map(\.id))   // 都点过了，工具答完收走
-                m.cards = []
-            },
-            shipped("focus-left", "逐件处理 · 跳过了几件") { m in
-                m.enterFocus()
-                for _ in m.cards { m.skipFocus() }
-            },
             shipped("permission", "要权限") { $0.requestPermission("calendar") },
             shipped("scan", "螺壳扫描") { $0.go(.scan) },
             whole("scan", "螺壳扫描", height: 2400) { $0.go(.scan) },
@@ -411,7 +418,7 @@ public enum Snapshot {
             end(shipped("today", "今天")),
             end(shipped("today-mini", "侧栏收成图标") { $0.setSidebar(mini: true) }),
             shipped("mail", "邮件助手") { $0.go(.mail) },
-        ] + mailPages + mailBuilt + memBuilt + scanBuilt + scanStatusWhole + searchBuilt + imeBuilt + imeTarget + dialogNarrow + memPages + scanScenes + macScenes + macExtra + [scanBusy, pickRows] + scanScenes.filter { (x: Screen) -> Bool in x.name == "scan-agent-decide-3" }.map { (x: Screen) -> Screen in end(x) }
+        ] + mailPages + mailBuilt + memBuilt + scanBuilt + scanStatusWhole + searchBuilt + imeBuilt + imeTarget + imeMore + dialogNarrow + memPages + scanScenes + macScenes + macExtra + [scanBusy, pickRows] + scanScenes.filter { (x: Screen) -> Bool in x.name == "scan-agent-decide-3" }.map { (x: Screen) -> Screen in end(x) }
           + scanScenes.filter { (x: Screen) -> Bool in x.name == "scan-agent-decide-3" }.map { (x: Screen) -> Screen in live(x) } + [
             shipped("apps", "应用管理") { $0.go(.apps) },
             shipped("apps-open", "应用管理 · 展开两个应用（权限、去权限设置和应用设置的入口）") { m in
@@ -562,27 +569,7 @@ public enum Snapshot {
             // 压力
             stress("today-many", "今天 · 邮件的卡片多 5 倍（急事 40 多张）", scale: many),
             stress("today-mini-many", "侧栏收成图标 · 卡片多 5 倍", scale: many) { $0.setSidebar(mini: true) },
-            stress("focus-many", "逐件处理 · 5 件", scale: many) { $0.enterFocus() },
-            stress("focus-small-window", "逐件处理 · 小窗口 860×600 · 8 封的方案卡片（手写的示意；中间滚动，按钮在底部）",
-                   size: CGSize(width: 860, height: 600)) { m in
-                m.cards.insert(Sample.longPlanCard(8), at: 0)
-                m.enterFocus()
-            },
-            whole("focus-long", "逐件处理 · 8 封的方案卡片（手写的示意）", height: 1400) { m in
-                m.cards.insert(Sample.longPlanCard(8), at: 0)
-                m.enterFocus()
-            },
-            kinds("today-kinds", "今天 · 要你决定有两类，各不止一件（段标题下面「按类处理」；同一类的排在一起）"),
-            kinds("focus-kind", "逐件处理 · 只走一类（在「按类处理」里点了「记忆的待确认事项」）") { m in
-                m.enterFocus(category: m.categoriesToPick.last?.id)
-            },
-            kinds("focus-kind-end", "逐件处理 · 只走一类，这一类都答完了，还有别的事") { m in
-                let ids = m.categoriesToPick.last?.ids ?? []
-                m.enterFocus(category: m.categoriesToPick.last?.id)
-                m.focus?.tapped = Set(ids)   // 都点过了，记忆答完收走
-                m.cards.removeAll { ids.contains($0.id) }
-            },
-            stress("focus-progress-many", "逐件处理 · 邮件的卡片多 15 倍（进度是一整条加数字）", scale: many * 3) { $0.enterFocus() },
+            kinds("today-kinds", "今天 · 要你决定有两类，各不止一件（同一类的排在一起）"),
             stress("today-empty", "今天 · 第一天，什么都没有", mail: "no-mailbox") { m in
                 m.urgent = []; m.cards = []; m.done = []; m.quiet = []; m.notices = []
             },
@@ -607,6 +594,12 @@ public enum Snapshot {
                 m.done.removeAll { $0.tool == .mail }; m.quiet.removeAll { $0.tool == .mail }
                 m.notices = ["螺壳邮件助手未运行"]; m.noticeRows = [NoticeRow(id: "luoke-mail", kind: "stopped", text: "螺壳邮件助手未运行")]   // agent.py `_merge` 的说法
                 if let i = m.agentApps?.firstIndex(where: { $0.id == "luoke-mail" }) { m.agentApps?[i].running = false }
+            },
+            // 两条提示压成一行（UX-12）：写第一条和「另有 1 项」，点开才一条一行
+            stress("today-notices-two", "今天 · 两条提示（邮件助手没在运行、通知没开）压成一行") { m in
+                m.notices = ["螺壳邮件助手未运行", "通知未开启"]
+                m.noticeRows = [NoticeRow(id: "luoke-mail", kind: "stopped", text: "螺壳邮件助手未运行"),
+                                NoticeRow(id: "notifications", kind: "notifications", text: "通知未开启，无法收到简报和急事提醒")]
             },
             end(stress("today-app-stopped", "今天 · 邮件助手没在运行（核心的提示）") { m in
                 m.urgent.removeAll { $0.tool == .mail }; m.cards.removeAll { $0.tool == .mail }
@@ -671,7 +664,6 @@ public enum Snapshot {
             stress("wide-today-mini", "宽窗口 1440×900 · 侧栏收起", size: CGSize(width: 1440, height: 900)) { $0.toggleSidebar() },
             stress("wide-today-2560", "宽窗口 2560×1440 · 今天", size: CGSize(width: 2560, height: 1440)),
             stress("wide-scan-2560", "宽窗口 2560×1440 · 螺壳扫描", size: CGSize(width: 2560, height: 1440)) { $0.go(.scan) },
-            stress("wide-compact-2560", "宽窗口 2560×1440 · 今天 · 紧凑（表最宽 1080）", size: CGSize(width: 2560, height: 1440)) { $0.setDensity(.compact) },
             // 宽窗口的应用页：侧栏里「这个应用 → 权限」写出等的是哪一项（只有灯时看不出是什么）
             shipped("stress-wide-scan-no-fda", "压力 · 宽窗口 1440×900 · 螺壳扫描 · 没允许完全磁盘访问（侧栏「这个应用 → 权限」）",
                     scan: "first-run-no-fda", size: CGSize(width: 1440, height: 900)) { $0.go(.scan) },
@@ -698,29 +690,10 @@ public enum Snapshot {
                 moreUrgent(m)
                 if let row = m.statusMenu.items.first(where: { $0.title == "200 封可疑邮件" }) { m.perform(row.action) }
             },
-            // 紧凑的「今天」：急事 205 件的回放（#54）。同一类叠成一行、最多 3 行，其余在「还有 N 件急事」；
-            // 点开一叠一行一件，靠副标题（§4 subtitle）分清；有选项的卡片只给「选一下」，点了展开成标准卡片
-            flood("compact-urgent-205", "紧凑 · 急事 205 件（同一类叠成一行，最多 3 行）"),
-            flood("compact-urgent-205-open", "紧凑 · 急事 205 件 · 点开 200 封可疑邮件那一叠") { m in
-                if let u = m.urgent.first(where: { $0.tool == .mail && $0.surface != nil }) {
-                    m.urgentOpenStacks.insert(TodayStack.key(u.tool, u.kind, u.title))
-                }
-            },
-            flood("compact-urgent-205-all", "紧凑 · 急事 205 件 · 点了「还有 N 件急事」") { $0.urgentAll = true },
-            stress("compact-choose", "紧凑 · 有选项的卡片点了「选一下」（展开成标准卡片）") { m in
-                m.setDensity(.compact)
-                if let c = m.cards.first(where: { SurfaceDigest($0.surface.surface).hasInputs }) { m.compactExpanded.insert(c.id) }
-            },
-            // 真窗口那条路（#65）：选择框、设置的下拉框和截图用的是同一个框
-            live(stress("compact-choose", "紧凑 · 「选一下」展开的卡片") { m in
-                m.setDensity(.compact)
-                if let c = m.cards.first(where: { SurfaceDigest($0.surface.surface).hasInputs }) { m.compactExpanded.insert(c.id) }
-            }),
             live(shipped("today-template", "今天 · 新模板") { TemplateSample.apply($0) }),
             live(shipped("prefs-general", "设置 · 通用") { $0.go(.prefs, tab: "general") }),
             // 完整版：beta 2 还没有的（活动、问螺壳、对话、记忆、显示和模型、隐私），用手写的示例
             full("today", "今天") { _ in },
-            full("today-compact", "今天 · 紧凑") { $0.setDensity(.compact) },
             full("today-done", "照方案处理以后") { m in
                 if let c = m.cards.first { m.tap(card: c, name: "mail_apply_plan", context: .object([:])) }
             },

@@ -21,7 +21,7 @@ public enum Sample {
             ],
             advanced: HostLocalAPI(enabled: false, address: "127.0.0.1", port: 11435, models: ["qwen3.5-9b-4bit"], hasKey: true)),
         privacy: HostPrivacy(dataLine: "所有数据都在这台 Mac 上，螺壳不上传任何内容。",
-                             systemChecks: [HostSystemCheck(name: "完全磁盘访问", ok: true), HostSystemCheck(name: "通知", ok: true),
+                             systemChecks: [HostSystemCheck(key: "fda", name: "完全磁盘访问", ok: true), HostSystemCheck(key: HostSystemCheck.notifications, name: "通知", ok: true),
                                             HostSystemCheck(name: "辅助功能", ok: false, detail: "输入法要用")]))
 
     /// 一张卡片的一组 A2UI 消息
@@ -61,27 +61,6 @@ public enum Sample {
         return TodayCard(id: id, tool: tool, time: time, surface: SurfaceModel(surface: s))
     }
 
-    /// 手写的示意：一张 n 封的方案卡片，排法照邮件助手的 plan_card（标题；每封一个选择框、一行说明；按钮）。
-    /// 截「逐件处理」在小窗口里放不下、中间滚动的样子用
-    static func longPlanCard(_ n: Int = 8) -> TodayCard {
-        let who = ["王老师 · 答辩时间确认", "房东 · 续租合同", "物业 · 停水通知", "银行 · 本月账单", "快递 · 已签收",
-                   "同学 · 周六聚餐", "期刊 · 审稿意见", "学校 · 选课提醒", "医院 · 体检报告", "航空 · 行程变更"]
-        let options: JSONValue = .array([("archive", "归档"), ("reply", "写草稿"), ("keep", "暂不处理")].map {
-            .object(["value": .string($0.0), "label": .string($0.1)])
-        })
-        var kids = ["h"]
-        var comps: [JSONValue] = [text("h", "\(n) 封待处理邮件", "h4")]
-        for i in 0..<n {
-            kids += ["c\(i)", "t\(i)"]
-            comps.append(.object(["id": .string("c\(i)"), "component": .string("ChoicePicker"), "label": .string(who[i % who.count]),
-                                  "options": options, "value": .array([.string(i == 0 ? "reply" : "archive")])]))
-            comps.append(text("t\(i)", i == 0 ? "王老师问答辩时间，周五前回" : "没什么要你做的，建议归档", "caption"))
-        }
-        kids.append("acts")
-        comps.append(node("acts", "Row", ["b1"]))
-        comps.insert(node("root", "Column", kids), at: 0)
-        return card("x-long-plan", .mail, "09:30", comps + button("b1", "按这个处理", "mail_apply_plan", [:], variant: "primary"))
-    }
 
     static func cards() -> [TodayCard] {
         [

@@ -17,16 +17,6 @@ enum Motion {
     static let undoRow = 0.16
     static let undoCard = 0.26
     static let undoCardAt = 0.16
-    static let focusGrow = 0.42
-    static let focusFade = 0.15
-    static let focusTopAt = 0.09
-    static let focusPartsAt = 0.10
-    static let focusStagger = 0.035
-    static let focusParts = 0.30
-    static let focusExit = 0.18
-    static let nextOut = 0.16
-    static let nextIn = 0.30
-    static let nextInAt = 0.07
     static let segment = 0.26
     static let key = 0.12
     static let pill = 0.28
@@ -152,7 +142,7 @@ private struct EnterBlock: ViewModifier {
                 guard armed == nil else { return }
                 armed = animate
                 guard animate else { shown = true; return }
-                let base = entrance == .fromFocus ? Motion.focusPartsAt : Motion.blocksAt
+                let base = Motion.blocksAt
                 withAnimation(Motion.enter(Motion.blocks, delay: base + Motion.stagger * Double(min(index, 9)), reduce: reduce)) { shown = true }
             }
     }

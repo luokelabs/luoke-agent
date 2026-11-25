@@ -5,9 +5,10 @@
 
 分组和各项的叫法照输入法原来那一页和它自己的设置窗口，不另起名；每项下面的说明压成一句（负责人 11-19：说明不把知道的都列上去，
 界面规范「说明一句话」）。隐私和权限的几句留着（负责人 11-19 看过：识别在本机完成、首次使用请求麦克风权限、
-密码框等处不统计，都有用）。一页从上到下：输入方式、模糊音、语音、中英文、排版、
-候选窗口、联想、记忆记录（这些改设置，走 `ime_set`）；词语（清除已学的、恢复忘记的）、使用统计、开发模式（走 `ime_do`）；
-文件（在访达中显示，核心自己做）。
+密码框等处不统计，都有用）。「设置」一页从上到下只放日常用的：输入方式、模糊音、语音、中英文、排版、
+候选窗口、联想、记忆记录（这些改设置，走 `ime_set`），和词语（清除已学的、恢复忘记的，日常纠错用，走 `ime_do`）；
+最下面一行「高级设置」点进隐藏页 `more`。不常用的几组收在 `more` 里（标签栏右端的图标也能打开，弹窗；UX-13）：
+使用统计、开发模式（走 `ime_do`）；文件（在访达中显示，核心自己做）。
 
 「各应用」那一页照 `data/apps` 拼：有单独设置的应用一个一组，都摊开，不点进二级页；改一项、恢复跟随全局都走 `ime_set`。"""
 from __future__ import annotations
@@ -19,10 +20,11 @@ from urllib.parse import urlencode
 from .kit import PageKit
 
 APP = "luoke-ime"
-PAGE_NEEDS = {"settings": ("settings",), "apps": ("apps",)}
+PAGE_NEEDS = {"settings": ("settings",), "apps": ("apps",), "more": ("settings",)}
 NEEDS = PAGE_NEEDS["settings"]
 BUILT = set(PAGE_NEEDS)
-PAGES = [{"id": "settings", "title": "设置"}, {"id": "apps", "title": "各应用"}]
+PAGES = [{"id": "settings", "title": "设置"}, {"id": "apps", "title": "各应用"},
+         {"id": "more", "title": "高级设置", "hidden": True, "icon": "sliders-horizontal"}]
 SET = "ime_set"
 DO = "ime_do"
 
@@ -82,7 +84,7 @@ ERRORS = {
 
 
 def build(page: str, args: Dict[str, str], read: Read) -> List[dict]:
-    return {"settings": settings, "apps": apps}[page](args, read)
+    return {"settings": settings, "apps": apps, "more": more}[page](args, read)
 
 
 def _n(v: Any) -> int:
@@ -170,11 +172,24 @@ def settings(args: Dict[str, str], read: Read) -> List[dict]:
             if rows:
                 top.append(kit.heading(heading))
                 top.append(kit.list(rows))
-
     _words(kit, top, d)
+    # 不常用的几组在「高级设置」：标签栏右端的图标不好发现，页底再放一行进去的入口
+    go = kit.open_page("高级设置", "more")
+    top.append(kit.list([kit.item("高级设置", "使用统计、开发模式和文件", [go], open=go, strong=False)]))
+    return kit.messages(top)
+
+
+def more(args: Dict[str, str], read: Read) -> List[dict]:
+    """「高级设置」：不常用的几组（UX-13）。设置文件读不到时只剩「文件」，能在访达中找到它"""
+    d = read("data/settings")
+    d = d if isinstance(d, dict) else {}
+    kit = PageKit("more")
+    top: List[str] = []
     _usage(kit, top, d)
-    _dev(kit, top, d, state)
+    _dev(kit, top, d, d.get("state"))
     _files(kit, top, d)
+    if not top:
+        top.append(kit.text("暂无高级设置", "caption"))
     return kit.messages(top)
 
 
@@ -284,7 +299,9 @@ APP_CHOICES = {
 }
 # 窗口示例里多存的几张带参数的页（scripts/window_samples.py 的 `views`）：名字 → （页，参数，{读的 uri: 样例里的文件}，只在哪个场景）
 SAMPLE_VIEWS = {"apps-target": ("apps", {"app": "com.apple.Safari"},
-                                {"data/apps?app=com.apple.Safari": "read-data-apps-target.json"}, "normal")}
+                                {"data/apps?app=com.apple.Safari": "read-data-apps-target.json"}, "normal"),
+                # 「高级设置」是隐藏页，回放时窗口不读：照录的 data/settings 拼一份，截图时换上去
+                "more": ("more", {}, {"data/settings": "read-data-settings.json"}, "normal")}
 APP_HOW = "在应用中打开输入法菜单，选择「此应用设置」"
 _BUNDLE_ID = re.compile(r"^[A-Za-z0-9.-]{1,255}$")
 APP_ROWS = 10           # 一页最多摊开几个应用（一个约 40 个组件）

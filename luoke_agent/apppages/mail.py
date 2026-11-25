@@ -23,6 +23,7 @@ PAGE_NEEDS = {
     "today": ("accounts", "today"),
     "inbox": ("accounts", "inbox"),
     "mail": ("mail",),
+    "change": ("mail",),
     "digest": ("accounts", "digest"),
     "piece": ("digest", "piece"),
     "clean": ("accounts", "clean", "old"),
@@ -47,6 +48,7 @@ PAGES = [
     {"id": "activity", "title": "处理记录", "hidden": True, "icon": "history"},
     {"id": "settings", "title": "邮件助手设置", "hidden": True, "icon": "settings"},
     {"id": "mail", "title": "邮件", "hidden": True},
+    {"id": "change", "title": "更改处理方式", "hidden": True},
     {"id": "piece", "title": "精选", "hidden": True},
     {"id": "sender", "title": "发件人", "hidden": True},
     {"id": "subs", "title": "订阅体检", "hidden": True},
@@ -173,7 +175,7 @@ def uri(name: str, **params: Optional[str]) -> str:
 
 def build(page: str, args: Dict[str, str], read: Read) -> List[dict]:
     return {"today": today, "inbox": inbox, "mail": one_mail, "digest": digest, "piece": piece, "clean": clean,
-            "sender": sender, "subs": subs, "old": old, "sources": sources, "job": job, "done": done,
+            "sender": sender, "subs": subs, "change": change, "old": old, "sources": sources, "job": job, "done": done,
             "activity": activity, "settings": settings}[page](args, read)
 
 
@@ -655,12 +657,33 @@ def one_mail(args: Dict[str, str], read: Read) -> List[dict]:
         save = kit.button("保存到草稿箱", "mail_draft_save", {"account": acct, "id": the_id, "text": {"path": "/fields/draft"}})
         top += [kit.heading("草稿"), field, kit.row([save])]
     if d.get("ways") and not gone:
-        do = kit.button("更改", "mail_change", {"account": acct, "ids": [the_id], "action": {"path": "/choices/change/0"},
-                                              "remember": {"path": "/choices/remember/0"}})
-        top.append(kit.fold("更改处理方式，可同时保存为规则", [
-            kit.choice("change", CHANGE, d.get("action") if d.get("action") in dict(CHANGE) else "archive", label="改成"),
+        # 改成别的处理方式（可同时存成规则）不再收在正文最下面：弹窗标题那一行右边一个按钮，点开下一层（UX-14）
+        b = kit.open_page("更改处理方式", "change", {"account": acct, "id": str(the_id)}, icon="pencil-line", variant="borderless",
+                          tooltip="更改处理方式，可同时保存为规则")
+        next(c for c in kit.components if c["id"] == b)["placement"] = "header"
+        top.insert(0, b)
+    return kit.messages(top)
+
+
+def change(args: Dict[str, str], read: Read) -> List[dict]:
+    """更改处理方式（从一封信的弹窗标题右边点开）：改成什么、以后同类的怎么办，一个「更改」"""
+    account, mid = args.get("account") or "all", args.get("id") or ""
+    d = read(uri("mail", account=None if account == "all" else account, id=mid)) or {}
+    kit = PageKit("change")
+    bad = _problem(kit, d)
+    if bad:
+        return bad
+    acct = d.get("account") or account
+    the_id = d.get("id", mid)
+    top = [kit.text(d.get("subject") or "（无主题）", "strong")]
+    if not d.get("ways") or "archive" not in d["ways"]:
+        top.append(kit.text("此邮件已不在收件箱中，无法更改处理方式", "caption"))
+        return kit.messages(top)
+    do = kit.button("更改", "mail_change", {"account": acct, "ids": [the_id], "action": {"path": "/choices/change/0"},
+                                          "remember": {"path": "/choices/remember/0"}}, variant="primary")
+    top += [kit.choice("change", CHANGE, d.get("action") if d.get("action") in dict(CHANGE) else "archive", label="改成"),
             kit.choice("remember", REMEMBER, "none", label="以后"),
-            kit.row([do])]))
+            kit.row([do])]
     return kit.messages(top)
 
 
@@ -854,7 +877,6 @@ SUB_GROUPS = [("unsubscribe", "建议退订"), ("no_way", "无法退订"), ("sus
 # 用户定了的（decision.status）怎么说
 DECISION = {"unsubscribed": "已退订", "unsubscribe_opened": "已打开退订网页", "keep": "保留，不再提示",
             "archive_rule": "今后一律归档", "trash_rule": "今后一律删除", "spam_rule": "今后一律移到垃圾邮件", "digest": "已加入精选"}
-CLEAN_ROWS = 10         # 清理页上每组最多几行，全部的在「订阅体检」「旧邮件」弹窗里
 SUB_ROWS = 20           # 订阅体检一组最多几行：一行十五个组件上下
 OLD_ROWS = 25           # 旧邮件一组最多几行：一行十一个上下
 
@@ -957,18 +979,6 @@ def _old_uri(account: str, scope: str, read: Read) -> str:
     return uri("old", account=account, scope=None if scope == "inbox" else scope)
 
 
-def _old_reads(account: str, read: Read, scope: str) -> List[dict]:
-    """data/old 是一个邮箱一处：「全部」时每个邮箱读一遍；读不出来的邮箱跳过"""
-    one = _single(account, read)
-    out = []
-    for a in [one] if one else [x["id"] for x in _accounts_of(read)]:
-        d = read(_old_uri(a, scope, read)) or {}
-        if isinstance(d, dict) and not isinstance(d.get("error"), dict):
-            out.append(dict(d, account=d.get("account") or a,
-                            groups=[dict(g, account=g.get("account") or a) for g in d.get("groups") or []]))
-    return out
-
-
 def _old_part(g: dict) -> str:
     """旧邮件的一组在哪一类：留着的、未分析、建议、待确认"""
     if g.get("kept"):
@@ -1024,37 +1034,6 @@ def _old_bulk(kit: PageKit, groups: List[dict], scope: str, mode: Optional[bool]
     return [kit.row(out)] if out else []
 
 
-def _old_bulk_rows(kit: PageKit, groups: List[dict], scope: str, listed: int) -> List[str]:
-    """清理页上「建议的几组一次做完」：一个邮箱、一种做法一行，和上面各组一样是列表里的一行（#165：七个主按钮叠在一起，
-    比每行的按钮还显眼；括号里只有 @ 前面那段，分不出邮箱；管着没列出的组却没写）。
-    写明几组、几封、其中几组没列在上面；几个邮箱时标题是整个地址。只有一组的不另给，行上就有"""
-    by: Dict[Tuple[str, str], List[dict]] = {}
-    for g in groups:
-        by.setdefault((g["account"], "trash" if g.get("action") == "trash" else "archive"), []).append(g)
-    multi = len({a for a, _ in by}) > 1
-    shown = {id(g) for g in groups[:listed]}
-    out = []
-    for (acct, act), gs in by.items():
-        if len(gs) < 2:
-            continue
-        n = sum(int(g.get("count") or 0) for g in gs)
-        keys = [g["key"] for g in gs]
-        hidden = sum(1 for g in gs if id(g) not in shown)
-        what = "移到已删除" if act == "trash" else "归档"
-        detail = f"{len(gs)} 组，共 {n} 封" + (f"，含未列出的 {hidden} 组" if hidden else "")
-        title, detail = (acct, f"建议{what} {detail}") if multi else (f"建议{what}的全部分组", detail)
-        if act == "trash":
-            btn = kit.button("全部移到已删除", "mail_old_trash", {"account": acct, "scope": scope, "keys": keys, "count": n},
-                             confirm=dict(_trash_confirm(f"将这 {len(gs)} 组的 {n} 封移到已删除？"),
-                                          text=_old_detail(gs) + _trash_confirm("")["text"]))
-        else:
-            btn = kit.button("全部归档", "mail_old_archive", {"account": acct, "keys": keys, "count": n},
-                             confirm={"title": f"归档这 {len(gs)} 组的 {n} 封？", "text": _old_detail(gs) + ARCHIVE_TIP,
-                                      "label": "归档"})
-        out.append(kit.item(title, detail, [btn]))
-    return out
-
-
 ARCHIVE_TIP = "标为已读、移出收件箱，不会删除；能在处理记录里撤销"
 
 
@@ -1099,106 +1078,65 @@ def _old_progress(kit: PageKit, o: dict, scope: str, multi: bool) -> Optional[st
     return kit.item(f"已分析 {judged} / {total} 封旧邮件{box}", state, [flip])
 
 
+# 清理页顶上的分段（UX-14）：订阅体检、旧邮件两个平级的视图，各自直接铺开分组，不再先列一部分、再点进弹窗看全部
+CLEAN_VIEWS = [("subs", "订阅体检"), ("old", "旧邮件")]
+
+
+def _clean_views(kit: PageKit, view: str, account: str) -> List[str]:
+    go = kit.open_page("切换视图", "clean", {"view": {"path": "/choices/view/0"}, **({} if account == "all" else {"account": account})})
+    return [kit.choice("view", CLEAN_VIEWS, view, submit=go)]
+
+
 def clean(args: Dict[str, str], read: Read) -> List[dict]:
-    """清理（并了订阅体检）：「可以退订」「可以归档」两组，各列建议的前几个；每组一个主按钮一次做完，单个用图标
-    （退订、保留，不再提示），点一个发件人打开它能做的全部。订阅体检的其余几组（无法退订、可疑、已处理、建议保留）、
-    旧邮件的全部分组和已归档的旧邮件在点开的弹窗里。没检查过订阅、没看过旧邮件的给「检查订阅」「看一遍」"""
+    """清理：顶上分段「订阅体检 / 旧邮件」，两个平级的视图（UX-14），各自就是原来点开的那张弹窗的全部内容，
+    直接铺在页上（少套一层弹窗）。订阅体检、旧邮件两张隐藏页照旧在（卡片、旧链接点得进去）"""
+    view = args.get("view") if args.get("view") in dict(CLEAN_VIEWS) else "subs"
+    return subs(args, read, host="clean") if view == "subs" else old(args, read, host="clean")
+
+
+def subs(args: Dict[str, str], read: Read, host: str = "subs") -> List[dict]:
+    """订阅体检：建议退订、无法退订、可疑、已处理、建议保留几组，一次看一组；每行照组给按钮，
+    已处理的能撤回；最下面写哪天检查了多少封，能重新检查。`host`：画在哪一页上，清理页的「订阅体检」分段（UX-14）
+    或单独的隐藏页（弹窗，卡片、旧链接点进来的）；切换分组、邮箱都回到这一页"""
     account = args.get("account") or "all"
     d = read(uri("clean", account=account)) or {}
-    kit = PageKit("clean")
+    kit = PageKit(host)
     bad = _problem(kit, d)
     if bad:
         return bad
-    top: List[str] = _account_switch(kit, "clean", account, read)
-    top += _status_block(kit, [_model_text(read)])
-    job = _job(kit, read)
-    if job:
-        top.append(job)
-    subs_ = _subs_of(d)
-    senders = [s for s in (subs_ or {}).get("senders") or [] if s.get("group") == "unsubscribe" and not s.get("decision")]
-    if senders:
-        top.append(kit.heading(f"可退订 · {len(senders)} 个发件人"))
-        rows = [_sub_row(kit, s, account) for s in senders[:CLEAN_ROWS]]
-        one_click = [s for s in senders if s.get("method") == "one_click"]
-        boxes = {s.get("account") or account for s in one_click}
-        if len(one_click) > 1 and len(boxes) == 1 and "all" not in boxes:
-            rows.append(kit.row([kit.button(f"全部退订（{len(one_click)}）", "mail_unsubscribe",
-                                            {"account": boxes.pop(), "keys": [s["key"] for s in one_click]}, variant="primary",
-                                            confirm={"title": f"退订这 {len(one_click)} 个发件人？",
-                                                     "text": _names(one_click, 5) + "。退订后无法在螺壳中撤销；如需重新订阅，需在对方网站操作",
-                                                     "label": "全部退订"})]))
-        top.append(kit.list(rows))
-    if subs_ is not None:
-        # 订阅体检自己一组（负责人 11-15：结果和「重新检查」排在旧邮件那张卡片里，订阅的东西挂在旧邮件的标题下）
-        counts = {g: 0 for g, _ in SUB_GROUPS}
-        for sd in subs_.get("senders") or []:
-            if sd.get("group") in counts:
-                counts[sd["group"]] += 1
-        # 只写要动手的两样（建议退订、可疑）；无法退订、已处理、建议保留的个数点进去才看（界面规范：数字只留对用户有意义的）
-        what = "、".join(f"{w} {counts[g]}" for g, w in SUB_GROUPS if counts[g] and g in ("unsubscribe", "suspicious"))
-        go = kit.open_page("订阅体检", "subs", {} if account == "all" else {"account": account})
-        when = f"上次检查：{_day(subs_.get('checked_at'))}"
-        again = kit.button("重新检查", "mail_subscriptions_check", {"account": account}, icon="refresh-cw", variant="borderless")
-        top.append(kit.heading("订阅体检"))
-        top.append(kit.list([kit.item("全部结果", what or None, [go], open=go, strong=False),
-                             kit.item(when, None, [again], strong=False)]))
-    if subs_ is None:
-        top.append(kit.heading("订阅"))
-        top.append(kit.list([kit.item("尚未检查订阅", "检查最近 60 天的订阅邮件，列出可退订的发件人",
-                                      [kit.button("检查订阅", "mail_subscriptions_check", {"account": account}, variant="primary")])]))
-    olds = _old_reads(account, read, "inbox")
-    groups = [g for o in olds for g in o["groups"] if _old_part(g) == "suggested"]
-    if not any(o.get("scanned_at") for o in olds):
-        top.append(kit.heading("旧邮件"))
-        top.append(kit.list([kit.item("尚未检查收件箱中的旧邮件", "仅读取邮件头，完成后列出可归档的分组",
-                                      [kit.button("开始检查", "mail_old_scan", {"account": account, "scope": "inbox"},
-                                                  variant="primary")])]))
-    else:
-        top.append(kit.heading("可归档的旧邮件" if groups else "旧邮件"))
-        rows = [_old_row(kit, g, "inbox") for g in groups[:CLEAN_ROWS]]
-        rows += _old_bulk_rows(kit, groups, "inbox", CLEAN_ROWS)
-        for o in olds:
-            p = _old_progress(kit, o, "inbox", len(olds) > 1)
-            if p:
-                rows.append(p)
-            if o.get("stale"):
-                rows.append(kit.item("检查后邮箱有变化", o["account"] if len(olds) > 1 else None, [     # 几个邮箱时写明是哪个
-                    kit.button("重新检查", "mail_old_scan", {"account": o["account"], "scope": "inbox"}, variant="borderless")]))
-        go = kit.open_page("全部旧邮件", "old", {"account": _single(account, read) or (olds[0]["account"] if olds else account),
-                                                  "scope": "inbox"})
-        rows.append(kit.item("全部分组，含已归档的旧邮件", None, [go], open=go, strong=False))
-        top.append(kit.list(rows))
-    if subs_ is not None and not senders and not groups and any(o.get("scanned_at") for o in olds):
-        top.append(kit.text("暂无可清理的邮件", "caption"))
-    return kit.messages(top, refresh=3 if job else None)
-
-
-def subs(args: Dict[str, str], read: Read) -> List[dict]:
-    """订阅体检（弹窗，从清理点开）：建议退订、无法退订、可疑、已处理、建议保留几组，一次看一组；每行照组给按钮，
-    已处理的能撤回；最下面写哪天检查了多少封，能重新检查"""
-    account = args.get("account") or "all"
-    d = read(uri("clean", account=account)) or {}
-    kit = PageKit("subs")
-    bad = _problem(kit, d)
-    if bad:
-        return bad
-    top: List[str] = _account_switch(kit, "subs", account, read, {"group": args.get("group") or "unsubscribe"})
+    view = {"view": "subs"} if host == "clean" else {}
+    top: List[str] = _account_switch(kit, host, account, read, {"group": args.get("group") or "unsubscribe", **view})
+    if host == "clean":
+        top += _clean_views(kit, "subs", account)
     s = _subs_of(d)
     # 现在分析不了的原因；这次体检本机模型没看完的说明（邮件助手的原文）
     top += _status_block(kit, [_model_text(read), _check_note(s)])
+    job = _job(kit, read)
+    if job:
+        top.append(job)
     if s is None:
         top.append(kit.list([kit.item("尚未检查订阅", "检查最近 60 天的订阅邮件，列出可退订的发件人",
                                       [kit.button("检查订阅", "mail_subscriptions_check", {"account": account}, variant="primary")])]))
-        return kit.messages(top)
+        return kit.messages(top, refresh=3 if job else None)
     senders = s.get("senders") or []
     counts = {g: sum(1 for x in senders if x.get("group") == g) for g, _ in SUB_GROUPS}
     shown = [g for g, _ in SUB_GROUPS if counts[g]]
     grp = args.get("group") if args.get("group") in shown else (shown[0] if shown else "unsubscribe")
     if shown:
-        go = kit.open_page("切换分组", "subs", {"group": {"path": "/choices/group/0"}, **({} if account == "all" else {"account": account})})
+        go = kit.open_page("切换分组", host, {"group": {"path": "/choices/group/0"}, **view,
+                                              **({} if account == "all" else {"account": account})})
         top.append(kit.choice("group", [(g, f"{w} {counts[g]}") for g, w in SUB_GROUPS if counts[g]], grp, submit=go))
     mine = [x for x in senders if x.get("group") == grp]
     rows = [_sub_row(kit, x, account) for x in mine[:SUB_ROWS]]
+    # 建议退订里一键退订的不止一个、都在一个邮箱：一个主按钮一次做完
+    one_click = [x for x in mine if grp == "unsubscribe" and not x.get("decision") and x.get("method") == "one_click"]
+    boxes = {x.get("account") or account for x in one_click}
+    if len(one_click) > 1 and len(boxes) == 1 and "all" not in boxes:
+        rows.append(kit.row([kit.button(f"全部退订（{len(one_click)}）", "mail_unsubscribe",
+                                        {"account": boxes.pop(), "keys": [x["key"] for x in one_click]}, variant="primary",
+                                        confirm={"title": f"退订这 {len(one_click)} 个发件人？",
+                                                 "text": _names(one_click, 5) + "。退订后无法在螺壳中撤销；如需重新订阅，需在对方网站操作",
+                                                 "label": "全部退订"})]))
     if rows:
         top.append(kit.list(rows))
         if len(mine) > SUB_ROWS:
@@ -1211,30 +1149,34 @@ def subs(args: Dict[str, str], read: Read) -> List[dict]:
         when += f"，建议退订的约占 {big}"
     again = kit.button("重新检查", "mail_subscriptions_check", {"account": account}, icon="refresh-cw", variant="borderless")
     top.append(kit.row([kit.text(when, "caption"), again], justify="spaceBetween"))
-    return kit.messages(top)
+    return kit.messages(top, refresh=3 if job else None)
 
 
 OLD_SCOPES = [("inbox", "收件箱"), ("archive", "已归档")]
 OLD_PARTS = [("suggested", "建议"), ("unsure", "待确认"), ("pending", "未分析"), ("kept", "已保留")]
 
 
-def old(args: Dict[str, str], read: Read) -> List[dict]:
-    """旧邮件（弹窗，从清理点开）：一个邮箱一处（收件箱里的、已归档的）；建议、待确认、未分析、留着的几类，一次看一类；
-    建议的一次做完；上面一行写共多少、多大、看了多少，星标和按标签留着的不动；没看完的能暂停、接着看"""
+def old(args: Dict[str, str], read: Read, host: str = "old") -> List[dict]:
+    """旧邮件：一个邮箱一处（收件箱里的、已归档的）；建议、待确认、未分析、留着的几类，一次看一类；
+    建议的一次做完；上面一行写共多少、多大、看了多少，星标和按标签留着的不动；没看完的能暂停、接着看。
+    `host`：清理页的「旧邮件」分段（UX-14）或单独的隐藏页（弹窗）；切换都回到这一页"""
     accts = _accounts_of(read)
     account = args.get("account") if any(a["id"] == args.get("account") for a in accts) else (accts[0]["id"] if accts else "")
     scope = args.get("scope") if args.get("scope") in dict(OLD_SCOPES) else "inbox"
     d = read(_old_uri(account, scope, read)) or {}
-    kit = PageKit("old")
+    kit = PageKit(host)
     bad = _problem(kit, d)
     if bad:
         return bad
+    view = {"view": "old"} if host == "clean" else {}
     top: List[str] = []
     if len(accts) > 1:
-        go = kit.open_page("切换邮箱", "old", {"account": {"path": "/choices/box/0"}, "scope": scope})
+        go = kit.open_page("切换邮箱", host, {"account": {"path": "/choices/box/0"}, "scope": scope, **view})
         top.append(kit.choice("box", [(a["id"], _box_name(a), None, a["address"]) for a in accts], account,
                               submit=go, placement="header"))
-    go = kit.open_page("切换范围", "old", {"scope": {"path": "/choices/scope/0"}, "account": account})
+    if host == "clean":
+        top += _clean_views(kit, "old", account)
+    go = kit.open_page("切换范围", host, {"scope": {"path": "/choices/scope/0"}, "account": account, **view})
     top.append(kit.choice("scope", OLD_SCOPES, scope, submit=go))
     job = _job(kit, read)
     if job:
@@ -1269,7 +1211,7 @@ def old(args: Dict[str, str], read: Read) -> List[dict]:
     part = args.get("part") if args.get("part") in shown else (shown[0] if shown else "suggested")
     words = dict(OLD_PARTS, suggested="建议删除" if scope == "archive" else "建议")
     if shown:
-        go = kit.open_page("切换分类", "old", {"part": {"path": "/choices/part/0"}, "scope": scope, "account": account})
+        go = kit.open_page("切换分类", host, {"part": {"path": "/choices/part/0"}, "scope": scope, "account": account, **view})
         top.append(kit.choice("part", [(k, f"{words[k]} {counts[k]}") for k, _ in OLD_PARTS if counts[k]], part, submit=go))
     mine = [g for g in groups if _old_part(g) == part]
     if part == "unsure" and mine:

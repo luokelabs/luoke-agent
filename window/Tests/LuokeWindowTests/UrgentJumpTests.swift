@@ -31,7 +31,7 @@ final class UrgentJumpTests: XCTestCase {
         XCTAssertTrue(m.urgentAll, "先把急事全展开")
         XCTAssertEqual(m.urgentJump?.id, "x-login")
         XCTAssertTrue(TodayPage.visibleUrgent(m.urgent, all: m.urgentAll).stacks.contains { $0.contains { $0.id == "x-login" } })
-        XCTAssertTrue(TodayCompact.urgentRows(m.urgent, all: m.urgentAll).stacks.contains { $0.contains { $0.id == "x-login" } },
+        XCTAssertTrue(TodayPage.visibleUrgent(m.urgent, all: m.urgentAll).stacks.contains { $0.contains { $0.id == "x-login" } },
                       "紧凑的表也一样")
     }
 

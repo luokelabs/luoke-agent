@@ -32,6 +32,8 @@ public protocol WindowBackend: AnyObject {
     func reloadActivity()
     /// 窗口换了一页（§11 `POST /window` 的 `page`）
     func windowPageChanged()
+    /// 打开系统设置的一页（通知……）：经连接的 `settingsOpener`，测试里换掉
+    func openSystemSettings(_ url: URL)
 }
 
 /// 只管「今天」和提醒的后端不用实现应用的页和权限
@@ -47,6 +49,7 @@ public extension WindowBackend {
     func searchHit(search: Int, app: String, hit: String, action: Int) {}
     func reloadActivity() {}
     func windowPageChanged() {}
+    func openSystemSettings(_ url: URL) { NSWorkspace.shared.open(url) }
     func cardSurface(_ sid: String) -> SurfaceModel? { nil }
 }
 
@@ -818,6 +821,8 @@ public final class AgentConnection: WindowBackend {
 
     /// 打开系统设置的一页（`settings` 的答复里核心给的地址）。螺壳.app 打开，核心不自己开（luoke-core#68）；测试里换掉。
     public var settingsOpener: (URL) -> Void = { NSWorkspace.shared.open($0) }
+
+    public func openSystemSettings(_ url: URL) { settingsOpener(url) }
 
     public func permission(app: String, id: String, op: String) {
         let body = JSONValue.object(["app": .string(app), "id": .string(id), "op": .string(op)])
